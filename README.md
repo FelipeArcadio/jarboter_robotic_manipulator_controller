@@ -68,7 +68,7 @@ Once trajectories are downloaded from the PC, the system can operate as a **stan
 ```
 
 ## Software Architecture (High-Level)
-
+![software Architecture](docs/img/software/arquitecturacom_en.png)
 ```text
 
 PC Side
