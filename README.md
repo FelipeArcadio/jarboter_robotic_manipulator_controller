@@ -23,6 +23,7 @@ Once trajectories are downloaded from the PC, the system can operate as a **stan
 
 ## Hardware Architecture (High-Level)
 
+
 ```text
                  +-------------------------------------+
                  |        PC / ROBOMOSP Platform       |
@@ -60,7 +61,12 @@ Once trajectories are downloaded from the PC, the system can operate as a **stan
                         |
                         v
                  Actuators (motors + gripper)
+
+```
+
 ## Software Architecture (High-Level)
+
+```text
 
 PC Side
 -------
