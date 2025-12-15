@@ -1,0 +1,777 @@
+//Microsoft Developer Studio generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+MENU_TXT MENU DISCARDABLE 
+BEGIN
+    POPUP "IDs"
+    BEGIN
+        MENUITEM "ID_SETROBOT",                 ID_SETROBOT
+        MENUITEM "ID_RESET",                    ID_RESET
+        MENUITEM "ID_TECHBOX",                  ID_TECHBOX
+        MENUITEM "ID_TIPOTRAYECTORIA",          ID_TIPOTRAYECTORIA
+        MENUITEM "ID_INICIALIZAR",              ID_INICIALIZAR
+    END
+END
+
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// Spanish (Castilian) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ESP)
+#ifdef _WIN32
+LANGUAGE LANG_SPANISH, SUBLANG_SPANISH
+#pragma code_page(1252)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+TRATJ DIALOG DISCARDABLE  0, 0, 283, 146
+STYLE DS_MODALFRAME | DS_3DLOOK | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "CONSTRUCTOR DE TRAYECTORIA"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   ">>>>>",IDC_AGREGAR,81,27,50,23
+    PUSHBUTTON      "CANCEL",ID_CANCELPROGRAMA,215,68,61,24
+    GROUPBOX        "Trayectoria",IDC_STATIC,138,7,68,100
+    EDITTEXT        IDC_PUNTOSMAX,20,125,40,14,ES_AUTOHSCROLL | WS_DISABLED
+    LTEXT           "NPuntos Max",IDC_STATIC,18,114,44,8
+    EDITTEXT        IDC_PUNTOACTUAL,153,125,40,14,ES_AUTOHSCROLL | 
+                    WS_DISABLED
+    LTEXT           "Npuntos Programados",IDC_STATIC,139,113,71,8
+    GROUPBOX        "Puntos Disponibles",IDC_STATIC,7,7,68,99,BS_CENTER
+    LISTBOX         IDC_PUNTOSUSER,145,18,55,83,LBS_NOINTEGRALHEIGHT | 
+                    LBS_DISABLENOSCROLL | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "ENVIAR TRAYECTORIA",IDC_GENTRACJ,216,30,60,27,
+                    BS_MULTILINE
+    LISTBOX         IDC_PUNTOSDIS,14,18,55,83,LBS_NOINTEGRALHEIGHT | 
+                    LBS_DISABLENOSCROLL | WS_VSCROLL | WS_TABSTOP
+    DEFPUSHBUTTON   "<<<<<",IDC_DELETE,82,66,50,25
+END
+
+RTC DIALOG DISCARDABLE  0, 65476, 302, 207
+STYLE DS_MODALFRAME | DS_3DLOOK | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "CONFIGURACION TAREAS PROGRAMAS"
+FONT 8, "MS Sans Serif"
+BEGIN
+    GROUPBOX        "Programar Tarea",IDC_STATIC,6,103,293,100
+    LTEXT           "HH:MM:SS ",IDC_STATIC,45,116,40,8
+    EDITTEXT        IDC_RTCTIME,39,130,54,14,ES_AUTOHSCROLL
+    GROUPBOX        "Configurar Reloj",IDC_STATIC,6,6,293,98
+    LTEXT           "Tarea Programada",IDC_STATIC,139,154,60,8
+    COMBOBOX        IDC_COMBO_TAREA_RTC,139,165,90,103,CBS_DROPDOWN | 
+                    WS_VSCROLL | WS_TABSTOP
+    LTEXT           "HH:MM:SS",IDC_STATIC,44,34,38,8
+    EDITTEXT        IDC_CLOCKTIME,44,45,54,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "ENVIAR HORA",IDC_SETHORA,250,16,40,29,BS_BITMAP | 
+                    BS_MULTILINE
+    PUSHBUTTON      "LEER HORA",IDC_LLEERHORA,250,61,40,29,BS_BITMAP
+    COMBOBOX        IDC_MESALARMA,39,165,54,56,CBS_DROPDOWN | WS_VSCROLL | 
+                    WS_TABSTOP
+    COMBOBOX        IDC_DIAALARMA,103,165,31,56,CBS_DROPDOWN | WS_VSCROLL | 
+                    WS_TABSTOP
+    LTEXT           "HORA",IDC_STATIC,13,130,22,8
+    LTEXT           "FECHA",IDC_STATIC,13,167,24,8
+    PUSHBUTTON      "ENVIAR ALARMA",IDC_SETALARMA,245,110,40,31,BS_BITMAP | 
+                    BS_MULTILINE
+    PUSHBUTTON      "LLEER ALARMA",IDC_READALARMA,245,157,40,31,BS_BITMAP | 
+                    BS_MULTILINE
+    LTEXT           "Mes",IDC_STATIC,39,154,14,8
+    LTEXT           "Dia",IDC_STATIC,97,154,12,8
+    LTEXT           "HORA",IDC_STATIC,18,47,22,8
+    LTEXT           "Mes",IDC_STATIC,44,65,38,8
+    LTEXT           "FECHA",IDC_STATIC,18,75,24,8
+    COMBOBOX        IDC_MESTIME,44,75,54,62,CBS_DROPDOWN | WS_VSCROLL | 
+                    WS_TABSTOP
+    COMBOBOX        IDC_DIATIME,160,75,34,51,CBS_DROPDOWN | WS_VSCROLL | 
+                    WS_TABSTOP
+    LTEXT           " Dia",IDC_STATIC,160,65,14,8
+    LTEXT           "Año",IDC_STATIC,197,65,14,8
+    CONTROL         "AM",IDC_TIMEAM,"Button",BS_AUTORADIOBUTTON,103,38,27,10
+    CONTROL         "PM",IDC_TIMEPM,"Button",BS_AUTORADIOBUTTON,103,50,27,10
+    COMBOBOX        IDC_DIASEMANA,103,75,53,82,CBS_DROPDOWN | WS_VSCROLL | 
+                    WS_TABSTOP
+    LTEXT           "Dia_Semana",IDC_STATIC,103,65,42,8
+    COMBOBOX        IDC_YEARTIME,197,75,48,101,CBS_DROPDOWN | WS_VSCROLL | 
+                    WS_TABSTOP
+    CONTROL         "PM",IDC_PMALARMA,"Button",BS_AUTORADIOBUTTON,97,135,27,
+                    10
+    CONTROL         "AM",IDC_AMALARMA,"Button",BS_AUTORADIOBUTTON,97,125,27,
+                    10
+    LTEXT           "ENVIAR TAREA",IDC_STATIC,237,143,54,8,SS_SUNKEN
+    LTEXT           "LEER TAREA",IDC_STATIC,239,190,46,8,SS_SUNKEN
+    LTEXT           "ENVIAR HORA",IDC_STATIC,241,47,53,8,SS_SUNKEN
+    LTEXT           "LEER HORA",IDC_STATIC,246,93,47,8,SS_SUNKEN
+END
+
+CONFIGURACION DIALOG DISCARDABLE  0, 65476, 401, 269
+STYLE DS_MODALFRAME | DS_3DLOOK | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "CONFIGURACION PARAMETROS ROBOT"
+FONT 8, "MS Sans Serif"
+BEGIN
+    GROUPBOX        "Motor Cintura",IDC_STATIC,5,7,387,45
+    COMBOBOX        IDC_CBOXuPASO,11,30,37,100,CBS_DROPDOWN | WS_VSCROLL | 
+                    WS_TABSTOP
+    LTEXT           "Switch Int",IDC_STATIC,106,16,32,8
+    PUSHBUTTON      "CONFIGURAR",IDC_SETROBODATA,284,226,53,32
+    LTEXT           "Encoder ",IDC_STATIC,153,16,30,8
+    PUSHBUTTON      "LEER",IDC_READROBODAT,342,226,50,32
+    LTEXT           "#Micropasos",IDC_STATIC,12,16,42,8
+    LTEXT           "Potencia",IDC_STATIC,64,16,29,8
+    COMBOBOX        IDC_CBOXPOT,56,30,48,111,CBS_DROPDOWN | WS_VSCROLL | 
+                    WS_TABSTOP
+    LTEXT           "ErrorLimit",IDC_STATIC,189,16,30,8
+    LTEXT           "TrackWindow",IDC_STATIC,235,16,46,8
+    LTEXT           "SettleWindow",IDC_STATIC,291,16,45,8
+    LTEXT           "SettleTime",IDC_STATIC,345,16,34,8
+    GROUPBOX        "Motor Hombro",IDC_STATIC,5,47,387,45
+    COMBOBOX        IDC_CBOXuPASO2,11,69,37,100,CBS_DROPDOWN | WS_VSCROLL | 
+                    WS_TABSTOP
+    LTEXT           "Switch Int",IDC_STATIC,106,56,32,8
+    LTEXT           "Encoder ",IDC_STATIC,153,56,30,8
+    LTEXT           "#Micropasos",IDC_STATIC,12,56,42,8
+    LTEXT           "Potencia",IDC_STATIC,64,56,29,8
+    COMBOBOX        IDC_CBOXPOT2,56,69,48,88,CBS_DROPDOWN | WS_VSCROLL | 
+                    WS_TABSTOP
+    LTEXT           "ErrorLimit",IDC_STATIC,189,56,30,8
+    LTEXT           "TrackWindow",IDC_STATIC,235,56,46,8
+    LTEXT           "SettleWindow",IDC_STATIC,291,56,45,8
+    LTEXT           "SettleTime",IDC_STATIC,345,56,34,8
+    GROUPBOX        "Motor Codo",IDC_STATIC,5,87,387,47
+    COMBOBOX        IDC_CBOXuPASO3,11,112,37,100,CBS_DROPDOWN | WS_VSCROLL | 
+                    WS_TABSTOP
+    LTEXT           "Switch Int",IDC_STATIC,106,98,32,8
+    LTEXT           "Encoder ",IDC_STATIC,153,98,30,8
+    LTEXT           "#Micropasos",IDC_STATIC,12,98,42,8
+    LTEXT           "Potencia",IDC_STATIC,64,98,29,8
+    COMBOBOX        IDC_CBOXPOT3,56,112,48,83,CBS_DROPDOWN | WS_VSCROLL | 
+                    WS_TABSTOP
+    LTEXT           "ErrorLimit",IDC_STATIC,189,98,30,8
+    LTEXT           "TrackWindow",IDC_STATIC,235,98,46,8
+    LTEXT           "SettleWindow",IDC_STATIC,291,98,45,8
+    LTEXT           "SettleTime",IDC_STATIC,345,98,34,8
+    GROUPBOX        "Motor Pitch",IDC_STATIC,5,129,387,47
+    COMBOBOX        IDC_CBOXuPASO4,11,152,37,100,CBS_DROPDOWN | WS_VSCROLL | 
+                    WS_TABSTOP
+    LTEXT           "Switch Int",IDC_STATIC,106,140,32,8
+    LTEXT           "Encoder ",IDC_STATIC,153,140,30,8
+    LTEXT           "#Micropasos",IDC_STATIC,12,140,42,8
+    LTEXT           "Potencia",IDC_STATIC,64,140,29,8
+    COMBOBOX        IDC_CBOXPOT4,56,152,48,86,CBS_DROPDOWN | WS_VSCROLL | 
+                    WS_TABSTOP
+    LTEXT           "ErrorLimit",IDC_STATIC,189,140,30,8
+    LTEXT           "TrackWindow",IDC_STATIC,235,140,46,8
+    LTEXT           "SettleWindow",IDC_STATIC,291,140,45,8
+    LTEXT           "SettleTime",IDC_STATIC,345,140,34,8
+    GROUPBOX        "Motor Roll",IDC_STATIC,5,171,387,47
+    COMBOBOX        IDC_CBOXuPASO5,11,195,37,100,CBS_DROPDOWN | WS_VSCROLL | 
+                    WS_TABSTOP
+    LTEXT           "Switch Int",IDC_STATIC,106,182,32,8
+    LTEXT           "Encoder ",IDC_STATIC,153,182,30,8
+    LTEXT           "#Micropasos",IDC_STATIC,12,182,42,8
+    LTEXT           "Potencia",IDC_STATIC,64,182,29,8
+    COMBOBOX        IDC_CBOXPOT5,56,195,48,76,CBS_DROPDOWN | WS_VSCROLL | 
+                    WS_TABSTOP
+    LTEXT           "ErrorLimit",IDC_STATIC,189,182,30,8
+    LTEXT           "TrackWindow",IDC_STATIC,235,182,46,8
+    LTEXT           "SettleWindow",IDC_STATIC,291,182,45,8
+    LTEXT           "SettleTime",IDC_STATIC,345,182,34,8
+    CONTROL         "SI",IDC_SWTENABLE1,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,109,31,23,10
+    CONTROL         "SI",IDC_ENCODER_EN1,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,154,31,23,10
+    CONTROL         "SI",IDC_SWTENABLE2,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,109,71,23,10
+    CONTROL         "SI",IDC_ENCODER_EN2,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,154,71,23,10
+    CONTROL         "SI",IDC_SWTENABLE3,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,109,112,23,10
+    CONTROL         "SI",IDC_SWTENABLE4,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,109,154,23,10
+    CONTROL         "SI",IDC_ENCODER_EN3,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,155,112,23,10
+    CONTROL         "SI",IDC_ENCODER_EN4,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,154,154,23,10
+    CONTROL         "SI",IDC_SWTENABLE5,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,109,195,23,10
+    CONTROL         "SI",IDC_ENCODER_EN5,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,153,196,23,10
+    EDITTEXT        IDC_CBOXERROR,189,27,40,14,ES_AUTOHSCROLL | WS_DISABLED
+    EDITTEXT        IDC_CBOXTRACKWIN,237,27,40,14,ES_AUTOHSCROLL | 
+                    WS_DISABLED
+    EDITTEXT        IDC_CBOXSETTLEW,290,27,40,14,ES_AUTOHSCROLL | 
+                    WS_DISABLED
+    EDITTEXT        IDC_CBOXSETTLET,344,27,40,14,ES_AUTOHSCROLL | 
+                    WS_DISABLED
+    EDITTEXT        IDC_CBOXERROR2,189,68,40,14,ES_AUTOHSCROLL | WS_DISABLED
+    EDITTEXT        IDC_CBOXTRACKWIN2,237,68,40,14,ES_AUTOHSCROLL | 
+                    WS_DISABLED
+    EDITTEXT        IDC_CBOXSETTLEW2,291,68,40,14,ES_AUTOHSCROLL | 
+                    WS_DISABLED
+    EDITTEXT        IDC_CBOXSETTLET2,344,68,40,14,ES_AUTOHSCROLL | 
+                    WS_DISABLED
+    EDITTEXT        IDC_CBOXERROR3,189,110,40,14,ES_AUTOHSCROLL | 
+                    WS_DISABLED
+    EDITTEXT        IDC_CBOXTRACKWIN3,237,110,40,14,ES_AUTOHSCROLL | 
+                    WS_DISABLED
+    EDITTEXT        IDC_CBOXSETTLEW3,290,110,40,14,ES_AUTOHSCROLL | 
+                    WS_DISABLED
+    EDITTEXT        IDC_CBOXSETTLET3,345,111,40,14,ES_AUTOHSCROLL | 
+                    WS_DISABLED
+    EDITTEXT        IDC_CBOXERROR4,189,151,40,14,ES_AUTOHSCROLL | 
+                    WS_DISABLED
+    EDITTEXT        IDC_CBOXTRACKWIN4,237,151,40,14,ES_AUTOHSCROLL | 
+                    WS_DISABLED
+    EDITTEXT        IDC_CBOXSETTLEW4,291,150,40,14,ES_AUTOHSCROLL | 
+                    WS_DISABLED
+    EDITTEXT        IDC_CBOXSETTLET4,344,151,40,14,ES_AUTOHSCROLL | 
+                    WS_DISABLED
+    EDITTEXT        IDC_CBOXERROR5,189,193,40,14,ES_AUTOHSCROLL | 
+                    WS_DISABLED
+    EDITTEXT        IDC_CBOXTRACKWIN5,237,194,40,14,ES_AUTOHSCROLL | 
+                    WS_DISABLED
+    EDITTEXT        IDC_CBOXSETTLEW5,291,192,40,14,ES_AUTOHSCROLL | 
+                    WS_DISABLED
+    EDITTEXT        IDC_CBOXSETTLET5,344,193,40,14,ES_AUTOHSCROLL | 
+                    WS_DISABLED
+    PUSHBUTTON      "GET STATUS",ID_EventStatus,5,226,50,32,BS_MULTILINE
+    PUSHBUTTON      "GET ACTIVTY",ID_AvtivityStatus,58,226,50,32,
+                    BS_MULTILINE
+    PUSHBUTTON      "GET SENSOR",ID_GetSensor,111,226,50,32,BS_MULTILINE
+    COMBOBOX        IDC_EJEMUESTRA,217,240,48,76,CBS_DROPDOWN | WS_VSCROLL | 
+                    WS_TABSTOP
+    LTEXT           "Eje",IDC_STATIC,217,229,11,8
+    PUSHBUTTON      "INFO MOV",ID_CommandGetinfomov,164,226,50,32,
+                    BS_MULTILINE
+    GROUPBOX        "Debug",IDC_STATIC,5,213,268,45
+END
+
+TRAZADO DIALOG DISCARDABLE  0, 0, 354, 180
+STYLE DS_MODALFRAME | DS_3DLOOK | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "CONFIGURACION DEL TRAZADO"
+FONT 8, "MS Sans Serif"
+BEGIN
+    CONTROL         "Trazado1",IDC_PMDTrace1,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,12,22,46,10
+    CONTROL         "Trazado2",IDC_PMDTrace2,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,12,38,46,10
+    CONTROL         "Trazado3",IDC_PMDTrace3,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,12,54,46,10
+    CONTROL         "Trazado4",IDC_PMDTrace4,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,12,70,46,10
+    COMBOBOX        IDC_PMDT1,142,22,124,96,CBS_DROPDOWN | WS_DISABLED | 
+                    WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_PMDT2,142,38,124,91,CBS_DROPDOWN | WS_DISABLED | 
+                    WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_PMDT3,142,54,124,90,CBS_DROPDOWN | WS_DISABLED | 
+                    WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_PMDT4,142,70,124,90,CBS_DROPDOWN | WS_DISABLED | 
+                    WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_AXISTRACE,74,22,61,96,CBS_DROPDOWN | WS_DISABLED | 
+                    WS_VSCROLL | WS_TABSTOP
+    GROUPBOX        "",IDC_STATIC,7,5,342,172
+    PUSHBUTTON      "CONFIGURAR",IDC_CONFIGURARTRACE,276,50,68,36
+    PUSHBUTTON      "GRAFICAR",IDC_MAKEBUFFER,276,104,69,36,WS_DISABLED
+    COMBOBOX        IDC_AXISTRACE2,74,38,61,96,CBS_DROPDOWN | WS_DISABLED | 
+                    WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Axis",IDC_STATIC,74,12,14,9
+    COMBOBOX        IDC_AXISTRACE3,74,54,61,96,CBS_DROPDOWN | WS_DISABLED | 
+                    WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_AXISTRACE4,74,70,61,96,CBS_DROPDOWN | WS_DISABLED | 
+                    WS_VSCROLL | WS_TABSTOP
+    LTEXT           "T.  muestreo (ms)",IDC_STATIC,12,159,55,8
+    EDITTEXT        IDC_TRACETIME,74,159,61,14,ES_AUTOHSCROLL
+    CONTROL         "Trazado5",IDC_PMDTrace5,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,12,86,46,10
+    COMBOBOX        IDC_PMDT5,142,86,124,90,CBS_DROPDOWN | WS_DISABLED | 
+                    WS_VSCROLL | WS_TABSTOP
+    CONTROL         "Trazado6",IDC_PMDTrace6,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,12,104,46,10
+    CONTROL         "Trazado7",IDC_PMDTrace7,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,12,122,46,10
+    CONTROL         "Trazado8",IDC_PMDTrace8,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,12,141,46,10
+    COMBOBOX        IDC_PMDT6,142,104,124,90,CBS_DROPDOWN | WS_DISABLED | 
+                    WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_PMDT7,142,122,124,90,CBS_DROPDOWN | WS_DISABLED | 
+                    WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_PMDT8,142,141,124,90,CBS_DROPDOWN | WS_DISABLED | 
+                    WS_VSCROLL | WS_TABSTOP
+    LTEXT           "   Configurado =>",IDC_STATIC,142,159,56,14,
+                    SS_CENTERIMAGE | SS_SUNKEN
+    EDITTEXT        IDC_PMDregistro,212,159,33,14,ES_AUTOHSCROLL | 
+                    WS_DISABLED
+    LTEXT           "ms",IDC_STATIC,250,162,10,8
+    LTEXT           "ROLL",IDC_STATIC,74,86,20,8
+    LTEXT           "ROLL",IDC_STATIC,74,104,20,8
+    LTEXT           "ROLL",IDC_STATIC,74,122,20,8
+    LTEXT           "ROLL",IDC_STATIC,74,141,20,8
+    CONTROL         "Configurar para Trayectoria",IDC_TRACETRAJECT,"Button",
+                    BS_AUTOCHECKBOX | BS_MULTILINE | WS_TABSTOP,276,22,69,25
+END
+
+ADVERTENCIA DIALOG DISCARDABLE  80, 50, 214, 55
+STYLE DS_MODALFRAME | DS_3DLOOK | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "ADVERTENCIA "
+FONT 8, "MS Sans Serif"
+BEGIN
+    PUSHBUTTON      "CANCEL",ID_CANCELPOSES,139,23,70,23
+    PUSHBUTTON      "SOBRE ESCRIBIR",IDC_SESCRIBIR,64,23,69,23,BS_MULTILINE
+    LTEXT           """IDENTIFICADOR DE POSES EXISTENTE""",IDC_STATIC,59,5,
+                    143,8
+    CONTROL         143,IDC_PIC,"Static",SS_BITMAP,9,10,47,37
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO DISCARDABLE 
+BEGIN
+    "TRATJ", DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 276
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 139
+    END
+
+    "RTC", DIALOG
+    BEGIN
+        VERTGUIDE, 6
+    END
+
+    "CONFIGURACION", DIALOG
+    BEGIN
+        LEFTMARGIN, 5
+        RIGHTMARGIN, 392
+        VERTGUIDE, 106
+        VERTGUIDE, 109
+        VERTGUIDE, 154
+        VERTGUIDE, 177
+        VERTGUIDE, 189
+        VERTGUIDE, 237
+        VERTGUIDE, 291
+        VERTGUIDE, 345
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 258
+        HORZGUIDE, 25
+        HORZGUIDE, 41
+        HORZGUIDE, 43
+        HORZGUIDE, 81
+        HORZGUIDE, 83
+        HORZGUIDE, 123
+        HORZGUIDE, 125
+        HORZGUIDE, 164
+        HORZGUIDE, 166
+        HORZGUIDE, 206
+        HORZGUIDE, 208
+        HORZGUIDE, 226
+    END
+
+    "TRAZADO", DIALOG
+    BEGIN
+        VERTGUIDE, 12
+        VERTGUIDE, 74
+        VERTGUIDE, 135
+        VERTGUIDE, 142
+        VERTGUIDE, 276
+        HORZGUIDE, 12
+        HORZGUIDE, 22
+        HORZGUIDE, 38
+        HORZGUIDE, 54
+        HORZGUIDE, 70
+        HORZGUIDE, 86
+        HORZGUIDE, 104
+        HORZGUIDE, 122
+        HORZGUIDE, 141
+        HORZGUIDE, 159
+    END
+
+    "ADVERTENCIA", DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 209
+        TOPMARGIN, 5
+        BOTTOMMARGIN, 51
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDB_EMERGENCY_STOP      BITMAP  DISCARDABLE     "Resource\\emergency_button.bmp"
+IDB_ORIGEN              BITMAP  DISCARDABLE     "Resource\\origen.bmp"
+IDB_NEST                BITMAP  DISCARDABLE     "Resource\\nest.bmp"
+IDB_SET                 BITMAP  DISCARDABLE     "Resource\\set.bmp"
+IDB_BACK                BITMAP  DISCARDABLE     "Resource\\back.bmp"
+IDB_INITIALIZE          BITMAP  DISCARDABLE     "Resource\\init_ejes.bmp"
+IDB_RESET               BITMAP  DISCARDABLE     "Resource\\reset.bmp"
+IDB_TRAJ                BITMAP  DISCARDABLE     "Resource\\traj.bmp"
+IDB_TECHBOX             BITMAP  DISCARDABLE     "Resource\\Techbox.bmp"
+IDB_OPENGRIPPER         BITMAP  DISCARDABLE     "Resource\\open_gripper.bmp"
+IDB_FORWARD             BITMAP  DISCARDABLE     "Resource\\forward.bmp"
+IDB_TEST_BACH           BITMAP  DISCARDABLE     "Resource\\testUSB.bmp"
+IDB_ACEPTAR             BITMAP  DISCARDABLE     "Resource\\aceptar.bmp"
+IDB_AJUSTE              BITMAP  DISCARDABLE     "Resource\\ajuste.bmp"
+IDB_ALARMA              BITMAP  DISCARDABLE     "Resource\\reloj.bmp"
+IDB_CLOSEGRIPPER        BITMAP  DISCARDABLE     "Resource\\close_gripper.bmp"
+IDB_GRAFICA             BITMAP  DISCARDABLE     "resource\\grafica.bmp"
+IDB_GET                 BITMAP  DISCARDABLE     "resource\\get.bmp"
+IDB_Wicon               BITMAP  DISCARDABLE     "resource\\wicon.bmp"
+#endif    // Spanish (Castilian) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// Spanish (Modern) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ESN)
+#ifdef _WIN32
+LANGUAGE LANG_SPANISH, SUBLANG_SPANISH_MODERN
+#pragma code_page(1252)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+DIALOGO_MATRIZ DIALOG DISCARDABLE  0, 0, 193, 97
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "D_H"
+FONT 8, "MS Sans Serif"
+BEGIN
+    PUSHBUTTON      "Cerrar",IDCANCELMATRIX,69,78,50,14
+    LTEXT           "Matriz Homogenea Resultante",IDC_STATIC,47,7,96,8
+    LISTBOX         IDC_MATRIX,7,17,181,57,NOT LBS_NOTIFY | LBS_USETABSTOPS | 
+                    LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_HSCROLL | 
+                    WS_TABSTOP
+END
+
+TERMINAL_ENSEÑANZA DIALOG DISCARDABLE  0, 65476, 374, 410
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "TERMINAL ENSEÑANZA"
+FONT 8, "MS Sans Serif"
+BEGIN
+    EDITTEXT        IDC_EPOS,72,153,33,14,WS_DISABLED
+    EDITTEXT        IDC_EVELO,166,153,42,14,ES_AUTOHSCROLL | WS_DISABLED
+    EDITTEXT        IDC_EACE,268,153,42,14,ES_AUTOHSCROLL | WS_DISABLED
+    LTEXT           "Aceleración Grados/Seg",IDC_STATIC,268,140,79,8
+    LTEXT           "Velocidad en Grados/Seg",IDC_STATIC,166,140,83,8
+    LTEXT           "Posición en Grados",IDC_STATIC,72,140,62,8
+    GROUPBOX        "MOVIMIENTO POR ARTICULACION",IDC_STATIC,4,131,365,175
+    CONTROL         "Hombro",IDC_RHOMBRO,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,20,174,42,11
+    CONTROL         "Cintura",IDC_RCINTURA,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,20,154,38,10
+    CONTROL         "Codo",IDC_RCODO,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
+                    20,194,33,10
+    CONTROL         "Cabeceo",IDC_RPITCH,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,20,213,45,10
+    CONTROL         "Balanceo",IDC_RROLL,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,20,233,46,10
+    EDITTEXT        IDC_EPOS2,72,172,34,14,ES_AUTOHSCROLL | WS_DISABLED
+    EDITTEXT        IDC_EVELO2,166,172,42,14,ES_AUTOHSCROLL | WS_DISABLED
+    EDITTEXT        IDC_EACE2,268,173,42,14,ES_AUTOHSCROLL | WS_DISABLED
+    EDITTEXT        IDC_EPOS3,72,193,33,14,ES_AUTOHSCROLL | WS_DISABLED
+    EDITTEXT        IDC_EVELO3,166,193,42,14,ES_AUTOHSCROLL | WS_DISABLED
+    EDITTEXT        IDC_EACE3,268,193,42,14,ES_AUTOHSCROLL | WS_DISABLED
+    EDITTEXT        IDC_EPOS4,72,211,33,14,ES_AUTOHSCROLL | WS_DISABLED
+    EDITTEXT        IDC_EVELO4,166,211,42,14,ES_AUTOHSCROLL | WS_DISABLED
+    EDITTEXT        IDC_EACE4,268,211,42,14,ES_AUTOHSCROLL | WS_DISABLED
+    EDITTEXT        IDC_EPOS5,72,230,34,14,ES_AUTOHSCROLL | WS_DISABLED
+    EDITTEXT        IDC_EVELO5,166,230,42,14,ES_AUTOHSCROLL | WS_DISABLED
+    EDITTEXT        IDC_EACE5,268,230,42,14,ES_AUTOHSCROLL | WS_DISABLED
+    GROUPBOX        "CONTROL DE MOVIMIENTO",IDC_STATIC,4,1,365,269
+    PUSHBUTTON      "",IDC_BACK,18,17,70,51,BS_BITMAP
+    PUSHBUTTON      "PARADA DE EMERGENCIA",IDC_EMER,270,16,70,51,BS_BITMAP | 
+                    BS_MULTILINE
+    PUSHBUTTON      "ABRIR GRIPPER",IDC_GRIOPEN,194,311,74,77,BS_BITMAP | 
+                    BS_MULTILINE
+    PUSHBUTTON      "CERAR GRIPPER",IDC_GRICLOSE,283,311,76,75,BS_BITMAP | 
+                    BS_MULTILINE
+    PUSHBUTTON      "ORIGEN",IDC_ORIGEN,11,311,75,77,BS_BITMAP | 
+                    BS_MULTILINE
+    PUSHBUTTON      "Guardar Posicion",IDC_GPOSE,78,101,50,24,BS_MULTILINE | 
+                    WS_DISABLED
+    PUSHBUTTON      "Ejecutar Posicion",IDC_EJEPOSE,140,101,46,24,
+                    BS_MULTILINE | WS_DISABLED
+    LTEXT           "Pose_ID",IDC_STATIC,334,104,28,8
+    PUSHBUTTON      "Play",IDC_BENVIAR,110,18,70,50,BS_BITMAP
+    PUSHBUTTON      "FORWARD",IDC_FORWARD,190,17,70,50,BS_BITMAP
+    PUSHBUTTON      "POSICION DESCANZO",IDC_NEST,104,311,75,77,BS_BITMAP | 
+                    BS_MULTILINE
+    PUSHBUTTON      "Generar trayectoria",IDC_TRAJPENDANT,197,101,50,24,
+                    BS_CENTER | BS_VCENTER | BS_MULTILINE | WS_DISABLED
+    PUSHBUTTON      "HABILITACIÓN DEL SISTEMA DE ALMACENAMIENTO",
+                    IDC_LEERPOSES,16,84,293,15,BS_CENTER | BS_VCENTER | 
+                    BS_MULTILINE
+    PUSHBUTTON      "Borrar Poses",IDC_BORRAR,259,101,50,24,BS_CENTER | 
+                    BS_VCENTER | BS_MULTILINE | WS_DISABLED
+    PUSHBUTTON      "Pose Actual",IDC_PoseActual,16,101,50,24,BS_CENTER | 
+                    BS_VCENTER | BS_MULTILINE | WS_DISABLED
+    GROUPBOX        "Posicion-Cinematica directa",IDC_STATIC,4,246,184,42
+    EDITTEXT        IDC_POSX,10,270,31,14,ES_AUTOHSCROLL | WS_DISABLED
+    EDITTEXT        IDC_POSY,44,270,31,14,ES_AUTOHSCROLL | WS_DISABLED
+    EDITTEXT        IDC_POSZ,79,270,31,14,ES_AUTOHSCROLL | WS_DISABLED
+    LTEXT           "X",IDC_STATIC,23,259,8,8
+    LTEXT           "Y",IDC_STATIC,59,259,8,8
+    LTEXT           "Z",IDC_STATIC,92,259,8,8
+    GROUPBOX        "Posicion-Cinematica Inversa",IDC_STATIC,187,246,107,42
+    EDITTEXT        IDC_POSXINV,192,270,31,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_POSYINV,227,270,29,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_POSZINV,260,270,29,14,ES_AUTOHSCROLL
+    LTEXT           "X",IDC_STATIC,201,259,8,8
+    LTEXT           "Y",IDC_STATIC,234,259,8,8
+    LTEXT           "Z",IDC_STATIC,269,259,8,8
+    PUSHBUTTON      "CALCULAR",IDC_CALINVERSA,299,289,48,14,BS_MULTILINE
+    SCROLLBAR       IDC_SCBCINPOS,108,156,52,8,WS_TABSTOP
+    SCROLLBAR       IDC_SCBHOMPOS,108,177,52,8,WS_TABSTOP
+    SCROLLBAR       IDC_SCBCODOPOS,108,196,52,8,WS_TABSTOP
+    SCROLLBAR       IDC_SCBPITCHPOS,108,213,52,8,WS_TABSTOP
+    SCROLLBAR       IDC_SCBROLLPOS,108,233,52,8,WS_TABSTOP
+    SCROLLBAR       IDC_SCBCINVEL,210,156,50,8,WS_TABSTOP
+    SCROLLBAR       IDC_SCBHOMVEL,210,175,50,8,WS_TABSTOP
+    SCROLLBAR       IDC_SCBCODOVEL,210,196,50,8,WS_TABSTOP
+    SCROLLBAR       IDC_SCBPITCHVEL,210,214,50,8,WS_TABSTOP
+    SCROLLBAR       IDC_SCBROLLVEL,210,233,50,8,WS_TABSTOP
+    SCROLLBAR       IDC_SCBCINACE,313,156,48,8,WS_TABSTOP
+    SCROLLBAR       IDC_SCBHOMACE,313,177,48,8,WS_TABSTOP
+    SCROLLBAR       IDC_SCBCODOACE,313,196,48,8,WS_TABSTOP
+    SCROLLBAR       IDC_SCBPITCHACE,313,214,48,8,WS_TABSTOP
+    SCROLLBAR       IDC_SCBROLLACE,313,233,48,8,WS_TABSTOP
+    EDITTEXT        IDC_eulerROLL,334,270,28,14,ES_AUTOHSCROLL
+    GROUPBOX        "Orientacion",IDC_STATIC,293,246,76,42
+    LTEXT           "R",IDC_STATIC,345,259,8,8
+    LTEXT           "P",IDC_STATIC,311,259,8,8
+    EDITTEXT        IDC_eulerPICH,301,270,27,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_eulerROLLkine,150,269,28,14,ES_AUTOHSCROLL | 
+                    WS_DISABLED
+    LTEXT           "R",IDC_STATIC,161,258,8,8
+    LTEXT           "P",IDC_STATIC,130,258,8,8
+    EDITTEXT        IDC_eulerPICHkine,119,269,27,14,ES_AUTOHSCROLL | 
+                    WS_DISABLED
+    PUSHBUTTON      "MATRIZ HOMOGENEA",IDC_MATRIXKINE,22,289,85,15,
+                    BS_MULTILINE | WS_DISABLED
+    PUSHBUTTON      "MATRIZ HOMOGENEA",IDC_MATRIXINVKINE,195,289,85,15,
+                    BS_MULTILINE | WS_DISABLED
+    GROUPBOX        "",IDC_STATIC,187,283,182,23
+    LTEXT           "2",IDC_STATIC,347,136,8,8
+    PUSHBUTTON      "CALCULAR",IDC_CALDIRECTA,120,289,48,14,BS_MULTILINE
+    GROUPBOX        "Orientacion",IDC_STATIC,111,246,77,42
+    COMBOBOX        IDC_COMBOID,317,115,49,131,CBS_DROPDOWN | WS_VSCROLL | 
+                    WS_TABSTOP
+    GROUPBOX        "ALMACENAMIENTO",IDC_STATIC,4,72,365,215
+END
+
+TRAYECTORIA DIALOG DISCARDABLE  0, 65476, 408, 134
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Enviar Trayectoria"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "Enviar ",IDOK,52,49,61,26
+    PUSHBUTTON      "Cancel",IDCANCEL,52,85,59,26
+    LTEXT           "Nombre de la trayectoria",IDC_STATIC,7,7,78,8
+    EDITTEXT        IDC_EDIT1,7,19,137,14
+    LTEXT           "Trayectoria Enviada",IDC_STATIC,155,7,64,8
+    LISTBOX         IDC_TRAJPRINT,156,19,248,109,NOT LBS_NOTIFY | 
+                    LBS_USETABSTOPS | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | 
+                    WS_HSCROLL | WS_TABSTOP
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO DISCARDABLE 
+BEGIN
+    "DIALOGO_MATRIZ", DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 188
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 92
+    END
+
+    "TERMINAL_ENSEÑANZA", DIALOG
+    BEGIN
+        LEFTMARGIN, 4
+        RIGHTMARGIN, 369
+        VERTGUIDE, 16
+        VERTGUIDE, 362
+        VERTGUIDE, 369
+        BOTTOMMARGIN, 375
+        HORZGUIDE, 101
+        HORZGUIDE, 294
+    END
+
+    "TRAYECTORIA", DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 404
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 129
+        HORZGUIDE, 19
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+#ifndef _MAC
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,1
+ PRODUCTVERSION 1,0,0,1
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x40004L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "0c0a04b0"
+        BEGIN
+            VALUE "Comments", "\0"
+            VALUE "CompanyName", " \0"
+            VALUE "FileDescription", "Conrtrolador Robotica\0"
+            VALUE "FileVersion", "1, 0, 0, 1\0"
+            VALUE "InternalName", "bulkloop\0"
+            VALUE "LegalCopyright", "Copyright © 2006\0"
+            VALUE "LegalTrademarks", "\0"
+            VALUE "OriginalFilename", "bulkloop.exe\0"
+            VALUE "PrivateBuild", "\0"
+            VALUE "ProductName", "  bulkloop\0"
+            VALUE "ProductVersion", "1, 0, 0, 1\0"
+            VALUE "SpecialBuild", "\0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0xc0a, 1200
+    END
+END
+
+#endif    // !_MAC
+
+#endif    // Spanish (Modern) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// Spanish (Castilian) (unknown sub-lang: 0x9) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ESO)
+#ifdef _WIN32
+LANGUAGE LANG_SPANISH, 0x9
+#pragma code_page(1252)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_ITEMOPCION00         "TERMINAL"
+    ID_ITEMOPCION01         "EMERGENCIA"
+    ID_ITEMOPCION02         "RESET"
+    ID_ITEMOPCION03         "TRAYECTORIA"
+    ID_ITEMOPCION04         "CONFIGURACIÓN"
+    ID_ITEMOPCION05         "TAREAS"
+    ID_ITEMOPCION06         "TRAZADO"
+    ID_ITEMOPCION07         "ENSEÑANZA"
+    ID_ITEMOPCION08         "PROGRAMADAS"
+END
+
+#endif    // Spanish (Castilian) (unknown sub-lang: 0x9) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

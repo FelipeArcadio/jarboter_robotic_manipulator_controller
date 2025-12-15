@@ -1,0 +1,2015 @@
+   1               		.file	"basicIO.c"
+   2               	__SREG__ = 0x3f
+   3               	__SP_H__ = 0x3e
+   4               	__SP_L__ = 0x3d
+   5               	__CCP__  = 0x34
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   9               		.text
+  10               	.Ltext0:
+ 226               	.global	writePMDcommand
+ 228               	writePMDcommand:
+   1:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c ****  
+   2:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** #include <avr/io.h>
+   3:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** #include <stdint.h>
+   4:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** #include <stdio.h>
+   5:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** #include <util/delay.h>
+   6:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** #include "basicIO.h"
+   7:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 
+   8:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** /*-----------------------Funciones Interface uControlador-PMD´s--------------------------*/
+   9:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 
+  10:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** void writePMDcommand(PMDuint16 PMDChipSet, PMDuint16 dataword)
+  11:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** {
+ 229               	1,.LM0-.LFBB1
+ 230               	.LM0:
+ 231               	.LFBB1:
+ 232               	/* prologue: function */
+ 233               	/* frame size = 0 */
+  12:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 
+  13:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	if(PMDChipSet==PMDChipSet1)
+ 234               	bn	68,0,13,.LM1-.LFBB1
+ 235               	.LM1:
+ 236 0000 0097      		sbiw r24,0
+ 237 0002 01F4      		brne .L2
+  14:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	{
+  15:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		PORTD			|=	_BV(HostSlct1);
+ 238               	abn	68,0,15,.LM2-.LFBB1
+ 239               	.LM2:
+ 240 0004 5C9A      		sbi 43-32,4
+  16:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl 	|=	_BV(HostWrite) | _BV(HostRead);				// Condiciones Iniciales		
+ 241               	tabn	68,0,16,.LM3-.LFBB1
+ 242               	.LM3:
+ 243 0006 84B3      		in r24,52-32
+ 244 0008 8063      		ori r24,lo8(48)
+ 245 000a 84BB      		out 52-32,r24
+  17:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	
+  18:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl 	&= 	~(_BV(HostCmd));						//HostCmd Bajo, Condiciones iniciales
+ 246               	bn	68,0,18,.LM4-.LFBB1
+ 247               	.LM4:
+ 248 000c A398      		cbi 52-32,3
+  19:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		Control_Port	=	0xFF;	  								//Coloco como salida el puerto 
+ 249               	tabn	68,0,19,.LM5-.LFBB1
+ 250               	.LM5:
+ 251 000e 8FEF      		ldi r24,lo8(-1)
+ 252 0010 8093 0401 		sts 260,r24
+  20:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		PORTD		 	&= 	~(_BV(HostSlct1));						//Selecciono el Chipset 
+ 253               	abn	68,0,20,.LM6-.LFBB1
+ 254               	.LM6:
+ 255 0014 5C98      		cbi 43-32,4
+  21:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl 	|= 	_BV(HostCmd);							//Coloco la Señal HostCmd a Nivel Alto
+ 256               	tabn	68,0,21,.LM7-.LFBB1
+ 257               	.LM7:
+ 258 0016 A39A      		sbi 52-32,3
+  22:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	
+  23:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostData		= 	(PMDuint8)((dataword>>8) & 0xFF);		//Envío por el puerto de datos el byte mas 
+ 259               	tabn	68,0,23,.LM8-.LFBB1
+ 260               	.LM8:
+ 261 0018 7093 0501 		sts 261,r23
+  24:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 																	//significativo  
+  25:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl		&= 	~(_BV(HostWrite));						//Realizo la escritura del byte enviado.
+ 262               	tabn	68,0,25,.LM9-.LFBB1
+ 263               	.LM9:
+ 264 001c A498      		cbi 52-32,4
+ 265               	.LBB330:
+ 266               	.LBB331:
+ 267               	.LBB332:
+ 268               	.LBB333:
+ 270               	.Ltext1:
+   1:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** /* Copyright (c) 2002, Marek Michalkiewicz
+   2:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****    Copyright (c) 2007 Joerg Wunsch
+   3:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****    All rights reserved.
+   4:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+   5:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****    Redistribution and use in source and binary forms, with or without
+   6:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****    modification, are permitted provided that the following conditions are met:
+   7:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+   8:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****    * Redistributions of source code must retain the above copyright
+   9:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****      notice, this list of conditions and the following disclaimer.
+  10:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  11:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****    * Redistributions in binary form must reproduce the above copyright
+  12:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****      notice, this list of conditions and the following disclaimer in
+  13:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****      the documentation and/or other materials provided with the
+  14:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****      distribution.
+  15:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  16:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****    * Neither the name of the copyright holders nor the names of
+  17:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****      contributors may be used to endorse or promote products derived
+  18:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****      from this software without specific prior written permission.
+  19:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  20:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  21:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****   AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  22:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+  23:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****   ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+  24:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****   LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+  25:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+  26:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****   SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+  27:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+  28:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+  29:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+  30:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****   POSSIBILITY OF SUCH DAMAGE. */
+  31:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  32:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** /* $Id: delay_basic.h,v 1.1 2007/05/13 21:23:20 joerg_wunsch Exp $ */
+  33:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  34:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** #ifndef _UTIL_DELAY_BASIC_H_
+  35:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** #define _UTIL_DELAY_BASIC_H_ 1
+  36:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  37:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** #include <inttypes.h>
+  38:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  39:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** /** \file */
+  40:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** /** \defgroup util_delay_basic <util/delay_basic.h>: Basic busy-wait delay loops
+  41:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     \code
+  42:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     #include <util/delay_basic.h>
+  43:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     \endcode
+  44:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  45:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     The functions in this header file implement simple delay loops
+  46:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     that perform a busy-waiting.  They are typically used to
+  47:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     facilitate short delays in the program execution.  They are
+  48:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     implemented as count-down loops with a well-known CPU cycle
+  49:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     count per loop iteration.  As such, no other processing can
+  50:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     occur simultaneously.  It should be kept in mind that the
+  51:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     functions described here do not disable interrupts.
+  52:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  53:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     In general, for long delays, the use of hardware timers is
+  54:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     much preferrable, as they free the CPU, and allow for
+  55:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     concurrent processing of other events while the timer is
+  56:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     running.  However, in particular for very short delays, the
+  57:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     overhead of setting up a hardware timer is too much compared
+  58:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     to the overall delay time.
+  59:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  60:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     Two inline functions are provided for the actual delay algorithms.
+  61:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  62:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** */
+  63:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  64:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** #if !defined(__DOXYGEN__)
+  65:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** static inline void _delay_loop_1(uint8_t __count) __attribute__((always_inline));
+  66:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** static inline void _delay_loop_2(uint16_t __count) __attribute__((always_inline));
+  67:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** #endif
+  68:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  69:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** /** \ingroup util_delay_basic
+  70:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  71:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     Delay loop using an 8-bit counter \c __count, so up to 256
+  72:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     iterations are possible.  (The value 256 would have to be passed
+  73:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     as 0.)  The loop executes three CPU cycles per iteration, not
+  74:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     including the overhead the compiler needs to setup the counter
+  75:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     register.
+  76:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  77:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     Thus, at a CPU speed of 1 MHz, delays of up to 768 microseconds
+  78:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     can be achieved.
+  79:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** */
+  80:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** void
+  81:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** _delay_loop_1(uint8_t __count)
+  82:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** {
+  83:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 	__asm__ volatile (
+ 271               	8,0,83,.LM10-.LFBB1
+ 272               	.LM10:
+ 273 001e 85E0      		ldi r24,lo8(5)
+ 274 0020 982F      		mov r25,r24
+ 275               	/* #APP */
+ 276               	 ;  83 "c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h" 1
+ 277 0022 9A95      		1: dec r25
+ 278 0024 01F4      		brne 1b
+ 279               	 ;  0 "" 2
+ 280               	/* #NOAPP */
+ 281               	.LBE333:
+ 282               	.LBE332:
+ 283               	.LBE331:
+ 284               	.LBE330:
+ 286               	.Ltext2:
+  26:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 																	//Nota: trabajando a una velocidad de 8MHz se tiene 
+  27:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		_delay_us(2);
+  28:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl 	|= 	_BV(HostWrite);							//que el ciclo de cada instruccion del uC es de 125ns
+ 287               	.LM11-.LFBB1
+ 288               	.LM11:
+ 289 0026 A49A      		sbi 52-32,4
+  29:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 																	// que es suficiente para relaizar el ciclo de escritura. 
+  30:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostData		=	(PMDuint8)(dataword&0xFF);				//Envío por el Puerto De datos el Byte menos signiicati
+ 290               	tabn	68,0,30,.LM12-.LFBB1
+ 291               	.LM12:
+ 292 0028 6093 0501 		sts 261,r22
+  31:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl		&= 	~(_BV(HostWrite));						//Realizo la escritura del byte enviado. 
+ 293               	tabn	68,0,31,.LM13-.LFBB1
+ 294               	.LM13:
+ 295 002c A498      		cbi 52-32,4
+ 296               	.LBB334:
+ 297               	.LBB335:
+ 298               	.LBB336:
+ 299               	.LBB337:
+ 301               	.Ltext3:
+ 303               	.LM14:
+ 304               	/* #APP */
+ 305               	 ;  83 "c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h" 1
+ 306 002e 8A95      		1: dec r24
+ 307 0030 01F4      		brne 1b
+ 308               	 ;  0 "" 2
+ 309               	/* #NOAPP */
+ 310               	.LBE337:
+ 311               	.LBE336:
+ 312               	.LBE335:
+ 313               	.LBE334:
+ 315               	.Ltext4:
+  32:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 																	//Nota: trabajando a una velocidad de 8MHz se tiene
+  33:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		_delay_us(2);
+  34:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl 	|= 	_BV(HostWrite);							// que el ciclo de cada instruccion del uC es de 125ns
+ 316               	LFBB1
+ 317               	.LM15:
+ 318 0032 A49A      		sbi 52-32,4
+  35:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 																	// que es suficiente para relaizar el ciclo de escritura.  
+  36:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		
+  37:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl 	&= 	~(_BV(HostCmd));						//Coloca la señal de HostCmd a Nivel bajo
+ 319               	tabn	68,0,37,.LM16-.LFBB1
+ 320               	.LM16:
+ 321 0034 A398      		cbi 52-32,3
+  38:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		PORTD		 	|= 	_BV(HostSlct1);							//Deselecciono el Chipset. NOta Para la version 
+ 322               	tabn	68,0,38,.LM17-.LFBB1
+ 323               	.LM17:
+ 324 0036 5C9A      		sbi 43-32,4
+ 325 0038 0895      		ret
+ 326               	.L2:
+  39:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 																	//con varios chipset se debe utilizarel puerto con una
+  40:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 																	// mascara para selecion y deseleccion respectivamente
+  41:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	}
+  42:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	
+  43:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	if(PMDChipSet==PMDChipSet2)
+ 327               	bn	68,0,43,.LM18-.LFBB1
+ 328               	.LM18:
+ 329 003a 8130      		cpi r24,1
+ 330 003c 9105      		cpc r25,__zero_reg__
+ 331 003e 01F4      		brne .L4
+  44:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	{
+  45:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		PORTD			|=	_BV(HostSlct2);
+ 332               	bn	68,0,45,.LM19-.LFBB1
+ 333               	.LM19:
+ 334 0040 5D9A      		sbi 43-32,5
+  46:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl 	|=	_BV(HostWrite) | _BV(HostRead);				// Condiciones Iniciales		
+ 335               	tabn	68,0,46,.LM20-.LFBB1
+ 336               	.LM20:
+ 337 0042 84B3      		in r24,52-32
+ 338 0044 8063      		ori r24,lo8(48)
+ 339 0046 84BB      		out 52-32,r24
+  47:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	
+  48:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl 	&= 	~(_BV(HostCmd));						//HostCmd Bajo, Condiciones iniciales
+ 340               	bn	68,0,48,.LM21-.LFBB1
+ 341               	.LM21:
+ 342 0048 A398      		cbi 52-32,3
+  49:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		Control_Port	=	0xFF;	  								//Coloco como salida el puerto 
+ 343               	tabn	68,0,49,.LM22-.LFBB1
+ 344               	.LM22:
+ 345 004a 8FEF      		ldi r24,lo8(-1)
+ 346 004c 8093 0401 		sts 260,r24
+  50:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		PORTD		 	&= 	~(_BV(HostSlct2));						//Selecciono el Chipset 
+ 347               	abn	68,0,50,.LM23-.LFBB1
+ 348               	.LM23:
+ 349 0050 5D98      		cbi 43-32,5
+  51:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl 	|= 	_BV(HostCmd);							//Coloco la Señal HostCmd a Nivel Alto
+ 350               	tabn	68,0,51,.LM24-.LFBB1
+ 351               	.LM24:
+ 352 0052 A39A      		sbi 52-32,3
+  52:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	
+  53:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostData		= 	(PMDuint8)((dataword>>8) & 0xFF);		//Envío por el puerto de datos el byte mas 
+ 353               	tabn	68,0,53,.LM25-.LFBB1
+ 354               	.LM25:
+ 355 0054 7093 0501 		sts 261,r23
+  54:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 																	//significativo  
+  55:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl		&= 	~(_BV(HostWrite));						//Realizo la escritura del byte enviado.
+ 356               	tabn	68,0,55,.LM26-.LFBB1
+ 357               	.LM26:
+ 358 0058 A498      		cbi 52-32,4
+ 359               	.LBB338:
+ 360               	.LBB339:
+ 361               	.LBB340:
+ 362               	.LBB341:
+ 364               	.Ltext5:
+ 366               	.LM27:
+ 367 005a 85E0      		ldi r24,lo8(5)
+ 368 005c 982F      		mov r25,r24
+ 369               	/* #APP */
+ 370               	 ;  83 "c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h" 1
+ 371 005e 9A95      		1: dec r25
+ 372 0060 01F4      		brne 1b
+ 373               	 ;  0 "" 2
+ 374               	/* #NOAPP */
+ 375               	.LBE341:
+ 376               	.LBE340:
+ 377               	.LBE339:
+ 378               	.LBE338:
+ 380               	.Ltext6:
+  56:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 																	//Nota: trabajando a una velocidad de 8MHz se tiene 
+  57:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		_delay_us(2);
+  58:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl 	|= 	_BV(HostWrite);							//que el ciclo de cada instruccion del uC es de 125ns
+ 381               	BB1
+ 382               	.LM28:
+ 383 0062 A49A      		sbi 52-32,4
+  59:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 																	// que es suficiente para relaizar el ciclo de escritura. 
+  60:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostData		=	(PMDuint8)(dataword&0xFF);				//Envío por el Puerto De datos el Byte menos signiicati
+ 384               	tabn	68,0,60,.LM29-.LFBB1
+ 385               	.LM29:
+ 386 0064 6093 0501 		sts 261,r22
+  61:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl		&= 	~(_BV(HostWrite));						//Realizo la escritura del byte enviado. 
+ 387               	tabn	68,0,61,.LM30-.LFBB1
+ 388               	.LM30:
+ 389 0068 A498      		cbi 52-32,4
+ 390               	.LBB342:
+ 391               	.LBB343:
+ 392               	.LBB344:
+ 393               	.LBB345:
+ 395               	.Ltext7:
+ 397               	.LM31:
+ 398               	/* #APP */
+ 399               	 ;  83 "c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h" 1
+ 400 006a 8A95      		1: dec r24
+ 401 006c 01F4      		brne 1b
+ 402               	 ;  0 "" 2
+ 403               	/* #NOAPP */
+ 404               	.LBE345:
+ 405               	.LBE344:
+ 406               	.LBE343:
+ 407               	.LBE342:
+ 409               	.Ltext8:
+  62:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 																	//Nota: trabajando a una velocidad de 8MHz se tiene
+  63:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		_delay_us(2);
+  64:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl 	|= 	_BV(HostWrite);							// que el ciclo de cada instruccion del uC es de 125ns
+ 410               	LFBB1
+ 411               	.LM32:
+ 412 006e A49A      		sbi 52-32,4
+  65:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 																	// que es suficiente para relaizar el ciclo de escritura.  
+  66:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		
+  67:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl 	&= 	~(_BV(HostCmd));						//Coloca la señal de HostCmd a Nivel bajo
+ 413               	tabn	68,0,67,.LM33-.LFBB1
+ 414               	.LM33:
+ 415 0070 A398      		cbi 52-32,3
+  68:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		PORTD		 	|= 	_BV(HostSlct2);							//Deselecciono el Chipset. NOta Para la version 
+ 416               	tabn	68,0,68,.LM34-.LFBB1
+ 417               	.LM34:
+ 418 0072 5D9A      		sbi 43-32,5
+ 419 0074 0895      		ret
+ 420               	.L4:
+  69:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 																	//con varios chipset se debe utilizarel puerto con una
+  70:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 																	// mascara para selecion y deseleccion respectivamente
+  71:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	}	
+  72:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	
+  73:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	if(PMDChipSet==PMDChipSet3)
+ 421               	bn	68,0,73,.LM35-.LFBB1
+ 422               	.LM35:
+ 423 0076 0297      		sbiw r24,2
+ 424 0078 01F4      		brne .L5
+  74:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	{
+  75:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		PORTD			|=	_BV(HostSlct3);
+ 425               	abn	68,0,75,.LM36-.LFBB1
+ 426               	.LM36:
+ 427 007a 5E9A      		sbi 43-32,6
+  76:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl 	|=	_BV(HostWrite) | _BV(HostRead);				// Condiciones Iniciales		
+ 428               	tabn	68,0,76,.LM37-.LFBB1
+ 429               	.LM37:
+ 430 007c 84B3      		in r24,52-32
+ 431 007e 8063      		ori r24,lo8(48)
+ 432 0080 84BB      		out 52-32,r24
+  77:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	
+  78:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl 	&= 	~(_BV(HostCmd));						//HostCmd Bajo, Condiciones iniciales
+ 433               	bn	68,0,78,.LM38-.LFBB1
+ 434               	.LM38:
+ 435 0082 A398      		cbi 52-32,3
+  79:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		Control_Port	=	0xFF;	  								//Coloco como salida el puerto 
+ 436               	tabn	68,0,79,.LM39-.LFBB1
+ 437               	.LM39:
+ 438 0084 8FEF      		ldi r24,lo8(-1)
+ 439 0086 8093 0401 		sts 260,r24
+  80:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		PORTD		 	&= 	~(_BV(HostSlct3));						//Selecciono el Chipset 
+ 440               	abn	68,0,80,.LM40-.LFBB1
+ 441               	.LM40:
+ 442 008a 5E98      		cbi 43-32,6
+  81:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl 	|= 	_BV(HostCmd);							//Coloco la Señal HostCmd a Nivel Alto
+ 443               	tabn	68,0,81,.LM41-.LFBB1
+ 444               	.LM41:
+ 445 008c A39A      		sbi 52-32,3
+  82:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	
+  83:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostData		= 	(PMDuint8)((dataword>>8) & 0xFF);		//Envío por el puerto de datos el byte mas 
+ 446               	tabn	68,0,83,.LM42-.LFBB1
+ 447               	.LM42:
+ 448 008e 7093 0501 		sts 261,r23
+  84:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 																	//significativo  
+  85:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl		&= 	~(_BV(HostWrite));						//Realizo la escritura del byte enviado.
+ 449               	tabn	68,0,85,.LM43-.LFBB1
+ 450               	.LM43:
+ 451 0092 A498      		cbi 52-32,4
+ 452               	.LBB346:
+ 453               	.LBB347:
+ 454               	.LBB348:
+ 455               	.LBB349:
+ 457               	.Ltext9:
+ 459               	.LM44:
+ 460 0094 85E0      		ldi r24,lo8(5)
+ 461 0096 982F      		mov r25,r24
+ 462               	/* #APP */
+ 463               	 ;  83 "c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h" 1
+ 464 0098 9A95      		1: dec r25
+ 465 009a 01F4      		brne 1b
+ 466               	 ;  0 "" 2
+ 467               	/* #NOAPP */
+ 468               	.LBE349:
+ 469               	.LBE348:
+ 470               	.LBE347:
+ 471               	.LBE346:
+ 473               	.Ltext10:
+  86:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 																	//Nota: trabajando a una velocidad de 8MHz se tiene 
+  87:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		_delay_us(2);
+  88:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl 	|= 	_BV(HostWrite);							//que el ciclo de cada instruccion del uC es de 125ns
+ 474               	BB1
+ 475               	.LM45:
+ 476 009c A49A      		sbi 52-32,4
+  89:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 																	// que es suficiente para relaizar el ciclo de escritura. 
+  90:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostData		=	(PMDuint8)(dataword&0xFF);				//Envío por el Puerto De datos el Byte menos signiicati
+ 477               	tabn	68,0,90,.LM46-.LFBB1
+ 478               	.LM46:
+ 479 009e 6093 0501 		sts 261,r22
+  91:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl		&= 	~(_BV(HostWrite));						//Realizo la escritura del byte enviado. 
+ 480               	tabn	68,0,91,.LM47-.LFBB1
+ 481               	.LM47:
+ 482 00a2 A498      		cbi 52-32,4
+ 483               	.LBB350:
+ 484               	.LBB351:
+ 485               	.LBB352:
+ 486               	.LBB353:
+ 488               	.Ltext11:
+ 490               	.LM48:
+ 491               	/* #APP */
+ 492               	 ;  83 "c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h" 1
+ 493 00a4 8A95      		1: dec r24
+ 494 00a6 01F4      		brne 1b
+ 495               	 ;  0 "" 2
+ 496               	/* #NOAPP */
+ 497               	.LBE353:
+ 498               	.LBE352:
+ 499               	.LBE351:
+ 500               	.LBE350:
+ 502               	.Ltext12:
+  92:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 																	//Nota: trabajando a una velocidad de 8MHz se tiene
+  93:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		_delay_us(2);
+  94:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl 	|= 	_BV(HostWrite);							// que el ciclo de cada instruccion del uC es de 125ns
+ 503               	LFBB1
+ 504               	.LM49:
+ 505 00a8 A49A      		sbi 52-32,4
+  95:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 																	// que es suficiente para relaizar el ciclo de escritura.  
+  96:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		
+  97:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl 	&= 	~(_BV(HostCmd));						//Coloca la señal de HostCmd a Nivel bajo
+ 506               	tabn	68,0,97,.LM50-.LFBB1
+ 507               	.LM50:
+ 508 00aa A398      		cbi 52-32,3
+  98:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		PORTD		 	|= 	_BV(HostSlct3);							//Deselecciono el Chipset. NOta Para la version 
+ 509               	tabn	68,0,98,.LM51-.LFBB1
+ 510               	.LM51:
+ 511 00ac 5E9A      		sbi 43-32,6
+ 512               	.L5:
+ 513 00ae 0895      		ret
+ 515               	.Lscope1:
+ 518               	.global	writePMDdata
+ 520               	writePMDdata:
+  99:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 																	//con varios chipset se debe utilizarel puerto con una
+ 100:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 																	// mascara para selecion y deseleccion respectivamente
+ 101:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	}	
+ 102:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 
+ 103:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** }
+ 104:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** /*-------------------------------------------------------------------------------------------------
+ 105:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** void writePMDdata(PMDuint16 PMDChipSet, PMDuint16 dataword)
+ 106:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** {
+ 521               	,106,.LM52-.LFBB2
+ 522               	.LM52:
+ 523               	.LFBB2:
+ 524               	/* prologue: function */
+ 525               	/* frame size = 0 */
+ 107:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 
+ 108:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	if(PMDChipSet==PMDChipSet1)
+ 526               	bn	68,0,108,.LM53-.LFBB2
+ 527               	.LM53:
+ 528 00b0 0097      		sbiw r24,0
+ 529 00b2 01F4      		brne .L7
+ 109:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	{	
+ 110:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		PORTD				|=	_BV(HostSlct1);
+ 530               	abn	68,0,110,.LM54-.LFBB2
+ 531               	.LM54:
+ 532 00b4 5C9A      		sbi 43-32,4
+ 111:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl		 	|=	_BV(HostWrite) | _BV(HostRead);				// Condiciones Iniciales		
+ 533               	tabn	68,0,111,.LM55-.LFBB2
+ 534               	.LM55:
+ 535 00b6 84B3      		in r24,52-32
+ 536 00b8 8063      		ori r24,lo8(48)
+ 537 00ba 84BB      		out 52-32,r24
+ 112:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 
+ 113:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		Control_Port		=	0xFF;			  						//Coloco como salida el puerto 
+ 538               	bn	68,0,113,.LM56-.LFBB2
+ 539               	.LM56:
+ 540 00bc 8FEF      		ldi r24,lo8(-1)
+ 541 00be 8093 0401 		sts 260,r24
+ 114:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 
+ 115:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl 		|= 	_BV(HostCmd);							//HostCmd Alto Condiciones iniciales
+ 542               	abn	68,0,115,.LM57-.LFBB2
+ 543               	.LM57:
+ 544 00c2 A39A      		sbi 52-32,3
+ 116:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		PORTD		 		&= 	~(_BV(HostSlct1));						//Selecciono el Chipset 
+ 545               	tabn	68,0,116,.LM58-.LFBB2
+ 546               	.LM58:
+ 547 00c4 5C98      		cbi 43-32,4
+ 117:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl 		&= 	~(_BV(HostCmd));			 			//Coloco la Señal HostCmd a Nivel bajo
+ 548               	tabn	68,0,117,.LM59-.LFBB2
+ 549               	.LM59:
+ 550 00c6 A398      		cbi 52-32,3
+ 118:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostData			= 	(PMDuint8)((dataword>>8)&0xFF);		//Envío por el puerto de datos el byte mas signifi
+ 551               	tabn	68,0,118,.LM60-.LFBB2
+ 552               	.LM60:
+ 553 00c8 7093 0501 		sts 261,r23
+ 119:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl			&= 	~(_BV(HostWrite));						//Realizo la escritura del byte enviado. 
+ 554               	tabn	68,0,119,.LM61-.LFBB2
+ 555               	.LM61:
+ 556 00cc A498      		cbi 52-32,4
+ 557               	.LBB354:
+ 558               	.LBB355:
+ 559               	.LBB356:
+ 560               	.LBB357:
+ 562               	.Ltext13:
+ 564               	.LM62:
+ 565 00ce 85E0      		ldi r24,lo8(5)
+ 566 00d0 982F      		mov r25,r24
+ 567               	/* #APP */
+ 568               	 ;  83 "c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h" 1
+ 569 00d2 9A95      		1: dec r25
+ 570 00d4 01F4      		brne 1b
+ 571               	 ;  0 "" 2
+ 572               	/* #NOAPP */
+ 573               	.LBE357:
+ 574               	.LBE356:
+ 575               	.LBE355:
+ 576               	.LBE354:
+ 578               	.Ltext14:
+ 120:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 																		//Nota: trabajando a una velocidad de 8MHz se tiene
+ 121:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		_delay_us(2);
+ 122:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl 		|= 	_BV(HostWrite);							// que el ciclo de cada instruccion del uC es de 125ns
+ 579               	FBB2
+ 580               	.LM63:
+ 581 00d6 A49A      		sbi 52-32,4
+ 123:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 																		// que es suficiente para relaizar el ciclo de escritura. 
+ 124:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostData			=	(PMDuint8)(dataword&0xFF);				//Envío por el Puerto e datos el Byte menos signiicati
+ 582               	tabn	68,0,124,.LM64-.LFBB2
+ 583               	.LM64:
+ 584 00d8 6093 0501 		sts 261,r22
+ 125:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl			&= 	~(_BV(HostWrite));						//Realizo la escritura del byte enviado. Nota: trabajan
+ 585               	tabn	68,0,125,.LM65-.LFBB2
+ 586               	.LM65:
+ 587 00dc A498      		cbi 52-32,4
+ 588               	.LBB358:
+ 589               	.LBB359:
+ 590               	.LBB360:
+ 591               	.LBB361:
+ 593               	.Ltext15:
+ 595               	.LM66:
+ 596               	/* #APP */
+ 597               	 ;  83 "c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h" 1
+ 598 00de 8A95      		1: dec r24
+ 599 00e0 01F4      		brne 1b
+ 600               	 ;  0 "" 2
+ 601               	/* #NOAPP */
+ 602               	.LBE361:
+ 603               	.LBE360:
+ 604               	.LBE359:
+ 605               	.LBE358:
+ 607               	.Ltext16:
+ 126:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 																		//a una velocidad de 8MHz se tiene que el ciclo de cada 
+ 127:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		_delay_us(2);
+ 128:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl 		|= 	_BV(HostWrite);							//instruccion del uC es de 125ns que es suficiente para
+ 608               	.LFBB2
+ 609               	.LM67:
+ 610 00e2 A49A      		sbi 52-32,4
+ 129:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 																		// relaizar el ciclo de escritura.  
+ 130:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	
+ 131:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl 		|= 	_BV(HostCmd);							//Coloca la señal de HostCmd a Nivel Alto
+ 611               	tabn	68,0,131,.LM68-.LFBB2
+ 612               	.LM68:
+ 613 00e4 A39A      		sbi 52-32,3
+ 132:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		PORTD		 		|= 	_BV(HostSlct1); 						//Deselecciono el Chipset. NOta Para la version con
+ 614               	tabn	68,0,132,.LM69-.LFBB2
+ 615               	.LM69:
+ 616 00e6 5C9A      		sbi 43-32,4
+ 617 00e8 0895      		ret
+ 618               	.L7:
+ 133:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 																		//varios chipset se debe utilizarel puerto con una mascara
+ 134:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 																		// para sellecion y deseleccion respectivamente
+ 135:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	}
+ 136:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 
+ 137:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	if(PMDChipSet==PMDChipSet2)
+ 619               	bn	68,0,137,.LM70-.LFBB2
+ 620               	.LM70:
+ 621 00ea 8130      		cpi r24,1
+ 622 00ec 9105      		cpc r25,__zero_reg__
+ 623 00ee 01F4      		brne .L9
+ 138:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	{	
+ 139:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		PORTD				|=	_BV(HostSlct2);
+ 624               	bn	68,0,139,.LM71-.LFBB2
+ 625               	.LM71:
+ 626 00f0 5D9A      		sbi 43-32,5
+ 140:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl		 	|=	_BV(HostWrite) | _BV(HostRead);				// Condiciones Iniciales		
+ 627               	tabn	68,0,140,.LM72-.LFBB2
+ 628               	.LM72:
+ 629 00f2 84B3      		in r24,52-32
+ 630 00f4 8063      		ori r24,lo8(48)
+ 631 00f6 84BB      		out 52-32,r24
+ 141:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 
+ 142:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		Control_Port		=	0xFF;			  						//Coloco como salida el puerto 
+ 632               	bn	68,0,142,.LM73-.LFBB2
+ 633               	.LM73:
+ 634 00f8 8FEF      		ldi r24,lo8(-1)
+ 635 00fa 8093 0401 		sts 260,r24
+ 143:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 
+ 144:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl 		|= 	_BV(HostCmd);							//HostCmd Alto Condiciones iniciales
+ 636               	abn	68,0,144,.LM74-.LFBB2
+ 637               	.LM74:
+ 638 00fe A39A      		sbi 52-32,3
+ 145:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		PORTD		 		&= 	~(_BV(HostSlct2));						//Selecciono el Chipset 
+ 639               	tabn	68,0,145,.LM75-.LFBB2
+ 640               	.LM75:
+ 641 0100 5D98      		cbi 43-32,5
+ 146:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl 		&= 	~(_BV(HostCmd));			 			//Coloco la Señal HostCmd a Nivel bajo
+ 642               	tabn	68,0,146,.LM76-.LFBB2
+ 643               	.LM76:
+ 644 0102 A398      		cbi 52-32,3
+ 147:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostData			= 	(PMDuint8)((dataword>>8)&0xFF);		//Envío por el puerto de datos el byte mas signifi
+ 645               	tabn	68,0,147,.LM77-.LFBB2
+ 646               	.LM77:
+ 647 0104 7093 0501 		sts 261,r23
+ 148:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl			&= 	~(_BV(HostWrite));						//Realizo la escritura del byte enviado. 
+ 648               	tabn	68,0,148,.LM78-.LFBB2
+ 649               	.LM78:
+ 650 0108 A498      		cbi 52-32,4
+ 651               	.LBB362:
+ 652               	.LBB363:
+ 653               	.LBB364:
+ 654               	.LBB365:
+ 656               	.Ltext17:
+ 658               	.LM79:
+ 659 010a 85E0      		ldi r24,lo8(5)
+ 660 010c 982F      		mov r25,r24
+ 661               	/* #APP */
+ 662               	 ;  83 "c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h" 1
+ 663 010e 9A95      		1: dec r25
+ 664 0110 01F4      		brne 1b
+ 665               	 ;  0 "" 2
+ 666               	/* #NOAPP */
+ 667               	.LBE365:
+ 668               	.LBE364:
+ 669               	.LBE363:
+ 670               	.LBE362:
+ 672               	.Ltext18:
+ 149:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 																		//Nota: trabajando a una velocidad de 8MHz se tiene
+ 150:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		_delay_us(2);
+ 151:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl 		|= 	_BV(HostWrite);							// que el ciclo de cada instruccion del uC es de 125ns
+ 673               	FBB2
+ 674               	.LM80:
+ 675 0112 A49A      		sbi 52-32,4
+ 152:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 																		// que es suficiente para relaizar el ciclo de escritura. 
+ 153:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostData			=	(PMDuint8)(dataword&0xFF);				//Envío por el Puerto e datos el Byte menos signiicati
+ 676               	tabn	68,0,153,.LM81-.LFBB2
+ 677               	.LM81:
+ 678 0114 6093 0501 		sts 261,r22
+ 154:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl			&= 	~(_BV(HostWrite));						//Realizo la escritura del byte enviado. Nota: trabajan
+ 679               	tabn	68,0,154,.LM82-.LFBB2
+ 680               	.LM82:
+ 681 0118 A498      		cbi 52-32,4
+ 682               	.LBB366:
+ 683               	.LBB367:
+ 684               	.LBB368:
+ 685               	.LBB369:
+ 687               	.Ltext19:
+ 689               	.LM83:
+ 690               	/* #APP */
+ 691               	 ;  83 "c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h" 1
+ 692 011a 8A95      		1: dec r24
+ 693 011c 01F4      		brne 1b
+ 694               	 ;  0 "" 2
+ 695               	/* #NOAPP */
+ 696               	.LBE369:
+ 697               	.LBE368:
+ 698               	.LBE367:
+ 699               	.LBE366:
+ 701               	.Ltext20:
+ 155:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 																		//a una velocidad de 8MHz se tiene que el ciclo de cada 
+ 156:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		_delay_us(2);
+ 157:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl 		|= 	_BV(HostWrite);							//instruccion del uC es de 125ns que es suficiente para
+ 702               	.LFBB2
+ 703               	.LM84:
+ 704 011e A49A      		sbi 52-32,4
+ 158:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 																		// relaizar el ciclo de escritura.  
+ 159:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	
+ 160:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl 		|= 	_BV(HostCmd);							//Coloca la señal de HostCmd a Nivel Alto
+ 705               	tabn	68,0,160,.LM85-.LFBB2
+ 706               	.LM85:
+ 707 0120 A39A      		sbi 52-32,3
+ 161:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		PORTD		 		|= 	_BV(HostSlct2); 						//Deselecciono el Chipset. NOta Para la version con
+ 708               	tabn	68,0,161,.LM86-.LFBB2
+ 709               	.LM86:
+ 710 0122 5D9A      		sbi 43-32,5
+ 711 0124 0895      		ret
+ 712               	.L9:
+ 162:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 																		//varios chipset se debe utilizarel puerto con una mascara
+ 163:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 																		// para sellecion y deseleccion respectivamente
+ 164:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	}	
+ 165:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 
+ 166:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	if(PMDChipSet==PMDChipSet3)
+ 713               	bn	68,0,166,.LM87-.LFBB2
+ 714               	.LM87:
+ 715 0126 0297      		sbiw r24,2
+ 716 0128 01F4      		brne .L10
+ 167:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	{	
+ 168:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		PORTD				|=	_BV(HostSlct3);
+ 717               	abn	68,0,168,.LM88-.LFBB2
+ 718               	.LM88:
+ 719 012a 5E9A      		sbi 43-32,6
+ 169:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl		 	|=	_BV(HostWrite) | _BV(HostRead);				// Condiciones Iniciales		
+ 720               	tabn	68,0,169,.LM89-.LFBB2
+ 721               	.LM89:
+ 722 012c 84B3      		in r24,52-32
+ 723 012e 8063      		ori r24,lo8(48)
+ 724 0130 84BB      		out 52-32,r24
+ 170:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 
+ 171:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		Control_Port		=	0xFF;			  						//Coloco como salida el puerto 
+ 725               	bn	68,0,171,.LM90-.LFBB2
+ 726               	.LM90:
+ 727 0132 8FEF      		ldi r24,lo8(-1)
+ 728 0134 8093 0401 		sts 260,r24
+ 172:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 
+ 173:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl 		|= 	_BV(HostCmd);							//HostCmd Alto Condiciones iniciales
+ 729               	abn	68,0,173,.LM91-.LFBB2
+ 730               	.LM91:
+ 731 0138 A39A      		sbi 52-32,3
+ 174:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		PORTD		 		&= 	~(_BV(HostSlct3));						//Selecciono el Chipset 
+ 732               	tabn	68,0,174,.LM92-.LFBB2
+ 733               	.LM92:
+ 734 013a 5E98      		cbi 43-32,6
+ 175:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl 		&= 	~(_BV(HostCmd));			 			//Coloco la Señal HostCmd a Nivel bajo
+ 735               	tabn	68,0,175,.LM93-.LFBB2
+ 736               	.LM93:
+ 737 013c A398      		cbi 52-32,3
+ 176:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostData			= 	(PMDuint8)((dataword>>8)&0xFF);		//Envío por el puerto de datos el byte mas signifi
+ 738               	tabn	68,0,176,.LM94-.LFBB2
+ 739               	.LM94:
+ 740 013e 7093 0501 		sts 261,r23
+ 177:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl			&= 	~(_BV(HostWrite));						//Realizo la escritura del byte enviado. 
+ 741               	tabn	68,0,177,.LM95-.LFBB2
+ 742               	.LM95:
+ 743 0142 A498      		cbi 52-32,4
+ 744               	.LBB370:
+ 745               	.LBB371:
+ 746               	.LBB372:
+ 747               	.LBB373:
+ 749               	.Ltext21:
+ 751               	.LM96:
+ 752 0144 85E0      		ldi r24,lo8(5)
+ 753 0146 982F      		mov r25,r24
+ 754               	/* #APP */
+ 755               	 ;  83 "c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h" 1
+ 756 0148 9A95      		1: dec r25
+ 757 014a 01F4      		brne 1b
+ 758               	 ;  0 "" 2
+ 759               	/* #NOAPP */
+ 760               	.LBE373:
+ 761               	.LBE372:
+ 762               	.LBE371:
+ 763               	.LBE370:
+ 765               	.Ltext22:
+ 178:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 																		//Nota: trabajando a una velocidad de 8MHz se tiene
+ 179:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		_delay_us(2);
+ 180:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl 		|= 	_BV(HostWrite);							// que el ciclo de cada instruccion del uC es de 125ns
+ 766               	FBB2
+ 767               	.LM97:
+ 768 014c A49A      		sbi 52-32,4
+ 181:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 																		// que es suficiente para relaizar el ciclo de escritura. 
+ 182:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostData			=	(PMDuint8)(dataword&0xFF);				//Envío por el Puerto e datos el Byte menos signiicati
+ 769               	tabn	68,0,182,.LM98-.LFBB2
+ 770               	.LM98:
+ 771 014e 6093 0501 		sts 261,r22
+ 183:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl			&= 	~(_BV(HostWrite));						//Realizo la escritura del byte enviado. Nota: trabajan
+ 772               	tabn	68,0,183,.LM99-.LFBB2
+ 773               	.LM99:
+ 774 0152 A498      		cbi 52-32,4
+ 775               	.LBB374:
+ 776               	.LBB375:
+ 777               	.LBB376:
+ 778               	.LBB377:
+ 780               	.Ltext23:
+ 782               	.LM100:
+ 783               	/* #APP */
+ 784               	 ;  83 "c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h" 1
+ 785 0154 8A95      		1: dec r24
+ 786 0156 01F4      		brne 1b
+ 787               	 ;  0 "" 2
+ 788               	/* #NOAPP */
+ 789               	.LBE377:
+ 790               	.LBE376:
+ 791               	.LBE375:
+ 792               	.LBE374:
+ 794               	.Ltext24:
+ 184:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 																		//a una velocidad de 8MHz se tiene que el ciclo de cada 
+ 185:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		_delay_us(2);
+ 186:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl 		|= 	_BV(HostWrite);							//instruccion del uC es de 125ns que es suficiente para
+ 795               	-.LFBB2
+ 796               	.LM101:
+ 797 0158 A49A      		sbi 52-32,4
+ 187:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 																		// relaizar el ciclo de escritura.  
+ 188:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	
+ 189:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl 		|= 	_BV(HostCmd);							//Coloca la señal de HostCmd a Nivel Alto
+ 798               	tabn	68,0,189,.LM102-.LFBB2
+ 799               	.LM102:
+ 800 015a A39A      		sbi 52-32,3
+ 190:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		PORTD		 		|= 	_BV(HostSlct3); 						//Deselecciono el Chipset. NOta Para la version con
+ 801               	tabn	68,0,190,.LM103-.LFBB2
+ 802               	.LM103:
+ 803 015c 5E9A      		sbi 43-32,6
+ 804               	.L10:
+ 805 015e 0895      		ret
+ 807               	.Lscope2:
+ 810               	.global	readPMDdata
+ 812               	readPMDdata:
+ 191:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 																		//varios chipset se debe utilizarel puerto con una mascara
+ 192:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 																		// para sellecion y deseleccion respectivamente
+ 193:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	}	
+ 194:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** }
+ 195:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 
+ 196:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** /*-------------------------------------------------------------------------------------------------
+ 197:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** PMDuint16 readPMDdata(PMDuint16 PMDChipSet)
+ 198:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** {
+ 813               	,198,.LM104-.LFBB3
+ 814               	.LM104:
+ 815               	.LFBB3:
+ 816               	/* prologue: function */
+ 817               	/* frame size = 0 */
+ 199:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	PMDuint16 i			=	0;
+ 200:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	PMDuint16 j			=	0;
+ 201:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 
+ 202:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	if(PMDChipSet==PMDChipSet1)
+ 818               	bn	68,0,202,.LM105-.LFBB3
+ 819               	.LM105:
+ 820 0160 0097      		sbiw r24,0
+ 821 0162 01F4      		brne .L12
+ 203:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	{
+ 204:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		PORTD			|=	_BV(HostSlct1);
+ 822               	abn	68,0,204,.LM106-.LFBB3
+ 823               	.LM106:
+ 824 0164 5C9A      		sbi 43-32,4
+ 205:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl 	|=	_BV(HostWrite) | _BV(HostRead);					// Condiciones Iniciales		
+ 825               	tabn	68,0,205,.LM107-.LFBB3
+ 826               	.LM107:
+ 827 0166 84B3      		in r24,52-32
+ 828 0168 8063      		ori r24,lo8(48)
+ 829 016a 84BB      		out 52-32,r24
+ 206:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 
+ 207:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	
+ 208:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 
+ 209:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 
+ 210:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		Control_Port		=	0x00;			  						//Coloco como entrada el puerto 
+ 830               	bn	68,0,210,.LM108-.LFBB3
+ 831               	.LM108:
+ 832 016c 1092 0401 		sts 260,__zero_reg__
+ 211:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostData			=	0xFF;									//Resistencias de Pullups ( averiguar mas esto)
+ 833               	tabn	68,0,211,.LM109-.LFBB3
+ 834               	.LM109:
+ 835 0170 8FEF      		ldi r24,lo8(-1)
+ 836 0172 8093 0501 		sts 261,r24
+ 212:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 
+ 213:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl 		|=	_BV(HostCmd);							//HostCmd Alto. Condiciones Iniciales
+ 837               	abn	68,0,213,.LM110-.LFBB3
+ 838               	.LM110:
+ 839 0176 A39A      		sbi 52-32,3
+ 214:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		PORTD		 		&= 	~(_BV(HostSlct1));						//Selecciono el Chipset 
+ 840               	tabn	68,0,214,.LM111-.LFBB3
+ 841               	.LM111:
+ 842 0178 5C98      		cbi 43-32,4
+ 215:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl 		&= 	~(_BV(HostCmd));						//Coloco la Señal HostCmd a Nivel bajo 
+ 843               	tabn	68,0,215,.LM112-.LFBB3
+ 844               	.LM112:
+ 845 017a A398      		cbi 52-32,3
+ 216:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	
+ 217:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl			&= 	~(_BV(HostRead));						//Aserto la señal de ~HostRead
+ 846               	tabn	68,0,217,.LM113-.LFBB3
+ 847               	.LM113:
+ 848 017c A598      		cbi 52-32,5
+ 849               	.LBB378:
+ 850               	.LBB379:
+ 851               	.LBB380:
+ 852               	.LBB381:
+ 854               	.Ltext25:
+ 856               	.LM114:
+ 857 017e 95E0      		ldi r25,lo8(5)
+ 858 0180 892F      		mov r24,r25
+ 859               	/* #APP */
+ 860               	 ;  83 "c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h" 1
+ 861 0182 8A95      		1: dec r24
+ 862 0184 01F4      		brne 1b
+ 863               	 ;  0 "" 2
+ 864               	/* #NOAPP */
+ 865               	.LBE381:
+ 866               	.LBE380:
+ 867               	.LBE379:
+ 868               	.LBE378:
+ 870               	.Ltext26:
+ 218:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		_delay_us(2);													//retardo de un 1uS para asegurar la lecltura del dato
+ 219:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		i					=	(ReadData & 0xFF)<<8;					//Hago corriminto hacia la izq en i de los
+ 871               	LFBB3
+ 872               	.LM115:
+ 873 0186 8091 0301 		lds r24,259
+ 874 018a 582F      		mov r21,r24
+ 875 018c 40E0      		ldi r20,lo8(0)
+ 220:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 																		//datos leídos en el puerto 
+ 221:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl 		|= 	_BV(HostRead);							//des_Aserto la señal de ~HostRead
+ 876               	bn	68,0,221,.LM116-.LFBB3
+ 877               	.LM116:
+ 878 018e A59A      		sbi 52-32,5
+ 879               	.LBB382:
+ 880               	.LBB383:
+ 881               	.LBB384:
+ 882               	.LBB385:
+ 884               	.Ltext27:
+ 886               	.LM117:
+ 887 0190 892F      		mov r24,r25
+ 888               	/* #APP */
+ 889               	 ;  83 "c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h" 1
+ 890 0192 8A95      		1: dec r24
+ 891 0194 01F4      		brne 1b
+ 892               	 ;  0 "" 2
+ 893               	/* #NOAPP */
+ 894               	.LBE385:
+ 895               	.LBE384:
+ 896               	.LBE383:
+ 897               	.LBE382:
+ 899               	.Ltext28:
+ 222:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		_delay_us(2);
+ 223:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 
+ 224:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl			&= 	~(_BV(HostRead));						//Aserto la señal de ~HostRead
+ 900               	.LFBB3
+ 901               	.LM118:
+ 902 0196 A598      		cbi 52-32,5
+ 903               	.LBB386:
+ 904               	.LBB387:
+ 905               	.LBB388:
+ 906               	.LBB389:
+ 908               	.Ltext29:
+ 910               	.LM119:
+ 911               	/* #APP */
+ 912               	 ;  83 "c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h" 1
+ 913 0198 9A95      		1: dec r25
+ 914 019a 01F4      		brne 1b
+ 915               	 ;  0 "" 2
+ 916               	/* #NOAPP */
+ 917               	.LBE389:
+ 918               	.LBE388:
+ 919               	.LBE387:
+ 920               	.LBE386:
+ 922               	.Ltext30:
+ 225:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		_delay_us(2);													//retardo de un 1uS para asegurar la lecltura del dato
+ 226:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		j					=	(ReadData & 0xFF);						//Asigno a j el valor leído en el Puerto de Datos
+ 923               	-.LFBB3
+ 924               	.LM120:
+ 925 019c 8091 0301 		lds r24,259
+ 926 01a0 282F      		mov r18,r24
+ 927 01a2 30E0      		ldi r19,lo8(0)
+ 227:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl 		|= 	_BV(HostRead);							//des_Aserto la señal de ~HostRead
+ 928               	bn	68,0,227,.LM121-.LFBB3
+ 929               	.LM121:
+ 930 01a4 A59A      		sbi 52-32,5
+ 228:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 
+ 229:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	
+ 230:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl 		|= _BV(HostCmd);							//Coloca la señal de HostCmd a Nivel Alto
+ 931               	tabn	68,0,230,.LM122-.LFBB3
+ 932               	.LM122:
+ 933 01a6 A39A      		sbi 52-32,3
+ 231:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		PORTD		 		|= _BV(HostSlct1); 							//Deselecciono el Chipset.
+ 934               	tabn	68,0,231,.LM123-.LFBB3
+ 935               	.LM123:
+ 936 01a8 5C9A      		sbi 43-32,4
+ 937 01aa 00C0      		rjmp .L13
+ 938               	.L12:
+ 232:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	
+ 233:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	
+ 234:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		
+ 235:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	}
+ 236:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 
+ 237:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	if(PMDChipSet==PMDChipSet2)
+ 939               	bn	68,0,237,.LM124-.LFBB3
+ 940               	.LM124:
+ 941 01ac 8130      		cpi r24,1
+ 942 01ae 9105      		cpc r25,__zero_reg__
+ 943 01b0 01F4      		brne .L14
+ 238:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	{
+ 239:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		PORTD			|=	_BV(HostSlct2);
+ 944               	bn	68,0,239,.LM125-.LFBB3
+ 945               	.LM125:
+ 946 01b2 5D9A      		sbi 43-32,5
+ 240:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl 	|=	_BV(HostWrite) | _BV(HostRead);					// Condiciones Iniciales		
+ 947               	tabn	68,0,240,.LM126-.LFBB3
+ 948               	.LM126:
+ 949 01b4 84B3      		in r24,52-32
+ 950 01b6 8063      		ori r24,lo8(48)
+ 951 01b8 84BB      		out 52-32,r24
+ 241:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 
+ 242:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	
+ 243:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 
+ 244:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 
+ 245:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		Control_Port		=	0x00;			  						//Coloco como entrada el puerto 
+ 952               	bn	68,0,245,.LM127-.LFBB3
+ 953               	.LM127:
+ 954 01ba 1092 0401 		sts 260,__zero_reg__
+ 246:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostData			=	0xFF;									//Resistencias de Pullups ( averiguar mas esto)
+ 955               	tabn	68,0,246,.LM128-.LFBB3
+ 956               	.LM128:
+ 957 01be 8FEF      		ldi r24,lo8(-1)
+ 958 01c0 8093 0501 		sts 261,r24
+ 247:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 
+ 248:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl 		|=	_BV(HostCmd);							//HostCmd Alto. Condiciones Iniciales
+ 959               	abn	68,0,248,.LM129-.LFBB3
+ 960               	.LM129:
+ 961 01c4 A39A      		sbi 52-32,3
+ 249:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		PORTD		 		&= 	~(_BV(HostSlct2));						//Selecciono el Chipset 
+ 962               	tabn	68,0,249,.LM130-.LFBB3
+ 963               	.LM130:
+ 964 01c6 5D98      		cbi 43-32,5
+ 250:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl 		&= 	~(_BV(HostCmd));						//Coloco la Señal HostCmd a Nivel bajo 
+ 965               	tabn	68,0,250,.LM131-.LFBB3
+ 966               	.LM131:
+ 967 01c8 A398      		cbi 52-32,3
+ 251:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	
+ 252:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl			&= 	~(_BV(HostRead));						//Aserto la señal de ~HostRead
+ 968               	tabn	68,0,252,.LM132-.LFBB3
+ 969               	.LM132:
+ 970 01ca A598      		cbi 52-32,5
+ 971               	.LBB390:
+ 972               	.LBB391:
+ 973               	.LBB392:
+ 974               	.LBB393:
+ 976               	.Ltext31:
+ 978               	.LM133:
+ 979 01cc 95E0      		ldi r25,lo8(5)
+ 980 01ce 892F      		mov r24,r25
+ 981               	/* #APP */
+ 982               	 ;  83 "c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h" 1
+ 983 01d0 8A95      		1: dec r24
+ 984 01d2 01F4      		brne 1b
+ 985               	 ;  0 "" 2
+ 986               	/* #NOAPP */
+ 987               	.LBE393:
+ 988               	.LBE392:
+ 989               	.LBE391:
+ 990               	.LBE390:
+ 992               	.Ltext32:
+ 253:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		_delay_us(2);													//retardo de un 1uS para asegurar la lecltura del dato
+ 254:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		i					=	(ReadData & 0xFF)<<8;					//Hago corriminto hacia la izq en i de los
+ 993               	LFBB3
+ 994               	.LM134:
+ 995 01d4 8091 0301 		lds r24,259
+ 996 01d8 582F      		mov r21,r24
+ 997 01da 40E0      		ldi r20,lo8(0)
+ 255:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 																		//datos leídos en el puerto 
+ 256:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl 		|= 	_BV(HostRead);							//des_Aserto la señal de ~HostRead
+ 998               	bn	68,0,256,.LM135-.LFBB3
+ 999               	.LM135:
+ 1000 01dc A59A      		sbi 52-32,5
+ 1001               	.LBB394:
+ 1002               	.LBB395:
+ 1003               	.LBB396:
+ 1004               	.LBB397:
+ 1006               	.Ltext33:
+ 1008               	.LM136:
+ 1009 01de 892F      		mov r24,r25
+ 1010               	/* #APP */
+ 1011               	 ;  83 "c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h" 1
+ 1012 01e0 8A95      		1: dec r24
+ 1013 01e2 01F4      		brne 1b
+ 1014               	 ;  0 "" 2
+ 1015               	/* #NOAPP */
+ 1016               	.LBE397:
+ 1017               	.LBE396:
+ 1018               	.LBE395:
+ 1019               	.LBE394:
+ 1021               	.Ltext34:
+ 257:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		_delay_us(2);
+ 258:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 
+ 259:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl			&= 	~(_BV(HostRead));						//Aserto la señal de ~HostRead
+ 1022               	.LFBB3
+ 1023               	.LM137:
+ 1024 01e4 A598      		cbi 52-32,5
+ 1025               	.LBB398:
+ 1026               	.LBB399:
+ 1027               	.LBB400:
+ 1028               	.LBB401:
+ 1030               	.Ltext35:
+ 1032               	.LM138:
+ 1033               	/* #APP */
+ 1034               	 ;  83 "c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h" 1
+ 1035 01e6 9A95      		1: dec r25
+ 1036 01e8 01F4      		brne 1b
+ 1037               	 ;  0 "" 2
+ 1038               	/* #NOAPP */
+ 1039               	.LBE401:
+ 1040               	.LBE400:
+ 1041               	.LBE399:
+ 1042               	.LBE398:
+ 1044               	.Ltext36:
+ 260:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		_delay_us(2);													//retardo de un 1uS para asegurar la lecltura del dato
+ 261:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		j					=	(ReadData & 0xFF);						//Asigno a j el valor leído en el Puerto de Datos
+ 1045               	-.LFBB3
+ 1046               	.LM139:
+ 1047 01ea 8091 0301 		lds r24,259
+ 1048 01ee 282F      		mov r18,r24
+ 1049 01f0 30E0      		ldi r19,lo8(0)
+ 262:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl 		|= 	_BV(HostRead);							//des_Aserto la señal de ~HostRead
+ 1050               	bn	68,0,262,.LM140-.LFBB3
+ 1051               	.LM140:
+ 1052 01f2 A59A      		sbi 52-32,5
+ 263:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 
+ 264:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	
+ 265:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl 		|= _BV(HostCmd);							//Coloca la señal de HostCmd a Nivel Alto
+ 1053               	tabn	68,0,265,.LM141-.LFBB3
+ 1054               	.LM141:
+ 1055 01f4 A39A      		sbi 52-32,3
+ 266:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		PORTD		 		|= _BV(HostSlct2); 							//Deselecciono el Chipset.
+ 1056               	tabn	68,0,266,.LM142-.LFBB3
+ 1057               	.LM142:
+ 1058 01f6 5D9A      		sbi 43-32,5
+ 1059 01f8 00C0      		rjmp .L13
+ 1060               	.L14:
+ 267:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	
+ 268:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	
+ 269:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		
+ 270:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	}
+ 271:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	
+ 272:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	if(PMDChipSet==PMDChipSet3)
+ 1061               	bn	68,0,272,.LM143-.LFBB3
+ 1062               	.LM143:
+ 1063 01fa 0297      		sbiw r24,2
+ 1064 01fc 01F0      		breq .L15
+ 1065 01fe 40E0      		ldi r20,lo8(0)
+ 1066 0200 50E0      		ldi r21,hi8(0)
+ 1067 0202 20E0      		ldi r18,lo8(0)
+ 1068 0204 30E0      		ldi r19,hi8(0)
+ 1069 0206 00C0      		rjmp .L13
+ 1070               	.L15:
+ 273:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	{
+ 274:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		PORTD			|=	_BV(HostSlct3);
+ 1071               	,0,274,.LM144-.LFBB3
+ 1072               	.LM144:
+ 1073 0208 5E9A      		sbi 43-32,6
+ 275:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl 	|=	_BV(HostWrite) | _BV(HostRead);					// Condiciones Iniciales		
+ 1074               	tabn	68,0,275,.LM145-.LFBB3
+ 1075               	.LM145:
+ 1076 020a 84B3      		in r24,52-32
+ 1077 020c 8063      		ori r24,lo8(48)
+ 1078 020e 84BB      		out 52-32,r24
+ 276:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 
+ 277:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	
+ 278:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 
+ 279:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 
+ 280:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		Control_Port		=	0x00;			  						//Coloco como entrada el puerto 
+ 1079               	bn	68,0,280,.LM146-.LFBB3
+ 1080               	.LM146:
+ 1081 0210 1092 0401 		sts 260,__zero_reg__
+ 281:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostData			=	0xFF;									//Resistencias de Pullups ( averiguar mas esto)
+ 1082               	tabn	68,0,281,.LM147-.LFBB3
+ 1083               	.LM147:
+ 1084 0214 8FEF      		ldi r24,lo8(-1)
+ 1085 0216 8093 0501 		sts 261,r24
+ 282:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 
+ 283:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl 		|=	_BV(HostCmd);							//HostCmd Alto. Condiciones Iniciales
+ 1086               	abn	68,0,283,.LM148-.LFBB3
+ 1087               	.LM148:
+ 1088 021a A39A      		sbi 52-32,3
+ 284:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		PORTD		 		&= 	~(_BV(HostSlct3));						//Selecciono el Chipset 
+ 1089               	tabn	68,0,284,.LM149-.LFBB3
+ 1090               	.LM149:
+ 1091 021c 5E98      		cbi 43-32,6
+ 285:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl 		&= 	~(_BV(HostCmd));						//Coloco la Señal HostCmd a Nivel bajo 
+ 1092               	tabn	68,0,285,.LM150-.LFBB3
+ 1093               	.LM150:
+ 1094 021e A398      		cbi 52-32,3
+ 286:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	
+ 287:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl			&= 	~(_BV(HostRead));						//Aserto la señal de ~HostRead
+ 1095               	tabn	68,0,287,.LM151-.LFBB3
+ 1096               	.LM151:
+ 1097 0220 A598      		cbi 52-32,5
+ 1098               	.LBB402:
+ 1099               	.LBB403:
+ 1100               	.LBB404:
+ 1101               	.LBB405:
+ 1103               	.Ltext37:
+ 1105               	.LM152:
+ 1106 0222 95E0      		ldi r25,lo8(5)
+ 1107 0224 892F      		mov r24,r25
+ 1108               	/* #APP */
+ 1109               	 ;  83 "c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h" 1
+ 1110 0226 8A95      		1: dec r24
+ 1111 0228 01F4      		brne 1b
+ 1112               	 ;  0 "" 2
+ 1113               	/* #NOAPP */
+ 1114               	.LBE405:
+ 1115               	.LBE404:
+ 1116               	.LBE403:
+ 1117               	.LBE402:
+ 1119               	.Ltext38:
+ 288:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		_delay_us(2);													//retardo de un 1uS para asegurar la lecltura del dato
+ 289:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		i					=	(ReadData & 0xFF)<<8;					//Hago corriminto hacia la izq en i de los
+ 1120               	LFBB3
+ 1121               	.LM153:
+ 1122 022a 8091 0301 		lds r24,259
+ 1123 022e 582F      		mov r21,r24
+ 1124 0230 40E0      		ldi r20,lo8(0)
+ 290:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 																		//datos leídos en el puerto 
+ 291:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl 		|= 	_BV(HostRead);							//des_Aserto la señal de ~HostRead
+ 1125               	bn	68,0,291,.LM154-.LFBB3
+ 1126               	.LM154:
+ 1127 0232 A59A      		sbi 52-32,5
+ 1128               	.LBB406:
+ 1129               	.LBB407:
+ 1130               	.LBB408:
+ 1131               	.LBB409:
+ 1133               	.Ltext39:
+ 1135               	.LM155:
+ 1136 0234 892F      		mov r24,r25
+ 1137               	/* #APP */
+ 1138               	 ;  83 "c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h" 1
+ 1139 0236 8A95      		1: dec r24
+ 1140 0238 01F4      		brne 1b
+ 1141               	 ;  0 "" 2
+ 1142               	/* #NOAPP */
+ 1143               	.LBE409:
+ 1144               	.LBE408:
+ 1145               	.LBE407:
+ 1146               	.LBE406:
+ 1148               	.Ltext40:
+ 292:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		_delay_us(2);
+ 293:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 
+ 294:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl			&= 	~(_BV(HostRead));						//Aserto la señal de ~HostRead
+ 1149               	.LFBB3
+ 1150               	.LM156:
+ 1151 023a A598      		cbi 52-32,5
+ 1152               	.LBB410:
+ 1153               	.LBB411:
+ 1154               	.LBB412:
+ 1155               	.LBB413:
+ 1157               	.Ltext41:
+ 1159               	.LM157:
+ 1160               	/* #APP */
+ 1161               	 ;  83 "c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h" 1
+ 1162 023c 9A95      		1: dec r25
+ 1163 023e 01F4      		brne 1b
+ 1164               	 ;  0 "" 2
+ 1165               	/* #NOAPP */
+ 1166               	.LBE413:
+ 1167               	.LBE412:
+ 1168               	.LBE411:
+ 1169               	.LBE410:
+ 1171               	.Ltext42:
+ 295:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		_delay_us(2);													//retardo de un 1uS para asegurar la lecltura del dato
+ 296:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		j					=	(ReadData & 0xFF);						//Asigno a j el valor leído en el Puerto de Datos
+ 1172               	-.LFBB3
+ 1173               	.LM158:
+ 1174 0240 8091 0301 		lds r24,259
+ 1175 0244 282F      		mov r18,r24
+ 1176 0246 30E0      		ldi r19,lo8(0)
+ 297:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl 		|= 	_BV(HostRead);							//des_Aserto la señal de ~HostRead
+ 1177               	bn	68,0,297,.LM159-.LFBB3
+ 1178               	.LM159:
+ 1179 0248 A59A      		sbi 52-32,5
+ 298:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 
+ 299:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	
+ 300:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl 		|= _BV(HostCmd);							//Coloca la señal de HostCmd a Nivel Alto
+ 1180               	tabn	68,0,300,.LM160-.LFBB3
+ 1181               	.LM160:
+ 1182 024a A39A      		sbi 52-32,3
+ 301:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		PORTD		 		|= _BV(HostSlct3); 							//Deselecciono el Chipset.
+ 1183               	tabn	68,0,301,.LM161-.LFBB3
+ 1184               	.LM161:
+ 1185 024c 5E9A      		sbi 43-32,6
+ 1186               	.L13:
+ 1187 024e 242B      		or r18,r20
+ 1188 0250 352B      		or r19,r21
+ 302:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	
+ 303:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	
+ 304:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		
+ 305:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	}
+ 306:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	
+ 307:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	
+ 308:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	return i | j;
+ 309:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** }  
+ 1189               	n	68,0,309,.LM162-.LFBB3
+ 1190               	.LM162:
+ 1191 0252 C901      		movw r24,r18
+ 1192               	/* epilogue start */
+ 1193 0254 0895      		ret
+ 1199               	.Lscope3:
+ 1202               	.global	readPMDstatus
+ 1204               	readPMDstatus:
+ 310:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 
+ 311:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** /*-------------------------------------------------------------------------------------------------
+ 312:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** PMDuint16 readPMDstatus(PMDuint16 PMDChipSet)
+ 313:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** {
+ 1205               	,.LM163-.LFBB4
+ 1206               	.LM163:
+ 1207               	.LFBB4:
+ 1208               	/* prologue: function */
+ 1209               	/* frame size = 0 */
+ 314:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	PMDuint16 i			=	0;
+ 315:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	PMDuint16 j			=	0;
+ 316:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	
+ 317:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	if(PMDChipSet==PMDChipSet1)
+ 1210               	bn	68,0,317,.LM164-.LFBB4
+ 1211               	.LM164:
+ 1212 0256 0097      		sbiw r24,0
+ 1213 0258 01F4      		brne .L18
+ 318:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	{
+ 319:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		PORTD				|=	_BV(HostSlct1);
+ 1214               	abn	68,0,319,.LM165-.LFBB4
+ 1215               	.LM165:
+ 1216 025a 5C9A      		sbi 43-32,4
+ 320:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl		 	|=	_BV(HostWrite) | _BV(HostRead);				// Condiciones Iniciales		
+ 1217               	tabn	68,0,320,.LM166-.LFBB4
+ 1218               	.LM166:
+ 1219 025c 84B3      		in r24,52-32
+ 1220 025e 8063      		ori r24,lo8(48)
+ 1221 0260 84BB      		out 52-32,r24
+ 321:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	
+ 322:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		
+ 323:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 
+ 324:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 
+ 325:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		Control_Port		=	0x00;									//Coloco como entrada el puerto A
+ 1222               	bn	68,0,325,.LM167-.LFBB4
+ 1223               	.LM167:
+ 1224 0262 1092 0401 		sts 260,__zero_reg__
+ 326:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostData			=	0xFF;   								//Resistencias de Pullups ( averiguar mas esto)
+ 1225               	tabn	68,0,326,.LM168-.LFBB4
+ 1226               	.LM168:
+ 1227 0266 8FEF      		ldi r24,lo8(-1)
+ 1228 0268 8093 0501 		sts 261,r24
+ 327:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	
+ 328:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl 		&= 	~(_BV(HostCmd));						//HostCmd Bajo.Condiciones Iniciales
+ 1229               	abn	68,0,328,.LM169-.LFBB4
+ 1230               	.LM169:
+ 1231 026c A398      		cbi 52-32,3
+ 329:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		PORTD		 		&= 	~(_BV(HostSlct1));						//Selecciono el Chipset 
+ 1232               	tabn	68,0,329,.LM170-.LFBB4
+ 1233               	.LM170:
+ 1234 026e 5C98      		cbi 43-32,4
+ 330:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl 		|= 	_BV(HostCmd);							//Coloco la Señal HostCmd a Nivel Alto 
+ 1235               	tabn	68,0,330,.LM171-.LFBB4
+ 1236               	.LM171:
+ 1237 0270 A39A      		sbi 52-32,3
+ 331:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	
+ 332:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl			&= 	~(_BV(HostRead));						//Aserto la señal de ~HostRead
+ 1238               	tabn	68,0,332,.LM172-.LFBB4
+ 1239               	.LM172:
+ 1240 0272 A598      		cbi 52-32,5
+ 1241               	.LBB414:
+ 1242               	.LBB415:
+ 1243               	.LBB416:
+ 1244               	.LBB417:
+ 1246               	.Ltext43:
+ 1248               	.LM173:
+ 1249 0274 95E0      		ldi r25,lo8(5)
+ 1250 0276 892F      		mov r24,r25
+ 1251               	/* #APP */
+ 1252               	 ;  83 "c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h" 1
+ 1253 0278 8A95      		1: dec r24
+ 1254 027a 01F4      		brne 1b
+ 1255               	 ;  0 "" 2
+ 1256               	/* #NOAPP */
+ 1257               	.LBE417:
+ 1258               	.LBE416:
+ 1259               	.LBE415:
+ 1260               	.LBE414:
+ 1262               	.Ltext44:
+ 333:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		_delay_us(2);													//retardo de un 1uS para asegurar la lecltura del dato
+ 334:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		i					=	(ReadData & 0xFF)<<8;					//Hago corriminto hacia la izq en i de los datos
+ 1263               	LFBB4
+ 1264               	.LM174:
+ 1265 027c 8091 0301 		lds r24,259
+ 1266 0280 582F      		mov r21,r24
+ 1267 0282 40E0      		ldi r20,lo8(0)
+ 335:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 																		//leídos en el puerto 
+ 336:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl 		|= 	_BV(HostRead);							//des_Aserto la señal de ~HostRead
+ 1268               	bn	68,0,336,.LM175-.LFBB4
+ 1269               	.LM175:
+ 1270 0284 A59A      		sbi 52-32,5
+ 1271               	.LBB418:
+ 1272               	.LBB419:
+ 1273               	.LBB420:
+ 1274               	.LBB421:
+ 1276               	.Ltext45:
+ 1278               	.LM176:
+ 1279               	/* #APP */
+ 1280               	 ;  83 "c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h" 1
+ 1281 0286 9A95      		1: dec r25
+ 1282 0288 01F4      		brne 1b
+ 1283               	 ;  0 "" 2
+ 1284               	/* #NOAPP */
+ 1285               	.LBE421:
+ 1286               	.LBE420:
+ 1287               	.LBE419:
+ 1288               	.LBE418:
+ 1290               	.Ltext46:
+ 337:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		_delay_us(2);
+ 338:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		
+ 339:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl			&= 	~(_BV(HostRead));						//Aserto la señal de ~HostRead
+ 1291               	-.LFBB4
+ 1292               	.LM177:
+ 1293 028a A598      		cbi 52-32,5
+ 1294               	.LBB422:
+ 1295               	.LBB423:
+ 1296               	.LBB424:
+ 1297               	.LBB425:
+ 1299               	.Ltext47:
+ 1301               	.LM178:
+ 1302 028c 82E0      		ldi r24,lo8(2)
+ 1303               	/* #APP */
+ 1304               	 ;  83 "c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h" 1
+ 1305 028e 8A95      		1: dec r24
+ 1306 0290 01F4      		brne 1b
+ 1307               	 ;  0 "" 2
+ 1308               	/* #NOAPP */
+ 1309               	.LBE425:
+ 1310               	.LBE424:
+ 1311               	.LBE423:
+ 1312               	.LBE422:
+ 1314               	.Ltext48:
+ 340:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		_delay_us(1);													//retardo de un 1uS para asegurar la lecltura del dato
+ 341:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		j					=	(ReadData & 0xFF);						//Asigno a j el valor leído en el Puerto de Datos
+ 1315               	.LFBB4
+ 1316               	.LM179:
+ 1317 0292 8091 0301 		lds r24,259
+ 1318 0296 282F      		mov r18,r24
+ 1319 0298 30E0      		ldi r19,lo8(0)
+ 342:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl 		|= 	_BV(HostRead);							//des_Aserto la señal de ~HostRead  
+ 1320               	bn	68,0,342,.LM180-.LFBB4
+ 1321               	.LM180:
+ 1322 029a A59A      		sbi 52-32,5
+ 343:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	
+ 344:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	
+ 345:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl 		&= 	~(_BV(HostCmd));						//Coloca la señal de HostCmd a Nivel Bajo  
+ 1323               	tabn	68,0,345,.LM181-.LFBB4
+ 1324               	.LM181:
+ 1325 029c A398      		cbi 52-32,3
+ 346:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		PORTD		 		|= 	_BV(HostSlct1); 						//Deselecciono el Chipset
+ 1326               	tabn	68,0,346,.LM182-.LFBB4
+ 1327               	.LM182:
+ 1328 029e 5C9A      		sbi 43-32,4
+ 1329 02a0 00C0      		rjmp .L19
+ 1330               	.L18:
+ 347:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 
+ 348:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		
+ 349:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	}
+ 350:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	
+ 351:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		if(PMDChipSet==PMDChipSet2)
+ 1331               	bn	68,0,351,.LM183-.LFBB4
+ 1332               	.LM183:
+ 1333 02a2 8130      		cpi r24,1
+ 1334 02a4 9105      		cpc r25,__zero_reg__
+ 1335 02a6 01F4      		brne .L20
+ 352:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	{
+ 353:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		PORTD				|=	_BV(HostSlct2);
+ 1336               	bn	68,0,353,.LM184-.LFBB4
+ 1337               	.LM184:
+ 1338 02a8 5D9A      		sbi 43-32,5
+ 354:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl		 	|=	_BV(HostWrite) | _BV(HostRead);				// Condiciones Iniciales		
+ 1339               	tabn	68,0,354,.LM185-.LFBB4
+ 1340               	.LM185:
+ 1341 02aa 84B3      		in r24,52-32
+ 1342 02ac 8063      		ori r24,lo8(48)
+ 1343 02ae 84BB      		out 52-32,r24
+ 355:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	
+ 356:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		
+ 357:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 
+ 358:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 
+ 359:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		Control_Port		=	0x00;									//Coloco como entrada el puerto A
+ 1344               	bn	68,0,359,.LM186-.LFBB4
+ 1345               	.LM186:
+ 1346 02b0 1092 0401 		sts 260,__zero_reg__
+ 360:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostData			=	0xFF;   								//Resistencias de Pullups ( averiguar mas esto)
+ 1347               	tabn	68,0,360,.LM187-.LFBB4
+ 1348               	.LM187:
+ 1349 02b4 8FEF      		ldi r24,lo8(-1)
+ 1350 02b6 8093 0501 		sts 261,r24
+ 361:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	
+ 362:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl 		&= 	~(_BV(HostCmd));						//HostCmd Bajo.Condiciones Iniciales
+ 1351               	abn	68,0,362,.LM188-.LFBB4
+ 1352               	.LM188:
+ 1353 02ba A398      		cbi 52-32,3
+ 363:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		PORTD		 		&= 	~(_BV(HostSlct2));						//Selecciono el Chipset 
+ 1354               	tabn	68,0,363,.LM189-.LFBB4
+ 1355               	.LM189:
+ 1356 02bc 5D98      		cbi 43-32,5
+ 364:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl 		|= 	_BV(HostCmd);							//Coloco la Señal HostCmd a Nivel Alto 
+ 1357               	tabn	68,0,364,.LM190-.LFBB4
+ 1358               	.LM190:
+ 1359 02be A39A      		sbi 52-32,3
+ 365:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	
+ 366:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl			&= 	~(_BV(HostRead));						//Aserto la señal de ~HostRead
+ 1360               	tabn	68,0,366,.LM191-.LFBB4
+ 1361               	.LM191:
+ 1362 02c0 A598      		cbi 52-32,5
+ 1363               	.LBB426:
+ 1364               	.LBB427:
+ 1365               	.LBB428:
+ 1366               	.LBB429:
+ 1368               	.Ltext49:
+ 1370               	.LM192:
+ 1371 02c2 95E0      		ldi r25,lo8(5)
+ 1372 02c4 892F      		mov r24,r25
+ 1373               	/* #APP */
+ 1374               	 ;  83 "c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h" 1
+ 1375 02c6 8A95      		1: dec r24
+ 1376 02c8 01F4      		brne 1b
+ 1377               	 ;  0 "" 2
+ 1378               	/* #NOAPP */
+ 1379               	.LBE429:
+ 1380               	.LBE428:
+ 1381               	.LBE427:
+ 1382               	.LBE426:
+ 1384               	.Ltext50:
+ 367:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		_delay_us(2);													//retardo de un 1uS para asegurar la lecltura del dato
+ 368:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		i					=	(ReadData & 0xFF)<<8;					//Hago corriminto hacia la izq en i de los datos
+ 1385               	LFBB4
+ 1386               	.LM193:
+ 1387 02ca 8091 0301 		lds r24,259
+ 1388 02ce 582F      		mov r21,r24
+ 1389 02d0 40E0      		ldi r20,lo8(0)
+ 369:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 																		//leídos en el puerto 
+ 370:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl 		|= 	_BV(HostRead);							//des_Aserto la señal de ~HostRead
+ 1390               	bn	68,0,370,.LM194-.LFBB4
+ 1391               	.LM194:
+ 1392 02d2 A59A      		sbi 52-32,5
+ 1393               	.LBB430:
+ 1394               	.LBB431:
+ 1395               	.LBB432:
+ 1396               	.LBB433:
+ 1398               	.Ltext51:
+ 1400               	.LM195:
+ 1401               	/* #APP */
+ 1402               	 ;  83 "c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h" 1
+ 1403 02d4 9A95      		1: dec r25
+ 1404 02d6 01F4      		brne 1b
+ 1405               	 ;  0 "" 2
+ 1406               	/* #NOAPP */
+ 1407               	.LBE433:
+ 1408               	.LBE432:
+ 1409               	.LBE431:
+ 1410               	.LBE430:
+ 1412               	.Ltext52:
+ 371:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		_delay_us(2);
+ 372:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		
+ 373:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl			&= 	~(_BV(HostRead));						//Aserto la señal de ~HostRead
+ 1413               	-.LFBB4
+ 1414               	.LM196:
+ 1415 02d8 A598      		cbi 52-32,5
+ 1416               	.LBB434:
+ 1417               	.LBB435:
+ 1418               	.LBB436:
+ 1419               	.LBB437:
+ 1421               	.Ltext53:
+ 1423               	.LM197:
+ 1424 02da 82E0      		ldi r24,lo8(2)
+ 1425               	/* #APP */
+ 1426               	 ;  83 "c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h" 1
+ 1427 02dc 8A95      		1: dec r24
+ 1428 02de 01F4      		brne 1b
+ 1429               	 ;  0 "" 2
+ 1430               	/* #NOAPP */
+ 1431               	.LBE437:
+ 1432               	.LBE436:
+ 1433               	.LBE435:
+ 1434               	.LBE434:
+ 1436               	.Ltext54:
+ 374:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		_delay_us(1);													//retardo de un 1uS para asegurar la lecltura del dato
+ 375:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		j					=	(ReadData & 0xFF);						//Asigno a j el valor leído en el Puerto de Datos
+ 1437               	.LFBB4
+ 1438               	.LM198:
+ 1439 02e0 8091 0301 		lds r24,259
+ 1440 02e4 282F      		mov r18,r24
+ 1441 02e6 30E0      		ldi r19,lo8(0)
+ 376:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl 		|= 	_BV(HostRead);							//des_Aserto la señal de ~HostRead  
+ 1442               	bn	68,0,376,.LM199-.LFBB4
+ 1443               	.LM199:
+ 1444 02e8 A59A      		sbi 52-32,5
+ 377:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	
+ 378:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	
+ 379:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl 		&= 	~(_BV(HostCmd));						//Coloca la señal de HostCmd a Nivel Bajo  
+ 1445               	tabn	68,0,379,.LM200-.LFBB4
+ 1446               	.LM200:
+ 1447 02ea A398      		cbi 52-32,3
+ 380:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		PORTD		 		|= 	_BV(HostSlct2); 						//Deselecciono el Chipset
+ 1448               	tabn	68,0,380,.LM201-.LFBB4
+ 1449               	.LM201:
+ 1450 02ec 5D9A      		sbi 43-32,5
+ 1451 02ee 00C0      		rjmp .L19
+ 1452               	.L20:
+ 381:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 
+ 382:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		
+ 383:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	}
+ 384:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 
+ 385:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	if(PMDChipSet==PMDChipSet3)
+ 1453               	bn	68,0,385,.LM202-.LFBB4
+ 1454               	.LM202:
+ 1455 02f0 0297      		sbiw r24,2
+ 1456 02f2 01F0      		breq .L21
+ 1457 02f4 40E0      		ldi r20,lo8(0)
+ 1458 02f6 50E0      		ldi r21,hi8(0)
+ 1459 02f8 20E0      		ldi r18,lo8(0)
+ 1460 02fa 30E0      		ldi r19,hi8(0)
+ 1461 02fc 00C0      		rjmp .L19
+ 1462               	.L21:
+ 386:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	{
+ 387:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		PORTD				|=	_BV(HostSlct3);
+ 1463               	,0,387,.LM203-.LFBB4
+ 1464               	.LM203:
+ 1465 02fe 5E9A      		sbi 43-32,6
+ 388:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl		 	|=	_BV(HostWrite) | _BV(HostRead);				// Condiciones Iniciales		
+ 1466               	tabn	68,0,388,.LM204-.LFBB4
+ 1467               	.LM204:
+ 1468 0300 84B3      		in r24,52-32
+ 1469 0302 8063      		ori r24,lo8(48)
+ 1470 0304 84BB      		out 52-32,r24
+ 389:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	
+ 390:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		
+ 391:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 
+ 392:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 
+ 393:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		Control_Port		=	0x00;									//Coloco como entrada el puerto A
+ 1471               	bn	68,0,393,.LM205-.LFBB4
+ 1472               	.LM205:
+ 1473 0306 1092 0401 		sts 260,__zero_reg__
+ 394:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostData			=	0xFF;   								//Resistencias de Pullups ( averiguar mas esto)
+ 1474               	tabn	68,0,394,.LM206-.LFBB4
+ 1475               	.LM206:
+ 1476 030a 8FEF      		ldi r24,lo8(-1)
+ 1477 030c 8093 0501 		sts 261,r24
+ 395:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	
+ 396:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl 		&= 	~(_BV(HostCmd));						//HostCmd Bajo.Condiciones Iniciales
+ 1478               	abn	68,0,396,.LM207-.LFBB4
+ 1479               	.LM207:
+ 1480 0310 A398      		cbi 52-32,3
+ 397:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		PORTD		 		&= 	~(_BV(HostSlct3));						//Selecciono el Chipset 
+ 1481               	tabn	68,0,397,.LM208-.LFBB4
+ 1482               	.LM208:
+ 1483 0312 5E98      		cbi 43-32,6
+ 398:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl 		|= 	_BV(HostCmd);							//Coloco la Señal HostCmd a Nivel Alto 
+ 1484               	tabn	68,0,398,.LM209-.LFBB4
+ 1485               	.LM209:
+ 1486 0314 A39A      		sbi 52-32,3
+ 399:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	
+ 400:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl			&= 	~(_BV(HostRead));						//Aserto la señal de ~HostRead
+ 1487               	tabn	68,0,400,.LM210-.LFBB4
+ 1488               	.LM210:
+ 1489 0316 A598      		cbi 52-32,5
+ 1490               	.LBB438:
+ 1491               	.LBB439:
+ 1492               	.LBB440:
+ 1493               	.LBB441:
+ 1495               	.Ltext55:
+ 1497               	.LM211:
+ 1498 0318 95E0      		ldi r25,lo8(5)
+ 1499 031a 892F      		mov r24,r25
+ 1500               	/* #APP */
+ 1501               	 ;  83 "c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h" 1
+ 1502 031c 8A95      		1: dec r24
+ 1503 031e 01F4      		brne 1b
+ 1504               	 ;  0 "" 2
+ 1505               	/* #NOAPP */
+ 1506               	.LBE441:
+ 1507               	.LBE440:
+ 1508               	.LBE439:
+ 1509               	.LBE438:
+ 1511               	.Ltext56:
+ 401:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		_delay_us(2);													//retardo de un 1uS para asegurar la lecltura del dato
+ 402:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		i					=	(ReadData & 0xFF)<<8;					//Hago corriminto hacia la izq en i de los datos
+ 1512               	: dec r24
+ 1513               		brne 1b
+ 1514 0320 8091 0301 	 ;  0 "" 2
+ 1515 0324 582F      	/* #NOAPP */
+ 1516 0326 40E0      	.LBE441:
+ 403:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 																		//leídos en el puerto 
+ 404:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl 		|= 	_BV(HostRead);							//des_Aserto la señal de ~HostRead
+ 1517               	.LM211:
+ 1518               		ldi r25,lo8(5)
+ 1519 0328 A59A      		mov r24,r25
+ 1520               	/* #APP */
+ 1521               	 ;  83 "c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h" 1
+ 1522               		1: dec r24
+ 1523               		brne 1b
+ 1524               	 ;  0 "" 2
+ 1525               	/* #NOAPP */
+ 1526               	.LBE441:
+ 1527               	.LBE440:
+ 1528               	.LBE439:
+ 1529               	.LBE438:
+ 1531 032c 01F4      	.Ltext56:
+ 1533               	.LM212:
+ 1534               		lds r24,259
+ 1535               		mov r21,r24
+ 1536               		ldi r20,lo8(0)
+ 1538               	.LM213:
+ 1539               		sbi 52-32,5
+ 405:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		_delay_us(2);
+ 406:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		
+ 407:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl			&= 	~(_BV(HostRead));						//Aserto la señal de ~HostRead
+ 1540               	.c",132,0,0,.Ltext56
+ 1541               	.Ltext56:
+ 1543               	.LM212:
+ 1544               		lds r24,259
+ 1545               		mov r21,r24
+ 1546               		ldi r20,lo8(0)
+ 1548               	.LM213:
+ 1549               		sbi 52-32,5
+ 1550               	.LBB442:
+ 1551 0330 82E0      	.LBB443:
+ 1552               	.LBB444:
+ 1553               	.LBB445:
+ 1555 0334 01F4      	.Ltext57:
+ 1557               	.LM214:
+ 1558               	/* #APP */
+ 1559               	 ;  83 "c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h" 1
+ 1560               		1: dec r25
+ 1561               		brne 1b
+ 1562               	 ;  0 "" 2
+ 1563               	/* #NOAPP */
+ 408:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		_delay_us(1);													//retardo de un 1uS para asegurar la lecltura del dato
+ 409:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		j					=	(ReadData & 0xFF);						//Asigno a j el valor leído en el Puerto de Datos
+ 1564               	214-.LFBB4
+ 1565               	.LM214:
+ 1566 0336 8091 0301 	/* #APP */
+ 1567 033a 282F      	 ;  83 "c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h" 1
+ 1568 033c 30E0      		1: dec r25
+ 410:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl 		|= 	_BV(HostRead);							//des_Aserto la señal de ~HostRead  
+ 1569               	text57
+ 1570               	.Ltext57:
+ 411:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	
+ 412:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	
+ 413:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		HostControl 		&= 	~(_BV(HostCmd));						//Coloca la señal de HostCmd a Nivel Bajo  
+ 1572               	LBB443:
+ 1573               	.LBB444:
+ 1574 0340 A398      	.LBB445:
+ 414:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		PORTD		 		|= 	_BV(HostSlct3); 						//Deselecciono el Chipset
+ 1575               	8,0,402,.LM212-.LFBB4
+ 1576               	.LM212:
+ 1577 0342 5E9A      		lds r24,259
+ 1578               		mov r21,r24
+ 1579 0344 242B      		ldi r20,lo8(0)
+ 415:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 
+ 416:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		
+ 417:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	}
+ 418:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	
+ 419:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 
+ 420:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 		return i | j;
+ 421:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** }
+ 1581               	erface_uC_PMD/C/basicIO.c",132,0,0,.Ltext56
+ 1582               	.Ltext56:
+ 1584               	.LM212:
+ 1585 034a 0895      		lds r24,259
+ 1586               		mov r21,r24
+ 1587               		ldi r20,lo8(0)
+ 1589               	.LM213:
+ 1590               		sbi 52-32,5
+ 1591               	.LBB442:
+ 1592               	.LBB443:
+ 1593               	.LBB444:
+ 1594               	.LBB445:
+ 422:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** /*-------------------------------------------------------------------------------------------------
+ 423:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** void writePMDreset(void)  
+ 424:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** {
+ 1596               	213-.LFBB4
+ 1597               	.LM213:
+ 1598               		sbi 52-32,5
+ 1599               	.LBB442:
+ 1600               	.LBB443:
+ 425:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	PORTE 	|= _BV(Reset);												//reset alto
+ 1601               	
+ 1602               	.Ltext56:
+ 426:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	PORTE 	&= ~(_BV(Reset));											//bajo reset
+ 1604               	 #NOAPP */
+ 1605               	.LBE441:
+ 1606 034e 7398      	.LBE440:
+ 1607               	.LBE439:
+ 1608               	.LBE438:
+ 1610               	.Ltext56:
+ 1612               	.LM212:
+ 1613               		lds r24,259
+ 1614               		mov r21,r24
+  84:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 		"1: dec %0" "\n\t"
+  85:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 		"brne 1b"
+  86:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 		: "=r" (__count)
+  87:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 		: "0" (__count)
+  88:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 	);
+  89:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** }
+  90:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  91:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** /** \ingroup util_delay_basic
+  92:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  93:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     Delay loop using a 16-bit counter \c __count, so up to 65536
+  94:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     iterations are possible.  (The value 65536 would have to be
+  95:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     passed as 0.)  The loop executes four CPU cycles per iteration,
+  96:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     not including the overhead the compiler requires to setup the
+  97:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     counter register pair.
+  98:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  99:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     Thus, at a CPU speed of 1 MHz, delays of up to about 262.1
+ 100:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     milliseconds can be achieved.
+ 101:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****  */
+ 102:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** void
+ 103:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** _delay_loop_2(uint16_t __count)
+ 104:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** {
+ 105:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 	__asm__ volatile (
+ 1615               	
+ 1616               	.LBE438:
+ 1618 0352 91E0      	.Ltext56:
+ 1620               	.LM212:
+ 1621 0354 0197      		lds r24,259
+ 1622 0356 01F4      		mov r21,r24
+ 1623               		ldi r20,lo8(0)
+ 1625               	.LM213:
+ 1626               		sbi 52-32,5
+ 1627               	.LBB442:
+ 1628               	.LBB443:
+ 1629               	.LBB444:
+ 1630               	.LBB445:
+ 1632               	.Ltext57:
+ 427:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	_delay_us(200);
+ 428:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	PORTE 	|= _BV(Reset);												//reset alto
+ 1633               	.LM213:
+ 1634               		sbi 52-32,5
+ 1635 0358 739A      	.LBB442:
+ 1636 035a 80E9      	.LBB443:
+ 1637 035c 91E0      	.LBB444:
+ 1638               	.LBB445:
+ 1640               	.Ltext57:
+ 1642               	.LM214:
+ 1643               	/* #APP */
+ 1644               	 ;  83 "c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h" 1
+ 1645               		1: dec r25
+ 1646 035e 28EC      		brne 1b
+ 1647 0360 30E0      	 ;  0 "" 2
+ 1648               	/* #NOAPP */
+ 1649 0362 F901      	.LBE445:
+ 1650               	.LBE444:
+ 1651               	.LBE443:
+ 1652 0364 3197      	.LBE442:
+ 1654               	.Ltext58:
+ 1656               	.LM215:
+ 1657               		cbi 52-32,5
+ 1658               	.LBB446:
+ 1659               	.LBB447:
+   1:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** /* Copyright (c) 2002, Marek Michalkiewicz
+   2:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****    Copyright (c) 2004,2005,2007 Joerg Wunsch
+   3:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****    Copyright (c) 2007  Florin-Viorel Petrov
+   4:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****    All rights reserved.
+   5:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+   6:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****    Redistribution and use in source and binary forms, with or without
+   7:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****    modification, are permitted provided that the following conditions are met:
+   8:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+   9:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****    * Redistributions of source code must retain the above copyright
+  10:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****      notice, this list of conditions and the following disclaimer.
+  11:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+  12:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****    * Redistributions in binary form must reproduce the above copyright
+  13:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****      notice, this list of conditions and the following disclaimer in
+  14:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****      the documentation and/or other materials provided with the
+  15:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****      distribution.
+  16:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+  17:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****    * Neither the name of the copyright holders nor the names of
+  18:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****      contributors may be used to endorse or promote products derived
+  19:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****      from this software without specific prior written permission.
+  20:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+  21:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  22:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****   AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  23:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+  24:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****   ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+  25:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****   LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+  26:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+  27:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****   SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+  28:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+  29:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+  30:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+  31:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****   POSSIBILITY OF SUCH DAMAGE. */
+  32:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+  33:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** /* $Id: delay.h,v 1.5.2.1 2009/02/25 10:14:03 joerg_wunsch Exp $ */
+  34:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+  35:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** #ifndef _UTIL_DELAY_H_
+  36:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** #define _UTIL_DELAY_H_ 1
+  37:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+  38:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** #include <inttypes.h>
+  39:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** #include <util/delay_basic.h>
+  40:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+  41:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** /** \file */
+  42:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** /** \defgroup util_delay <util/delay.h>: Convenience functions for busy-wait delay loops
+  43:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     \code
+  44:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     #define F_CPU 1000000UL  // 1 MHz
+  45:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     //#define F_CPU 14.7456E6
+  46:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     #include <util/delay.h>
+  47:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     \endcode
+  48:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+  49:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     \note As an alternative method, it is possible to pass the
+  50:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     F_CPU macro down to the compiler from the Makefile.
+  51:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     Obviously, in that case, no \c \#define statement should be
+  52:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     used.
+  53:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+  54:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     The functions in this header file are wrappers around the basic
+  55:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     busy-wait functions from <util/delay_basic.h>.  They are meant as
+  56:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     convenience functions where actual time values can be specified
+  57:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     rather than a number of cycles to wait for.  The idea behind is
+  58:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     that compile-time constant expressions will be eliminated by
+  59:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     compiler optimization so floating-point expressions can be used
+  60:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     to calculate the number of delay cycles needed based on the CPU
+  61:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     frequency passed by the macro F_CPU.
+  62:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+  63:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     \note In order for these functions to work as intended, compiler
+  64:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     optimizations <em>must</em> be enabled, and the delay time
+  65:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     <em>must</em> be an expression that is a known constant at
+  66:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     compile-time.  If these requirements are not met, the resulting
+  67:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     delay will be much longer (and basically unpredictable), and
+  68:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     applications that otherwise do not use floating-point calculations
+  69:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     will experience severe code bloat by the floating-point library
+  70:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     routines linked into the application.
+  71:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+  72:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     The functions available allow the specification of microsecond, and
+  73:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     millisecond delays directly, using the application-supplied macro
+  74:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     F_CPU as the CPU clock frequency (in Hertz).
+  75:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+  76:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** */
+  77:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+  78:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** #if !defined(__DOXYGEN__)
+  79:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** static inline void _delay_us(double __us) __attribute__((always_inline));
+  80:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** static inline void _delay_ms(double __ms) __attribute__((always_inline));
+  81:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** #endif
+  82:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+  83:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** #ifndef F_CPU
+  84:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** /* prevent compiler error by supplying a default */
+  85:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** # warning "F_CPU not defined for <util/delay.h>"
+  86:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** # define F_CPU 1000000UL
+  87:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** #endif
+  88:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+  89:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** #ifndef __OPTIMIZE__
+  90:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** # warning "Compiler optimizations disabled; functions from <util/delay.h> won't work as designed"
+  91:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** #endif
+  92:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+  93:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** /**
+  94:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****    \ingroup util_delay
+  95:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+  96:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****    Perform a delay of \c __ms milliseconds, using _delay_loop_2().
+  97:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+  98:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****    The macro F_CPU is supposed to be defined to a
+  99:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****    constant defining the CPU clock frequency (in Hertz).
+ 100:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+ 101:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****    The maximal possible delay is 262.14 ms / F_CPU in MHz.
+ 102:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+ 103:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****    When the user request delay which exceed the maximum possible one,
+ 104:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****    _delay_ms() provides a decreased resolution functionality. In this
+ 105:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****    mode _delay_ms() will work with a resolution of 1/10 ms, providing
+ 106:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****    delays up to 6.5535 seconds (independent from CPU frequency).  The
+ 107:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****    user will not be informed about decreased resolution.
+ 108:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****  */
+ 109:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** void
+ 110:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** _delay_ms(double __ms)
+ 111:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** {
+ 112:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 	uint16_t __ticks;
+ 113:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 	double __tmp = ((F_CPU) / 4e3) * __ms;
+ 114:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 	if (__tmp < 1.0)
+ 115:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 		__ticks = 1;
+ 116:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 	else if (__tmp > 65535)
+ 117:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 	{
+ 118:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 		//	__ticks = requested delay in 1/10 ms
+ 119:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 		__ticks = (uint16_t) (__ms * 10.0);
+ 120:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 		while(__ticks)
+ 121:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 		{
+ 122:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 			// wait 1/10 ms
+ 123:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 			_delay_loop_2(((F_CPU) / 4e3) / 10);
+ 124:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 			__ticks --;
+ 1660               	_1/Firmware/Interface_uC_PMD/C/basicIO.c",132,0,0,.Ltext58
+ 1661               	.Ltext58:
+ 1663               	.LM215:
+ 1664               		cbi 52-32,5
+ 1665 036a 01F4      	.LBB446:
+ 1666               	.LBB447:
+ 1667               	.LBB448:
+ 1668               	.LBB449:
+ 1670               	.Ltext59:
+ 429:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	_delay_ms(40);                     									//TIEMPO TOMADO DE C_MOTION ORIGINAL	 
+ 430:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** 	
+ 431:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/basicIO.c **** }
+ 1671               	BB446:
+ 1672               	.LBB447:
+ 1673 036c 0895      	.LBB448:
+ 1674               	.LBB449:
+ 1676               	.Ltext59:
+ 1678               	.LM216:
+ 1679               		ldi r24,lo8(2)
+ 1680               	/* #APP */
+ 1681               	 ;  83 "c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h" 1
+ 1682               		1: dec r24
+ 1683               		brne 1b
+DEFINED SYMBOLS
+                            *ABS*:00000000 basicIO.c
+C:\DOCUME~1\David\LOCALS~1\Temp/ccSYcup6.s:2      *ABS*:0000003f __SREG__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccSYcup6.s:3      *ABS*:0000003e __SP_H__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccSYcup6.s:4      *ABS*:0000003d __SP_L__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccSYcup6.s:5      *ABS*:00000034 __CCP__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccSYcup6.s:6      *ABS*:00000000 __tmp_reg__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccSYcup6.s:7      *ABS*:00000001 __zero_reg__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccSYcup6.s:228    .text:00000000 writePMDcommand
+C:\DOCUME~1\David\LOCALS~1\Temp/ccSYcup6.s:520    .text:000000b0 writePMDdata
+C:\DOCUME~1\David\LOCALS~1\Temp/ccSYcup6.s:812    .text:00000160 readPMDdata
+C:\DOCUME~1\David\LOCALS~1\Temp/ccSYcup6.s:1204   .text:00000256 readPMDstatus
+C:\DOCUME~1\David\LOCALS~1\Temp/ccSYcup6.s:1595   .text:0000034c writePMDreset
+
+NO UNDEFINED SYMBOLS

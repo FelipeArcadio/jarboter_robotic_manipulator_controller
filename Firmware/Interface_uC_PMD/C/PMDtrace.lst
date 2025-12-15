@@ -1,0 +1,1705 @@
+   1               		.file	"PMDtrace.c"
+   2               	__SREG__ = 0x3f
+   3               	__SP_H__ = 0x3e
+   4               	__SP_L__ = 0x3d
+   5               	__CCP__  = 0x34
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   9               		.text
+  10               	.Ltext0:
+ 241               	.global	Tracevar2PMDVar
+ 243               	Tracevar2PMDVar:
+   1:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** #include <avr/io.h>
+   2:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** #include <stdint.h>
+   3:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** #include <stdio.h>
+   4:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** #include "c-motion.h"
+   5:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** #include "messages.h"
+   6:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** #include "PMDsetup.h"
+   7:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** #include "PMDtrace.h"
+   8:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** #include "mem.h"
+   9:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** #include "low_usb.h"
+  10:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** #include "packetIO.h"
+  11:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 
+  12:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 
+  13:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** /*Indica que es la primera vez que se toman los datos del buffer*/
+  14:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** uint8 printOK=0;
+  15:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** /*Conteo del Numero de variables configuradas en el PMD1*/
+  16:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** uint8 PMD1NVariables;
+  17:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** /*Conteo del Numero de variables configuradas en el PMD2*/
+  18:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** uint8 PMD2NVariables;
+  19:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 
+  20:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** extern PMDAxisHandle hAxis[DOF]; 
+  21:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 
+  22:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 
+  23:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 
+  24:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** /*****************************************************************************************/
+  25:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** void Memoryconfig(void)
+  26:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** {
+  27:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	uint8 axis;
+  28:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	
+  29:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	//Defino el Comienzo y la longitud del Buffer de memoria para ambos chipsets
+  30:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	
+  31:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	for(axis=0; axis < DOF; axis++)
+  32:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	{
+  33:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 		if(hAxis[axis].axis == 0)  
+  34:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 		{
+  35:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 			PMDSetBufferStart(&hAxis[axis],BUFFER_ID,BUFFER_START);
+  36:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 			PMDSetBufferLength(&hAxis[axis],BUFFER_ID,BUFFER_LENGTH);
+  37:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 		}
+  38:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	}
+  39:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** }
+  40:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 
+  41:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** /*****************************************************************************************/
+  42:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** void SetupSingleAxisTrace(tAxis Axis)
+  43:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** {
+  44:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	
+  45:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	PMDSetTraceVariable(&hAxis[Axis], PMDTrace1, Axis2PMDAxis(Axis), PMDTraceCommandedPosition );
+  46:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	PMDSetTraceVariable(&hAxis[Axis], PMDTrace2, Axis2PMDAxis(Axis), PMDTraceActualPosition);
+  47:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	PMDSetTraceVariable(&hAxis[Axis], PMDTrace3, Axis2PMDAxis(Axis), PMDTracePositionError);
+  48:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	PMDSetTraceVariable(&hAxis[Axis], PMDTrace4, Axis2PMDAxis(Axis), PMDTraceEventStatus);
+  49:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	
+  50:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	PMDSetTracePeriod(&hAxis[Axis],200);				//120ms
+  51:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	PMDSetTraceMode(&hAxis[Axis],PMDTraceOneTime);	
+  52:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	PMDSetTraceStop(&hAxis[Axis], Axis2PMDAxis(Axis),  PMDTraceConditionEventStatus, PMDEventMotionCom
+  53:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	PMDSetTraceStart( &hAxis[Axis], Axis2PMDAxis(Axis), PMDTraceConditionUpdate, 0, 0);
+  54:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	
+  55:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** }
+  56:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** /*****************************************************************************************/
+  57:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** void SetupAxisTrace(tCommand VisualTrace)
+  58:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** {
+  59:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	int8 i,Axis,NvaribleVisual,VariableConf;
+  60:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	
+  61:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	NvaribleVisual=VisualTrace.Dato;
+  62:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	printf("SetupAxisTrace=> Numero de variables a configurar %d \n",NvaribleVisual);
+  63:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	Memoryconfig();
+  64:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	printf("SetupAxisTrace=> Ejecute Memoryconfig \n");
+  65:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	DisableVariable();
+  66:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	printf("SetupAxisTrace=> Ejecute DisableVariable \n");
+  67:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	if(NvaribleVisual>0 && NvaribleVisual <= 8) 
+  68:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	{
+  69:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 		/*Reiniciamos el contreo de variables configuradas (son globales)*/
+  70:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 		PMD1NVariables=0;
+  71:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 		PMD2NVariables=0;
+  72:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 		for(i=0;i<NvaribleVisual;i++)
+  73:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 		{
+  74:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 			//Obtenemos el eje a configurar
+  75:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 			Axis=VisualTrace.Tracecomand[i].AxisTrace;
+  76:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 			//Obtenemos a que PMD pertenece, y llevamos la cuenta de la varialies configuradas para cada PMD
+  77:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 			VariableConf=Tracevar2PMDVar(VisualTrace,i);
+  78:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 			printf("SetupAxisTrace=> Configurando la variable %d = al CMD # %d en el EJE %s \n",VariableConf
+  79:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 			PMDSetTraceVariable(&hAxis[Axis],VariableConf,Axis2PMDAxis(Axis),VisualTrace.Tracecomand[i].Trac
+  80:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 			printf("SetupAxisTrace=> Configurando  Sample Trace_time %d \n",VisualTrace.TraceTime);		
+  81:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 			PMDSetTracePeriod(&hAxis[Axis],VisualTrace.TraceTime);
+  82:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 			PMDSetTraceMode(&hAxis[Axis],PMDTraceOneTime);	
+  83:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 			if(VisualTrace.TraceTraj==0)
+  84:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 				PMDSetTraceStop(&hAxis[Axis], Axis2PMDAxis(Axis),  PMDTraceConditionEventStatus, PMDEventMotion
+  85:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 			PMDSetTraceStart( &hAxis[Axis], Axis2PMDAxis(Axis), PMDTraceConditionUpdate, BUFFER_ID, PMDTrace
+  86:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 		}
+  87:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 		
+  88:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	}
+  89:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** }
+  90:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 
+  91:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** /*****************************************************************************************/
+  92:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** void DisplayTraceResults(int Chipset,PMDuint8 nVariables)
+  93:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** {
+  94:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	
+  95:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	PMDuint32 i;
+  96:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	PMDuint32 total_data;
+  97:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	PMDuint32 readindex;
+  98:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	PMDlong32 bufferdata ;
+  99:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c ****     int Axis;
+ 100:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 
+ 101:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	
+ 102:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	Axis = AxisWaist;
+ 103:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	if(Chipset==2) 
+ 104:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 		Axis = AxisRoll;
+ 105:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	PMDGetTraceCount(&hAxis[Axis], &total_data);
+ 106:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	printf("DisplayTraceResults=> Total de Datos= %ld \n", total_data);
+ 107:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	
+ 108:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	do
+ 109:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	{
+ 110:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 		PMDGetBufferReadIndex(&hAxis[Axis], BUFFER_ID, &readindex);
+ 111:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 		printf("DisplayTraceResults=> readindex= %ld",readindex);
+ 112:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 		
+ 113:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 		for(i=0 ; i<nVariables; i++)
+ 114:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 		{
+ 115:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 			PMDReadBuffer(&hAxis[Axis], BUFFER_ID, &bufferdata);	
+ 116:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 			if(i==3)			
+ 117:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 				printf("DisplayTraceResults=> \t%#lX", bufferdata);
+ 118:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 			else 
+ 119:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 				printf("DisplayTraceResults=> \t%ld", bufferdata);
+ 120:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 		}
+ 121:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 		
+ 122:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 		printf("\n");
+ 123:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	}
+ 124:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	while (readindex < (total_data - nVariables));	
+ 125:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** } 
+ 126:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 
+ 127:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** int8 Tracevar2PMDVar(tCommand VisualTrace,int8 TracevarIndex)
+ 128:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** {
+ 244               	1
+ 245               	.LM0:
+ 246               	.LFBB1:
+ 247 0000 DF93      		push r29
+ 248 0002 CF93      		push r28
+ 249 0004 CDB7      		in r28,__SP_L__
+ 250 0006 DEB7      		in r29,__SP_H__
+ 251               	/* prologue: function */
+ 252               	/* frame size = 0 */
+ 129:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	int8 Result,Axis;
+ 130:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	
+ 131:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	
+ 132:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	Axis=VisualTrace.Tracecomand[TracevarIndex].AxisTrace;
+ 133:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	if(Axis==AxisRoll) 
+ 253               	8,0,133,.LM1-.LFBB1
+ 254               	.LM1:
+ 255 0008 E8A1      		ldd r30,Y+32
+ 256 000a FF27      		clr r31
+ 257 000c E7FD      		sbrc r30,7
+ 258 000e F095      		com r31
+ 259 0010 EE0F      		lsl r30
+ 260 0012 FF1F      		rol r31
+ 261 0014 85E0      		ldi r24,lo8(5)
+ 262 0016 90E0      		ldi r25,hi8(5)
+ 263 0018 8C0F      		add r24,r28
+ 264 001a 9D1F      		adc r25,r29
+ 265 001c E80F      		add r30,r24
+ 266 001e F91F      		adc r31,r25
+ 267 0020 8385      		ldd r24,Z+11
+ 268 0022 8430      		cpi r24,lo8(4)
+ 269 0024 01F4      		brne .L2
+ 134:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	{
+ 135:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 		Result=PMD2NVariables;
+ 270               	.LM2-.LFBB1
+ 271               	.LM2:
+ 272 0026 8091 0000 		lds r24,PMD2NVariables
+ 136:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 		PMD2NVariables++;
+ 273               	tabn	68,0,136,.LM3-.LFBB1
+ 274               	.LM3:
+ 275 002a 8F5F      		subi r24,lo8(-(1))
+ 276 002c 8093 0000 		sts PMD2NVariables,r24
+ 277 0030 00C0      		rjmp .L5
+ 278               	.L2:
+ 137:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	}
+ 138:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	else
+ 139:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	{
+ 140:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 		Result=PMD1NVariables;
+ 279               	n	68,0,140,.LM4-.LFBB1
+ 280               	.LM4:
+ 281 0032 8091 0000 		lds r24,PMD1NVariables
+ 141:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 		PMD1NVariables++;
+ 282               	tabn	68,0,141,.LM5-.LFBB1
+ 283               	.LM5:
+ 284 0036 8F5F      		subi r24,lo8(-(1))
+ 285 0038 8093 0000 		sts PMD1NVariables,r24
+ 286               	.L5:
+ 287 003c 8150      		subi r24,lo8(-(-1))
+ 288               	/* epilogue start */
+ 142:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	}
+ 143:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	
+ 144:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	return Result;
+ 145:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 
+ 146:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** }
+ 289               		68,0,146,.LM6-.LFBB1
+ 290               	.LM6:
+ 291 003e CF91      		pop r28
+ 292 0040 DF91      		pop r29
+ 293 0042 0895      		ret
+ 299               	.Lscope1:
+ 301               	.global	DisableVariable
+ 303               	DisableVariable:
+ 147:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 
+ 148:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 
+ 149:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** /*****************************************************************************************/
+ 150:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** void EnvioTrazado2PC(uint8 N_traceVariable)
+ 151:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** {
+ 152:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	uint8 Axis=0;
+ 153:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	PMDuint32 total_data_Chipset2=0;
+ 154:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	PMDuint32 total_data_Chipset1=0;
+ 155:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	PMDuint32 total_data=0;
+ 156:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	int32 Tracebufferdata[4];
+ 157:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	uint8 *BufferData;
+ 158:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	tPacketHeader PacketHeader;
+ 159:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	int16 i,buffersize;
+ 160:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	#ifdef DEBUGUSBLevel1
+ 161:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	uint16 spacefree;
+ 162:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	#endif
+ 163:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	total_data=0;
+ 164:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	
+ 165:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	PMDGetTraceCount(&hAxis[AxisWaist], &total_data_Chipset1);		
+ 166:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	printf("EnvioTrazado2PC=> total_data_Chipset1=  %ld\n",total_data_Chipset1);
+ 167:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	PMDGetTraceCount(&hAxis[AxisRoll], &total_data_Chipset2);
+ 168:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	printf("EnvioTrazado2PC=> total_data_Chipset2=  %ld\n",total_data_Chipset2);
+ 169:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	
+ 170:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	PMDSetBufferReadIndex(&hAxis[AxisWaist], BUFFER_ID,0);
+ 171:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	PMDSetBufferReadIndex(&hAxis[AxisRoll], BUFFER_ID,0);
+ 172:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	
+ 173:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 
+ 174:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	total_data=total_data_Chipset1+total_data_Chipset2;
+ 175:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	/*He configurado alguna variable para trazar*/
+ 176:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	if(N_traceVariable>0 && N_traceVariable<=8)
+ 177:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	{
+ 178:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 		/*total_data = Numero de datos de 32 bists del trazado*/			
+ 179:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 		Tracebufferdata[0]=total_data;
+ 180:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 		Tracebufferdata[1]=total_data_Chipset1;
+ 181:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 		Tracebufferdata[2]=total_data_Chipset2;
+ 182:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 		printf("EnvioTrazado2PC=> Tracebufferdata[0]=  %ld\n",Tracebufferdata[0]);
+ 183:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 		if(total_data_Chipset1>0)
+ 184:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 			Axis=AxisWaist;
+ 185:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 		/*Solo tamaño de los datos, 4N+12 siempre es par*/
+ 186:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 		buffersize=(Tracebufferdata[0]*sizeof(int32))+(sizeof(int32)*3);
+ 187:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 		fillPacketHeader(&PacketHeader,PacketTrace,buffersize,NULL); 
+ 188:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 		BufferData=(uint8*)&PacketHeader;
+ 189:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 		Envio_USB(BufferData,sizeof(tPacketHeader));
+ 190:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 		/*Mando el Tracebufferdata[0] */
+ 191:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 		BufferData=(uint8*)&Tracebufferdata[0];
+ 192:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 		Envio_USB(BufferData,sizeof(int32));
+ 193:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 		/*Mando el Tracebufferdata[1] */
+ 194:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 		BufferData=(uint8*)&Tracebufferdata[1];
+ 195:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 		Envio_USB(BufferData,sizeof(int32));
+ 196:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 		/*Mando el Tracebufferdata[2] */
+ 197:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 		BufferData=(uint8*)&Tracebufferdata[2];
+ 198:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 		Envio_USB(BufferData,sizeof(int32));
+ 199:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 		/*Grabo todos los datos*/
+ 200:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 		printf("EnvioTrazado2PC=> Iniciando envio de trazado... \n");
+ 201:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 		for(i=0;i<total_data;i++)
+ 202:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 		{
+ 203:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 			/*Estoy en el PMD2*/
+ 204:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 			if(i>=(total_data_Chipset1))
+ 205:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 				Axis=AxisRoll;
+ 206:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 			/*Leo el dato*/
+ 207:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 			PMDReadBuffer(&hAxis[Axis], BUFFER_ID,&Tracebufferdata[3]);	
+ 208:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 			/*Mando el Tracebufferdata[3], dato lleido de la memoria del PMD */
+ 209:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 			BufferData=(uint8*)&Tracebufferdata[3];
+ 210:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 			Envio_USB(BufferData,sizeof(int32));
+ 211:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 			//printf("Tracebufferdata[3]=  %ld, Index %d \n",(int32)Tracebufferdata[3],i);
+ 212:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 		}
+ 213:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 		printf("EnvioTrazado2PC=> Envio de trazado finalizado... \n");
+ 214:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 		PMDSetBufferReadIndex(&hAxis[AxisWaist], BUFFER_ID,0);
+ 215:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 		PMDSetBufferWriteIndex(&hAxis[AxisWaist], BUFFER_ID,0);
+ 216:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 		PMDSetBufferReadIndex(&hAxis[AxisRoll], BUFFER_ID,0);
+ 217:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 		PMDSetBufferWriteIndex(&hAxis[AxisRoll], BUFFER_ID,0);
+ 218:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	}
+ 219:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	printf("EnvioTrazado2PC=> total_data=  %ld\n ",total_data);
+ 220:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	printf("EnvioTrazado2PC=> Saliendo readbuffer\n ");
+ 221:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** } 
+ 222:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 
+ 223:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** void DisableVariable(void)
+ 224:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** {
+ 304               	4,.LM7-.LFBB2
+ 305               	.LM7:
+ 306               	.LFBB2:
+ 307 0044 0F93      		push r16
+ 308 0046 1F93      		push r17
+ 309               	/* prologue: function */
+ 310               	/* frame size = 0 */
+ 225:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 
+ 226:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	PMDSetTraceVariable(&hAxis[AxisWaist], PMDTrace1, Axis2PMDAxis(AxisWaist), PMDTraceNoVariable);
+ 311               		68,0,226,.LM8-.LFBB2
+ 312               	.LM8:
+ 313 0048 80E0      		ldi r24,lo8(0)
+ 314 004a 90E0      		ldi r25,hi8(0)
+ 315 004c 0E94 0000 		call Axis2PMDAxis
+ 316 0050 AC01      		movw r20,r24
+ 317 0052 00E0      		ldi r16,lo8(hAxis)
+ 318 0054 10E0      		ldi r17,hi8(hAxis)
+ 319 0056 C801      		movw r24,r16
+ 320 0058 60E0      		ldi r22,lo8(0)
+ 321 005a 70E0      		ldi r23,hi8(0)
+ 322 005c 20E0      		ldi r18,lo8(0)
+ 323 005e 0E94 0000 		call PMDSetTraceVariable
+ 227:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	PMDSetTraceVariable(&hAxis[AxisWaist], PMDTrace2, Axis2PMDAxis(AxisWaist), PMDTraceNoVariable);
+ 324               	227,.LM9-.LFBB2
+ 325               	.LM9:
+ 326 0062 80E0      		ldi r24,lo8(0)
+ 327 0064 90E0      		ldi r25,hi8(0)
+ 328 0066 0E94 0000 		call Axis2PMDAxis
+ 329 006a AC01      		movw r20,r24
+ 330 006c C801      		movw r24,r16
+ 331 006e 61E0      		ldi r22,lo8(1)
+ 332 0070 70E0      		ldi r23,hi8(1)
+ 333 0072 20E0      		ldi r18,lo8(0)
+ 334 0074 0E94 0000 		call PMDSetTraceVariable
+ 228:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	PMDSetTraceVariable(&hAxis[AxisWaist], PMDTrace3, Axis2PMDAxis(AxisWaist), PMDTraceNoVariable);
+ 335               	0,228,.LM10-.LFBB2
+ 336               	.LM10:
+ 337 0078 80E0      		ldi r24,lo8(0)
+ 338 007a 90E0      		ldi r25,hi8(0)
+ 339 007c 0E94 0000 		call Axis2PMDAxis
+ 340 0080 AC01      		movw r20,r24
+ 341 0082 C801      		movw r24,r16
+ 342 0084 62E0      		ldi r22,lo8(2)
+ 343 0086 70E0      		ldi r23,hi8(2)
+ 344 0088 20E0      		ldi r18,lo8(0)
+ 345 008a 0E94 0000 		call PMDSetTraceVariable
+ 229:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	PMDSetTraceVariable(&hAxis[AxisWaist], PMDTrace4, Axis2PMDAxis(AxisWaist), PMDTraceNoVariable);	
+ 346               	0,229,.LM11-.LFBB2
+ 347               	.LM11:
+ 348 008e 80E0      		ldi r24,lo8(0)
+ 349 0090 90E0      		ldi r25,hi8(0)
+ 350 0092 0E94 0000 		call Axis2PMDAxis
+ 351 0096 AC01      		movw r20,r24
+ 352 0098 C801      		movw r24,r16
+ 353 009a 63E0      		ldi r22,lo8(3)
+ 354 009c 70E0      		ldi r23,hi8(3)
+ 355 009e 20E0      		ldi r18,lo8(0)
+ 356 00a0 0E94 0000 		call PMDSetTraceVariable
+ 230:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	PMDSetTraceVariable(&hAxis[AxisRoll], PMDTrace1, Axis2PMDAxis(AxisRoll), PMDTraceNoVariable);
+ 357               	0,230,.LM12-.LFBB2
+ 358               	.LM12:
+ 359 00a4 84E0      		ldi r24,lo8(4)
+ 360 00a6 90E0      		ldi r25,hi8(4)
+ 361 00a8 0E94 0000 		call Axis2PMDAxis
+ 362 00ac AC01      		movw r20,r24
+ 363 00ae 00E0      		ldi r16,lo8(hAxis+384)
+ 364 00b0 10E0      		ldi r17,hi8(hAxis+384)
+ 365 00b2 C801      		movw r24,r16
+ 366 00b4 60E0      		ldi r22,lo8(0)
+ 367 00b6 70E0      		ldi r23,hi8(0)
+ 368 00b8 20E0      		ldi r18,lo8(0)
+ 369 00ba 0E94 0000 		call PMDSetTraceVariable
+ 231:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	PMDSetTraceVariable(&hAxis[AxisRoll], PMDTrace2, Axis2PMDAxis(AxisRoll), PMDTraceNoVariable);
+ 370               	231,.LM13-.LFBB2
+ 371               	.LM13:
+ 372 00be 84E0      		ldi r24,lo8(4)
+ 373 00c0 90E0      		ldi r25,hi8(4)
+ 374 00c2 0E94 0000 		call Axis2PMDAxis
+ 375 00c6 AC01      		movw r20,r24
+ 376 00c8 C801      		movw r24,r16
+ 377 00ca 61E0      		ldi r22,lo8(1)
+ 378 00cc 70E0      		ldi r23,hi8(1)
+ 379 00ce 20E0      		ldi r18,lo8(0)
+ 380 00d0 0E94 0000 		call PMDSetTraceVariable
+ 232:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	PMDSetTraceVariable(&hAxis[AxisRoll], PMDTrace3, Axis2PMDAxis(AxisRoll), PMDTraceNoVariable);
+ 381               	0,232,.LM14-.LFBB2
+ 382               	.LM14:
+ 383 00d4 84E0      		ldi r24,lo8(4)
+ 384 00d6 90E0      		ldi r25,hi8(4)
+ 385 00d8 0E94 0000 		call Axis2PMDAxis
+ 386 00dc AC01      		movw r20,r24
+ 387 00de C801      		movw r24,r16
+ 388 00e0 62E0      		ldi r22,lo8(2)
+ 389 00e2 70E0      		ldi r23,hi8(2)
+ 390 00e4 20E0      		ldi r18,lo8(0)
+ 391 00e6 0E94 0000 		call PMDSetTraceVariable
+ 233:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** 	PMDSetTraceVariable(&hAxis[AxisRoll], PMDTrace4, Axis2PMDAxis(AxisRoll), PMDTraceNoVariable);	
+ 392               	0,233,.LM15-.LFBB2
+ 393               	.LM15:
+ 394 00ea 84E0      		ldi r24,lo8(4)
+ 395 00ec 90E0      		ldi r25,hi8(4)
+ 396 00ee 0E94 0000 		call Axis2PMDAxis
+ 397 00f2 AC01      		movw r20,r24
+ 398 00f4 C801      		movw r24,r16
+ 399 00f6 63E0      		ldi r22,lo8(3)
+ 400 00f8 70E0      		ldi r23,hi8(3)
+ 401 00fa 20E0      		ldi r18,lo8(0)
+ 402 00fc 0E94 0000 		call PMDSetTraceVariable
+ 403               	/* epilogue start */
+ 234:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDtrace.c **** }...
+ 404               	,234,.LM16-.LFBB2
+ 405               	.LM16:
+ 406 0100 1F91      		pop r17
+ 407 0102 0F91      		pop r16
+ 408 0104 0895      		ret
+ 410               	.Lscope2:
+ 411               		.data
+ 412               	.LC0:
+ 413 0000 456E 7669 		.string	"EnvioTrazado2PC=> total_data_Chipset1=  %ld\n"
+ 413      6F54 7261 
+ 413      7A61 646F 
+ 413      3250 433D 
+ 413      3E20 746F 
+ 414               	.LC1:
+ 415 002d 456E 7669 		.string	"EnvioTrazado2PC=> total_data_Chipset2=  %ld\n"
+ 415      6F54 7261 
+ 415      7A61 646F 
+ 415      3250 433D 
+ 415      3E20 746F 
+ 416               	.LC2:
+ 417 005a 456E 7669 		.string	"EnvioTrazado2PC=> Tracebufferdata[0]=  %ld\n"
+ 417      6F54 7261 
+ 417      7A61 646F 
+ 417      3250 433D 
+ 417      3E20 5472 
+ 418               	.LC3:
+ 419 0086 456E 7669 		.string	"EnvioTrazado2PC=> Iniciando envio de trazado... "
+ 419      6F54 7261 
+ 419      7A61 646F 
+ 419      3250 433D 
+ 419      3E20 496E 
+ 420               	.LC4:
+ 421 00b7 456E 7669 		.string	"EnvioTrazado2PC=> Envio de trazado finalizado... "
+ 421      6F54 7261 
+ 421      7A61 646F 
+ 421      3250 433D 
+ 421      3E20 456E 
+ 422               	.LC5:
+ 423 00e9 456E 7669 		.string	"EnvioTrazado2PC=> total_data=  %ld\n "
+ 423      6F54 7261 
+ 423      7A61 646F 
+ 423      3250 433D 
+ 423      3E20 746F 
+ 424               	.LC6:
+ 425 010e 456E 7669 		.string	"EnvioTrazado2PC=> Saliendo readbuffer\n "
+ 425      6F54 7261 
+ 425      7A61 646F 
+ 425      3250 433D 
+ 425      3E20 5361 
+ 426               		.text
+ 429               	.global	EnvioTrazado2PC
+ 431               	EnvioTrazado2PC:
+ 433               	.LM17:
+ 434               	.LFBB3:
+ 435 0106 6F92      		push r6
+ 436 0108 7F92      		push r7
+ 437 010a 8F92      		push r8
+ 438 010c 9F92      		push r9
+ 439 010e AF92      		push r10
+ 440 0110 BF92      		push r11
+ 441 0112 CF92      		push r12
+ 442 0114 DF92      		push r13
+ 443 0116 EF92      		push r14
+ 444 0118 FF92      		push r15
+ 445 011a 0F93      		push r16
+ 446 011c 1F93      		push r17
+ 447 011e DF93      		push r29
+ 448 0120 CF93      		push r28
+ 449 0122 CDB7      		in r28,__SP_L__
+ 450 0124 DEB7      		in r29,__SP_H__
+ 451 0126 A097      		sbiw r28,32
+ 452 0128 0FB6      		in __tmp_reg__,__SREG__
+ 453 012a F894      		cli
+ 454 012c DEBF      		out __SP_H__,r29
+ 455 012e 0FBE      		out __SREG__,__tmp_reg__
+ 456 0130 CDBF      		out __SP_L__,r28
+ 457               	/* prologue: function */
+ 458               	/* frame size = 32 */
+ 459 0132 182F      		mov r17,r24
+ 461               	.LM18:
+ 462 0134 1982      		std Y+1,__zero_reg__
+ 463 0136 1A82      		std Y+2,__zero_reg__
+ 464 0138 1B82      		std Y+3,__zero_reg__
+ 465 013a 1C82      		std Y+4,__zero_reg__
+ 467               	.LM19:
+ 468 013c 1D82      		std Y+5,__zero_reg__
+ 469 013e 1E82      		std Y+6,__zero_reg__
+ 470 0140 1F82      		std Y+7,__zero_reg__
+ 471 0142 1886      		std Y+8,__zero_reg__
+ 473               	.LM20:
+ 474 0144 80E0      		ldi r24,lo8(hAxis)
+ 475 0146 90E0      		ldi r25,hi8(hAxis)
+ 476 0148 BE01      		movw r22,r28
+ 477 014a 6B5F      		subi r22,lo8(-(5))
+ 478 014c 7F4F      		sbci r23,hi8(-(5))
+ 479 014e 0E94 0000 		call PMDGetTraceCount
+ 481               	.LM21:
+ 482 0152 00D0      		rcall .
+ 483 0154 00D0      		rcall .
+ 484 0156 00D0      		rcall .
+ 485 0158 80E0      		ldi r24,lo8(.LC0)
+ 486 015a 90E0      		ldi r25,hi8(.LC0)
+ 487 015c ADB7      		in r26,__SP_L__
+ 488 015e BEB7      		in r27,__SP_H__
+ 489 0160 1296      		adiw r26,1+1
+ 490 0162 9C93      		st X,r25
+ 491 0164 8E93      		st -X,r24
+ 492 0166 1197      		sbiw r26,1
+ 493 0168 8D81      		ldd r24,Y+5
+ 494 016a 9E81      		ldd r25,Y+6
+ 495 016c AF81      		ldd r26,Y+7
+ 496 016e B885      		ldd r27,Y+8
+ 497 0170 EDB7      		in r30,__SP_L__
+ 498 0172 FEB7      		in r31,__SP_H__
+ 499 0174 8383      		std Z+3,r24
+ 500 0176 9483      		std Z+4,r25
+ 501 0178 A583      		std Z+5,r26
+ 502 017a B683      		std Z+6,r27
+ 503 017c 0E94 0000 		call printf
+ 505               	.LM22:
+ 506 0180 8DB7      		in r24,__SP_L__
+ 507 0182 9EB7      		in r25,__SP_H__
+ 508 0184 0696      		adiw r24,6
+ 509 0186 0FB6      		in __tmp_reg__,__SREG__
+ 510 0188 F894      		cli
+ 511 018a 9EBF      		out __SP_H__,r25
+ 512 018c 0FBE      		out __SREG__,__tmp_reg__
+ 513 018e 8DBF      		out __SP_L__,r24
+ 514 0190 80E0      		ldi r24,lo8(hAxis+384)
+ 515 0192 90E0      		ldi r25,hi8(hAxis+384)
+ 516 0194 BE01      		movw r22,r28
+ 517 0196 6F5F      		subi r22,lo8(-(1))
+ 518 0198 7F4F      		sbci r23,hi8(-(1))
+ 519 019a 0E94 0000 		call PMDGetTraceCount
+ 521               	.LM23:
+ 522 019e 00D0      		rcall .
+ 523 01a0 00D0      		rcall .
+ 524 01a2 00D0      		rcall .
+ 525 01a4 80E0      		ldi r24,lo8(.LC1)
+ 526 01a6 90E0      		ldi r25,hi8(.LC1)
+ 527 01a8 ADB7      		in r26,__SP_L__
+ 528 01aa BEB7      		in r27,__SP_H__
+ 529 01ac 1296      		adiw r26,1+1
+ 530 01ae 9C93      		st X,r25
+ 531 01b0 8E93      		st -X,r24
+ 532 01b2 1197      		sbiw r26,1
+ 533 01b4 8981      		ldd r24,Y+1
+ 534 01b6 9A81      		ldd r25,Y+2
+ 535 01b8 AB81      		ldd r26,Y+3
+ 536 01ba BC81      		ldd r27,Y+4
+ 537 01bc EDB7      		in r30,__SP_L__
+ 538 01be FEB7      		in r31,__SP_H__
+ 539 01c0 8383      		std Z+3,r24
+ 540 01c2 9483      		std Z+4,r25
+ 541 01c4 A583      		std Z+5,r26
+ 542 01c6 B683      		std Z+6,r27
+ 543 01c8 0E94 0000 		call printf
+ 545               	.LM24:
+ 546 01cc 8DB7      		in r24,__SP_L__
+ 547 01ce 9EB7      		in r25,__SP_H__
+ 548 01d0 0696      		adiw r24,6
+ 549 01d2 0FB6      		in __tmp_reg__,__SREG__
+ 550 01d4 F894      		cli
+ 551 01d6 9EBF      		out __SP_H__,r25
+ 552 01d8 0FBE      		out __SREG__,__tmp_reg__
+ 553 01da 8DBF      		out __SP_L__,r24
+ 554 01dc 80E0      		ldi r24,lo8(hAxis)
+ 555 01de 90E0      		ldi r25,hi8(hAxis)
+ 556 01e0 60E0      		ldi r22,lo8(0)
+ 557 01e2 70E0      		ldi r23,hi8(0)
+ 558 01e4 20E0      		ldi r18,lo8(0)
+ 559 01e6 30E0      		ldi r19,hi8(0)
+ 560 01e8 40E0      		ldi r20,hlo8(0)
+ 561 01ea 50E0      		ldi r21,hhi8(0)
+ 562 01ec 0E94 0000 		call PMDSetBufferReadIndex
+ 564               	.LM25:
+ 565 01f0 80E0      		ldi r24,lo8(hAxis+384)
+ 566 01f2 90E0      		ldi r25,hi8(hAxis+384)
+ 567 01f4 60E0      		ldi r22,lo8(0)
+ 568 01f6 70E0      		ldi r23,hi8(0)
+ 569 01f8 20E0      		ldi r18,lo8(0)
+ 570 01fa 30E0      		ldi r19,hi8(0)
+ 571 01fc 40E0      		ldi r20,hlo8(0)
+ 572 01fe 50E0      		ldi r21,hhi8(0)
+ 573 0200 0E94 0000 		call PMDSetBufferReadIndex
+ 575               	.LM26:
+ 576 0204 2D81      		ldd r18,Y+5
+ 577 0206 3E81      		ldd r19,Y+6
+ 578 0208 4F81      		ldd r20,Y+7
+ 579 020a 5885      		ldd r21,Y+8
+ 580 020c 8981      		ldd r24,Y+1
+ 581 020e 9A81      		ldd r25,Y+2
+ 582 0210 AB81      		ldd r26,Y+3
+ 583 0212 BC81      		ldd r27,Y+4
+ 584 0214 5C01      		movw r10,r24
+ 585 0216 6D01      		movw r12,r26
+ 586 0218 A20E      		add r10,r18
+ 587 021a B31E      		adc r11,r19
+ 588 021c C41E      		adc r12,r20
+ 589 021e D51E      		adc r13,r21
+ 591               	.LM27:
+ 592 0220 1150      		subi r17,lo8(-(-1))
+ 593 0222 1830      		cpi r17,lo8(8)
+ 594 0224 00F0      		brlo .+2
+ 595 0226 00C0      		rjmp .L9
+ 597               	.LM28:
+ 598 0228 A98A      		std Y+17,r10
+ 599 022a BA8A      		std Y+18,r11
+ 600 022c CB8A      		std Y+19,r12
+ 601 022e DC8A      		std Y+20,r13
+ 603               	.LM29:
+ 604 0230 2D8B      		std Y+21,r18
+ 605 0232 3E8B      		std Y+22,r19
+ 606 0234 4F8B      		std Y+23,r20
+ 607 0236 588F      		std Y+24,r21
+ 609               	.LM30:
+ 610 0238 898F      		std Y+25,r24
+ 611 023a 9A8F      		std Y+26,r25
+ 612 023c AB8F      		std Y+27,r26
+ 613 023e BC8F      		std Y+28,r27
+ 615               	.LM31:
+ 616 0240 00D0      		rcall .
+ 617 0242 00D0      		rcall .
+ 618 0244 00D0      		rcall .
+ 619 0246 EDB7      		in r30,__SP_L__
+ 620 0248 FEB7      		in r31,__SP_H__
+ 621 024a 3196      		adiw r30,1
+ 622 024c 80E0      		ldi r24,lo8(.LC2)
+ 623 024e 90E0      		ldi r25,hi8(.LC2)
+ 624 0250 ADB7      		in r26,__SP_L__
+ 625 0252 BEB7      		in r27,__SP_H__
+ 626 0254 1296      		adiw r26,1+1
+ 627 0256 9C93      		st X,r25
+ 628 0258 8E93      		st -X,r24
+ 629 025a 1197      		sbiw r26,1
+ 630 025c A282      		std Z+2,r10
+ 631 025e B382      		std Z+3,r11
+ 632 0260 C482      		std Z+4,r12
+ 633 0262 D582      		std Z+5,r13
+ 634 0264 0E94 0000 		call printf
+ 636               	.LM32:
+ 637 0268 EDB7      		in r30,__SP_L__
+ 638 026a FEB7      		in r31,__SP_H__
+ 639 026c 3696      		adiw r30,6
+ 640 026e 0FB6      		in __tmp_reg__,__SREG__
+ 641 0270 F894      		cli
+ 642 0272 FEBF      		out __SP_H__,r31
+ 643 0274 0FBE      		out __SREG__,__tmp_reg__
+ 644 0276 EDBF      		out __SP_L__,r30
+ 645 0278 8E01      		movw r16,r28
+ 646 027a 075F      		subi r16,lo8(-(9))
+ 647 027c 1F4F      		sbci r17,hi8(-(9))
+ 648 027e 2989      		ldd r18,Y+17
+ 649 0280 3A89      		ldd r19,Y+18
+ 650 0282 4B89      		ldd r20,Y+19
+ 651 0284 5C89      		ldd r21,Y+20
+ 652 0286 2D5F      		subi r18,lo8(-(3))
+ 653 0288 3F4F      		sbci r19,hi8(-(3))
+ 654 028a 4F4F      		sbci r20,hlo8(-(3))
+ 655 028c 5F4F      		sbci r21,hhi8(-(3))
+ 656 028e 62E0      		ldi r22,2
+ 657 0290 220F      	1:	lsl r18
+ 658 0292 331F      		rol r19
+ 659 0294 441F      		rol r20
+ 660 0296 551F      		rol r21
+ 661 0298 6A95      		dec r22
+ 662 029a 01F4      		brne 1b
+ 663 029c C801      		movw r24,r16
+ 664 029e 6CE0      		ldi r22,lo8(12)
+ 665 02a0 70E0      		ldi r23,hi8(12)
+ 666 02a2 A901      		movw r20,r18
+ 667 02a4 20E0      		ldi r18,lo8(0)
+ 668 02a6 30E0      		ldi r19,hi8(0)
+ 669 02a8 0E94 0000 		call fillPacketHeader
+ 671               	.LM33:
+ 672 02ac C801      		movw r24,r16
+ 673 02ae 68E0      		ldi r22,lo8(8)
+ 674 02b0 70E0      		ldi r23,hi8(8)
+ 675 02b2 0E94 0000 		call Envio_USB
+ 677               	.LM34:
+ 678 02b6 CE01      		movw r24,r28
+ 679 02b8 4196      		adiw r24,17
+ 680 02ba 64E0      		ldi r22,lo8(4)
+ 681 02bc 70E0      		ldi r23,hi8(4)
+ 682 02be 0E94 0000 		call Envio_USB
+ 684               	.LM35:
+ 685 02c2 CE01      		movw r24,r28
+ 686 02c4 4596      		adiw r24,21
+ 687 02c6 64E0      		ldi r22,lo8(4)
+ 688 02c8 70E0      		ldi r23,hi8(4)
+ 689 02ca 0E94 0000 		call Envio_USB
+ 691               	.LM36:
+ 692 02ce CE01      		movw r24,r28
+ 693 02d0 4996      		adiw r24,25
+ 694 02d2 64E0      		ldi r22,lo8(4)
+ 695 02d4 70E0      		ldi r23,hi8(4)
+ 696 02d6 0E94 0000 		call Envio_USB
+ 698               	.LM37:
+ 699 02da 80E0      		ldi r24,lo8(.LC3)
+ 700 02dc 90E0      		ldi r25,hi8(.LC3)
+ 701 02de 0E94 0000 		call puts
+ 702 02e2 7724      		clr r7
+ 703 02e4 EE24      		clr r14
+ 704 02e6 FF24      		clr r15
+ 705 02e8 8701      		movw r16,r14
+ 707               	.LM38:
+ 708 02ea 30E6      		ldi r19,lo8(96)
+ 709 02ec 632E      		mov r6,r19
+ 710 02ee 2DE1      		ldi r18,lo8(29)
+ 711 02f0 822E      		mov r8,r18
+ 712 02f2 912C      		mov r9,__zero_reg__
+ 713 02f4 8C0E      		add r8,r28
+ 714 02f6 9D1E      		adc r9,r29
+ 715 02f8 00C0      		rjmp .L10
+ 716               	.L12:
+ 718               	.LM39:
+ 719 02fa 8D81      		ldd r24,Y+5
+ 720 02fc 9E81      		ldd r25,Y+6
+ 721 02fe AF81      		ldd r26,Y+7
+ 722 0300 B885      		ldd r27,Y+8
+ 723 0302 E816      		cp r14,r24
+ 724 0304 F906      		cpc r15,r25
+ 725 0306 0A07      		cpc r16,r26
+ 726 0308 1B07      		cpc r17,r27
+ 727 030a 00F0      		brlo .L11
+ 728 030c 94E0      		ldi r25,lo8(4)
+ 729 030e 792E      		mov r7,r25
+ 730               	.L11:
+ 732               	.LM40:
+ 733 0310 769C      		mul r7,r6
+ 734 0312 C001      		movw r24,r0
+ 735 0314 1124      		clr r1
+ 736 0316 8050      		subi r24,lo8(-(hAxis))
+ 737 0318 9040      		sbci r25,hi8(-(hAxis))
+ 738 031a 60E0      		ldi r22,lo8(0)
+ 739 031c 70E0      		ldi r23,hi8(0)
+ 740 031e A401      		movw r20,r8
+ 741 0320 0E94 0000 		call PMDReadBuffer
+ 743               	.LM41:
+ 744 0324 C401      		movw r24,r8
+ 745 0326 64E0      		ldi r22,lo8(4)
+ 746 0328 70E0      		ldi r23,hi8(4)
+ 747 032a 0E94 0000 		call Envio_USB
+ 748 032e 0894      		sec
+ 749 0330 E11C      		adc r14,__zero_reg__
+ 750 0332 F11C      		adc r15,__zero_reg__
+ 751 0334 011D      		adc r16,__zero_reg__
+ 752 0336 111D      		adc r17,__zero_reg__
+ 753               	.L10:
+ 755               	.LM42:
+ 756 0338 EA14      		cp r14,r10
+ 757 033a FB04      		cpc r15,r11
+ 758 033c 0C05      		cpc r16,r12
+ 759 033e 1D05      		cpc r17,r13
+ 760 0340 00F0      		brlo .L12
+ 762               	.LM43:
+ 763 0342 80E0      		ldi r24,lo8(.LC4)
+ 764 0344 90E0      		ldi r25,hi8(.LC4)
+ 765 0346 0E94 0000 		call puts
+ 767               	.LM44:
+ 768 034a 80E0      		ldi r24,lo8(hAxis)
+ 769 034c 90E0      		ldi r25,hi8(hAxis)
+ 770 034e 60E0      		ldi r22,lo8(0)
+ 771 0350 70E0      		ldi r23,hi8(0)
+ 772 0352 20E0      		ldi r18,lo8(0)
+ 773 0354 30E0      		ldi r19,hi8(0)
+ 774 0356 40E0      		ldi r20,hlo8(0)
+ 775 0358 50E0      		ldi r21,hhi8(0)
+ 776 035a 0E94 0000 		call PMDSetBufferReadIndex
+ 778               	.LM45:
+ 779 035e 80E0      		ldi r24,lo8(hAxis)
+ 780 0360 90E0      		ldi r25,hi8(hAxis)
+ 781 0362 60E0      		ldi r22,lo8(0)
+ 782 0364 70E0      		ldi r23,hi8(0)
+ 783 0366 20E0      		ldi r18,lo8(0)
+ 784 0368 30E0      		ldi r19,hi8(0)
+ 785 036a 40E0      		ldi r20,hlo8(0)
+ 786 036c 50E0      		ldi r21,hhi8(0)
+ 787 036e 0E94 0000 		call PMDSetBufferWriteIndex
+ 789               	.LM46:
+ 790 0372 80E0      		ldi r24,lo8(hAxis+384)
+ 791 0374 90E0      		ldi r25,hi8(hAxis+384)
+ 792 0376 60E0      		ldi r22,lo8(0)
+ 793 0378 70E0      		ldi r23,hi8(0)
+ 794 037a 20E0      		ldi r18,lo8(0)
+ 795 037c 30E0      		ldi r19,hi8(0)
+ 796 037e 40E0      		ldi r20,hlo8(0)
+ 797 0380 50E0      		ldi r21,hhi8(0)
+ 798 0382 0E94 0000 		call PMDSetBufferReadIndex
+ 800               	.LM47:
+ 801 0386 80E0      		ldi r24,lo8(hAxis+384)
+ 802 0388 90E0      		ldi r25,hi8(hAxis+384)
+ 803 038a 60E0      		ldi r22,lo8(0)
+ 804 038c 70E0      		ldi r23,hi8(0)
+ 805 038e 20E0      		ldi r18,lo8(0)
+ 806 0390 30E0      		ldi r19,hi8(0)
+ 807 0392 40E0      		ldi r20,hlo8(0)
+ 808 0394 50E0      		ldi r21,hhi8(0)
+ 809 0396 0E94 0000 		call PMDSetBufferWriteIndex
+ 810               	.L9:
+ 812               	.LM48:
+ 813 039a 00D0      		rcall .
+ 814 039c 00D0      		rcall .
+ 815 039e 00D0      		rcall .
+ 816 03a0 80E0      		ldi r24,lo8(.LC5)
+ 817 03a2 90E0      		ldi r25,hi8(.LC5)
+ 818 03a4 ADB7      		in r26,__SP_L__
+ 819 03a6 BEB7      		in r27,__SP_H__
+ 820 03a8 1296      		adiw r26,1+1
+ 821 03aa 9C93      		st X,r25
+ 822 03ac 8E93      		st -X,r24
+ 823 03ae 1197      		sbiw r26,1
+ 824 03b0 EDB7      		in r30,__SP_L__
+ 825 03b2 FEB7      		in r31,__SP_H__
+ 826 03b4 A382      		std Z+3,r10
+ 827 03b6 B482      		std Z+4,r11
+ 828 03b8 C582      		std Z+5,r12
+ 829 03ba D682      		std Z+6,r13
+ 830 03bc 0E94 0000 		call printf
+ 832               	.LM49:
+ 833 03c0 0F90      		pop __tmp_reg__
+ 834 03c2 0F90      		pop __tmp_reg__
+ 835 03c4 0F90      		pop __tmp_reg__
+ 836 03c6 0F90      		pop __tmp_reg__
+ 837 03c8 80E0      		ldi r24,lo8(.LC6)
+ 838 03ca 90E0      		ldi r25,hi8(.LC6)
+ 839 03cc ADB7      		in r26,__SP_L__
+ 840 03ce BEB7      		in r27,__SP_H__
+ 841 03d0 1296      		adiw r26,1+1
+ 842 03d2 9C93      		st X,r25
+ 843 03d4 8E93      		st -X,r24
+ 844 03d6 1197      		sbiw r26,1
+ 845 03d8 0E94 0000 		call printf
+ 846 03dc 0F90      		pop __tmp_reg__
+ 847 03de 0F90      		pop __tmp_reg__
+ 848               	/* epilogue start */
+ 850               	.LM50:
+ 851 03e0 A096      		adiw r28,32
+ 852 03e2 0FB6      		in __tmp_reg__,__SREG__
+ 853 03e4 F894      		cli
+ 854 03e6 DEBF      		out __SP_H__,r29
+ 855 03e8 0FBE      		out __SREG__,__tmp_reg__
+ 856 03ea CDBF      		out __SP_L__,r28
+ 857 03ec CF91      		pop r28
+ 858 03ee DF91      		pop r29
+ 859 03f0 1F91      		pop r17
+ 860 03f2 0F91      		pop r16
+ 861 03f4 FF90      		pop r15
+ 862 03f6 EF90      		pop r14
+ 863 03f8 DF90      		pop r13
+ 864 03fa CF90      		pop r12
+ 865 03fc BF90      		pop r11
+ 866 03fe AF90      		pop r10
+ 867 0400 9F90      		pop r9
+ 868 0402 8F90      		pop r8
+ 869 0404 7F90      		pop r7
+ 870 0406 6F90      		pop r6
+ 871 0408 0895      		ret
+ 881               	.Lscope3:
+ 882               		.data
+ 883               	.LC7:
+ 884 0136 4469 7370 		.string	"DisplayTraceResults=> Total de Datos= %ld \n"
+ 884      6C61 7954 
+ 884      7261 6365 
+ 884      5265 7375 
+ 884      6C74 733D 
+ 885               	.LC8:
+ 886 0162 4469 7370 		.string	"DisplayTraceResults=> readindex= %ld"
+ 886      6C61 7954 
+ 886      7261 6365 
+ 886      5265 7375 
+ 886      6C74 733D 
+ 887               	.LC9:
+ 888 0187 4469 7370 		.string	"DisplayTraceResults=> \t%#lX"
+ 888      6C61 7954 
+ 888      7261 6365 
+ 888      5265 7375 
+ 888      6C74 733D 
+ 889               	.LC10:
+ 890 01a3 4469 7370 		.string	"DisplayTraceResults=> \t%ld"
+ 890      6C61 7954 
+ 890      7261 6365 
+ 890      5265 7375 
+ 890      6C74 733D 
+ 891               		.text
+ 895               	.global	DisplayTraceResults
+ 897               	DisplayTraceResults:
+ 899               	.LM51:
+ 900               	.LFBB4:
+ 901 040a 2F92      		push r2
+ 902 040c 3F92      		push r3
+ 903 040e 4F92      		push r4
+ 904 0410 5F92      		push r5
+ 905 0412 6F92      		push r6
+ 906 0414 7F92      		push r7
+ 907 0416 8F92      		push r8
+ 908 0418 9F92      		push r9
+ 909 041a AF92      		push r10
+ 910 041c BF92      		push r11
+ 911 041e CF92      		push r12
+ 912 0420 DF92      		push r13
+ 913 0422 EF92      		push r14
+ 914 0424 FF92      		push r15
+ 915 0426 0F93      		push r16
+ 916 0428 1F93      		push r17
+ 917 042a DF93      		push r29
+ 918 042c CF93      		push r28
+ 919 042e CDB7      		in r28,__SP_L__
+ 920 0430 DEB7      		in r29,__SP_H__
+ 921 0432 2C97      		sbiw r28,12
+ 922 0434 0FB6      		in __tmp_reg__,__SREG__
+ 923 0436 F894      		cli
+ 924 0438 DEBF      		out __SP_H__,r29
+ 925 043a 0FBE      		out __SREG__,__tmp_reg__
+ 926 043c CDBF      		out __SP_L__,r28
+ 927               	/* prologue: function */
+ 928               	/* frame size = 12 */
+ 929 043e 162F      		mov r17,r22
+ 931               	.LM52:
+ 932 0440 0297      		sbiw r24,2
+ 933 0442 01F4      		brne .L15
+ 934 0444 24E0      		ldi r18,lo8(4)
+ 935 0446 30E0      		ldi r19,hi8(4)
+ 936 0448 00C0      		rjmp .L16
+ 937               	.L15:
+ 938 044a 20E0      		ldi r18,lo8(0)
+ 939 044c 30E0      		ldi r19,hi8(0)
+ 940               	.L16:
+ 942               	.LM53:
+ 943 044e 80E6      		ldi r24,lo8(96)
+ 944 0450 90E0      		ldi r25,hi8(96)
+ 945 0452 289F      		mul r18,r24
+ 946 0454 6001      		movw r12,r0
+ 947 0456 299F      		mul r18,r25
+ 948 0458 D00C      		add r13,r0
+ 949 045a 389F      		mul r19,r24
+ 950 045c D00C      		add r13,r0
+ 951 045e 1124      		clr r1
+ 952 0460 80E0      		ldi r24,lo8(hAxis)
+ 953 0462 90E0      		ldi r25,hi8(hAxis)
+ 954 0464 C80E      		add r12,r24
+ 955 0466 D91E      		adc r13,r25
+ 956 0468 C601      		movw r24,r12
+ 957 046a BE01      		movw r22,r28
+ 958 046c 6F5F      		subi r22,lo8(-(1))
+ 959 046e 7F4F      		sbci r23,hi8(-(1))
+ 960 0470 0E94 0000 		call PMDGetTraceCount
+ 962               	.LM54:
+ 963 0474 00D0      		rcall .
+ 964 0476 00D0      		rcall .
+ 965 0478 00D0      		rcall .
+ 966 047a 80E0      		ldi r24,lo8(.LC7)
+ 967 047c 90E0      		ldi r25,hi8(.LC7)
+ 968 047e EDB7      		in r30,__SP_L__
+ 969 0480 FEB7      		in r31,__SP_H__
+ 970 0482 9283      		std Z+2,r25
+ 971 0484 8183      		std Z+1,r24
+ 972 0486 8981      		ldd r24,Y+1
+ 973 0488 9A81      		ldd r25,Y+2
+ 974 048a AB81      		ldd r26,Y+3
+ 975 048c BC81      		ldd r27,Y+4
+ 976 048e 8383      		std Z+3,r24
+ 977 0490 9483      		std Z+4,r25
+ 978 0492 A583      		std Z+5,r26
+ 979 0494 B683      		std Z+6,r27
+ 980 0496 0E94 0000 		call printf
+ 981 049a 8DB7      		in r24,__SP_L__
+ 982 049c 9EB7      		in r25,__SP_H__
+ 983 049e 0696      		adiw r24,6
+ 984 04a0 0FB6      		in __tmp_reg__,__SREG__
+ 985 04a2 F894      		cli
+ 986 04a4 9EBF      		out __SP_H__,r25
+ 987 04a6 0FBE      		out __SREG__,__tmp_reg__
+ 988 04a8 8DBF      		out __SP_L__,r24
+ 990               	.LM55:
+ 991 04aa 812E      		mov r8,r17
+ 992 04ac 9924      		clr r9
+ 993 04ae AA24      		clr r10
+ 994 04b0 BB24      		clr r11
+ 996               	.LM56:
+ 997 04b2 F9E0      		ldi r31,lo8(9)
+ 998 04b4 2F2E      		mov r2,r31
+ 999 04b6 312C      		mov r3,__zero_reg__
+ 1000 04b8 2C0E      		add r2,r28
+ 1001 04ba 3D1E      		adc r3,r29
+ 1003               	.LM57:
+ 1004 04bc E0E0      		ldi r30,lo8(.LC10)
+ 1005 04be 4E2E      		mov r4,r30
+ 1006 04c0 E0E0      		ldi r30,hi8(.LC10)
+ 1007 04c2 5E2E      		mov r5,r30
+ 1009               	.LM58:
+ 1010 04c4 70E0      		ldi r23,lo8(.LC9)
+ 1011 04c6 672E      		mov r6,r23
+ 1012 04c8 70E0      		ldi r23,hi8(.LC9)
+ 1013 04ca 772E      		mov r7,r23
+ 1014               	.L21:
+ 1016               	.LM59:
+ 1017 04cc C601      		movw r24,r12
+ 1018 04ce 60E0      		ldi r22,lo8(0)
+ 1019 04d0 70E0      		ldi r23,hi8(0)
+ 1020 04d2 AE01      		movw r20,r28
+ 1021 04d4 4B5F      		subi r20,lo8(-(5))
+ 1022 04d6 5F4F      		sbci r21,hi8(-(5))
+ 1023 04d8 0E94 0000 		call PMDGetBufferReadIndex
+ 1025               	.LM60:
+ 1026 04dc 00D0      		rcall .
+ 1027 04de 00D0      		rcall .
+ 1028 04e0 00D0      		rcall .
+ 1029 04e2 80E0      		ldi r24,lo8(.LC8)
+ 1030 04e4 90E0      		ldi r25,hi8(.LC8)
+ 1031 04e6 EDB7      		in r30,__SP_L__
+ 1032 04e8 FEB7      		in r31,__SP_H__
+ 1033 04ea 9283      		std Z+2,r25
+ 1034 04ec 8183      		std Z+1,r24
+ 1035 04ee 8D81      		ldd r24,Y+5
+ 1036 04f0 9E81      		ldd r25,Y+6
+ 1037 04f2 AF81      		ldd r26,Y+7
+ 1038 04f4 B885      		ldd r27,Y+8
+ 1039 04f6 8383      		std Z+3,r24
+ 1040 04f8 9483      		std Z+4,r25
+ 1041 04fa A583      		std Z+5,r26
+ 1042 04fc B683      		std Z+6,r27
+ 1043 04fe 0E94 0000 		call printf
+ 1044 0502 EE24      		clr r14
+ 1045 0504 FF24      		clr r15
+ 1046 0506 8701      		movw r16,r14
+ 1047 0508 8DB7      		in r24,__SP_L__
+ 1048 050a 9EB7      		in r25,__SP_H__
+ 1049 050c 0696      		adiw r24,6
+ 1050 050e 0FB6      		in __tmp_reg__,__SREG__
+ 1051 0510 F894      		cli
+ 1052 0512 9EBF      		out __SP_H__,r25
+ 1053 0514 0FBE      		out __SREG__,__tmp_reg__
+ 1054 0516 8DBF      		out __SP_L__,r24
+ 1055 0518 00C0      		rjmp .L17
+ 1056               	.L20:
+ 1058               	.LM61:
+ 1059 051a C601      		movw r24,r12
+ 1060 051c 60E0      		ldi r22,lo8(0)
+ 1061 051e 70E0      		ldi r23,hi8(0)
+ 1062 0520 A101      		movw r20,r2
+ 1063 0522 0E94 0000 		call PMDReadBuffer
+ 1065               	.LM62:
+ 1066 0526 93E0      		ldi r25,lo8(3)
+ 1067 0528 E916      		cp r14,r25
+ 1068 052a F104      		cpc r15,__zero_reg__
+ 1069 052c 0105      		cpc r16,__zero_reg__
+ 1070 052e 1105      		cpc r17,__zero_reg__
+ 1071 0530 01F4      		brne .L18
+ 1073               	.LM63:
+ 1074 0532 00D0      		rcall .
+ 1075 0534 00D0      		rcall .
+ 1076 0536 00D0      		rcall .
+ 1077 0538 EDB7      		in r30,__SP_L__
+ 1078 053a FEB7      		in r31,__SP_H__
+ 1079 053c 7282      		std Z+2,r7
+ 1080 053e 6182      		std Z+1,r6
+ 1081 0540 00C0      		rjmp .L24
+ 1082               	.L18:
+ 1084               	.LM64:
+ 1085 0542 00D0      		rcall .
+ 1086 0544 00D0      		rcall .
+ 1087 0546 00D0      		rcall .
+ 1088 0548 EDB7      		in r30,__SP_L__
+ 1089 054a FEB7      		in r31,__SP_H__
+ 1090 054c 5282      		std Z+2,r5
+ 1091 054e 4182      		std Z+1,r4
+ 1092               	.L24:
+ 1093 0550 8985      		ldd r24,Y+9
+ 1094 0552 9A85      		ldd r25,Y+10
+ 1095 0554 AB85      		ldd r26,Y+11
+ 1096 0556 BC85      		ldd r27,Y+12
+ 1097 0558 8383      		std Z+3,r24
+ 1098 055a 9483      		std Z+4,r25
+ 1099 055c A583      		std Z+5,r26
+ 1100 055e B683      		std Z+6,r27
+ 1101 0560 0E94 0000 		call printf
+ 1102 0564 8DB7      		in r24,__SP_L__
+ 1103 0566 9EB7      		in r25,__SP_H__
+ 1104 0568 0696      		adiw r24,6
+ 1105 056a 0FB6      		in __tmp_reg__,__SREG__
+ 1106 056c F894      		cli
+ 1107 056e 9EBF      		out __SP_H__,r25
+ 1108 0570 0FBE      		out __SREG__,__tmp_reg__
+ 1109 0572 8DBF      		out __SP_L__,r24
+ 1111               	.LM65:
+ 1112 0574 0894      		sec
+ 1113 0576 E11C      		adc r14,__zero_reg__
+ 1114 0578 F11C      		adc r15,__zero_reg__
+ 1115 057a 011D      		adc r16,__zero_reg__
+ 1116 057c 111D      		adc r17,__zero_reg__
+ 1117               	.L17:
+ 1118 057e E814      		cp r14,r8
+ 1119 0580 F904      		cpc r15,r9
+ 1120 0582 0A05      		cpc r16,r10
+ 1121 0584 1B05      		cpc r17,r11
+ 1122 0586 00F0      		brlo .L20
+ 1124               	.LM66:
+ 1125 0588 8AE0      		ldi r24,lo8(10)
+ 1126 058a 90E0      		ldi r25,hi8(10)
+ 1127 058c 0E94 0000 		call putchar
+ 1129               	.LM67:
+ 1130 0590 8981      		ldd r24,Y+1
+ 1131 0592 9A81      		ldd r25,Y+2
+ 1132 0594 AB81      		ldd r26,Y+3
+ 1133 0596 BC81      		ldd r27,Y+4
+ 1134 0598 8819      		sub r24,r8
+ 1135 059a 9909      		sbc r25,r9
+ 1136 059c AA09      		sbc r26,r10
+ 1137 059e BB09      		sbc r27,r11
+ 1138 05a0 2D81      		ldd r18,Y+5
+ 1139 05a2 3E81      		ldd r19,Y+6
+ 1140 05a4 4F81      		ldd r20,Y+7
+ 1141 05a6 5885      		ldd r21,Y+8
+ 1142 05a8 2817      		cp r18,r24
+ 1143 05aa 3907      		cpc r19,r25
+ 1144 05ac 4A07      		cpc r20,r26
+ 1145 05ae 5B07      		cpc r21,r27
+ 1146 05b0 00F4      		brsh .+2
+ 1147 05b2 00C0      		rjmp .L21
+ 1148               	/* epilogue start */
+ 1150               	.LM68:
+ 1151 05b4 2C96      		adiw r28,12
+ 1152 05b6 0FB6      		in __tmp_reg__,__SREG__
+ 1153 05b8 F894      		cli
+ 1154 05ba DEBF      		out __SP_H__,r29
+ 1155 05bc 0FBE      		out __SREG__,__tmp_reg__
+ 1156 05be CDBF      		out __SP_L__,r28
+ 1157 05c0 CF91      		pop r28
+ 1158 05c2 DF91      		pop r29
+ 1159 05c4 1F91      		pop r17
+ 1160 05c6 0F91      		pop r16
+ 1161 05c8 FF90      		pop r15
+ 1162 05ca EF90      		pop r14
+ 1163 05cc DF90      		pop r13
+ 1164 05ce CF90      		pop r12
+ 1165 05d0 BF90      		pop r11
+ 1166 05d2 AF90      		pop r10
+ 1167 05d4 9F90      		pop r9
+ 1168 05d6 8F90      		pop r8
+ 1169 05d8 7F90      		pop r7
+ 1170 05da 6F90      		pop r6
+ 1171 05dc 5F90      		pop r5
+ 1172 05de 4F90      		pop r4
+ 1173 05e0 3F90      		pop r3
+ 1174 05e2 2F90      		pop r2
+ 1175 05e4 0895      		ret
+ 1184               	.Lscope4:
+ 1187               	.global	SetupSingleAxisTrace
+ 1189               	SetupSingleAxisTrace:
+ 1191               	.LM69:
+ 1192               	.LFBB5:
+ 1193 05e6 CF92      		push r12
+ 1194 05e8 DF92      		push r13
+ 1195 05ea EF92      		push r14
+ 1196 05ec FF92      		push r15
+ 1197 05ee 0F93      		push r16
+ 1198               	/* prologue: function */
+ 1199               	/* frame size = 0 */
+ 1200 05f0 6C01      		movw r12,r24
+ 1202               	.LM70:
+ 1203 05f2 80E6      		ldi r24,lo8(96)
+ 1204 05f4 90E0      		ldi r25,hi8(96)
+ 1205 05f6 C89E      		mul r12,r24
+ 1206 05f8 7001      		movw r14,r0
+ 1207 05fa C99E      		mul r12,r25
+ 1208 05fc F00C      		add r15,r0
+ 1209 05fe D89E      		mul r13,r24
+ 1210 0600 F00C      		add r15,r0
+ 1211 0602 1124      		clr r1
+ 1212 0604 80E0      		ldi r24,lo8(hAxis)
+ 1213 0606 90E0      		ldi r25,hi8(hAxis)
+ 1214 0608 E80E      		add r14,r24
+ 1215 060a F91E      		adc r15,r25
+ 1216 060c C601      		movw r24,r12
+ 1217 060e 0E94 0000 		call Axis2PMDAxis
+ 1218 0612 AC01      		movw r20,r24
+ 1219 0614 C701      		movw r24,r14
+ 1220 0616 60E0      		ldi r22,lo8(0)
+ 1221 0618 70E0      		ldi r23,hi8(0)
+ 1222 061a 22E0      		ldi r18,lo8(2)
+ 1223 061c 0E94 0000 		call PMDSetTraceVariable
+ 1225               	.LM71:
+ 1226 0620 C601      		movw r24,r12
+ 1227 0622 0E94 0000 		call Axis2PMDAxis
+ 1228 0626 AC01      		movw r20,r24
+ 1229 0628 C701      		movw r24,r14
+ 1230 062a 61E0      		ldi r22,lo8(1)
+ 1231 062c 70E0      		ldi r23,hi8(1)
+ 1232 062e 25E0      		ldi r18,lo8(5)
+ 1233 0630 0E94 0000 		call PMDSetTraceVariable
+ 1235               	.LM72:
+ 1236 0634 C601      		movw r24,r12
+ 1237 0636 0E94 0000 		call Axis2PMDAxis
+ 1238 063a AC01      		movw r20,r24
+ 1239 063c C701      		movw r24,r14
+ 1240 063e 62E0      		ldi r22,lo8(2)
+ 1241 0640 70E0      		ldi r23,hi8(2)
+ 1242 0642 21E0      		ldi r18,lo8(1)
+ 1243 0644 0E94 0000 		call PMDSetTraceVariable
+ 1245               	.LM73:
+ 1246 0648 C601      		movw r24,r12
+ 1247 064a 0E94 0000 		call Axis2PMDAxis
+ 1248 064e AC01      		movw r20,r24
+ 1249 0650 C701      		movw r24,r14
+ 1250 0652 63E0      		ldi r22,lo8(3)
+ 1251 0654 70E0      		ldi r23,hi8(3)
+ 1252 0656 2CE0      		ldi r18,lo8(12)
+ 1253 0658 0E94 0000 		call PMDSetTraceVariable
+ 1255               	.LM74:
+ 1256 065c C701      		movw r24,r14
+ 1257 065e 68EC      		ldi r22,lo8(200)
+ 1258 0660 70E0      		ldi r23,hi8(200)
+ 1259 0662 0E94 0000 		call PMDSetTracePeriod
+ 1261               	.LM75:
+ 1262 0666 C701      		movw r24,r14
+ 1263 0668 60E0      		ldi r22,lo8(0)
+ 1264 066a 70E0      		ldi r23,hi8(0)
+ 1265 066c 0E94 0000 		call PMDSetTraceMode
+ 1267               	.LM76:
+ 1268 0670 C601      		movw r24,r12
+ 1269 0672 0E94 0000 		call Axis2PMDAxis
+ 1270 0676 BC01      		movw r22,r24
+ 1271 0678 C701      		movw r24,r14
+ 1272 067a 42E0      		ldi r20,lo8(2)
+ 1273 067c 20E0      		ldi r18,lo8(0)
+ 1274 067e 01E0      		ldi r16,lo8(1)
+ 1275 0680 0E94 0000 		call PMDSetTraceStop
+ 1277               	.LM77:
+ 1278 0684 C601      		movw r24,r12
+ 1279 0686 0E94 0000 		call Axis2PMDAxis
+ 1280 068a BC01      		movw r22,r24
+ 1281 068c C701      		movw r24,r14
+ 1282 068e 41E0      		ldi r20,lo8(1)
+ 1283 0690 20E0      		ldi r18,lo8(0)
+ 1284 0692 00E0      		ldi r16,lo8(0)
+ 1285 0694 0E94 0000 		call PMDSetTraceStart
+ 1286               	/* epilogue start */
+ 1288               	.LM78:
+ 1289 0698 0F91      		pop r16
+ 1290 069a FF90      		pop r15
+ 1291 069c EF90      		pop r14
+ 1292 069e DF90      		pop r13
+ 1293 06a0 CF90      		pop r12
+ 1294 06a2 0895      		ret
+ 1296               	.Lscope5:
+ 1298               	.global	Memoryconfig
+ 1300               	Memoryconfig:
+ 1302               	.LM79:
+ 1303               	.LFBB6:
+ 1304 06a4 CF93      		push r28
+ 1305 06a6 DF93      		push r29
+ 1306               	/* prologue: function */
+ 1307               	/* frame size = 0 */
+ 1309               	.LM80:
+ 1310 06a8 C0E0      		ldi r28,lo8(hAxis)
+ 1311 06aa D0E0      		ldi r29,hi8(hAxis)
+ 1312               	.L29:
+ 1314               	.LM81:
+ 1315 06ac 8A81      		ldd r24,Y+2
+ 1316 06ae 9B81      		ldd r25,Y+3
+ 1317 06b0 892B      		or r24,r25
+ 1318 06b2 01F4      		brne .L28
+ 1320               	.LM82:
+ 1321 06b4 CE01      		movw r24,r28
+ 1322 06b6 60E0      		ldi r22,lo8(0)
+ 1323 06b8 70E0      		ldi r23,hi8(0)
+ 1324 06ba 20E0      		ldi r18,lo8(512)
+ 1325 06bc 32E0      		ldi r19,hi8(512)
+ 1326 06be 40E0      		ldi r20,hlo8(512)
+ 1327 06c0 50E0      		ldi r21,hhi8(512)
+ 1328 06c2 0E94 0000 		call PMDSetBufferStart
+ 1330               	.LM83:
+ 1331 06c6 CE01      		movw r24,r28
+ 1332 06c8 60E0      		ldi r22,lo8(0)
+ 1333 06ca 70E0      		ldi r23,hi8(0)
+ 1334 06cc 2CEF      		ldi r18,lo8(16380)
+ 1335 06ce 3FE3      		ldi r19,hi8(16380)
+ 1336 06d0 40E0      		ldi r20,hlo8(16380)
+ 1337 06d2 50E0      		ldi r21,hhi8(16380)
+ 1338 06d4 0E94 0000 		call PMDSetBufferLength
+ 1339               	.L28:
+ 1340 06d8 C05A      		subi r28,lo8(-(96))
+ 1341 06da DF4F      		sbci r29,hi8(-(96))
+ 1343               	.LM84:
+ 1344 06dc 80E0      		ldi r24,hi8(hAxis+480)
+ 1345 06de C030      		cpi r28,lo8(hAxis+480)
+ 1346 06e0 D807      		cpc r29,r24
+ 1347 06e2 01F4      		brne .L29
+ 1348               	/* epilogue start */
+ 1350               	.LM85:
+ 1351 06e4 DF91      		pop r29
+ 1352 06e6 CF91      		pop r28
+ 1353 06e8 0895      		ret
+ 1355               	.Lscope6:
+ 1356               		.data
+ 1357               	.LC11:
+ 1358 01be 5365 7475 		.string	"SetupAxisTrace=> Numero de variables a configurar %d \n"
+ 1358      7041 7869 
+ 1358      7354 7261 
+ 1358      6365 3D3E 
+ 1358      204E 756D 
+ 1359               	.LC12:
+ 1360 01f5 5365 7475 		.string	"SetupAxisTrace=> Ejecute Memoryconfig "
+ 1360      7041 7869 
+ 1360      7354 7261 
+ 1360      6365 3D3E 
+ 1360      2045 6A65 
+ 1361               	.LC13:
+ 1362 021c 5365 7475 		.string	"SetupAxisTrace=> Ejecute DisableVariable "
+ 1362      7041 7869 
+ 1362      7354 7261 
+ 1362      6365 3D3E 
+ 1362      2045 6A65 
+ 1363               	.LC14:
+ 1364 0246 5365 7475 		.ascii	"SetupAxis"
+ 1364      7041 7869 
+ 1364      73
+ 1365 024f 5472 6163 		.string	"Trace=> Configurando la variable %d = al CMD # %d en el EJE %s \n"
+ 1365      653D 3E20 
+ 1365      436F 6E66 
+ 1365      6967 7572 
+ 1365      616E 646F 
+ 1366               	.LC15:
+ 1367 0290 5365 7475 		.string	"SetupAxisTrace=> Configurando  Sample Trace_time %d \n"
+ 1367      7041 7869 
+ 1367      7354 7261 
+ 1367      6365 3D3E 
+ 1367      2043 6F6E 
+ 1368               		.text
+ 1371               	.global	SetupAxisTrace
+ 1373               	SetupAxisTrace:
+ 1375               	.LM86:
+ 1376               	.LFBB7:
+ 1377 06ea 2F92      		push r2
+ 1378 06ec 3F92      		push r3
+ 1379 06ee 4F92      		push r4
+ 1380 06f0 5F92      		push r5
+ 1381 06f2 6F92      		push r6
+ 1382 06f4 7F92      		push r7
+ 1383 06f6 8F92      		push r8
+ 1384 06f8 9F92      		push r9
+ 1385 06fa AF92      		push r10
+ 1386 06fc BF92      		push r11
+ 1387 06fe CF92      		push r12
+ 1388 0700 DF92      		push r13
+ 1389 0702 EF92      		push r14
+ 1390 0704 FF92      		push r15
+ 1391 0706 0F93      		push r16
+ 1392 0708 1F93      		push r17
+ 1393 070a DF93      		push r29
+ 1394 070c CF93      		push r28
+ 1395 070e CDB7      		in r28,__SP_L__
+ 1396 0710 DEB7      		in r29,__SP_H__
+ 1397 0712 A097      		sbiw r28,32
+ 1398 0714 0FB6      		in __tmp_reg__,__SREG__
+ 1399 0716 F894      		cli
+ 1400 0718 DEBF      		out __SP_H__,r29
+ 1401 071a 0FBE      		out __SREG__,__tmp_reg__
+ 1402 071c CDBF      		out __SP_L__,r28
+ 1403               	/* prologue: function */
+ 1404               	/* frame size = 32 */
+ 1406               	.LM87:
+ 1407 071e 39AC      		ldd r3,Y+57
+ 1408 0720 2AAD      		ldd r18,Y+58
+ 1409 0722 2C8F      		std Y+28,r18
+ 1410 0724 3BAD      		ldd r19,Y+59
+ 1411 0726 3D8F      		std Y+29,r19
+ 1412 0728 8CAD      		ldd r24,Y+60
+ 1413 072a 8E8F      		std Y+30,r24
+ 1414 072c 4DAC      		ldd r4,Y+61
+ 1415 072e 5EAC      		ldd r5,Y+62
+ 1416 0730 2FAC      		ldd r2,Y+63
+ 1418               	.LM88:
+ 1419 0732 00D0      		rcall .
+ 1420 0734 00D0      		rcall .
+ 1421 0736 80E0      		ldi r24,lo8(.LC11)
+ 1422 0738 90E0      		ldi r25,hi8(.LC11)
+ 1423 073a ADB7      		in r26,__SP_L__
+ 1424 073c BEB7      		in r27,__SP_H__
+ 1425 073e 1296      		adiw r26,1+1
+ 1426 0740 9C93      		st X,r25
+ 1427 0742 8E93      		st -X,r24
+ 1428 0744 1197      		sbiw r26,1
+ 1429 0746 832D      		mov r24,r3
+ 1430 0748 9927      		clr r25
+ 1431 074a 87FD      		sbrc r24,7
+ 1432 074c 9095      		com r25
+ 1433 074e 1496      		adiw r26,3+1
+ 1434 0750 9C93      		st X,r25
+ 1435 0752 8E93      		st -X,r24
+ 1436 0754 1397      		sbiw r26,3
+ 1437 0756 0E94 0000 		call printf
+ 1439               	.LM89:
+ 1440 075a 0F90      		pop __tmp_reg__
+ 1441 075c 0F90      		pop __tmp_reg__
+ 1442 075e 0F90      		pop __tmp_reg__
+ 1443 0760 0F90      		pop __tmp_reg__
+ 1444 0762 0E94 0000 		call Memoryconfig
+ 1446               	.LM90:
+ 1447 0766 80E0      		ldi r24,lo8(.LC12)
+ 1448 0768 90E0      		ldi r25,hi8(.LC12)
+ 1449 076a 0E94 0000 		call puts
+ 1451               	.LM91:
+ 1452 076e 0E94 0000 		call DisableVariable
+ 1454               	.LM92:
+ 1455 0772 80E0      		ldi r24,lo8(.LC13)
+ 1456 0774 90E0      		ldi r25,hi8(.LC13)
+ 1457 0776 0E94 0000 		call puts
+ 1459               	.LM93:
+ 1460 077a 832D      		mov r24,r3
+ 1461 077c 8150      		subi r24,lo8(-(-1))
+ 1462 077e 8830      		cpi r24,lo8(8)
+ 1463 0780 00F0      		brlo .+2
+ 1464 0782 00C0      		rjmp .L40
+ 1466               	.LM94:
+ 1467 0784 1092 0000 		sts PMD1NVariables,__zero_reg__
+ 1469               	.LM95:
+ 1470 0788 1092 0000 		sts PMD2NVariables,__zero_reg__
+ 1471 078c B0E4      		ldi r27,lo8(64)
+ 1472 078e 8B2E      		mov r8,r27
+ 1473 0790 912C      		mov r9,__zero_reg__
+ 1474 0792 8C0E      		add r8,r28
+ 1475 0794 9D1E      		adc r9,r29
+ 1476 0796 ACE0      		ldi r26,lo8(12)
+ 1477 0798 6A2E      		mov r6,r26
+ 1478 079a 712C      		mov r7,__zero_reg__
+ 1479 079c 6C0E      		add r6,r28
+ 1480 079e 7D1E      		adc r7,r29
+ 1481 07a0 EE24      		clr r14
+ 1483               	.LM96:
+ 1484 07a2 E5E3      		ldi r30,lo8(53)
+ 1485 07a4 F0E0      		ldi r31,hi8(53)
+ 1486 07a6 EC0F      		add r30,r28
+ 1487 07a8 FD1F      		adc r31,r29
+ 1488 07aa EF8F      		std Y+31,r30
+ 1489 07ac F8A3      		std Y+32,r31
+ 1490 07ae 00C0      		rjmp .L34
+ 1491               	.L39:
+ 1493               	.LM97:
+ 1494 07b0 D401      		movw r26,r8
+ 1495 07b2 DC90      		ld r13,X
+ 1497               	.LM98:
+ 1498 07b4 39AE      		std Y+57,r3
+ 1499 07b6 BC8D      		ldd r27,Y+28
+ 1500 07b8 BAAF      		std Y+58,r27
+ 1501 07ba ED8D      		ldd r30,Y+29
+ 1502 07bc EBAF      		std Y+59,r30
+ 1503 07be FE8D      		ldd r31,Y+30
+ 1504 07c0 FCAF      		std Y+60,r31
+ 1505 07c2 5EAE      		std Y+62,r5
+ 1506 07c4 4DAE      		std Y+61,r4
+ 1507 07c6 2FAE      		std Y+63,r2
+ 1508 07c8 DE01      		movw r26,r28
+ 1509 07ca 1196      		adiw r26,1
+ 1510 07cc 8F8D      		ldd r24,Y+31
+ 1511 07ce 98A1      		ldd r25,Y+32
+ 1512 07d0 FC01      		movw r30,r24
+ 1513 07d2 8BE1      		ldi r24,lo8(27)
+ 1514               	.L35:
+ 1515 07d4 0190      		ld r0,Z+
+ 1516 07d6 0D92      		st X+,r0
+ 1517 07d8 8150      		subi r24,lo8(-(-1))
+ 1518 07da 01F4      		brne .L35
+ 1519               	.LBB4:
+ 1520               	.LBB5:
+ 1522               	.LM99:
+ 1523 07dc D301      		movw r26,r6
+ 1524 07de 8C91      		ld r24,X
+ 1525 07e0 8430      		cpi r24,lo8(4)
+ 1526 07e2 01F4      		brne .L36
+ 1528               	.LM100:
+ 1529 07e4 0091 0000 		lds r16,PMD2NVariables
+ 1531               	.LM101:
+ 1532 07e8 0F5F      		subi r16,lo8(-(1))
+ 1533 07ea 0093 0000 		sts PMD2NVariables,r16
+ 1534 07ee 00C0      		rjmp .L42
+ 1535               	.L36:
+ 1537               	.LM102:
+ 1538 07f0 0091 0000 		lds r16,PMD1NVariables
+ 1540               	.LM103:
+ 1541 07f4 0F5F      		subi r16,lo8(-(1))
+ 1542 07f6 0093 0000 		sts PMD1NVariables,r16
+ 1543               	.L42:
+ 1544 07fa 0150      		subi r16,lo8(-(-1))
+ 1545               	.LBE5:
+ 1546               	.LBE4:
+ 1548               	.LM104:
+ 1549 07fc F401      		movw r30,r8
+ 1550 07fe F180      		ldd r15,Z+1
+ 1551 0800 AD2C      		mov r10,r13
+ 1552 0802 BB24      		clr r11
+ 1553 0804 A7FC      		sbrc r10,7
+ 1554 0806 B094      		com r11
+ 1555 0808 C501      		movw r24,r10
+ 1556 080a 0E94 0000 		call AxisName
+ 1557 080e 2DB7      		in r18,__SP_L__
+ 1558 0810 3EB7      		in r19,__SP_H__
+ 1559 0812 2850      		subi r18,lo8(-(-8))
+ 1560 0814 3040      		sbci r19,hi8(-(-8))
+ 1561 0816 0FB6      		in __tmp_reg__,__SREG__
+ 1562 0818 F894      		cli
+ 1563 081a 3EBF      		out __SP_H__,r19
+ 1564 081c 0FBE      		out __SREG__,__tmp_reg__
+ 1565 081e 2DBF      		out __SP_L__,r18
+ 1566 0820 EDB7      		in r30,__SP_L__
+ 1567 0822 FEB7      		in r31,__SP_H__
+ 1568 0824 3196      		adiw r30,1
+ 1569 0826 20E0      		ldi r18,lo8(.LC14)
+ 1570 0828 30E0      		ldi r19,hi8(.LC14)
+ 1571 082a ADB7      		in r26,__SP_L__
+ 1572 082c BEB7      		in r27,__SP_H__
+ 1573 082e 1296      		adiw r26,1+1
+ 1574 0830 3C93      		st X,r19
+ 1575 0832 2E93      		st -X,r18
+ 1576 0834 1197      		sbiw r26,1
+ 1577 0836 1127      		clr r17
+ 1578 0838 07FD      		sbrc r16,7
+ 1579 083a 1095      		com r17
+ 1580 083c 1383      		std Z+3,r17
+ 1581 083e 0283      		std Z+2,r16
+ 1582 0840 2F2D      		mov r18,r15
+ 1583 0842 3327      		clr r19
+ 1584 0844 27FD      		sbrc r18,7
+ 1585 0846 3095      		com r19
+ 1586 0848 3583      		std Z+5,r19
+ 1587 084a 2483      		std Z+4,r18
+ 1588 084c 9783      		std Z+7,r25
+ 1589 084e 8683      		std Z+6,r24
+ 1590 0850 0E94 0000 		call printf
+ 1592               	.LM105:
+ 1593 0854 3D2D      		mov r19,r13
+ 1594 0856 80E6      		ldi r24,lo8(96)
+ 1595 0858 3802      		muls r19,r24
+ 1596 085a 6001      		movw r12,r0
+ 1597 085c 1124      		clr r1
+ 1598 085e A0E0      		ldi r26,lo8(hAxis)
+ 1599 0860 B0E0      		ldi r27,hi8(hAxis)
+ 1600 0862 CA0E      		add r12,r26
+ 1601 0864 DB1E      		adc r13,r27
+ 1602 0866 EDB7      		in r30,__SP_L__
+ 1603 0868 FEB7      		in r31,__SP_H__
+ 1604 086a 3896      		adiw r30,8
+ 1605 086c 0FB6      		in __tmp_reg__,__SREG__
+ 1606 086e F894      		cli
+ 1607 0870 FEBF      		out __SP_H__,r31
+ 1608 0872 0FBE      		out __SREG__,__tmp_reg__
+ 1609 0874 EDBF      		out __SP_L__,r30
+ 1610 0876 C501      		movw r24,r10
+ 1611 0878 0E94 0000 		call Axis2PMDAxis
+ 1612 087c AC01      		movw r20,r24
+ 1613 087e C601      		movw r24,r12
+ 1614 0880 B801      		movw r22,r16
+ 1615 0882 2F2D      		mov r18,r15
+ 1616 0884 0E94 0000 		call PMDSetTraceVariable
+ 1618               	.LM106:
+ 1619 0888 00D0      		rcall .
+ 1620 088a 00D0      		rcall .
+ 1621 088c E0E0      		ldi r30,lo8(.LC15)
+ 1622 088e F0E0      		ldi r31,hi8(.LC15)
+ 1623 0890 ADB7      		in r26,__SP_L__
+ 1624 0892 BEB7      		in r27,__SP_H__
+ 1625 0894 1296      		adiw r26,1+1
+ 1626 0896 FC93      		st X,r31
+ 1627 0898 EE93      		st -X,r30
+ 1628 089a 1197      		sbiw r26,1
+ 1629 089c 1496      		adiw r26,3+1
+ 1630 089e 5C92      		st X,r5
+ 1631 08a0 4E92      		st -X,r4
+ 1632 08a2 1397      		sbiw r26,3
+ 1633 08a4 0E94 0000 		call printf
+ 1635               	.LM107:
+ 1636 08a8 0F90      		pop __tmp_reg__
+ 1637 08aa 0F90      		pop __tmp_reg__
+ 1638 08ac 0F90      		pop __tmp_reg__
+ 1639 08ae 0F90      		pop __tmp_reg__
+ 1640 08b0 C601      		movw r24,r12
+ 1641 08b2 B201      		movw r22,r4
+ 1642 08b4 0E94 0000 		call PMDSetTracePeriod
+ 1644               	.LM108:
+ 1645 08b8 C601      		movw r24,r12
+ 1646 08ba 60E0      		ldi r22,lo8(0)
+ 1647 08bc 70E0      		ldi r23,hi8(0)
+ 1648 08be 0E94 0000 		call PMDSetTraceMode
+ 1650               	.LM109:
+ 1651 08c2 2220      		tst r2
+ 1652 08c4 01F4      		brne .L38
+ 1654               	.LM110:
+ 1655 08c6 C501      		movw r24,r10
+ 1656 08c8 0E94 0000 		call Axis2PMDAxis
+ 1657 08cc BC01      		movw r22,r24
+ 1658 08ce C601      		movw r24,r12
+ 1659 08d0 42E0      		ldi r20,lo8(2)
+ 1660 08d2 20E0      		ldi r18,lo8(0)
+ 1661 08d4 01E0      		ldi r16,lo8(1)
+ 1662 08d6 0E94 0000 		call PMDSetTraceStop
+ 1663               	.L38:
+ 1665               	.LM111:
+ 1666 08da C501      		movw r24,r10
+ 1667 08dc 0E94 0000 		call Axis2PMDAxis
+ 1668 08e0 BC01      		movw r22,r24
+ 1669 08e2 C601      		movw r24,r12
+ 1670 08e4 41E0      		ldi r20,lo8(1)
+ 1671 08e6 20E0      		ldi r18,lo8(0)
+ 1672 08e8 01E0      		ldi r16,lo8(1)
+ 1673 08ea 0E94 0000 		call PMDSetTraceStart
+ 1675               	.LM112:
+ 1676 08ee E394      		inc r14
+ 1677 08f0 22E0      		ldi r18,lo8(2)
+ 1678 08f2 30E0      		ldi r19,hi8(2)
+ 1679 08f4 820E      		add r8,r18
+ 1680 08f6 931E      		adc r9,r19
+ 1681 08f8 620E      		add r6,r18
+ 1682 08fa 731E      		adc r7,r19
+ 1683               	.L34:
+ 1684 08fc E314      		cp r14,r3
+ 1685 08fe 04F4      		brge .+2
+ 1686 0900 00C0      		rjmp .L39
+ 1687               	.L40:
+ 1688               	/* epilogue start */
+ 1690               	.LM113:
+ 1691 0902 A096      		adiw r28,32
+ 1692 0904 0FB6      		in __tmp_reg__,__SREG__
+ 1693 0906 F894      		cli
+ 1694 0908 DEBF      		out __SP_H__,r29
+ 1695 090a 0FBE      		out __SREG__,__tmp_reg__
+ 1696 090c CDBF      		out __SP_L__,r28
+ 1697 090e CF91      		pop r28
+ 1698 0910 DF91      		pop r29
+ 1699 0912 1F91      		pop r17
+ 1700 0914 0F91      		pop r16
+ 1701 0916 FF90      		pop r15
+ 1702 0918 EF90      		pop r14
+ 1703 091a DF90      		pop r13
+ 1704 091c CF90      		pop r12
+ 1705 091e BF90      		pop r11
+ 1706 0920 AF90      		pop r10
+ 1707 0922 9F90      		pop r9
+ 1708 0924 8F90      		pop r8
+ 1709 0926 7F90      		pop r7
+ 1710 0928 6F90      		pop r6
+ 1711 092a 5F90      		pop r5
+ 1712 092c 4F90      		pop r4
+ 1713 092e 3F90      		pop r3
+ 1714 0930 2F90      		pop r2
+ 1715 0932 0895      		ret
+ 1725               	.Lscope7:
+ 1726               	.global	printOK
+ 1727               	.global	printOK
+ 1728               		.section .bss
+ 1731               	printOK:
+ 1732 0000 00        		.skip 1,0
+ 1733               		.comm hAxis,480,1
+ 1734               		.comm rxAxisSettings,340,1
+ 1735               		.comm rxTraceBuffer,2,1
+ 1736               		.comm rxPosesActual,2,1
+ 1737               		.comm PMD1NVariables,1,1
+ 1738               		.comm PMD2NVariables,1,1
+ 1746               		.text
+ 1748               	.Letext0:
+ 1749               	.global __do_copy_data
+ 1750               	.global __do_clear_bss
+DEFINED SYMBOLS
+                            *ABS*:00000000 PMDtrace.c
+C:\DOCUME~1\David\LOCALS~1\Temp/ccqOhMnj.s:2      *ABS*:0000003f __SREG__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccqOhMnj.s:3      *ABS*:0000003e __SP_H__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccqOhMnj.s:4      *ABS*:0000003d __SP_L__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccqOhMnj.s:5      *ABS*:00000034 __CCP__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccqOhMnj.s:6      *ABS*:00000000 __tmp_reg__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccqOhMnj.s:7      *ABS*:00000001 __zero_reg__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccqOhMnj.s:243    .text:00000000 Tracevar2PMDVar
+                            *COM*:00000001 PMD2NVariables
+                            *COM*:00000001 PMD1NVariables
+C:\DOCUME~1\David\LOCALS~1\Temp/ccqOhMnj.s:303    .text:00000044 DisableVariable
+                            *COM*:000001e0 hAxis
+C:\DOCUME~1\David\LOCALS~1\Temp/ccqOhMnj.s:431    .text:00000106 EnvioTrazado2PC
+C:\DOCUME~1\David\LOCALS~1\Temp/ccqOhMnj.s:897    .text:0000040a DisplayTraceResults
+C:\DOCUME~1\David\LOCALS~1\Temp/ccqOhMnj.s:1189   .text:000005e6 SetupSingleAxisTrace
+C:\DOCUME~1\David\LOCALS~1\Temp/ccqOhMnj.s:1300   .text:000006a4 Memoryconfig
+C:\DOCUME~1\David\LOCALS~1\Temp/ccqOhMnj.s:1373   .text:000006ea SetupAxisTrace
+C:\DOCUME~1\David\LOCALS~1\Temp/ccqOhMnj.s:1731   .bss:00000000 printOK
+                            *COM*:00000154 rxAxisSettings
+                            *COM*:00000002 rxTraceBuffer
+                            *COM*:00000002 rxPosesActual
+
+UNDEFINED SYMBOLS
+Axis2PMDAxis
+PMDSetTraceVariable
+PMDGetTraceCount
+printf
+PMDSetBufferReadIndex
+fillPacketHeader
+Envio_USB
+puts
+PMDReadBuffer
+PMDSetBufferWriteIndex
+PMDGetBufferReadIndex
+putchar
+PMDSetTracePeriod
+PMDSetTraceMode
+PMDSetTraceStop
+PMDSetTraceStart
+PMDSetBufferStart
+PMDSetBufferLength
+AxisName
+__do_copy_data
+__do_clear_bss

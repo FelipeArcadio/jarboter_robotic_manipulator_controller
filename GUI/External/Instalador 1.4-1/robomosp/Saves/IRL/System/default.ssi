@@ -1,0 +1,144 @@
+PROGRAM basic;
+
+CONST
+    INT : R_NTURNS := 2;
+        { maximun number of joints in a cell which can rotate more than 360 degrees }
+    INT : R_NADDJ := 1;
+        { maximun number of additional joints in a cell; see type ADD_JOINT }
+    INT : R_NJ := 8;
+    { number of joints; must correspond with type JOINT }
+    { The differents ways to define Orientations }
+    STRING : RS := 'RS';
+    STRING : XYZ := 'XYZ';
+    STRING : YXZ := 'YXZ';
+    STRING : ZYX := 'ZYX';
+    STRING : ZYZ2 := 'ZYZ2';
+    STRING : VANG := 'VANG';
+    STRING : QUAT := 'QUAT';
+
+    { Total number of devices }
+    INT : R_DEVICE_NUMBER := 4;
+    { The next 5 definitions are used for D_AXES_TYPE in D_SPEC_TYPE }
+
+    INT : AX_NONE := -1;  { No device }
+    INT : AX_MAIN := 0;   { Main axes (robot) }
+    INT : ADAX_IS := 1;   { Additional axis starting the kinimatical chain; e.g. a rail }
+    INT : ADAX_IE := 2;   { Additional axes ending the kinematical chain }
+    INT : ADAX_EX := 3;   { External additional axes; e.g. a positioner }
+    INT : NO_ADAX_CONTROL := 0;
+    { The next definition is used for D_PRED_DEVICE of D_SPEC_TYPE }
+    INT : NO_PRED := -1;  { Having no predecessor in the kinematical chain }
+
+TYPE
+    RECORD REAL : lower, upper; ENDRECORD : BOUNDS;
+
+    RECORD
+        REAL : A1, A2, A3, A4, A5, A6, A7;
+        { The number of joints can be seven or smaller }
+    ENDRECORD : MAIN_JOINT;
+
+    RECORD
+        REAL : AA1;
+    ENDRECORD : ADD_JOINT;
+
+    RECORD
+        MAIN_JOINT : M_JOINT;
+        ADD_JOINT : A_JOINT;
+        { names nd type compatibility with ROBTARGET }
+    ENDRECORD : JOINT;
+
+    RECORD
+        POSE :  PSE;
+        INT :   STATUS;
+        ARRAY [1..R_NTURNS] OF INT: TURNS;
+        ADD_JOINT:  A_JOINT;
+    ENDRECORD : ROBTARGET;
+    {
+        ROBTARGET has to be defined suitable for all robots in a common cell;
+        the exact semantic of the structure ROBTARGET has to be explained in comment
+    }
+
+    RECORD
+        INT : D_NO; { Unique identification number of this device; must be >= 0 }
+        INT : D_AXES_TYPE; { Type of additional axes: AX_MAIN, ADAX_IS, ADAX_IE, ADAX_EX; for information only }
+        INT : D_PRED_DEVICE; { Identification number of the preceeding device in the kinematical chain; NO_PRED if there is no predecessor }
+        INT : D_NJ;  { Number of joints of this device }
+    ENDRECORD : D_SPEC_TYPE;
+
+    RECORD
+        REAL : R_ACC;
+        ARRAY[1..R_NJ] OF REAL : R_ACC_PTP;
+        REAL : R_C_PTP;
+        REAL : R_C_CP;
+        REAL : R_C_SPEED;
+        ARRAY[1..R_DEVICE_NUMBER] OF INT : R_DEVICES;
+        JOINT : R_JOINT_ACT;
+        ROBTARGET : R_ROBTARGET_ACT;
+        ROBTARGET : R_ROBTARGET_START;
+        ROBTARGET : R_ROBTARGET_END;
+        ROBTARGET : R_ROBTARGET_INTER;
+        REAL : R_SPEED_ACT;
+        REAL : R_SPEED;
+        ARRAY[1..R_NJ] OF REAL : R_SPEED_PTP;
+        REAL : R_SPEED_ORI;
+        POSE : R_BASE;
+        POSE : R_TOOL;
+    ENDRECORD : R_SPEC_TYPE;
+
+    ROBOT ROBOT_AND_POSITIONER :=
+        { robot 1 used together with the 2 axis external positioner }
+        R_SPEC_TYPE(
+                50.0,
+                [ 50.0, 50.0, 50.0, 50.0, 50.0, 50.0, 50.0, 40.0 ],
+                50.0,
+                200.0,
+                50.0,
+                [ 1 { robot 1 },
+                  3 { 2 axis positioner },
+                  AX_NONE,
+                  AX_NONE { just to fill up }
+                ],
+                JOINT(
+                    MAIN_JOINT(40.0, 35.0, 25.0, 15.0, 0.0, 25.0, 45.0),
+                    ADD_JOINT(0.0)
+                     ),
+                ROBTARGET
+                (
+                    POSE(
+                        POSITION(100.0, 1000.0,0.0),
+                        ORIRS (90.0, 0.0, 90.0 )
+                        ),
+                    0,
+                    [0,0],
+                    ADD_JOINT(0.0)
+                ),
+                ROBTARGET(
+                    POSE(POSITION(100.0, 1000.0,0.0), ORIRS (90.0, 0.0, 90.0 )),
+                    0, [0,0],ADD_JOINT(0.0) ),
+                ROBTARGET(
+                    POSE(POSITION(100.0, 1000.0,0.0), ORIRS (90.0, 0.0, 90.0 )),
+                    0, [0,0],ADD_JOINT(0.0)),
+                ROBTARGET(
+                    POSE(POSITION(100.0, 1000.0,0.0), ORIRS (90.0, 0.0, 90.0 )),
+                    0, [0,0],ADD_JOINT(0.0) ),
+                0.0, 50.0, [100.0, 100.0, 100.0, 50.0, 50.0, 50.0, 100.0, 40.0],
+                50.0,
+                POSE(POSITION(0.0,0.0,0.0), ORIRS(0.0,0.0,0.0)),
+                POSE(POSITION(0.0,0.0,-100.0),ORIRS(90.0,0.0,0.0)));
+                
+   
+    VAR
+        ARRAY[1..R_NJ] OF CHAR : R_JT;      { types of joint }
+        ARRAY[1..R_NJ] OF BOUNDS : R_JBD;   { limits of joints }
+        STRING : R_DEF_ORI := QUAT;
+            { RS | XYZ | YXZ | ZYZ2 1 ZYX 1 VANG | QUAT }
+        ARRAY[1..R_DEVICE_NUMBER] OF D_SPEC_TYPE :
+            D_DEVICES :=
+            [ D_SPEC_TYPE (1, AX_MAIN, NO_PRED, 6), { 6 axis robot 1 }
+              D_SPEC_TYPE (2, AX_MAIN, NO_PRED, 6), { 6 axis robot 2 }
+              D_SPEC_TYPE (3, ADAX_EX, NO_PRED, 2), { a 2 axis positioner }
+              D_SPEC_TYPE (4, ADAX_EX, NO_PRED, 3) { a 3 axis positioner }
+            ]; { all devices R_SPEC_TYPE : R_ACT_ROB := ROBOT_2;}
+
+ENDPROGRAM;
+

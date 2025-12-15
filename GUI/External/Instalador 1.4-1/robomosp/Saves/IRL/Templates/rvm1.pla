@@ -1,0 +1,710 @@
+% El Lenguaje destino es C++
+
+% Bloque de Preprocesamiento
+% En este bloque se ubican las instrucciones necesarias en el lenguaje destino para la ejecución del
+% programa objeto.
+
+@{
+    #include <math.h>
+    #include <listrvm1.h>
+    #include <soporte.h>
+    #include <iostream.h>
+    #include <stdio.h>
+    #include <fstream.h>
+    #include <string.h>
+	#include <trigo.h>
+    using namespace std;
+
+    #define NumParalel 2 	/*Numero de puertos de conexion para robots*/
+    #define Abierto 0    	/*Grip*/
+    #define Inicio 10    	/*identificador inicial para almacenamoento de las posciciones*/
+
+    #define CJOINT  1	 	/*El punto especificado es un Joint*/
+    #define CTARGET 2	 	/*El punto especificado es un target*/
+    #define CMAINJOINT 3 	/*El ponto especifica el grip*/
+
+    char * pointer1;
+    char * pointer2;
+
+    int i,j;
+    int posNumber = Inicio;
+    int posActual = Inicio;
+
+    double pitch,roll;
+
+    int linea = 10;
+
+    fstream filedatalist;
+
+    /*Punto para efectuar movimiento*/
+    typedef struct{
+        int tipo;			/*Numero de posicion almacenada cuando es de tipo xyz*/
+        int posNumber;		/*Idenfificador del punto*/
+		char grip;			/*Estado del Grip*/
+        double valor[5];    /*Angulos o valores target*/
+    }punto;
+    
+    typedef struct{
+        char cmd[20];
+    } cadena;
+    
+    cadena * comando;
+    punto  * point;
+
+    FILE * fp;
+    List <punto *> * posiciones = new List <punto *>;	/*Lista de almacenamiento de puntos del programa*/
+    List <cadena*> * movimientos = new List <cadena*> ; 	/*Lista de comandos de movimiento*/
+
+@}
+
+INT $ $ <nombrevariable> = "long <nombrevariable>;"
+;
+CHAR $ $ <nombrevariable> = "char <nombrevariable>;"
+;
+REAL $ $ <nombrevariable> = "double <nombrevariable>;"
+;
+STRING $ $ <nombrevariable> = "char <nombrevariable> [256];"
+;
+TEXT $ $ <nombrevariable> = "char * <nombrevariable> ;"
+;
+BOOL $ $ <nombrevariable> = "bool <nombrevariable> ;"
+;
+USER $ <tipo> <objeto> = "<tipo> <objeto>;"
+;
+ROBOT $ $ <objeto> = "R_SPEC_TYPE * <objeto>;"
+;
+LIST $ $ $ = " List <"
+;
+ENDLIST $ $ <variable> = " > <variable>;"
+;
+RECORD $ $ <nombre_variable> = "struct {"
+;
+ENDRECORD $ $ <nombrevariable> = "} <nombrevariable> ;"
+;
+FILE $ $ <nombrevariable> = "fstream <nombrevariable>;"
+;
+PARININT $ $ <nombrevariable> = "long <nombrevariable>"
+;
+PARINCHAR $ $ <nombrevariable> = "char <nombrevariable>"
+;
+PARINREAL $ $ <nombrevariable> = "double <nombrevariable>"
+;
+PARINSTRING $ $ <nombrevariable> = "char <nombrevariable> [256]"
+;
+PARINBOOL $ $ <nombrevariable> = "bool <nombrevariable>"
+;
+PARINENDRECORD $ $ <nombrevariable> = "} & <nombrevariable>"
+;
+PARINENDLIST $ $ <variable> = "> & <variable> "
+;
+PARINFILE $ $ <nombrevariable> = "fstream <nombrevariable>"
+;
+PARINUSER $ <tipo> <objeto> = "<tipo> <objeto>"
+;
+PAROUTINT $ $ <nombrevariable> = "long & <nombrevariable>"
+;
+PAROUTCHAR $ $ <nombrevariable> = "char & <nombrevariable>"
+;
+PAROUTREAL $ $ <nombrevariable> = "double & <nombrevariable>"
+;
+PAROUTSTRING $ $ <nombrevariable> = "char & <nombrevariable> [256]"
+;
+PAROUTBOOL $ $ <nombrevariable> = "bool & <nombrevariable>"
+;
+PAROUTENDLIST $ $ <variable> = "> & <variable> "
+;
+PAROUTENDRECORD $ $ <nombrevariable> = "} & <nombrevariable>"
+;
+PAROUTFILE $ $ <nombrevariable> = "fstream & <nombrevariable>"
+;
+PAROUTUSER $ <tipo> <objeto> = "<tipo> & <objeto>"
+;
+TYPE $ $ $ = "typedef "
+;
+ENDTYPE $ $ $ = " "
+;
+
+
+%
+% Programa
+%
+
+BEGINBLOCK $ $ $ = "{"
+;
+ENDBLOCK $ $ $ = "}"
+;
+LABEL <etiqueta> $ $ = "<etiqueta> : ;"
+;
+BEGINMAINBLOCK $ $ $ = "
+	#ifndef DATALIST
+	char datalist [250] = \"datalist.dls\";
+	#define DATALIST
+	#endif
+	int main()
+	{
+        int inicio = linea;
+ 		filedatalist.open ( datalist, ios::in | ios::binary);
+ 		fp = fopen(\"programa.txt\",\"w\");
+        linea += 2;
+"
+;
+ENDMAINBLOCK $ $ $ = "
+	filedatalist.close ();
+    fprintf(fp,\"DL 1, 2048\\r\\nTL 110\\r\\n%d OB +0\\r\\n%d NT\\r\\n\", inicio, inicio + 1);
+	for(i=1;i<=movimientos->Listlength();i++)
+    {
+        comando = (*movimientos)[i];
+		fprintf(fp,\"%s %s\",comando->cmd,\"\\r\\n\");
+    }
+	fprintf(fp,\"%d NT\\r\\n\", linea);
+        linea ++;
+        fprintf(fp,\"%d OB -0\\r\\n\RN\\r\\n\", linea);
+	fclose(fp);
+	linea++;
+	return 1;
+	}
+"
+;
+
+BEGINPROGRAM $ $ $ = "
+ R_SPEC_TYPE * robots[NumParalel];
+ int robot;
+ void MovPointToPoint(AT parametros);
+"
+;
+
+%
+% Arreglos
+%
+
+ARRAYASSIGNMENT <expresion> <indice> <objetoarreglo> = "<objetoarreglo> [ <indice> ] = <expresion> ;"
+;
+ARRAYASSIGNMENTCOPY <expresion> <indice> <objetoarreglo> = "
+    pointer1 = (char *)&<expresion>;
+    pointer2 = (char *)&(<objetoarreglo>[ <indice> ]);
+    for ( i = 0; i < sizeof ( <expresion> ) ; i ++ )
+            pointer2[i] = pointer1[i];
+"
+;
+ARRAYUSER <tamano> <tipo> <variable> = "<tipo> <variable> [ <tamano> ];"
+;
+ARRAYINT <tamano> $ <variable> = "long <variable> [ <tamano> ];"
+;
+ARRAYREAL <tamano> $ <variable> = "double <variable> [ <tamano> ];"
+;
+ARRAYENDRECORD <tamano> $ <nombrevariable> = "} <nombrevariable> [ <tamano> ];"
+;
+COPYARRAY <origen> <indice> <destino> = "<destino> [ <indice> ] = <origen> [ <indice> ];"
+;
+COPYARRAYHARD <origen> <indice> <destino> = "
+    pointer1 = (char *)&(<origen> [ <indice> ]);
+    pointer2 = (char *)&(<destino> [ <indice> ]);
+    for ( i = 0; i < sizeof ( <destino> [ <indice> ] ) ; i ++ )
+        pointer2[i] = pointer1[i];
+"
+;
+ARRAYINDEX <indice> <objetoarreglo> <respuesta> = "<respuesta> = <objetoarreglo> [<indice>] ;"
+;
+ARRAYINDEXCOPY <indice> <objetoarreglo> <respuesta> = "
+    pointer1 = (char *)&(<objetoarreglo> [<indice>]);
+    pointer2 = (char *)&<respuesta>;
+    for ( i = 0; i < sizeof ( <respuesta> ) ; i ++ )
+        pointer2[i] = pointer1[i];
+"
+;
+
+
+%
+% Registros
+% Copia el valor de <expresion> en el componente <componente> del registro <registro>, el
+% tipo de dato del componente es simple
+%
+COMPONENTASSIGNMENT <expresion> <componente> <registro> = "<registro>.<componente> = <expresion>;"
+;
+
+% Copia el valor del registro2 en el componente <componente> del registro <record1>
+%<registro>.<componente> = <expresion>
+COMPONENTASSIGNMENTHARD <expresion> <componente> <registro> = "
+    pointer1 = (char *)&<expresion>;
+    pointer2 = (char *)&(<registro>.<componente>);
+    for ( i = 0; i < sizeof ( <expresion> ) ; i ++ )
+        pointer2[i] = pointer1[i];
+"
+;
+RECORDASSIGNMENT <record2> $ <record1> = "
+    pointer1 = (char *)&<record2>;
+    pointer2 = (char *)&<record1>;
+    for ( i = 0; i < sizeof ( <record1> ) ; i ++ )
+        pointer2[i] = pointer1[i];
+"
+;
+RECORDCOMPONENT <componente> <objetoregistro> <respuesta> = "<respuesta> = <objetoregistro>.<componente>;"
+;
+RECORDCOMPONENTCOPY <componente> <objetoregistro> <respuesta> = "
+    pointer1 = (char *)&(<objetoregistro>.<componente>);
+    pointer2 = (char *)&<respuesta>;
+    for ( i = 0; i < sizeof ( <respuesta> ) ; i ++ )
+        pointer2[i] = pointer1[i];
+"
+;
+ROBOTCOMPONENT <componente> <objetoregistro> <respuesta> = "<respuesta> = <objetoregistro>-><componente>;"
+;
+ROBOTCOMPONENTCOPY <componente> <objetoregistro> <respuesta> = "
+    pointer1 = (char *)&(<objetoregistro>-><componente>);
+    pointer2 = (char *)&<respuesta>;
+    for ( i = 0; i < sizeof ( <respuesta> ) ; i ++ )
+        pointer2[i] = pointer1[i];
+"
+;
+ROBOTCOMPONENTASSIGNMENT <expresion> <componente> <registro> = "<registro>.<componente> = <expresion>;"
+;
+
+% Copia el valor del registro2 en el componente <componente> del registro <record1>
+%<registro>.<componente> = <expresion>
+ROBOTCOMPONENTASSIGNMENTHARD <expresion> <componente> <registro> = "
+    pointer1 = (char *)&<expresion>;
+    pointer2 = (char *)&(<registro>.<componente>);
+    for ( i = 0; i < sizeof ( <expresion> ) ; i ++ )
+        pointer2[i] = pointer1[i];
+"
+;
+
+%
+% Comparaciones
+%
+IFGREATER <expresion1> <expresion2> <etiqueta> = "if( <expresion1> > <expresion2> ) goto <etiqueta>;"
+;
+IFSMALLER <expresion1> <expresion2> <etiqueta> = "if( <expresion1> < <expresion2> ) goto <etiqueta>;"
+;
+IFEQUAL <expresion1> <expresion2> <etiqueta> = "if( <expresion1> == <expresion2> ) goto <etiqueta>;"
+;
+IFDIFERENT <expresion1> <expresion2> <etiqueta> = "if( <expresion1> != <expresion2> ) goto <etiqueta>;"
+;
+IFGREATEREQUAL <expresion1> <expresion2> <etiqueta> = "if( <expresion1> >= <expresion2> ) goto <etiqueta>;"
+;
+IFSMALLEREQUAL <expresion1> <expresion2> <etiqueta> = "if( <expresion1> <= <expresion2> ) goto <etiqueta>;"
+;
+IFEQUALSTRING <cadena1> <cadena2> <etiqueta> = "if( strcmp ( <cadena1>, <cadena2> ) == 0 ) goto <etiqueta> ;"
+;
+IFTRUE <expresion> $ <etiqueta> = "if( <expresion> ) goto <etiqueta> ;"
+;
+IFFALSE <expresion> $ <etiqueta> = "if( !<expresion> ) goto <etiqueta> ;"
+;
+GOTO $ $ <etiqueta> = "goto <etiqueta> ;"
+;
+
+
+%
+% Operaciones Matematicas
+%
+
+ASSIGNMENT <expresion> $ <objeto> = "<objeto>  = <expresion> ;"
+;
+ADDITION <expresion1> <expresion2> <respuesta> = "<respuesta> = <expresion1> + <expresion2> ;"
+;
+SUBSTRACTION <expresion1> <expresion2> <respuesta> = "<respuesta>  = <expresion1> - <expresion2> ;"
+;
+MULTIPLICATION <expresion1> <expresion2> <respuesta> = "<respuesta> = <expresion1> * <expresion2>;"
+;
+DIVISION <expresion1> <expresion2> <respuesta> = "<respuesta> = <expresion1> / <expresion2> ;"
+;
+ABS <expresion> $ <respuesta> = "<respuesta> = ABS ( <expresion> );"
+;
+SQRT <expresion> $ <respuesta> = "<respuesta> = sqrt ( <expresion> );"
+;
+
+
+%
+% Operaciones a nivel de Bits
+%
+
+ORBIT <expresion1> <expresion2> <respuesta> = "<respuesta> = <expresion1> | <expresion2> ;"
+;
+ANDBIT <expresion1> <expresion2> <respuesta> = "<respuesta> = <expresion1> & <expresion2> ;"
+;
+XORBIT <expresion1> <expresion2> <respuesta> = "<respuesta> = <expresion1> ^ <expresion2> ;"
+;
+SIZEOF <objeto> $ <resp> = "<resp> = sizeof ( <objeto> );"
+;
+
+
+%
+% Operaciones Trigonometricas
+%
+
+TAN <expresion> $ <respuesta> = "<respuesta> = TAN ( <expresion> ); "
+;
+SIN <expresion> $ <respuesta> = "<respuesta> = SIN ( <expresion> ); "
+;
+COS <expresion> $ <respuesta> = "<respuesta> = COS ( <expresion> ); "
+;
+ATAN2 <expresion1> <expresion2> <respuesta> = "<respuesta> = ATAN2 ( <expresion1>, <expresion2> );"
+;
+ATAN <expresion> $ <respuesta> = "<respuesta> = ATAN ( <expresion> );"
+;
+ASIN <expresion> $ <respuesta> = "<respuesta> = ASIN ( <expresion> );"
+;
+ACOS <expresion> $ <respuesta> = "<respuesta> = ACOS ( <expresion> );"
+;
+
+
+%
+% Funciones, Procedimientos y Porcesos Paralelos
+%
+
+CALLFUNCTION <nombre> $ <respuesta> = "<respuesta> = <nombre> ( "
+;
+CALLPROCEDURE <nombre> $ $ = "<nombre> (  "
+;
+ENDCALL $ $ $ = " ) ; "
+;
+ENDPROCESS $ $ $ = " */ "
+;
+PARAMETER <objeto> $ $ = " <objeto> "
+;
+PARAMETERSEPARATOR $ $ $ = ","
+;
+PARAMETERBLOCK $ $ $ = "("
+;
+ENDPARAMETERBLOCK $ $ $ = ")"
+;
+START <proceso> $ $ = "/* Start */"
+;
+CANCEL <proceso> $ $ ="/* Cancel */"
+;
+STOP <proceso> $ $ ="/* Stop */"
+;
+CONTINUE <proceso> $ $ ="/* Continue */"
+;
+PROCESS <nombre> <prioridad> $ = "/* "
+;
+PROCEDURE <nombre> $ $ = "void <nombre> "
+;
+INTFUNCTION <nombre> $ $ = "long <nombre> "
+;
+REALFUNCTION <nombre> $ $ = "double <nombre> "
+;
+BOOLFUNCTION <nombre> $ $ = "bool <nombre> "
+;
+CHARFUNCTION <nombre> $ $ = "char <nombre> "
+;
+USERFUNCTION <nombre> $ <tipo> = "<tipo> & <nombre> "
+;
+RETURN <expresion> $ $ = "return <expresion>;"
+;
+EMPTYRETURN $ $ $ = "return;"
+;
+
+
+%
+% Strings
+%
+
+STRINGASSIGNMENT <stringfuente> $ <stringdestino> = "strcpy (<stringdestino>, <stringfuente>); "
+;
+COMPARESTRING <cadena1> <cadena2> <respuesta> = "<respuesta> = strcmp ( <cadena1>, <cadena2> );"
+;
+CONCATSTRING <cadena1> <cadena2> <respuesta> = "
+    strcpy ( <respuesta>, <cadena1> );
+    strcat ( <respuesta>, <cadena2> );
+"
+;
+GETCHARACTER <cadena> <indice> <respuesta> = "<respuesta> = <cadena> [ <indice> - 1 ];"
+;
+SETCHARACTER <cadena> <caracter> <indice> = "<cadena> [ <indice> - 1 ] = <caracter>;"
+;
+LENGTHSTRING <cadena> $ <respuesta> = "<respuesta> = strlen ( <cadena> );"
+;
+LOCATESTRING <cadena> <subcadena> <respuesta> = "<respuesta> = LocateString ( <cadena>, <subcadena> );"
+;
+DELETECHARACTERS <cadena> <inicio> <final> = "DeleteCharacteres ( <cadena>, <inicio>, <final> );"
+;
+EXTRACTSTRING <cadena> <inicio> <final> = "ExtractString ( <cadena>, <inicio>, <final> );"
+;
+APPENDCHAR <cadena> <caracter> <respuesta> = "
+    strcpy ( <respuesta>, <cadena> );
+    <respuesta> [ strlen ( <cadena> ) ] = <caracter> ;
+    <respuesta> [ strlen ( <cadena> ) + 1 ] = 0 ;
+"
+;
+
+
+%
+% Puntos y Movimientos del Robot
+%
+
+
+ROBTARGETPATH <robtarget> $ $ = "
+    point = new punto();
+    point->tipo = CTARGET;
+    point->posNumber = posNumber;
+    point->valor[0]= <robtarget>.PSE.POS.X;
+    point->valor[1]= <robtarget>.PSE.POS.Y;
+    point->valor[2]= <robtarget>.PSE.POS.Z;
+    point->valor[3]= ANGLEX(\"ZYX\",<robtarget>.PSE.ORI);
+    if (  ( point->valor[3] > 90.0 ) || ( point->valor[3] >= 270.0 ) )
+        point->valor[3] -= 360.0;
+    point->valor[4]= ANGLEZ(\"ZYX\",<robtarget>.PSE.ORI);
+    if ( point->valor[4] > 180.0 )
+        point->valor[4] -= 360.0;
+    if(<robtarget>.A_JOINT.AA1 == Abierto)
+    	point->grip = 'O';
+    else
+       point->grip ='C';
+    posiciones->Listadd(point);
+    posNumber ++;
+"
+;
+MAINJOINTPATH <joint> $ $ = "
+    point = new punto();
+    point->tipo = CJOINT;
+    point->valor[0]= (int)<joint>.A1;
+    point->valor[1]= (int)<joint>.A2;
+    point->valor[2]= (int)<joint>.A3;
+    point->valor[3]= (int)<joint>.A4;
+    if ( point->valor[3] > 90.0 )
+        if ( point->valor[3] >= 270.0 )
+            point->valor[3] -= 360.0;
+    point->valor[4]= (int)<joint>.A5;
+    if ( point->valor[4] > 180.0 )
+        point->valor[4] -= 360.0;
+    posiciones->Listadd(point);
+"
+;
+ADDJOINTPATH <mainjoint> $ $ ="
+    point = new punto;
+    point->tipo = CADDJOINT;
+    if(<mainjoint>.AA1 == Abierto)
+    	point->grip = 'O';
+    else
+       point->grip ='C';
+    posiciones->Listadd(point);"
+;
+ROBOTDEF <nombre> <inicializacion> <variable> = "
+    R_SPEC_TYPE * <variable>;
+    <variable> = & <inicializacion>;
+    robots[robot] = <variable>;
+    robot ++;
+    "
+;
+MOVEPTP $ <parametros> $ = "
+    MovPointToPoint(<parametros>);
+"
+;
+
+UNTIL $ $ $ ="/*"
+;
+ENDUNTIL $ $ $="*/"
+;
+
+%
+% Operaciones de lista
+%
+
+LISTADD <expresion> $ <objetolista> = "<objetolista>.Listadd(<expresion>) ;"
+;
+LISTDEL <indice> $ <objetolista> = "<objetolista>.Listdel(<indice>) ;"
+;
+LISTINS <expresion> <indice> <objetolista> = "<objetolista>.Listins(<expresion>,<indice>) ;"
+;
+LISTLENGTH <objetolista> $ <objetorespuesta> = " <objetorespuesta> = <objetolista>.Listlength() ;"
+;
+LISTINDEX <objeto_lista> <expresion> <objeto_respuesta> = "<objeto_respuesta>  = <objeto_lista>.Listindex (<expresion>);"
+;
+LISTDESTROY <objeto_lista> $ $ = "<objeto_lista>.Listdestroy (  );"
+;
+LISTELEMENT <indice> <lista> <destino> = "<destino> = <lista>[<indice>];"
+;
+LISTELEMENTCOPY <indice> <lista> <destino> = "
+    pointer1 = (char *)&<destino>;
+    pointer2 = (char *)&<lista>[<indice>];
+
+    for(i = 0; i < sizeof(<lista>[<indice>]); i++)
+        pointer1[i] = pointer2[i];
+"
+;
+
+
+%
+% Entrada y Salida (I/O)
+%
+OPENREAD <nombrearchivo> $ <objetoarchivo> = "<objetoarchivo>.open ( <nombrearchivo> , ios::in ); "
+;
+OPENNEW <nombrearchivo> $ <objetoarchivo> = "<objetoarchivo>.open ( <nombrearchivo>, ios::out ); "
+;
+OPENALEATORY <nombrearchivo> $ <objetoarchivo> = "<objetoarchivo>.open ( <nombrearchivo>, ios::in | ios::out | ios :: /*trunc*/ate | ios::binary );"
+;
+OPENEND <nombrearchivo> $ <objetoarchivo> = "<objetoarchivo>.open ( <nombrearchivo>, ios::in|ios::app ); "
+;
+FILEERROR <archivo> $ <variableerror> = "/*<variableerror> = errno;*/"
+;
+CLOSE <archivo> $ $ = "<archivo>.close ();"
+;
+FILEWRITE <dato> $ <file> = "<file> << <dato>;"
+;
+STDWRITE <dato> $ $ = "cout << <dato>;"
+;
+FILEWRITELN $ $ <file> = "<file> << endl;"
+;
+STDWRITELN $ $ $ = "cout << endl;"
+;
+FILESETPRECISION <file> $ <precision> = "<file>.precision( <precision> );"
+;
+FILESETWIDTH <file> $ <width> = "<file>.width ( <width> );"
+;
+FILESETRIGTH <file> $ $ = "//<file>.setf (ios::rigth);"
+;
+FILESETLEFT <file> $ $ = "//<file>.setf (ios::left);"
+;
+STDSETPRECISION $ $ <precision> = "cout.precision( <precision> );"
+;
+STDSETWIDTH $ $ <width> = "cout.width ( <width> );"
+;
+STDSETRIGTH $ $ $ = "//cout.setf (ios::rigth);"
+;
+STDSETLEFT $ $ $ = "//cout.setf (ios::left);"
+;
+ERROR $ $ $ = " /* ERROR */ "
+;
+FILESEEKW <file> <posicion> $ = "<file>.seekp ( <posicion>, ios::beg );"
+;
+FILESEEKR <file> <posicion> $ = "<file>.seekg ( <posicion>, ios::beg );"
+;
+FILEWRITERAC <file> <objeto> $ = "<file>.write((char *)&<objeto>, sizeof(<objeto>));"
+;
+FILEREADRAC <file> <objeto> $ = "<file>.read((char *)&<objeto>, sizeof(<objeto>));"
+;
+FILEREAD <file> $ <dato> = "<file> >> <dato>;"
+;
+STDREAD $ $ <dato> = "cin >> <dato>;"
+;
+FILEREADLN <file> $ $ = "<file>.get ( );"
+;
+STDREADLN $ $ $ = "cin.get();"
+;
+ENDOFFILE <archivo> $ <respuesta> = "<respuesta> = <archivo>.feof ( );"
+;
+TRUNC <expresion> $ <respuesta> = "<respuesta> = (int)trunc ( <expresion> );"
+;
+ROUND <expresion> $ <respuesta> = "<respuesta> = (int)round ( <expresion> );"
+;
+TEMPLATEINT $ $ $ = "long "
+;
+TEMPLATECHAR $ $ $ = "char "
+;
+TEMPLATEREAL $ $ $ = " double "
+;
+TEMPLATESTRING $ $ $ = "char [256]"
+;
+TEMPLATEBOOL $ $ $ = "bool "
+;
+TEMPLATEENDLIST $ $ $ = "> ;"
+;
+TEMPLATEENDRECORD $ $ $ = "}"
+;
+TEMPLATEFILE $ $ $ = "fstream "
+;
+TEMPLATESEMABOOL $ $ $ = "static bool"
+;
+TEMPLATESEMAINT $ $ $ = "static int "
+;
+TEMPLATEUSER  $ <tipo> $ = " <tipo> "
+;
+PAUSE <time> $ $ = "fprintf(fp,\"'%d TI <time>\\r\\n\", linea++);"
+;
+HALT $ $ $ = "fprintf(fp,\"'%d ED\\r\\n\", linea++);"
+;
+DATALIST <archivo> $ $ = "char datalist [250] = <archivo>;
+                        #define DATALIST"
+;
+
+DECLINTERRUPT <numero> $ $ = "/*DECLINTERRUPT ( <numero> ) { "
+;
+
+ENDDECLINTERRUPT $ $ $ = "return; }*/"
+;
+
+INPUTINT <byte> <direccion> <nombrevariable> = "long <nombrevariable>;"
+;
+INPUTREAL <byte> <direccion> <nombrevariable> = "double <nombrevariable>;"
+;
+INPUTBOOL <byte> <direccion> <nombrevariable> = "bool <nombrevariable> ;"
+;
+
+OUTPUTINT <byte> <direccion> <nombrevariable> = "long <nombrevariable>;"
+;
+OUTPUTREAL <byte> <direccion> <nombrevariable> = "double <nombrevariable>;"
+;
+OUTPUTBOOL <byte> <direccion> <nombrevariable> = "bool <nombrevariable> ;"
+;
+
+TEACH $ $ <nombrevariable> = "
+    filedatalist.read((char *)&<nombrevariable>, sizeof(<nombrevariable>));
+";
+
+@{
+void getMat(POSE p, double m[3][4])
+{
+    POSITION o,a,n;
+    a = VECTORA(p.ORI);
+    o = VECTORO(p.ORI);
+    n = VECTORN(p.ORI);
+
+    m[0][0] =  n.X;
+    m[0][1] =  n.Y;
+    m[0][2] =  n.Z;
+
+    m[1][0] =  o.X;
+    m[1][1] =  o.Y;
+    m[1][2] =  o.Z;
+
+    m[2][0] =  a.X;
+    m[2][1] =  a.Y;
+    m[2][2] =  a.Z;
+
+    m[3][0] =  p.POS.X;
+    m[3][1] =  p.POS.Y;
+    m[3][2] =  p.POS.Z;
+
+}
+
+void MovPointToPoint(AT parametros)
+ {
+     comando = new cadena;
+     if(posiciones->Listlength() > 1)
+     {
+         comando = new cadena;
+         int tam = posiciones->Listlength();
+         punto * point1 = (*posiciones)[1];
+         punto * point2 = (*posiciones)[tam];
+         sprintf(comando->cmd,"%d MS %.0f, %.0f, %c", point1->posNumber,point2->posNumber,point1->grip);
+         movimientos->Listadd(comando);
+     }
+     else
+     {
+        comando = new cadena;
+        point = (*posiciones)[1];
+        if(point->tipo == CTARGET)
+        {
+            sprintf(comando->cmd,"%d MO %d, %c",linea,point->posNumber,point->grip);
+            movimientos->Listadd(comando);
+            fprintf(fp,"PD %d, %.1f, %.1f, %.1f, %.1f, %.1f\r\n",point->posNumber, point->valor[0],point->valor[1],point->valor[2],point->valor[3],point->valor[4]);
+        }
+        else if(point->tipo == CJOINT)
+        {
+            sprintf(comando->cmd,"%d MJ %.1f,%.1f,%.1f,%.1f,%.1f",linea,point->valor[0],point->valor[1],point->valor[2],point->valor[3],point->valor[4]);
+            movimientos->Listadd(comando);
+        }
+        else
+        {
+            sprintf(comando->cmd,"%d G%c",linea,point->grip);
+            movimientos->Listadd(comando);
+        }
+    }
+    linea ++;
+    posiciones->Listdestroy();
+ }
+
+@}
+
+

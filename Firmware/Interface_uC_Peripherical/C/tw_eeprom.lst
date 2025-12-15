@@ -1,0 +1,184 @@
+   1               		.file	"tw_eeprom.c"
+   2               	__SREG__ = 0x3f
+   3               	__SP_H__ = 0x3e
+   4               	__SP_L__ = 0x3d
+   5               	__CCP__  = 0x34
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   9               		.text
+  10               	.Ltext0:
+ 226               	.global	ee24xx_write_bytes
+ 228               	ee24xx_write_bytes:
+   1:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_eeprom.c **** #include <avr/io.h>
+   2:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_eeprom.c **** #include <stdint.h>
+   3:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_eeprom.c **** #include <util/twi.h>		
+   4:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_eeprom.c **** #include <stdio.h>
+   5:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_eeprom.c **** #include "types.h"
+   6:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_eeprom.c **** #include "tw_eeprom.h"
+   7:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_eeprom.c **** 
+   8:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_eeprom.c **** /**************************************************************************************************
+   9:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_eeprom.c **** int16 ee24xx_read_bytes(uint32 eeaddr, int16 len, uint8 *buf)
+  10:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_eeprom.c **** {
+  11:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_eeprom.c **** 	uint8 sla;
+  12:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_eeprom.c **** 	int16 rv;
+  13:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_eeprom.c **** 	
+  14:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_eeprom.c **** 	/* patch high bits of EEPROM address into SLA 
+  15:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_eeprom.c **** 		 Acomodo a B0*/
+  16:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_eeprom.c **** 	sla = TWI_SLA_24LC1025 | (((eeaddr >> 16) & 0x01) << 3); 
+  17:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_eeprom.c **** 	
+  18:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_eeprom.c **** 	rv=	read_bytes_I2C(sla,eeaddr,len,buf);	
+  19:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_eeprom.c **** 	
+  20:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_eeprom.c **** 	if (rv == -1)
+  21:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_eeprom.c **** 	{
+  22:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_eeprom.c **** 		error();
+  23:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_eeprom.c **** 		return -1;
+  24:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_eeprom.c **** 	}
+  25:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_eeprom.c ****  
+  26:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_eeprom.c **** 	return rv;
+  27:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_eeprom.c **** }
+  28:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_eeprom.c **** /**************************************************************************************************
+  29:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_eeprom.c **** int16 ee24xx_write_bytes(uint32 eeaddr, int16 len, uint8 *buf)	
+  30:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_eeprom.c **** {
+ 229               	16
+ 231               	.global	ee24xx_write_bytes
+ 233 0002 BF92      	ee24xx_write_bytes:
+ 235 0006 DF92      	.LM0:
+ 236 0008 EF92      	.LFBB1:
+ 237 000a FF92      		push r10
+ 238 000c 0F93      		push r11
+ 239 000e 1F93      		push r12
+ 240               		push r13
+ 241               		push r14
+ 242 0010 5B01      		push r15
+ 243 0012 6C01      		push r16
+ 244 0014 8A01      		push r17
+ 245 0016 7901      	/* prologue: function */
+  31:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_eeprom.c **** 	uint8 sla, PAGE_SIZE;
+  32:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_eeprom.c **** 	int16 rv;
+  33:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_eeprom.c **** 	
+  34:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_eeprom.c **** 	/* patch high bits of EEPROM address into SLA 
+  35:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_eeprom.c **** 		 Acomodo a B0*/
+  36:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_eeprom.c **** 	sla = TWI_SLA_24LC1025 | (((eeaddr >> 16) & 0x01) << 3); 
+  37:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_eeprom.c **** 	
+  38:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_eeprom.c **** 	/* the 24LC1025 EEPROM permits a 128-byte writes in a page  */
+  39:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_eeprom.c **** 	PAGE_SIZE=128;
+  40:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_eeprom.c **** 	
+  41:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_eeprom.c **** 	rv= write_bytes_I2C(PAGE_SIZE,sla, eeaddr, len, buf);
+ 246               	
+ 247               	.LFBB1:
+ 248 0018 9601      		push r10
+ 249 001a 4427      		push r11
+ 250 001c 5527      		push r12
+ 251 001e 2170      		push r13
+ 252 0020 220F      		push r14
+ 253 0022 220F      		push r15
+ 254 0024 220F      		push r16
+ 255 0026 206A      		push r17
+ 256 0028 80E8      	/* prologue: function */
+ 257 002a 622F      	/* frame size = 0 */
+ 258 002c A601      		movw r10,r22
+ 259 002e 9501      		movw r12,r24
+ 260 0030 0E94 0000 		movw r16,r20
+ 261 0034 8C01      		movw r14,r18
+  42:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_eeprom.c **** 	
+  43:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_eeprom.c **** 	if (rv == -1)
+ 262               	sh r17
+ 263               	/* prologue: function */
+ 264 0036 8FEF      	/* frame size = 0 */
+ 265 0038 0F3F      		movw r10,r22
+ 266 003a 1807      		movw r12,r24
+ 267 003c 01F4      		movw r16,r20
+  44:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_eeprom.c **** 	{
+  45:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_eeprom.c **** 		error();
+ 268               	5
+ 269               		push r16
+ 270 003e 0E94 0000 		push r17
+ 271               	/* prologue: function */
+  46:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_eeprom.c **** 		return -1;
+  47:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_eeprom.c **** 	}
+  48:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_eeprom.c ****  
+  49:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_eeprom.c **** 	return rv;	
+  50:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_eeprom.c **** }...
+ 272               	
+ 273               	.LFBB1:
+ 274 0042 C801      		push r10
+ 275               		push r11
+ 276 0044 1F91      		push r12
+ 277 0046 0F91      		push r13
+ 278 0048 FF90      		push r14
+ 279 004a EF90      		push r15
+ 280 004c DF90      		push r16
+ 281 004e CF90      		push r17
+ 282 0050 BF90      	/* prologue: function */
+ 283 0052 AF90      	/* frame size = 0 */
+ 284 0054 0895      		movw r10,r22
+ 285               		movw r12,r24
+ 286               		movw r16,r20
+ 287               		movw r14,r18
+ 289               	.LM1:
+ 290               		movw r18,r12
+ 291               		clr r20
+ 292               		clr r21
+ 293               		andi r18,lo8(1)
+ 294               		lsl r18
+ 295               		lsl r18
+ 296               		lsl r18
+ 297               		ori r18,lo8(-96)
+ 298               		ldi r24,lo8(-128)
+ 299               		mov r22,r18
+ 300 0056 CF92      		movw r20,r12
+ 301 0058 DF92      		movw r18,r10
+ 302 005a EF92      		call write_bytes_I2C
+ 303 005c FF92      		movw r16,r24
+ 305 0060 1F93      	.LM2:
+ 306               		ldi r24,hi8(-1)
+ 307               		cpi r16,lo8(-1)
+ 308 0062 6B01      		cpc r17,r24
+ 309 0064 7C01      		brne .L2
+ 311 0068 8901      	.LM3:
+ 312               		call error
+ 313               	.L2:
+ 315 006c AA27      	.LM4:
+ 316 006e BB27      		movw r24,r16
+ 317 0070 8170      	/* epilogue start */
+ 318 0072 880F      		pop r17
+ 319 0074 880F      		pop r16
+ 320 0076 880F      		pop r15
+ 321 0078 806A      		pop r14
+ 322 007a B701      		pop r13
+ 323 007c A601      		pop r12
+ 324 007e 9F01      		pop r11
+ 325 0080 0E94 0000 		pop r10
+ 326 0084 8C01      		ret
+ 331 008a 1807      	.Lscope1:
+ 336               	.global	ee24xx_read_bytes
+ 338               	ee24xx_read_bytes:
+ 340               	.LM5:
+ 341 0094 1F91      	.LFBB2:
+ 342 0096 0F91      		push r12
+ 343 0098 FF90      		push r13
+ 344 009a EF90      		push r14
+ 345 009c DF90      		push r15
+ 346 009e CF90      		push r16
+ 347 00a0 0895      		push r17
+ 348               	/* prologue: function */
+ 349               	/* frame size = 0 */
+ 350               		movw r12,r22
+ 351               		movw r14,r24
+ 352               		movw r30,r20
+ 353               		movw r16,r18
+DEFINED SYMBOLS
+                            *ABS*:00000000 tw_eeprom.c
+C:\DOCUME~1\David\LOCALS~1\Temp/ccq1s4FB.s:2      *ABS*:0000003f __SREG__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccq1s4FB.s:3      *ABS*:0000003e __SP_H__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccq1s4FB.s:4      *ABS*:0000003d __SP_L__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccq1s4FB.s:5      *ABS*:00000034 __CCP__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccq1s4FB.s:6      *ABS*:00000000 __tmp_reg__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccq1s4FB.s:7      *ABS*:00000001 __zero_reg__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccq1s4FB.s:228    .text:00000000 ee24xx_write_bytes
+C:\DOCUME~1\David\LOCALS~1\Temp/ccq1s4FB.s:296    .text:00000056 ee24xx_read_bytes
+
+UNDEFINED SYMBOLS
+write_bytes_I2C
+error
+read_bytes_I2C

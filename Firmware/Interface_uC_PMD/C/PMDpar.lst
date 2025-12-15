@@ -1,0 +1,1791 @@
+   1               		.file	"PMDpar.c"
+   2               	__SREG__ = 0x3f
+   3               	__SP_H__ = 0x3e
+   4               	__SP_L__ = 0x3d
+   5               	__CCP__  = 0x34
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   9               		.text
+  10               	.Ltext0:
+ 234               	.global	Axis2PMDChipset
+ 236               	Axis2PMDChipset:
+   1:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** #include <avr/io.h>
+   2:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** #include <stdlib.h>
+   3:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** #include <string.h>
+   4:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** #include <stdio.h>
+   5:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 
+   6:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** #include "PMDpar.h"
+   7:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** #include "uart.h"
+   8:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** #include "messages.h"
+   9:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** #include "debug.h"
+  10:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 
+  11:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 
+  12:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** // undefine __TIME_WAITFORREADY if it is not desired to have a timeout while waiting for the ready 
+  13:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** #define __TIME_WAITFORREADY
+  14:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** #ifdef 	__TIME_WAITFORREADY
+  15:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** #include <util/delay.h>
+  16:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** #endif
+  17:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 
+  18:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 
+  19:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 
+  20:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** // only include this if we are running in diagnostics mode
+  21:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** //#include "PMDdiag.h"  
+  22:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 
+  23:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 
+  24:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** /**	\ingroup PMDpar 
+  25:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	\brief Función que envía una instrucción a los chips PMDs en el modo 8/16 @see Manual Técnico PMDs
+  26:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	
+  27:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	@param PMDChipSet- Corresponde al Juego de chipsets al que se le envía el Comando
+  28:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	@param dataword- Es el comando o instrucción que se le mandará a los chips PMDs*/
+  29:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** static void OutP8BitCmd(PMDuint16 PMDChipSet, PMDuint16 dataword);
+  30:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 
+  31:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** /**	\ingroup PMDpar 
+  32:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	\brief Función que envía un dato a los chips PMDs en el modo 8/16 @see Manual Técnico PMDs
+  33:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	
+  34:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	@param PMDChipSet- Corresponde al Juego de chipsets al que se le envía el Dato
+  35:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	@param dataword- Es el Dato  que se le mandará a los chips PMDs*/
+  36:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** static void OutP8Bit(PMDuint16 PMDChipSet, PMDuint16 dataword);
+  37:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 
+  38:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** /**	\ingroup PMDpar 
+  39:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	\brief Función que Recibe un dato de los chips PMDs en el modo 8/16 @see Manual Técnico PMDs
+  40:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	
+  41:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	@param PMDChipSet- Corresponde al Juego de chipsets del que se recibe el dato
+  42:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	@return Dato de 16 Bits que se lee de los chips PMDs*/
+  43:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** static PMDuint16 InP8Bit(PMDuint16 PMDChipSet);
+  44:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 
+  45:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** /**	\ingroup PMDpar 
+  46:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	\brief Función que realiza una operación de Lectura de Estado en el chip PMD
+  47:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	
+  48:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	@param PMDChipSet- Corresponde al Juego de chipsets al que se le realiza la operación
+  49:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	@return Dato de 16 Bits que corresponde al EStado actual de los chips PMDs 
+  50:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	@see Manual Técnico*/
+  51:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** static PMDuint16 InP8BitStatus(PMDuint16 PMDChipSet);
+  52:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 
+  53:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** /** \ingroup PMDpar
+  54:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	\brief Lectura del registro del Estado del chip PMD.
+  55:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	 Permite al usuario determinar el estado de algunas señales de la interface del Host con 
+  56:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	 el chipset sin tener que desarrollar una lógica de decodificación especial.
+  57:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	 
+  58:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	 Una operación de Status Read se desarrolla seleccionando ya sea PMD1, PMD2 ó PMD3, luego
+  59:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	 acertar las señales  ~HostRead y ~HostSlct bajo, HostCmd alto, y 
+  60:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	 leer el bus de datos.*/
+  61:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** static PMDuint16 PMDParallel_GetStatus(void* transport_data);
+  62:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 
+  63:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** /** \ingroup PMDpar
+  64:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	\brief Lectura del Bit 15 (señal HostRdy) del Registro de EStado del Chip PMD*/
+  65:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** static PMDuint16 PMDParallel_IsReady(void* transport_data);
+  66:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 
+  67:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** /** \ingroup PMDpar
+  68:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	\brief Lectura del Bit 14 (señal ~HostIntrp) del Registro de EStado del Chip PMD*/
+  69:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** static PMDuint16 PMDParallel_HasInterrupt(void* transport_data);
+  70:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 
+  71:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** /** \ingroup PMDpar
+  72:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	\brief Lectura del Bit 13 (señal HostIOError) del Registro de EStado del Chip PMD*/
+  73:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** static PMDuint16 PMDParallel_HasError(void* transport_data);
+  74:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 
+  75:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** /** \ingroup PMDpar
+  76:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	\brief Espera por el siguiente Comando hasta que el Chip PMD esté disponible
+  77:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	(la señal HostRdy debe ser "ALTA")*/
+  78:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** static PMDuint16 PMDParallel_WaitForReady(PMDParallelIOTransportData* transport_data);
+  79:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 
+  80:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 
+  81:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** /** \ingroup PMDpar
+  82:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	\brief Lectura de Datos por un puerto de 8 bits de los Chips PMDs
+  83:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	@param lenght-Números de bytes que se leerán
+  84:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	@param buffer- Buffer de almacenamiento de datos*/
+  85:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** static PMDuint16 PMDParallel_ReceiveResponse(PMDParallelIOTransportData* transport_data, PMDuint16 
+  86:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 
+  87:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** /** \ingroup PMDpar
+  88:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	\brief Esta función realiza:
+  89:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	1.Envió de comando/datos a los chips PMDs
+  90:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	2.Recepción de Datos 
+  91:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	3. Checksum de datos
+  92:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	@param XCt- Número de Datos (de 16Bits) que se enviarán a los chips
+  93:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	@param XDat- Buffer que contiene los datos que serán transmitidos. 
+  94:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 		   Incluye también el Comando
+  95:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	@param RCt-Número de Datos (de 16Bits) que serán recibidos por el Host de los Chipsets
+  96:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	@param rDat-Buffer para el almacenamiento de los datos que se reciben*/
+  97:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** static PMDuint16 PMDParallel_Send(PMDParallelIOTransportData* transport_data, 
+  98:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 							  PMDuint8 xCt, PMDuint16* xDat, PMDuint8 rCt, PMDuint16* rDat);
+  99:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 							  
+ 100:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** /** \ingroup PMDpar
+ 101:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	\brief Libera espacio que fué asignado a la estructura PMDParallelIOTransportData*/							  
+ 102:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** static void PMDParallel_Close(void* transport_data);
+ 103:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 
+ 104:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** ////////////funciones agregadas por david
+ 105:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** static void OutP8BitHard(void);
+ 106:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** static PMDuint16 PMDParallel_HardReset(void* transport_data); 
+ 107:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 
+ 108:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 
+ 109:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 
+ 110:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** //**********************************************************************************************
+ 111:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** int16 Axis2PMDChipset(tAxis Axis) 
+ 112:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** {
+ 237               	,.LM0-.LFBB1
+ 238               	.LM0:
+ 239               	.LFBB1:
+ 240               	/* prologue: function */
+ 241               	/* frame size = 0 */
+ 113:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	switch(Axis) 
+ 242               	bn	68,0,113,.LM1-.LFBB1
+ 243               	.LM1:
+ 244 0000 8430      		cpi r24,4
+ 245 0002 9105      		cpc r25,__zero_reg__
+ 246 0004 04F0      		brlt .L2
+ 247 0006 8830      		cpi r24,8
+ 248 0008 9105      		cpc r25,__zero_reg__
+ 249 000a 04F0      		brlt .L3
+ 250 000c 0C97      		sbiw r24,12
+ 251 000e 04F4      		brge .L2
+ 252 0010 00C0      		rjmp .L8
+ 253               	.L3:
+ 254 0012 21E0      		ldi r18,lo8(1)
+ 255 0014 30E0      		ldi r19,hi8(1)
+ 256 0016 00C0      		rjmp .L5
+ 257               	.L2:
+ 258 0018 20E0      		ldi r18,lo8(0)
+ 259 001a 30E0      		ldi r19,hi8(0)
+ 260 001c 00C0      		rjmp .L5
+ 261               	.L8:
+ 262 001e 22E0      		ldi r18,lo8(2)
+ 263 0020 30E0      		ldi r19,hi8(2)
+ 264               	.L5:
+ 114:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	{                              		// name on connector board:
+ 115:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 		//PMDChipSet1 Waist=0
+ 116:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 		case AxisWaist 			: 	return PMDChipSet1;      	// cintura
+ 117:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 		case AxisShoulder 		: 	return PMDChipSet1;   		// hombro
+ 118:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 		case AxisElbow 			: 	return PMDChipSet1;      	// codo
+ 119:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 		case AxisPitch 			: 	return PMDChipSet1;      	// pitch
+ 120:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 		
+ 121:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 		//PMDChipSet2
+ 122:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 		case AxisRoll 			: 	return PMDChipSet2;       	// roll esta en otro chipset 
+ 123:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 		case AxisAux1 			: 	return PMDChipSet2;       	// aux1
+ 124:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 		case AxisAux2 			: 	return PMDChipSet2;       	// aux2
+ 125:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 		case AxisAux3 			: 	return PMDChipSet2;       	// aux3
+ 126:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 		//PMDChipSet3
+ 127:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 		case AxisAux4 			: 	return PMDChipSet3;       	// aux4
+ 128:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 		case AxisAux5 			: 	return PMDChipSet3;       	// aux5
+ 129:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 		case AxisAux6 			: 	return PMDChipSet3;       	// aux6
+ 130:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 		case AxisAux7 			: 	return PMDChipSet3;       	// aux7
+ 131:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 		
+ 132:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 		default 					: 	return PMDChipSet1;
+ 133:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	}
+ 134:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c ****   return PMDChipSet1;  // we must return something to avoid compiler warning
+ 135:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** } // Axis2PMDChipset
+ 265               	LFBB1
+ 266               	.LM2:
+ 267 0022 C901      		movw r24,r18
+ 268               	/* epilogue start */
+ 269 0024 0895      		ret
+ 271               	.Lscope1:
+ 274               	.global	Axis2PMDAxis
+ 276               	Axis2PMDAxis:
+ 136:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 
+ 137:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** //**********************************************************************************************
+ 138:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** // mapping which (logical) axis is to find on which chipset axis:
+ 139:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 
+ 140:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** int16 Axis2PMDAxis(tAxis Axis) 
+ 141:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** {
+ 277               	,141,.LM3-.LFBB2
+ 278               	.LM3:
+ 279               	.LFBB2:
+ 280               	/* prologue: function */
+ 281               	/* frame size = 0 */
+ 142:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	switch(Axis) 
+ 282               	bn	68,0,142,.LM4-.LFBB2
+ 283               	.LM4:
+ 284 0026 8630      		cpi r24,6
+ 285 0028 9105      		cpc r25,__zero_reg__
+ 286 002a 01F0      		breq .L12
+ 287 002c 8730      		cpi r24,7
+ 288 002e 9105      		cpc r25,__zero_reg__
+ 289 0030 04F4      		brge .L14
+ 290 0032 8230      		cpi r24,2
+ 291 0034 9105      		cpc r25,__zero_reg__
+ 292 0036 01F0      		breq .L12
+ 293 0038 8330      		cpi r24,3
+ 294 003a 9105      		cpc r25,__zero_reg__
+ 295 003c 04F4      		brge .L15
+ 296 003e 0197      		sbiw r24,1
+ 297 0040 01F4      		brne .L10
+ 298 0042 00C0      		rjmp .L11
+ 299               	.L15:
+ 300 0044 8330      		cpi r24,3
+ 301 0046 9105      		cpc r25,__zero_reg__
+ 302 0048 01F0      		breq .L13
+ 303 004a 0597      		sbiw r24,5
+ 304 004c 01F4      		brne .L10
+ 305 004e 00C0      		rjmp .L11
+ 306               	.L14:
+ 307 0050 8930      		cpi r24,9
+ 308 0052 9105      		cpc r25,__zero_reg__
+ 309 0054 01F0      		breq .L11
+ 310 0056 8A30      		cpi r24,10
+ 311 0058 9105      		cpc r25,__zero_reg__
+ 312 005a 04F4      		brge .L16
+ 313 005c 0797      		sbiw r24,7
+ 314 005e 01F4      		brne .L10
+ 315 0060 00C0      		rjmp .L13
+ 316               	.L16:
+ 317 0062 8A30      		cpi r24,10
+ 318 0064 9105      		cpc r25,__zero_reg__
+ 319 0066 01F0      		breq .L12
+ 320 0068 0B97      		sbiw r24,11
+ 321 006a 01F4      		brne .L10
+ 322 006c 00C0      		rjmp .L13
+ 323               	.L11:
+ 324 006e 21E0      		ldi r18,lo8(1)
+ 325 0070 30E0      		ldi r19,hi8(1)
+ 326 0072 00C0      		rjmp .L17
+ 327               	.L10:
+ 328 0074 20E0      		ldi r18,lo8(0)
+ 329 0076 30E0      		ldi r19,hi8(0)
+ 330 0078 00C0      		rjmp .L17
+ 331               	.L12:
+ 332 007a 22E0      		ldi r18,lo8(2)
+ 333 007c 30E0      		ldi r19,hi8(2)
+ 334 007e 00C0      		rjmp .L17
+ 335               	.L13:
+ 336 0080 23E0      		ldi r18,lo8(3)
+ 337 0082 30E0      		ldi r19,hi8(3)
+ 338               	.L17:
+ 143:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	{
+ 144:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 		case AxisWaist 		: 	return PMDAxis1; //0
+ 145:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 		case AxisShoulder 	: 	return PMDAxis2; //1
+ 146:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 		case AxisElbow 		:	return PMDAxis3; //2
+ 147:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 		case AxisPitch 		: 	return PMDAxis4; //3		
+ 148:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 		
+ 149:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 		case AxisRoll 		: 	return PMDAxis1; //0
+ 150:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 		case AxisAux1 		: 	return PMDAxis2; //1		
+ 151:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 		case AxisAux2 		: 	return PMDAxis3;    	
+ 152:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 		case AxisAux3 		: 	return PMDAxis4;       
+ 153:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 		
+ 154:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 		case AxisAux4 		: 	return PMDAxis1;       
+ 155:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 		case AxisAux5 		: 	return PMDAxis2;       
+ 156:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 		case AxisAux6 		: 	return PMDAxis3;       
+ 157:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 		case AxisAux7 		: 	return PMDAxis4;      	
+ 158:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 		default 			:   return PMDAxis1;
+ 159:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	}
+ 160:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c ****   return PMDAxis1;  // we must return something
+ 161:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** } // Axis2PMDAxis
+ 339               	gue start */
+ 340               		ret
+ 342               	.Lscope2:
+ 345               	PMDParallel_GetStatus:
+ 347               	.LM6:
+ 348               	.LFBB3:
+ 162:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 
+ 163:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 
+ 164:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** //*************************************************************************************************
+ 165:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** void OutP8BitCmd(PMDuint16 PMDChipSet, PMDuint16 dataword) 
+ 166:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** {
+ 167:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c ****   writePMDcommand(PMDChipSet,dataword);   // low-level function, provided by basicIO.h
+ 168:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** }
+ 169:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 
+ 170:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** //*************************************************************************************************
+ 171:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** void OutP8BitHard(void) 
+ 172:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** {
+ 173:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c ****   writePMDreset(); 
+ 174:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** }
+ 175:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c ****  
+ 176:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c ****  
+ 177:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c ****  //************************************************************************************************
+ 178:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** void OutP8Bit(PMDuint16 PMDChipSet, PMDuint16 dataword) 
+ 179:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** {
+ 180:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c ****   writePMDdata(PMDChipSet,dataword);
+ 181:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** }
+ 182:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 
+ 183:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** //*************************************************************************************************
+ 184:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** PMDuint16 InP8Bit(PMDuint16 PMDChipSet) 
+ 185:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** {
+ 186:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c ****   return readPMDdata(PMDChipSet);
+ 187:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** }
+ 188:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** //*************************************************************************************************
+ 189:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** PMDuint16 InP8BitStatus(PMDuint16 PMDChipSet) 
+ 190:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** {
+ 191:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c ****   return readPMDstatus(PMDChipSet);
+ 192:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** }
+ 193:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 
+ 194:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c ****  
+ 195:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** //*************************************************************************************************
+ 196:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 
+ 197:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 
+ 198:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** PMDuint16 PMDParallel_GetStatus(void* transport_data)
+ 199:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** {
+ 349               	e: function */
+ 350               	/* frame size = 0 */
+ 352               	.LM7:
+ 353               		movw r30,r24
+ 200:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	PMDParallelIOTransportData* PIOtransport_data = (PMDParallelIOTransportData*)transport_data;
+ 354               	bn	68,0,202,.LM8-.LFBB3
+ 355               	.LM8:
+ 356 0088 FC01      		ldd r18,Z+26
+ 201:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 
+ 202:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	return PIOtransport_data->InPStatus(PIOtransport_data->dcs_Port);
+ 357               	d r19,Z+27
+ 358               		ld r24,Z
+ 359 008a 228D      		ldd r25,Z+1
+ 360 008c 338D      		movw r30,r18
+ 361 008e 8081      		icall
+ 362 0090 9181      	/* epilogue start */
+ 364 0094 0995      	.LM9:
+ 365               		ret
+ 203:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** }
+ 366               	DParallel_GetStatus, .-PMDParallel_GetStatus
+ 367               	.Lscope3:
+ 370               	PMDParallel_IsReady:
+ 372               	.LM10:
+ 373               	.LFBB4:
+ 204:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	
+ 205:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** //*************************************************************************************************
+ 206:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** PMDuint16 PMDParallel_IsReady(void* transport_data)
+ 207:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** {
+ 374               	6
+ 375               		push r17
+ 376               	/* prologue: function */
+ 377 0098 0F93      	/* frame size = 0 */
+ 379               	.LM11:
+ 380               		movw r16,r24
+ 208:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	PMDParallelIOTransportData* PIOtransport_data = (PMDParallelIOTransportData*)transport_data;
+ 381               		68,0,210,.LM12-.LFBB4
+ 382               	.LM12:
+ 383 009c 8C01      		movw r26,r24
+ 209:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 
+ 210:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	return ((PIOtransport_data->InPStatus(PIOtransport_data->dcs_Port)
+ 384               	iw r26,26
+ 385               		ld r30,X+
+ 386 009e DC01      		ld r31,X
+ 387 00a0 5A96      		sbiw r26,26+1
+ 388 00a2 ED91      		ld r24,X+
+ 389 00a4 FC91      		ld r25,X
+ 390 00a6 5B97      		icall
+ 391 00a8 8D91      		ldi r20,lo8(0)
+ 392 00aa 9C91      		ldi r21,hi8(0)
+ 393 00ac 0995      		movw r30,r16
+ 394 00ae 40E0      		ldd r18,Z+2
+ 395 00b0 50E0      		ldd r19,Z+3
+ 396 00b2 F801      		and r18,r24
+ 397 00b4 2281      		and r19,r25
+ 398 00b6 3381      		ldd r24,Z+4
+ 399 00b8 2823      		ldd r25,Z+5
+ 400 00ba 3923      		cp r18,r24
+ 401 00bc 8481      		cpc r19,r25
+ 402 00be 9581      		brne .L22
+ 403 00c0 2817      		ldi r20,lo8(1)
+ 404 00c2 3907      		ldi r21,hi8(1)
+ 405 00c4 01F4      	.L22:
+ 407 00c8 50E0      	.LM13:
+ 408               		movw r24,r20
+ 211:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 		& PIOtransport_data->readyMask) == PIOtransport_data->readyValue);
+ 212:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** }
+ 409               	 r17
+ 410               		pop r16
+ 411 00ca CA01      		ret
+ 413 00cc 1F91      	.Lscope4:
+ 416               	PMDParallel_HasInterrupt:
+ 418               	.LM14:
+ 419               	.LFBB5:
+ 420               		push r16
+ 213:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 
+ 214:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** //*************************************************************************************************
+ 215:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** PMDuint16 PMDParallel_HasInterrupt(void* transport_data)
+ 216:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** {
+ 421               	 prologue: function */
+ 422               	/* frame size = 0 */
+ 424 00d2 0F93      	.LM15:
+ 425 00d4 1F93      		movw r16,r24
+ 427               	.LM16:
+ 217:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	PMDParallelIOTransportData* PIOtransport_data = (PMDParallelIOTransportData*)transport_data;
+ 428               	26,r24
+ 429               		adiw r26,26
+ 430 00d6 8C01      		ld r30,X+
+ 218:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 
+ 219:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	return ((PIOtransport_data->InPStatus(PIOtransport_data->dcs_Port) 
+ 431               	 r31,X
+ 432               		sbiw r26,26+1
+ 433 00d8 DC01      		ld r24,X+
+ 434 00da 5A96      		ld r25,X
+ 435 00dc ED91      		icall
+ 436 00de FC91      		ldi r20,lo8(0)
+ 437 00e0 5B97      		ldi r21,hi8(0)
+ 438 00e2 8D91      		movw r30,r16
+ 439 00e4 9C91      		ldd r18,Z+6
+ 440 00e6 0995      		ldd r19,Z+7
+ 441 00e8 40E0      		and r18,r24
+ 442 00ea 50E0      		and r19,r25
+ 443 00ec F801      		ldd r24,Z+8
+ 444 00ee 2681      		ldd r25,Z+9
+ 445 00f0 3781      		cp r18,r24
+ 446 00f2 2823      		cpc r19,r25
+ 447 00f4 3923      		brne .L25
+ 448 00f6 8085      		ldi r20,lo8(1)
+ 449 00f8 9185      		ldi r21,hi8(1)
+ 450 00fa 2817      	.L25:
+ 452 00fe 01F4      	.LM17:
+ 453 0100 41E0      		movw r24,r20
+ 454 0102 50E0      	/* epilogue start */
+ 455               		pop r17
+ 220:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 		& PIOtransport_data->hostInterruptMask) == PIOtransport_data->hostInterruptValue);
+ 221:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** }
+ 456               	arallel_HasInterrupt, .-PMDParallel_HasInterrupt
+ 457               	.Lscope5:
+ 460 0106 1F91      	PMDParallel_HasError:
+ 462 010a 0895      	.LM18:
+ 463               	.LFBB6:
+ 464               		push r16
+ 465               		push r17
+ 466               	/* prologue: function */
+ 467               	/* frame size = 0 */
+ 222:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 		
+ 223:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** //*************************************************************************************************
+ 224:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** PMDuint16 PMDParallel_HasError(void* transport_data)
+ 225:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** {
+ 468               	,226,.LM19-.LFBB6
+ 469               	.LM19:
+ 470               		movw r16,r24
+ 472 010e 1F93      	.LM20:
+ 473               		movw r26,r24
+ 474               		adiw r26,26
+ 226:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	PMDParallelIOTransportData* PIOtransport_data = (PMDParallelIOTransportData*)transport_data;
+ 475               	,X+
+ 476               		ld r31,X
+ 477 0110 8C01      		sbiw r26,26+1
+ 227:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 
+ 228:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	return ((PIOtransport_data->InPStatus(PIOtransport_data->dcs_Port) 
+ 478               	 r24,X+
+ 479               		ld r25,X
+ 480 0112 DC01      		icall
+ 481 0114 5A96      		ldi r20,lo8(0)
+ 482 0116 ED91      		ldi r21,hi8(0)
+ 483 0118 FC91      		movw r30,r16
+ 484 011a 5B97      		ldd r18,Z+10
+ 485 011c 8D91      		ldd r19,Z+11
+ 486 011e 9C91      		and r18,r24
+ 487 0120 0995      		and r19,r25
+ 488 0122 40E0      		ldd r24,Z+12
+ 489 0124 50E0      		ldd r25,Z+13
+ 490 0126 F801      		cp r18,r24
+ 491 0128 2285      		cpc r19,r25
+ 492 012a 3385      		brne .L28
+ 493 012c 2823      		ldi r20,lo8(1)
+ 494 012e 3923      		ldi r21,hi8(1)
+ 495 0130 8485      	.L28:
+ 497 0134 2817      	.LM21:
+ 498 0136 3907      		movw r24,r20
+ 499 0138 01F4      	/* epilogue start */
+ 500 013a 41E0      		pop r17
+ 501 013c 50E0      		pop r16
+ 502               		ret
+ 229:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 		& PIOtransport_data->commandStatusMask) == PIOtransport_data->commandStatusValue);
+ 230:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** }
+ 503               	or, .-PMDParallel_HasError
+ 504               	.Lscope6:
+ 508 0142 0F91      	PMDParallel_HardReset:
+ 510               	.LM22:
+ 511               	.LFBB7:
+ 512               	/* prologue: function */
+ 513               	/* frame size = 0 */
+ 515               	.LM23:
+ 231:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 
+ 232:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 		
+ 233:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** //*************************************************************************************************
+ 234:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 
+ 235:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 
+ 236:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 
+ 237:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** PMDuint16 PMDParallel_HardReset(void* transport_data)
+ 238:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** {
+ 516               	
+ 517               		adiw r26,22
+ 518               		ld r30,X+
+ 519               		ld r31,X
+ 520               		sbiw r26,22+1
+ 239:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 
+ 240:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c ****     PMDParallelIOTransportData* PIOtransport_data = (PMDParallelIOTransportData*)transport_data;
+ 241:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	//le debe de entar transport_data por que proviene 
+ 242:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	//de una axis ya inicualizada correctamente
+ 243:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	PIOtransport_data->Hard();
+ 521               	ll
+ 523 0146 DC01      	.LM24:
+ 524 0148 5696      		ldi r24,lo8(0)
+ 525 014a ED91      		ldi r25,hi8(0)
+ 526 014c FC91      	/* epilogue start */
+ 527 014e 5797      		ret
+ 244:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c ****  
+ 245:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c ****     return PMD_NOERROR;
+ 246:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c ****     
+ 247:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** }
+ 529               	:
+ 533               	.global	PMDParallel_InitData
+ 535               	PMDParallel_InitData:
+ 537               	.LM25:
+ 538               	.LFBB8:
+ 539               	/* prologue: function */
+ 540               	/* frame size = 0 */
+ 541               		movw r30,r24
+ 248:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 
+ 249:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** //*************************************************************************************************
+ 250:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** //Esta Funcion Verifica que el Dato retornado por la Funcion Read_Status_Register contenga en el Bi
+ 251:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** //(HostRdy signal) un Valor igual a 1, indicando al HOST que El PMD esta Listo para Operaciones.
+ 252:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 
+ 253:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** PMDuint16 PMDParallel_WaitForReady(PMDParallelIOTransportData* transport_data)
+ 254:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** {
+ 255:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	PMDuint16 in_val;
+ 256:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c ****     
+ 257:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** #ifdef __TIME_WAITFORREADY
+ 258:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 		PMDuint16 timer;
+ 259:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 		
+ 260:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c ****   		timer 		= 12000; 																      
+ 261:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 		
+ 262:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 		for(;;) 
+ 263:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 		{
+ 264:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 			// poll ready port, if not ready, loop
+ 265:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c ****     		in_val = transport_data->InPStatus(transport_data->dcs_Port);
+ 266:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c ****     		if ((in_val != 0xFFFF) && ((in_val & transport_data->readyMask) == transport_data->readyValue
+ 267:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 				return PMD_ERR_OK;
+ 268:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 			else// not ready 
+ 269:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 			{ 
+ 270:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 				timer--;
+ 271:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 				if(timer == 0) 
+ 272:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 				{
+ 273:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 					/* se enciende el LED Rojo*/
+ 274:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 					Led_on(Rojo);
+ 275:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 					printf("PMDParallel_WaitForReady=> 40ms Timeout Error\n");
+ 276:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 					return PMD_ERR_CommTimeoutError;
+ 277:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 				} // if timer == 0
+ 278:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 			}
+ 279:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c ****   		} // for EVER   
+ 280:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** #else
+ 281:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c ****     // wait indefinitely
+ 282:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c ****     for(;;)
+ 283:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c ****     {
+ 284:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c ****         // poll ready port, if not ready, loop
+ 285:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c ****         in_val = transport_data->InPStatus(transport_data->dcs_Port);
+ 286:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 		
+ 287:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c ****         if ((in_val != 0xFFFF) 
+ 288:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 			&& ((in_val & transport_data->readyMask) == transport_data->readyValue))
+ 289:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c ****                 return PMD_ERR_OK;
+ 290:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c ****     }
+ 291:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** #endif
+ 292:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** } 
+ 293:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** //*************************************************************************************************
+ 294:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** // wait for the PMD´s to be ready for the next command
+ 295:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** PMDuint16 PMDParallel_GetCommandStatus(PMDParallelIOTransportData* transport_data)
+ 296:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** {
+ 297:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	PMDuint16 result;
+ 298:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	int16     in_val;
+ 299:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 
+ 300:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	if((result = PMDParallel_WaitForReady(transport_data)) != PMD_ERR_OK)
+ 301:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	{
+ 302:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	    printf("PMDParallel_GetCommandStatus=> Wait Status Register Timeout \n");    
+ 303:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	    return result;
+ 304:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	}	
+ 305:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 
+ 306:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 
+ 307:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	//En este punto Verifica que el Dato retornado por la Funcion Read_Status_Register contenga en el 
+ 308:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	//(HostIOError signal) un Valor igual a 1, indicando  que El PMD contiene un HOST I/O Error (ver s
+ 309:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	//10.3.3 del Manual de Usuario). 
+ 310:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	
+ 311:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	in_val = transport_data->InPStatus(transport_data->dcs_Port);
+ 312:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	if ((in_val & transport_data->commandStatusMask) == transport_data->commandStatusValue)
+ 313:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	{
+ 314:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 		if (transport_data->bDiagnostics)
+ 315:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 				printf("PMDParallel_GetCommandStatus=> C-Motion: Command Error bit set.\n");
+ 316:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 		return PMD_ERR_CommandError;
+ 317:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	}
+ 318:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	return PMD_ERR_OK;
+ 319:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** } 
+ 320:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 
+ 321:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** //*************************************************************************************************
+ 322:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** PMDuint16 PMDParallel_ReceiveResponse(PMDParallelIOTransportData* transport_data, 
+ 323:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 															 PMDuint16 length, PMDuint16 buffer[])
+ 324:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** {
+ 325:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c ****         PMDuint16 result;
+ 326:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c ****         PMDuint16 index;
+ 327:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 
+ 328:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c ****        result = PMD_ERR_PMDNotInitialized;
+ 329:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 
+ 330:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c ****         // get the data from the jarboter Controller
+ 331:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c ****         for(index=0; index<length; index++)
+ 332:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c ****         {
+ 333:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c ****             if((result = PMDParallel_WaitForReady(transport_data)) != PMD_ERR_OK)
+ 334:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 			{
+ 335:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 			    printf("PMDParallel_ReceiveResponse=> wait for Cheksum timeout \n");		
+ 336:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c ****                 break;
+ 337:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 			}
+ 338:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c ****             
+ 339:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 			buffer[index] = transport_data->InPData(transport_data->dcs_Port);
+ 340:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c ****         }
+ 341:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 
+ 342:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c ****         return result;
+ 343:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** }	
+ 344:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 
+ 345:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 
+ 346:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** //*************************************************************************************************
+ 347:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** // send the command and data to the chips PMDs
+ 348:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 
+ 349:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** //XCt=Numero de DAtos a Enviar
+ 350:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** //XDatPuntero que Contiene los Datos a enviar
+ 351:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** //RCt=Numero de Datos a Recibir
+ 352:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** //rDat=Puntero de almacena  los Datos a Recibir
+ 353:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 
+ 354:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** //result=MD_ERR_CommTimeoutError o  PMD_ERR_OK
+ 355:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 
+ 356:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** PMDuint16 PMDParallel_Send(PMDParallelIOTransportData* transport_data, 
+ 357:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 							  PMDuint8 xCt, PMDuint16* xDat, PMDuint8 rCt, PMDuint16* rDat)
+ 358:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** {
+ 359:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 
+ 360:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c ****     PMDuint16 result;
+ 361:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	PMDuint16 commandstatus = PMD_ERR_OK;
+ 362:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c ****     PMDuint16 index;
+ 363:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c ****     long messageChecksum=0;
+ 364:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c ****     PMDuint16 chipsetChecksum=0;
+ 365:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 
+ 366:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	result=PMD_ERR_PMDNotInitialized;
+ 367:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** ///////////////////////////////ESCRIBE UN COMANDO/////////////////////////////////////////  
+ 368:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c ****     if((result = PMDParallel_WaitForReady(transport_data)) == PMD_ERR_OK) //Esta readey
+ 369:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c ****     {  
+ 370:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 		// put the command into the PMD1/PMD2/PMD3
+ 371:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 		transport_data->OutPCmd(transport_data->dcs_Port, xDat[0]);
+ 372:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 		
+ 373:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 		// put the data into the PMD1/PMD2/PMD3
+ 374:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 		// one word at a time
+ 375:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c ****         for(index=1; index<xCt; index++)
+ 376:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c ****         {
+ 377:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 			if((result = PMDParallel_WaitForReady(transport_data)) != PMD_ERR_OK)
+ 378:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 				break;
+ 379:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 			
+ 380:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 			transport_data->OutPData(transport_data->dcs_Port,xDat[index]);
+ 381:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c ****         }
+ 382:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 		
+ 383:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 		if(result == PMD_ERR_OK)
+ 384:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 			commandstatus = PMDParallel_GetCommandStatus(transport_data);
+ 385:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 		
+ 386:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 		
+ 387:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c ****     }
+ 388:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	else
+ 389:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	   printf("PMDParallel_Send=> Error Envio Datos o Comando \n");    
+ 390:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	//El comando fue un exito
+ 391:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	//El commandstatus por defaut despues de reset tiene un (1) en campo de error
+ 392:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	//Pero si ejecutamos el coammand PMDGetHostIOError este se vuelve (0)
+ 393:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	//Se debe de limpiar esta bandera antes de ejecutar cuanlquier commando, pues
+ 394:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	//no tiene sentido que halla error seguido de un reset.
+ 395:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	
+ 396:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	
+ 397:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	/////////////////////////////LEE DATOS //////////////////////////////
+ 398:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c ****     // get the data from the DK2000
+ 399:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c ****     for(index=0; index<rCt; index++)
+ 400:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c ****     {
+ 401:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c ****         if((result = PMDParallel_WaitForReady(transport_data)) != PMD_ERR_OK)
+ 402:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	    {
+ 403:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	       printf("PMDParallel_Send=> Error datos recibidos\n");    
+ 404:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c ****           break;
+ 405:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 		} 
+ 406:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c ****         
+ 407:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 		rDat[index] = transport_data->InPData(transport_data->dcs_Port);
+ 408:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c ****     }
+ 409:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** ///////////////////////////VERIFICACIONES/////////////////////////////////    
+ 410:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c ****     if(transport_data->bVerifyChecksum)
+ 411:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	{
+ 412:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 		for(index=0; index<xCt; index++)
+ 413:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 			messageChecksum += xDat[index];
+ 414:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 		  
+ 415:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 		for(index=0; index<rCt; index++)
+ 416:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 			messageChecksum += rDat[index];
+ 417:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 		 
+ 418:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 		messageChecksum = messageChecksum & 0xFFFF;
+ 419:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 		
+ 420:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 		result = PMDParallel_ReceiveResponse(transport_data, 1, &chipsetChecksum);
+ 421:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 		if ( result == PMD_ERR_OK && messageChecksum != chipsetChecksum )
+ 422:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 		{			
+ 423:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 			if (transport_data->bDiagnostics)
+ 424:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 			{	
+ 425:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 				printf("PMDParallel_Send=> Checksum failure.  expected: %ld  got: %x\n",messageChecksum,chipset
+ 426:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 				
+ 427:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 				printf("PMDParallel_Send=> C-Motion: %s ",PMDGetOpcodeText(xDat[0]));
+ 428:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 				
+ 429:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 				for(index=0; index<xCt; index++)
+ 430:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 					printf("%X ",xDat[index]);
+ 431:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 				
+ 432:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 				printf("\n");
+ 433:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 		    }  
+ 434:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 			return PMD_ERR_ChecksumError;
+ 435:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 		}
+ 436:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	}
+ 437:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	
+ 438:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	if (commandstatus!=PMD_ERR_OK)
+ 439:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	{
+ 440:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 		if (transport_data->bDiagnostics)
+ 441:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 		{
+ 442:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 			printf("PMDParallel_Send=> Host I/O Error \n");
+ 443:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 			printf("PMDParallel_Send=> C-Motion: %s ",PMDGetOpcodeText(xDat[0]));
+ 444:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 			
+ 445:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 			for(index=0; index<xCt; index++)
+ 446:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 				printf("%X ",xDat[index]);
+ 447:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 			
+ 448:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 			printf("\n");
+ 449:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 		}
+ 450:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 		return commandstatus;
+ 451:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	}
+ 452:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	
+ 453:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	return result;
+ 454:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** }
+ 455:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 
+ 456:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 
+ 457:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 
+ 458:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** //*************************************************************************************************
+ 459:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** void PMDParallel_Close(void* transport_data)
+ 460:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** {
+ 461:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c ****     free(transport_data);
+ 462:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** }	
+ 463:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** //*************************************************************************************************
+ 464:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** void PMDParallel_InitData(PMDParallelIOTransportData* transport_data, int16 IOMode)
+ 465:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** {
+ 543               	4,lo8(-32768)
+ 544               		ldi r25,hi8(-32768)
+ 545               		std Z+3,r25
+ 546               		std Z+2,r24
+ 548 0158 FC01      	.LM27:
+ 466:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	// assign default values
+ 467:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 
+ 468:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 
+ 469:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	transport_data->readyMask = 0x8000;
+ 549               	+5,r25
+ 550               		std Z+4,r24
+ 552 015c 90E8      	.LM28:
+ 553 015e 9383      		ldi r24,lo8(16384)
+ 554 0160 8283      		ldi r25,hi8(16384)
+ 470:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	transport_data->readyValue = 0x8000;
+ 555               	+7,r25
+ 556               		std Z+6,r24
+ 558 0164 8483      	.LM29:
+ 471:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	transport_data->hostInterruptMask = 0x4000;
+ 559               	 Z+9,r25
+ 560               		std Z+8,r24
+ 562 0168 90E4      	.LM30:
+ 563 016a 9783      		ldi r24,lo8(8192)
+ 564 016c 8683      		ldi r25,hi8(8192)
+ 472:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	transport_data->hostInterruptValue = 0x4000;
+ 565               	+11,r25
+ 566               		std Z+10,r24
+ 568 0170 8087      	.LM31:
+ 473:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	transport_data->commandStatusMask = 0x2000;
+ 569               	 Z+13,r25
+ 570               		std Z+12,r24
+ 572 0174 90E2      	.LM32:
+ 573 0176 9387      		ldi r24,lo8(1)
+ 574 0178 8287      		ldi r25,hi8(1)
+ 474:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	transport_data->commandStatusValue = 0x2000;
+ 575               	+15,r25
+ 576               		std Z+14,r24
+ 578 017c 8487      	.LM33:
+ 475:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 
+ 476:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	// by default always verify the checksum
+ 477:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	transport_data->bVerifyChecksum = 1;
+ 579               	 Z+17,r25
+ 580               		std Z+16,r24
+ 582 0180 90E0      	.LM34:
+ 583 0182 9787      		cpi r22,1
+ 584 0184 8687      		cpc r23,__zero_reg__
+ 478:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	// by default disable diagnostics
+ 479:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	// Modificado por David
+ 480:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	// Activo los diagnosticos
+ 481:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	transport_data->bDiagnostics = 1;
+ 585               	.L35
+ 587 0186 918B      	.LM35:
+ 588 0188 808B      		ldi r24,lo8(gs(OutP8Bit))
+ 482:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 
+ 483:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	// assign default handlers/masks according to IO mode
+ 484:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	switch (IOMode)
+ 589               	 r25,hi8(gs(OutP8Bit))
+ 590               		std Z+19,r25
+ 591 018a 6130      		std Z+18,r24
+ 593 018e 01F4      	.LM36:
+ 485:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	{
+ 486:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	case PMDParallelIOMode_8_16:
+ 487:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 		transport_data->OutPData = OutP8Bit ;
+ 594               	r24,lo8(gs(OutP8BitCmd))
+ 595               		ldi r25,hi8(gs(OutP8BitCmd))
+ 596 0190 80E0      		std Z+21,r25
+ 597 0192 90E0      		std Z+20,r24
+ 599 0196 828B      	.LM37:
+ 488:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 		transport_data->OutPCmd = OutP8BitCmd;
+ 600               	24,lo8(gs(InP8Bit))
+ 601               		ldi r25,hi8(gs(InP8Bit))
+ 602 0198 80E0      		std Z+25,r25
+ 603 019a 90E0      		std Z+24,r24
+ 605 019e 848B      	.LM38:
+ 489:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 		transport_data->InPData = InP8Bit;
+ 606               	24,lo8(gs(InP8BitStatus))
+ 607               		ldi r25,hi8(gs(InP8BitStatus))
+ 608 01a0 80E0      		std Z+27,r25
+ 609 01a2 90E0      		std Z+26,r24
+ 611 01a6 808F      	.LM39:
+ 490:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 		transport_data->InPStatus = InP8BitStatus;
+ 612               	24,lo8(gs(OutP8BitHard))
+ 613               		ldi r25,hi8(gs(OutP8BitHard))
+ 614 01a8 80E0      		std Z+23,r25
+ 615 01aa 90E0      		std Z+22,r24
+ 616 01ac 938F      	.L35:
+ 617 01ae 828F      		ret
+ 491:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 		transport_data->Hard = OutP8BitHard;
+ 618               		PMDParallel_InitData, .-PMDParallel_InitData
+ 619               	.Lscope8:
+ 622 01b4 978B      	.global	PMDParallel_Init
+ 624               	PMDParallel_Init:
+ 626               	.LM40:
+ 627               	.LFBB9:
+ 628               	/* prologue: function */
+ 629               	/* frame size = 0 */
+ 630               		movw r30,r24
+ 632               	.LM41:
+ 492:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 		break;	
+ 493:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	}
+ 494:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** }
+ 495:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 
+ 496:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 
+ 497:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** //*************************************************************************************************
+ 498:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** void PMDParallel_Init(PMDIOTransport* transport)
+ 499:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** {
+ 633               	(PMDParallel_Send))
+ 634               		ldi r25,hi8(gs(PMDParallel_Send))
+ 635               		std Z+1,r25
+ 636               		st Z,r24
+ 638 01ba FC01      	.LM42:
+ 500:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	// setup function pointers
+ 501:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	transport->SendCommand = PMDParallel_Send;
+ 639               	24,lo8(gs(PMDParallel_GetStatus))
+ 640               		ldi r25,hi8(gs(PMDParallel_GetStatus))
+ 641 01bc 80E0      		std Z+5,r25
+ 642 01be 90E0      		std Z+4,r24
+ 644 01c2 8083      	.LM43:
+ 502:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	transport->GetStatus = PMDParallel_GetStatus;
+ 645               	24,lo8(gs(PMDParallel_IsReady))
+ 646               		ldi r25,hi8(gs(PMDParallel_IsReady))
+ 647 01c4 80E0      		std Z+7,r25
+ 648 01c6 90E0      		std Z+6,r24
+ 650 01ca 8483      	.LM44:
+ 503:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	transport->IsReady = PMDParallel_IsReady;
+ 651               	24,lo8(gs(PMDParallel_HasInterrupt))
+ 652               		ldi r25,hi8(gs(PMDParallel_HasInterrupt))
+ 653 01cc 80E0      		std Z+9,r25
+ 654 01ce 90E0      		std Z+8,r24
+ 656 01d2 8683      	.LM45:
+ 504:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	transport->HasInterrupt = PMDParallel_HasInterrupt;
+ 657               	24,lo8(gs(PMDParallel_HasError))
+ 658               		ldi r25,hi8(gs(PMDParallel_HasError))
+ 659 01d4 80E0      		std Z+11,r25
+ 660 01d6 90E0      		std Z+10,r24
+ 662 01da 8087      	.LM46:
+ 505:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	transport->HasError = PMDParallel_HasError;
+ 663               	24,lo8(gs(PMDParallel_HardReset))
+ 664               		ldi r25,hi8(gs(PMDParallel_HardReset))
+ 665 01dc 80E0      		std Z+13,r25
+ 666 01de 90E0      		std Z+12,r24
+ 668 01e2 8287      	.LM47:
+ 506:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c ****   	transport->HardReset = PMDParallel_HardReset;
+ 669               	24,lo8(gs(PMDParallel_Close))
+ 670               		ldi r25,hi8(gs(PMDParallel_Close))
+ 671 01e4 80E0      		std Z+3,r25
+ 672 01e6 90E0      		std Z+2,r24
+ 673 01e8 9587      	/* epilogue start */
+ 507:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 
+ 508:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	transport->Close = PMDParallel_Close;
+ 675               	
+ 676               		ret
+ 678 01ee 90E0      	.Lscope9:
+ 509:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** } 
+ 682               	s	"PMDChipSet:P(4,4)",64,0,0,14
+ 683               	.global	PMDSetupAxisInterface_Parallel
+ 685               	PMDSetupAxisInterface_Parallel:
+ 687               	.LM49:
+ 688               	.LFBB10:
+ 689               		push r12
+ 690               		push r13
+ 691               		push r14
+ 692               		push r15
+ 693               		push r16
+ 510:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 
+ 511:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** //*************************************************************************************************
+ 512:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 
+ 513:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** PMDuint16 PMDSetupAxisInterface_Parallel(PMDAxisHandle* axis_handle, PMDAxis axis_number, PMDuint16
+ 514:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** {
+ 694               	ush r28
+ 695               		push r29
+ 696               	/* prologue: function */
+ 697 01f6 CF92      	/* frame size = 0 */
+ 698 01f8 DF92      		movw r16,r24
+ 699 01fa EF92      		movw r12,r22
+ 700 01fc FF92      		movw r14,r20
+ 702 0200 1F93      	.LM50:
+ 703 0202 CF93      		ldi r24,lo8(28)
+ 704 0204 DF93      		ldi r25,hi8(28)
+ 705               		call malloc
+ 706               		movw r28,r24
+ 708 0208 6B01      	.LM51:
+ 709 020a 7A01      		ldi r24,lo8(28)
+ 515:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	PMDParallelIOTransportData* transport_data;
+ 516:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	
+ 517:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	
+ 518:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	transport_data = (PMDParallelIOTransportData*) malloc( sizeof( PMDParallelIOTransportData ) );
+ 710               	t Z+,__zero_reg__
+ 711               	        dec r24
+ 712 020c 8CE1      		brne .-6
+ 714 0210 0E94 0000 	.LM52:
+ 715 0214 EC01      		sbiw r28,0
+ 519:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	memset(transport_data, 0, sizeof(PMDParallelIOTransportData));
+ 716               	.L39
+ 717               		ldi r18,lo8(8)
+ 718 0216 8CE1      		ldi r19,hi8(8)
+ 719 0218 FE01      		rjmp .L40
+ 720 021a 1192      	.L39:
+ 722 021e 01F4      	.LM53:
+ 520:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c ****     
+ 521:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	if(transport_data == 0) return rcNoMemory;  // check if operation succeeded
+ 723               	30,r16
+ 724               		std Z+3,r13
+ 725 0220 2097      		std Z+2,r12
+ 727 0224 28E0      	.LM54:
+ 728 0226 30E0      		std Y+1,r15
+ 729 0228 00C0      		st Y,r14
+ 522:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 
+ 523:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	// set the axis we are talking to with this handle
+ 524:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	axis_handle->axis = axis_number;
+ 731               	std Z+1,r15
+ 732               		st Z,r14
+ 734 022c D382      	.LM56:
+ 735 022e C282      		movw r24,r28
+ 525:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	
+ 526:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 
+ 527:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	// if required the transport data defaults can be changed here
+ 528:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	// e.g. board IO address (dataPort,commandPort,statusPort)
+ 529:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	//transport_data->dataPort = board_address;
+ 530:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	transport_data->dcs_Port = PMDChipSet;  // actual port is treated in low-level function in basicIO
+ 736               	r22,lo8(1)
+ 737               		ldi r23,hi8(1)
+ 738 0230 F982      		call PMDParallel_InitData
+ 531:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	axis_handle->chipset=PMDChipSet;
+ 740               	7:
+ 741               		subi r16,lo8(-(94))
+ 742 0234 F182      		sbci r17,hi8(-(94))
+ 743 0236 E082      		movw r30,r16
+ 532:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 
+ 533:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	// the transport data is initialized first to setup the defaults
+ 534:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	// make sure the IO mode is set correctly
+ 535:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	PMDParallel_InitData(transport_data, PMDParallelIOMode_8_16);
+ 744               	 Z+1,r29
+ 745               		st Z,r28
+ 747 023a 61E0      	.LM58:
+ 748 023c 70E0      		movw r24,r16
+ 749 023e 0E94 0000 		sbiw r24,14
+ 536:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 
+ 537:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	axis_handle->transport_data = (void*) transport_data;
+ 750               	PMDParallel_Init
+ 751               		ldi r18,lo8(0)
+ 752 0242 025A      		ldi r19,hi8(0)
+ 753 0244 1F4F      	.L40:
+ 755 0248 D183      	.LM59:
+ 756 024a C083      		movw r24,r18
+ 538:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 
+ 539:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	// initialize the transport (inits function pointers)
+ 540:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 	PMDParallel_Init(&axis_handle->transport);
+ 757               	ogue start */
+ 758               		pop r29
+ 759 024c C801      		pop r28
+ 760 024e 0E97      		pop r17
+ 761 0250 0E94 0000 		pop r16
+ 762 0254 20E0      		pop r15
+ 763 0256 30E0      		pop r14
+ 764               		pop r13
+ 541:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** 
+ 542:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c ****  return rcOK;
+ 543:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDpar.c **** }
+ 765               	
+ 766               		ret
+ 768               	.Lscope10:
+ 772 0260 0F91      	PMDParallel_Close:
+ 774 0264 EF90      	.LM60:
+ 775 0266 DF90      	.LFBB11:
+ 776 0268 CF90      	/* prologue: function */
+ 777 026a 0895      	/* frame size = 0 */
+ 779               	.LM61:
+ 780               		call free
+ 781               	/* epilogue start */
+ 783               	.LM62:
+ 784               		ret
+ 786               	.Lscope11:
+ 787               		.data
+ 788               	.LC0:
+ 789               		.string	"PMDParallel_WaitForReady=> 40ms Timeout Error"
+ 790               		.text
+ 794               	PMDParallel_WaitForReady:
+ 796               	.LM63:
+ 797               	.LFBB12:
+ 798               		push r16
+ 799               		push r17
+ 800 0000 504D 4450 		push r28
+ 800      6172 616C 
+ 800      6C65 6C5F 
+ 800      5761 6974 
+ 800      466F 7252 
+ 801               		push r29
+ 802               	/* prologue: function */
+ 803               	/* frame size = 0 */
+ 804               		movw r28,r24
+ 806               	.LM64:
+ 807               		ldi r16,lo8(12000)
+ 808               		ldi r17,hi8(12000)
+ 809 0272 0F93      	.L47:
+ 811 0276 CF93      	.LM65:
+ 812 0278 DF93      		ldd r30,Y+26
+ 813               		ldd r31,Y+27
+ 814               		ld r24,Y
+ 815 027a EC01      		ldd r25,Y+1
+ 816               		icall
+ 817               		movw r18,r24
+ 819 027e 1EE2      	.LM66:
+ 820               		ldi r24,hi8(-1)
+ 821               		cpi r18,lo8(-1)
+ 822               		cpc r19,r24
+ 823 0280 EA8D      		breq .L45
+ 824 0282 FB8D      		ldd r24,Y+2
+ 825 0284 8881      		ldd r25,Y+3
+ 826 0286 9981      		and r24,r18
+ 827 0288 0995      		and r25,r19
+ 828 028a 9C01      		ldd r18,Y+4
+ 829               		ldd r19,Y+5
+ 830               		cp r24,r18
+ 831 028c 8FEF      		cpc r25,r19
+ 832 028e 2F3F      		brne .L45
+ 833 0290 3807      		ldi r18,lo8(0)
+ 834 0292 01F0      		ldi r19,hi8(0)
+ 835 0294 8A81      		rjmp .L46
+ 836 0296 9B81      	.L45:
+ 838 029a 9323      	.LM67:
+ 839 029c 2C81      		subi r16,lo8(-(-1))
+ 840 029e 3D81      		sbci r17,hi8(-(-1))
+ 842 02a2 9307      	.LM68:
+ 843 02a4 01F4      		brne .L47
+ 845 02a8 30E0      	.LM69:
+ 846 02aa 00C0      		ldi r24,lo8(1)
+ 847               		call Led_on
+ 849               	.LM70:
+ 850 02ac 0150      		ldi r24,lo8(.LC0)
+ 851 02ae 1040      		ldi r25,hi8(.LC0)
+ 852               		call puts
+ 853               		ldi r18,lo8(32765)
+ 854 02b0 01F4      		ldi r19,hi8(32765)
+ 855               	.L46:
+ 857 02b2 81E0      	.LM71:
+ 858 02b4 0E94 0000 		movw r24,r18
+ 859               	/* epilogue start */
+ 860               		pop r29
+ 861 02b8 80E0      		pop r28
+ 862 02ba 90E0      		pop r17
+ 863 02bc 0E94 0000 		pop r16
+ 864 02c0 2DEF      		ret
+ 870               	.Lscope12:
+ 871 02c6 DF91      		.data
+ 872 02c8 CF91      	.LC1:
+ 873 02ca 1F91      		.string	"PMDParallel_GetCommandStatus=> Wait Status Register Timeout "
+ 874 02cc 0F91      	.LC2:
+ 875 02ce 0895      		.string	"PMDParallel_GetCommandStatus=> C-Motion: Command Error bit set."
+ 876               		.text
+ 879               	.global	PMDParallel_GetCommandStatus
+ 881               	PMDParallel_GetCommandStatus:
+ 883               	.LM72:
+ 884 002e 504D 4450 	.LFBB13:
+ 884      6172 616C 
+ 884      6C65 6C5F 
+ 884      4765 7443 
+ 884      6F6D 6D61 
+ 885               		push r16
+ 886 006b 504D 4450 		push r17
+ 886      6172 616C 
+ 886      6C65 6C5F 
+ 886      4765 7443 
+ 886      6F6D 6D61 
+ 887               		push r28
+ 888               		push r29
+ 889               	/* prologue: function */
+ 890               	/* frame size = 0 */
+ 891               		movw r28,r24
+ 893               	.LM73:
+ 894               		call PMDParallel_WaitForReady
+ 895               		movw r16,r24
+ 896 02d0 0F93      		sbiw r24,0
+ 897 02d2 1F93      		breq .L51
+ 899 02d6 DF93      	.LM74:
+ 900               		ldi r24,lo8(.LC1)
+ 901               		ldi r25,hi8(.LC1)
+ 902 02d8 EC01      		call puts
+ 903               		rjmp .L52
+ 904               	.L51:
+ 906 02de 8C01      	.LM75:
+ 907 02e0 0097      		ldd r30,Y+26
+ 908 02e2 01F0      		ldd r31,Y+27
+ 909               		ld r24,Y
+ 910               		ldd r25,Y+1
+ 911 02e4 80E0      		icall
+ 913 02e8 0E94 0000 	.LM76:
+ 914 02ec 00C0      		ldd r18,Y+10
+ 915               		ldd r19,Y+11
+ 916               		and r18,r24
+ 917               		and r19,r25
+ 918 02ee EA8D      		ldd r24,Y+12
+ 919 02f0 FB8D      		ldd r25,Y+13
+ 920 02f2 8881      		cp r18,r24
+ 921 02f4 9981      		cpc r19,r25
+ 922 02f6 0995      		brne .L52
+ 924               	.LM77:
+ 925 02f8 2A85      		ldd r24,Y+16
+ 926 02fa 3B85      		ldd r25,Y+17
+ 927 02fc 2823      		or r24,r25
+ 928 02fe 3923      		breq .L55
+ 929 0300 8C85      	.L53:
+ 931 0304 2817      	.LM78:
+ 932 0306 3907      		ldi r24,lo8(.LC2)
+ 933 0308 01F4      		ldi r25,hi8(.LC2)
+ 934               		call puts
+ 935               	.L55:
+ 936 030a 8889      		ldi r16,lo8(32767)
+ 937 030c 9989      		ldi r17,hi8(32767)
+ 938 030e 892B      	.L52:
+ 940               	.LM79:
+ 941               		movw r24,r16
+ 942               	/* epilogue start */
+ 943 0312 80E0      		pop r29
+ 944 0314 90E0      		pop r28
+ 945 0316 0E94 0000 		pop r17
+ 946               		pop r16
+ 947 031a 0FEF      		ret
+ 952 031e C801      	.Lscope13:
+ 953               		.data
+ 954 0320 DF91      	.LC3:
+ 955 0322 CF91      		.string	"PMDParallel_Send=> Error Envio Datos o Comando "
+ 956 0324 1F91      	.LC4:
+ 957 0326 0F91      		.string	"PMDParallel_Send=> Error datos recibidos"
+ 958 0328 0895      	.LC5:
+ 959               		.string	"PMDParallel_ReceiveResponse=> wait for Cheksum timeout "
+ 960               	.LC6:
+ 961               		.string	"PMDParallel_Send=> Checksum failure.  expected: %ld  got: %x\n"
+ 962               	.LC7:
+ 963               		.string	"PMDParallel_Send=> C-Motion: %s "
+ 964               	.LC8:
+ 965               		.string	"%X "
+ 966 00ab 504D 4450 	.LC9:
+ 966      6172 616C 
+ 966      6C65 6C5F 
+ 966      5365 6E64 
+ 966      3D3E 2045 
+ 967               		.string	"PMDParallel_Send=> Host I/O Error "
+ 968 00db 504D 4450 		.text
+ 968      6172 616C 
+ 968      6C65 6C5F 
+ 968      5365 6E64 
+ 968      3D3E 2045 
+ 975               	PMDParallel_Send:
+ 977               	.LM80:
+ 978 019f 504D 4450 	.LFBB14:
+ 978      6172 616C 
+ 978      6C65 6C5F 
+ 978      5365 6E64 
+ 978      3D3E 2048 
+ 979               		push r2
+ 980               		push r3
+ 981               		push r4
+ 982               		push r5
+ 983               		push r6
+ 984               		push r7
+ 985               		push r8
+ 986               		push r9
+ 987               		push r10
+ 988               		push r11
+ 989               		push r12
+ 990 032a 2F92      		push r13
+ 991 032c 3F92      		push r14
+ 992 032e 4F92      		push r15
+ 993 0330 5F92      		push r16
+ 994 0332 6F92      		push r17
+ 995 0334 7F92      		push r29
+ 996 0336 8F92      		push r28
+ 997 0338 9F92      		in r28,__SP_L__
+ 998 033a AF92      		in r29,__SP_H__
+ 999 033c BF92      		sbiw r28,7
+ 1000 033e CF92      		in __tmp_reg__,__SREG__
+ 1001 0340 DF92      		cli
+ 1002 0342 EF92      		out __SP_H__,r29
+ 1003 0344 FF92      		out __SREG__,__tmp_reg__
+ 1004 0346 0F93      		out __SP_L__,r28
+ 1005 0348 1F93      	/* prologue: function */
+ 1006 034a DF93      	/* frame size = 7 */
+ 1007 034c CF93      		movw r12,r24
+ 1008 034e CDB7      		std Y+5,r22
+ 1009 0350 DEB7      		movw r4,r20
+ 1010 0352 2797      		mov r3,r18
+ 1011 0354 0FB6      		mov r7,r16
+ 1012 0356 F894      		mov r6,r17
+ 1014 035a 0FBE      	.LM81:
+ 1015 035c CDBF      		std Y+2,__zero_reg__
+ 1016               		std Y+1,__zero_reg__
+ 1018 035e 6C01      	.LM82:
+ 1019 0360 6D83      		call PMDParallel_WaitForReady
+ 1020 0362 2A01      		movw r10,r24
+ 1021 0364 322E      		sbiw r24,0
+ 1022 0366 702E      		brne .L57
+ 1024               	.LM83:
+ 1025               		movw r26,r4
+ 1026 036a 1A82      		ld r22,X+
+ 1027 036c 1982      		ld r23,X
+ 1028               		movw r26,r12
+ 1029               		adiw r26,20
+ 1030 036e 0E94 0000 		ld r30,X+
+ 1031 0372 5C01      		ld r31,X
+ 1032 0374 0097      		sbiw r26,20+1
+ 1033 0376 01F4      		ld r24,X+
+ 1034               		ld r25,X
+ 1035               		icall
+ 1036 0378 D201      		movw r14,r4
+ 1037 037a 6D91      		ldi r16,lo8(1)
+ 1038 037c 7C91      		ldi r17,hi8(1)
+ 1040 0380 5496      	.LM84:
+ 1041 0382 ED91      		ldd r27,Y+5
+ 1042 0384 FC91      		mov r8,r27
+ 1043 0386 5597      		clr r9
+ 1044 0388 8D91      		rjmp .L58
+ 1045 038a 9C91      	.L61:
+ 1047 038e 7201      	.LM85:
+ 1048 0390 01E0      		movw r24,r12
+ 1049 0392 10E0      		call PMDParallel_WaitForReady
+ 1050               		ldi r30,lo8(2)
+ 1051               		ldi r31,hi8(2)
+ 1052 0394 BD81      		add r14,r30
+ 1053 0396 8B2E      		adc r15,r31
+ 1054 0398 9924      		sbiw r24,0
+ 1055 039a 00C0      		breq .L59
+ 1056               		movw r10,r24
+ 1057               		rjmp .L80
+ 1058               	.L59:
+ 1060 039e 0E94 0000 	.LM86:
+ 1061 03a2 E2E0      		movw r26,r14
+ 1062 03a4 F0E0      		ld r22,X+
+ 1063 03a6 EE0E      		ld r23,X
+ 1064 03a8 FF1E      		movw r26,r12
+ 1065 03aa 0097      		adiw r26,18
+ 1066 03ac 01F0      		ld r30,X+
+ 1067 03ae 5C01      		ld r31,X
+ 1068 03b0 00C0      		sbiw r26,18+1
+ 1069               		ld r24,X+
+ 1070               		ld r25,X
+ 1071               		icall
+ 1073 03b4 6D91      	.LM87:
+ 1074 03b6 7C91      		subi r16,lo8(-(1))
+ 1075 03b8 D601      		sbci r17,hi8(-(1))
+ 1076 03ba 5296      	.L58:
+ 1077 03bc ED91      		cp r16,r8
+ 1078 03be FC91      		cpc r17,r9
+ 1079 03c0 5397      		brlo .L61
+ 1081 03c4 9C91      	.LM88:
+ 1082 03c6 0995      		movw r24,r12
+ 1083               		call PMDParallel_GetCommandStatus
+ 1084               		movw r8,r24
+ 1085 03c8 0F5F      		rjmp .L60
+ 1086 03ca 1F4F      	.L57:
+ 1088 03cc 0815      	.LM89:
+ 1089 03ce 1905      		ldi r24,lo8(.LC3)
+ 1090 03d0 00F0      		ldi r25,hi8(.LC3)
+ 1091               		call puts
+ 1092               	.L80:
+ 1093 03d2 C601      		clr r8
+ 1094 03d4 0E94 0000 		clr r9
+ 1095 03d8 4C01      	.L60:
+ 1096 03da 00C0      		mov r24,r7
+ 1097               		mov r25,r6
+ 1098               		movw r18,r24
+ 1099               		movw r6,r18
+ 1100 03dc 80E0      		movw r14,r18
+ 1101 03de 90E0      		ldi r16,lo8(0)
+ 1102 03e0 0E94 0000 		ldi r17,hi8(0)
+ 1104 03e4 8824      	.LM90:
+ 1105 03e6 9924      		mov r2,r3
+ 1106               		clr r3
+ 1107 03e8 872D      		rjmp .L62
+ 1108 03ea 962D      	.L65:
+ 1110 03ee 3901      	.LM91:
+ 1111 03f0 7901      		movw r24,r12
+ 1112 03f2 00E0      		call PMDParallel_WaitForReady
+ 1113 03f4 10E0      		movw r10,r24
+ 1114               		sbiw r24,0
+ 1115               		breq .L63
+ 1117 03f8 3324      	.LM92:
+ 1118 03fa 00C0      		ldi r24,lo8(.LC4)
+ 1119               		ldi r25,hi8(.LC4)
+ 1120               		call puts
+ 1121               		rjmp .L64
+ 1122 03fc C601      	.L63:
+ 1124 0402 5C01      	.LM93:
+ 1125 0404 0097      		movw r26,r12
+ 1126 0406 01F0      		adiw r26,24
+ 1127               		ld r30,X+
+ 1128               		ld r31,X
+ 1129 0408 80E0      		sbiw r26,24+1
+ 1130 040a 90E0      		ld r24,X+
+ 1131 040c 0E94 0000 		ld r25,X
+ 1132 0410 00C0      		icall
+ 1133               		movw r30,r14
+ 1134               		st Z+,r24
+ 1135               		st Z+,r25
+ 1136 0412 D601      		movw r14,r30
+ 1138 0416 ED91      	.LM94:
+ 1139 0418 FC91      		subi r16,lo8(-(1))
+ 1140 041a 5997      		sbci r17,hi8(-(1))
+ 1141 041c 8D91      	.L62:
+ 1142 041e 9C91      		cp r16,r2
+ 1143 0420 0995      		cpc r17,r3
+ 1144 0422 F701      		brlo .L65
+ 1145 0424 8193      	.L64:
+ 1147 0428 7F01      	.LM95:
+ 1148               		movw r26,r12
+ 1149               		adiw r26,14
+ 1150 042a 0F5F      		ld r24,X+
+ 1151 042c 1F4F      		ld r25,X
+ 1152               		sbiw r26,14+1
+ 1153 042e 0215      		or r24,r25
+ 1154 0430 1305      		brne .+2
+ 1155 0432 00F0      		rjmp .L66
+ 1156               		std Y+4,r5
+ 1157               		std Y+3,r4
+ 1158               		movw r30,r4
+ 1159 0434 D601      		ldi r18,lo8(0)
+ 1160 0436 1E96      		ldi r19,hi8(0)
+ 1161 0438 8D91      		clr r14
+ 1162 043a 9C91      		clr r15
+ 1163 043c 1F97      		movw r16,r14
+ 1165 0440 01F4      	.LM96:
+ 1166 0442 00C0      		ldd r25,Y+5
+ 1167 0444 5C82      		mov r24,r25
+ 1168 0446 4B82      		ldi r25,lo8(0)
+ 1169 0448 F201      		std Y+7,r25
+ 1170 044a 20E0      		std Y+6,r24
+ 1171 044c 30E0      		rjmp .L67
+ 1172 044e EE24      	.L68:
+ 1174 0452 8701      	.LM97:
+ 1175               		ld r24,Z+
+ 1176               		ld r25,Z+
+ 1177 0454 9D81      		ldi r26,lo8(0)
+ 1178 0456 892F      		ldi r27,hi8(0)
+ 1179 0458 90E0      		add r14,r24
+ 1180 045a 9F83      		adc r15,r25
+ 1181 045c 8E83      		adc r16,r26
+ 1182 045e 00C0      		adc r17,r27
+ 1184               	.LM98:
+ 1185               		subi r18,lo8(-(1))
+ 1186 0460 8191      		sbci r19,hi8(-(1))
+ 1187 0462 9191      	.L67:
+ 1188 0464 A0E0      		ldd r26,Y+6
+ 1189 0466 B0E0      		ldd r27,Y+7
+ 1190 0468 E80E      		cp r18,r26
+ 1191 046a F91E      		cpc r19,r27
+ 1192 046c 0A1F      		brlo .L68
+ 1193 046e 1B1F      		ldi r18,lo8(0)
+ 1194               		ldi r19,hi8(0)
+ 1195               		rjmp .L69
+ 1196 0470 2F5F      	.L70:
+ 1198               	.LM99:
+ 1199 0474 AE81      		movw r30,r6
+ 1200 0476 BF81      		ld r24,Z+
+ 1201 0478 2A17      		ld r25,Z+
+ 1202 047a 3B07      		movw r6,r30
+ 1203 047c 00F0      		ldi r26,lo8(0)
+ 1204 047e 20E0      		ldi r27,hi8(0)
+ 1205 0480 30E0      		add r14,r24
+ 1206 0482 00C0      		adc r15,r25
+ 1207               		adc r16,r26
+ 1208               		adc r17,r27
+ 1210 0484 F301      	.LM100:
+ 1211 0486 8191      		subi r18,lo8(-(1))
+ 1212 0488 9191      		sbci r19,hi8(-(1))
+ 1213 048a 3F01      	.L69:
+ 1214 048c A0E0      		cp r18,r2
+ 1215 048e B0E0      		cpc r19,r3
+ 1216 0490 E80E      		brlo .L70
+ 1217 0492 F91E      	.LBB4:
+ 1219 0496 1B1F      	.LM101:
+ 1220               		movw r24,r12
+ 1221               		call PMDParallel_WaitForReady
+ 1222 0498 2F5F      		movw r10,r24
+ 1223 049a 3F4F      	.LBB5:
+ 1224               		sbiw r24,0
+ 1225 049c 2215      		breq .L71
+ 1227 04a0 00F0      	.LM102:
+ 1228               		ldi r24,lo8(.LC5)
+ 1229               		ldi r25,hi8(.LC5)
+ 1230               		call puts
+ 1231 04a2 C601      		rjmp .L66
+ 1232 04a4 0E94 0000 	.L71:
+ 1233 04a8 5C01      	.LBE5:
+ 1234               	.LBE4:
+ 1236 04ac 01F0      	.LM103:
+ 1237               		ldi r24,lo8(65535)
+ 1238               		ldi r25,hi8(65535)
+ 1239 04ae 80E0      		ldi r26,hlo8(65535)
+ 1240 04b0 90E0      		ldi r27,hhi8(65535)
+ 1241 04b2 0E94 0000 		and r14,r24
+ 1242 04b6 00C0      		and r15,r25
+ 1243               		and r16,r26
+ 1244               		and r17,r27
+ 1245               	.LBB7:
+ 1247               	.LM104:
+ 1248 04b8 8FEF      		movw r26,r12
+ 1249 04ba 9FEF      		adiw r26,24
+ 1250 04bc A0E0      		ld r30,X+
+ 1251 04be B0E0      		ld r31,X
+ 1252 04c0 E822      		sbiw r26,24+1
+ 1253 04c2 F922      		ld r24,X+
+ 1254 04c4 0A23      		ld r25,X
+ 1255 04c6 1B23      		icall
+ 1256               		movw r18,r24
+ 1257               	.LBB6:
+ 1258               		std Y+2,r25
+ 1259 04c8 D601      		std Y+1,r24
+ 1260 04ca 5896      	.LBE6:
+ 1261 04cc ED91      	.LBE7:
+ 1263 04d0 5997      	.LM105:
+ 1264 04d2 8D91      		ldi r26,lo8(0)
+ 1265 04d4 9C91      		ldi r27,hi8(0)
+ 1266 04d6 0995      		cp r14,r24
+ 1267 04d8 9C01      		cpc r15,r25
+ 1268               		cpc r16,r26
+ 1269 04da 9A83      		cpc r17,r27
+ 1270 04dc 8983      		brne .+2
+ 1271               		rjmp .L66
+ 1273               	.LM106:
+ 1274               		movw r30,r12
+ 1275 04de A0E0      		ldd r24,Z+16
+ 1276 04e0 B0E0      		ldd r25,Z+17
+ 1277 04e2 E816      		or r24,r25
+ 1278 04e4 F906      		brne .+2
+ 1279 04e6 0A07      		rjmp .L81
+ 1280 04e8 1B07      	.L72:
+ 1282 04ec 00C0      	.LM107:
+ 1283               		in r24,__SP_L__
+ 1284               		in r25,__SP_H__
+ 1285 04ee F601      		sbiw r24,8
+ 1286 04f0 8089      		in __tmp_reg__,__SREG__
+ 1287 04f2 9189      		cli
+ 1288 04f4 892B      		out __SP_H__,r25
+ 1289 04f6 01F4      		out __SREG__,__tmp_reg__
+ 1290 04f8 00C0      		out __SP_L__,r24
+ 1291               		in r30,__SP_L__
+ 1292               		in r31,__SP_H__
+ 1293               		adiw r30,1
+ 1294 04fa 8DB7      		ldi r24,lo8(.LC6)
+ 1295 04fc 9EB7      		ldi r25,hi8(.LC6)
+ 1296 04fe 0897      		in r26,__SP_L__
+ 1297 0500 0FB6      		in r27,__SP_H__
+ 1298 0502 F894      		adiw r26,1+1
+ 1299 0504 9EBF      		st X,r25
+ 1300 0506 0FBE      		st -X,r24
+ 1301 0508 8DBF      		sbiw r26,1
+ 1302 050a EDB7      		std Z+2,r14
+ 1303 050c FEB7      		std Z+3,r15
+ 1304 050e 3196      		std Z+4,r16
+ 1305 0510 80E0      		std Z+5,r17
+ 1306 0512 90E0      		std Z+7,r19
+ 1307 0514 ADB7      		std Z+6,r18
+ 1308 0516 BEB7      		call printf
+ 1310 051a 9C93      	.LM108:
+ 1311 051c 8E93      		in r30,__SP_L__
+ 1312 051e 1197      		in r31,__SP_H__
+ 1313 0520 E282      		adiw r30,8
+ 1314 0522 F382      		in __tmp_reg__,__SREG__
+ 1315 0524 0483      		cli
+ 1316 0526 1583      		out __SP_H__,r31
+ 1317 0528 3783      		out __SREG__,__tmp_reg__
+ 1318 052a 2683      		out __SP_L__,r30
+ 1319 052c 0E94 0000 		movw r26,r4
+ 1320               		ld r24,X+
+ 1321               		ld r25,X
+ 1322 0530 EDB7      		call PMDGetOpcodeText
+ 1323 0532 FEB7      		rcall .
+ 1324 0534 3896      		rcall .
+ 1325 0536 0FB6      		ldi r18,lo8(.LC7)
+ 1326 0538 F894      		ldi r19,hi8(.LC7)
+ 1327 053a FEBF      		in r30,__SP_L__
+ 1328 053c 0FBE      		in r31,__SP_H__
+ 1329 053e EDBF      		std Z+2,r19
+ 1330 0540 D201      		std Z+1,r18
+ 1331 0542 8D91      		std Z+4,r25
+ 1332 0544 9C91      		std Z+3,r24
+ 1333 0546 0E94 0000 		call printf
+ 1334 054a 00D0      		ldi r16,lo8(0)
+ 1335 054c 00D0      		ldi r17,hi8(0)
+ 1336 054e 20E0      		pop __tmp_reg__
+ 1337 0550 30E0      		pop __tmp_reg__
+ 1338 0552 EDB7      		pop __tmp_reg__
+ 1339 0554 FEB7      		pop __tmp_reg__
+ 1341 0558 2183      	.LM109:
+ 1342 055a 9483      		ldi r18,lo8(.LC8)
+ 1343 055c 8383      		mov r14,r18
+ 1344 055e 0E94 0000 		ldi r18,hi8(.LC8)
+ 1345 0562 00E0      		mov r15,r18
+ 1346 0564 10E0      		rjmp .L74
+ 1347 0566 0F90      	.L75:
+ 1348 0568 0F90      		rcall .
+ 1349 056a 0F90      		rcall .
+ 1350 056c 0F90      		in r26,__SP_L__
+ 1351               		in r27,__SP_H__
+ 1352               		adiw r26,1+1
+ 1353 056e 20E0      		st X,r15
+ 1354 0570 E22E      		st -X,r14
+ 1355 0572 20E0      		sbiw r26,1
+ 1356 0574 F22E      		ldd r30,Y+3
+ 1357 0576 00C0      		ldd r31,Y+4
+ 1358               		ld r24,Z+
+ 1359 0578 00D0      		ld r25,Z+
+ 1360 057a 00D0      		std Y+4,r31
+ 1361 057c ADB7      		std Y+3,r30
+ 1362 057e BEB7      		adiw r26,3+1
+ 1363 0580 1296      		st X,r25
+ 1364 0582 FC92      		st -X,r24
+ 1365 0584 EE92      		sbiw r26,3
+ 1366 0586 1197      		call printf
+ 1368 058a FC81      	.LM110:
+ 1369 058c 8191      		subi r16,lo8(-(1))
+ 1370 058e 9191      		sbci r17,hi8(-(1))
+ 1371 0590 FC83      		pop __tmp_reg__
+ 1372 0592 EB83      		pop __tmp_reg__
+ 1373 0594 1496      		pop __tmp_reg__
+ 1374 0596 9C93      		pop __tmp_reg__
+ 1375 0598 8E93      	.L74:
+ 1376 059a 1397      		ldd r18,Y+6
+ 1377 059c 0E94 0000 		ldd r19,Y+7
+ 1378               		cp r16,r18
+ 1379               		cpc r17,r19
+ 1380 05a0 0F5F      		brlo .L75
+ 1382 05a4 0F90      	.LM111:
+ 1383 05a6 0F90      		ldi r24,lo8(10)
+ 1384 05a8 0F90      		ldi r25,hi8(10)
+ 1385 05aa 0F90      		call putchar
+ 1386               	.L81:
+ 1387 05ac 2E81      		ldi r25,lo8(32766)
+ 1388 05ae 3F81      		mov r8,r25
+ 1389 05b0 0217      		ldi r25,hi8(32766)
+ 1390 05b2 1307      		mov r9,r25
+ 1391 05b4 00F0      		rjmp .L73
+ 1392               	.L66:
+ 1394 05b6 8AE0      	.LM112:
+ 1395 05b8 90E0      		cp r8,__zero_reg__
+ 1396 05ba 0E94 0000 		cpc r9,__zero_reg__
+ 1397               		brne .L76
+ 1398 05be 9EEF      		movw r8,r10
+ 1399 05c0 892E      		rjmp .L73
+ 1400 05c2 9FE7      	.L76:
+ 1402 05c6 00C0      	.LM113:
+ 1403               		movw r26,r12
+ 1404               		adiw r26,16
+ 1405               		ld r24,X+
+ 1406 05c8 8114      		ld r25,X
+ 1407 05ca 9104      		sbiw r26,16+1
+ 1408 05cc 01F4      		or r24,r25
+ 1409 05ce 4501      		brne .+2
+ 1410 05d0 00C0      		rjmp .L73
+ 1412               	.LM114:
+ 1413               		ldi r24,lo8(.LC9)
+ 1414 05d2 D601      		ldi r25,hi8(.LC9)
+ 1415 05d4 5096      		call puts
+ 1417 05d8 9C91      	.LM115:
+ 1418 05da 5197      		movw r30,r4
+ 1419 05dc 892B      		ld r24,Z
+ 1420 05de 01F4      		ldd r25,Z+1
+ 1421 05e0 00C0      		call PMDGetOpcodeText
+ 1422               		rcall .
+ 1423               		rcall .
+ 1424 05e2 80E0      		ldi r18,lo8(.LC7)
+ 1425 05e4 90E0      		ldi r19,hi8(.LC7)
+ 1426 05e6 0E94 0000 		in r26,__SP_L__
+ 1427               		in r27,__SP_H__
+ 1428               		adiw r26,1+1
+ 1429 05ea F201      		st X,r19
+ 1430 05ec 8081      		st -X,r18
+ 1431 05ee 9181      		sbiw r26,1
+ 1432 05f0 0E94 0000 		adiw r26,3+1
+ 1433 05f4 00D0      		st X,r25
+ 1434 05f6 00D0      		st -X,r24
+ 1435 05f8 20E0      		sbiw r26,3
+ 1436 05fa 30E0      		call printf
+ 1437 05fc ADB7      		movw r14,r4
+ 1438 05fe BEB7      		ldi r16,lo8(0)
+ 1439 0600 1296      		ldi r17,hi8(0)
+ 1440 0602 3C93      		pop __tmp_reg__
+ 1441 0604 2E93      		pop __tmp_reg__
+ 1442 0606 1197      		pop __tmp_reg__
+ 1443 0608 1496      		pop __tmp_reg__
+ 1445 060c 8E93      	.LM116:
+ 1446 060e 1397      		ldd r27,Y+5
+ 1447 0610 0E94 0000 		mov r12,r27
+ 1448 0614 7201      		clr r13
+ 1450 0618 10E0      	.LM117:
+ 1451 061a 0F90      		ldi r24,lo8(.LC8)
+ 1452 061c 0F90      		mov r10,r24
+ 1453 061e 0F90      		ldi r24,hi8(.LC8)
+ 1454 0620 0F90      		mov r11,r24
+ 1455               		rjmp .L77
+ 1456               	.L78:
+ 1457 0622 BD81      		rcall .
+ 1458 0624 CB2E      		rcall .
+ 1459 0626 DD24      		in r30,__SP_L__
+ 1460               		in r31,__SP_H__
+ 1461               		std Z+2,r11
+ 1462 0628 80E0      		std Z+1,r10
+ 1463 062a A82E      		movw r26,r14
+ 1464 062c 80E0      		ld r24,X+
+ 1465 062e B82E      		ld r25,X+
+ 1466 0630 00C0      		movw r14,r26
+ 1467               		std Z+4,r25
+ 1468 0632 00D0      		std Z+3,r24
+ 1469 0634 00D0      		call printf
+ 1471 0638 FEB7      	.LM118:
+ 1472 063a B282      		subi r16,lo8(-(1))
+ 1473 063c A182      		sbci r17,hi8(-(1))
+ 1474 063e D701      		pop __tmp_reg__
+ 1475 0640 8D91      		pop __tmp_reg__
+ 1476 0642 9D91      		pop __tmp_reg__
+ 1477 0644 7D01      		pop __tmp_reg__
+ 1478 0646 9483      	.L77:
+ 1479 0648 8383      		cp r16,r12
+ 1480 064a 0E94 0000 		cpc r17,r13
+ 1481               		brlo .L78
+ 1483 064e 0F5F      	.LM119:
+ 1484 0650 1F4F      		ldi r24,lo8(10)
+ 1485 0652 0F90      		ldi r25,hi8(10)
+ 1486 0654 0F90      		call putchar
+ 1487 0656 0F90      	.L73:
+ 1489               	.LM120:
+ 1490 065a 0C15      		movw r24,r8
+ 1491 065c 1D05      	/* epilogue start */
+ 1492 065e 00F0      		adiw r28,7
+ 1493               		in __tmp_reg__,__SREG__
+ 1494               		cli
+ 1495 0660 8AE0      		out __SP_H__,r29
+ 1496 0662 90E0      		out __SREG__,__tmp_reg__
+ 1497 0664 0E94 0000 		out __SP_L__,r28
+ 1498               		pop r28
+ 1499               		pop r29
+ 1500               		pop r17
+ 1501 0668 C401      		pop r16
+ 1502               		pop r15
+ 1503 066a 2796      		pop r14
+ 1504 066c 0FB6      		pop r13
+ 1505 066e F894      		pop r12
+ 1506 0670 DEBF      		pop r11
+ 1507 0672 0FBE      		pop r10
+ 1508 0674 CDBF      		pop r9
+ 1509 0676 CF91      		pop r8
+ 1510 0678 DF91      		pop r7
+ 1511 067a 1F91      		pop r6
+ 1512 067c 0F91      		pop r5
+ 1513 067e FF90      		pop r4
+ 1514 0680 EF90      		pop r3
+ 1515 0682 DF90      		pop r2
+ 1516 0684 CF90      		ret
+ 1525 0696 3F90      	.Lscope14:
+ 1528               	OutP8BitHard:
+ 1530               	.LM121:
+ 1531               	.LFBB15:
+ 1532               	/* prologue: function */
+ 1533               	/* frame size = 0 */
+ 1535               	.LM122:
+ 1536               		call writePMDreset
+ 1537               	/* epilogue start */
+ 1539               	.LM123:
+ 1540               		ret
+ 1542               	.Lscope15:
+ 1546               	InP8BitStatus:
+ 1548               	.LM124:
+ 1549               	.LFBB16:
+ 1550               	/* prologue: function */
+ 1551 06a0 0895      	/* frame size = 0 */
+ 1553               	.LM125:
+ 1554               		call readPMDstatus
+ 1555               	/* epilogue start */
+ 1557               	.LM126:
+ 1558               		ret
+ 1560               	.Lscope16:
+ 1564               	InP8Bit:
+ 1566               	.LM127:
+ 1567               	.LFBB17:
+ 1568               	/* prologue: function */
+ 1569 06a6 0895      	/* frame size = 0 */
+ 1571               	.LM128:
+ 1572               		call readPMDdata
+ 1573               	/* epilogue start */
+ 1575               	.LM129:
+ 1576               		ret
+ 1578               	.Lscope17:
+ 1583 06a8 0E94 0000 	OutP8BitCmd:
+ 1585               	.LM130:
+ 1586               	.LFBB18:
+ 1587 06ac 0895      	/* prologue: function */
+ 1588               	/* frame size = 0 */
+ 1590               	.LM131:
+ 1591               		call writePMDcommand
+ 1592               	/* epilogue start */
+ 1594               	.LM132:
+ 1595               		ret
+ 1597               	.Lscope18:
+ 1602 06ae 0E94 0000 	OutP8Bit:
+ 1604               	.LM133:
+ 1605               	.LFBB19:
+ 1606 06b2 0895      	/* prologue: function */
+ 1607               	/* frame size = 0 */
+ 1609               	.LM134:
+ 1610               		call writePMDdata
+ 1611               	/* epilogue start */
+ 1613               	.LM135:
+ 1614               		ret
+ 1616               	.Lscope19:
+ 1618               	.Letext0:
+ 1619               	.global __do_copy_data
+ 1620               	...
+DEFINED SYMBOLS
+                            *ABS*:00000000 PMDpar.c
+C:\DOCUME~1\David\LOCALS~1\Temp/ccBhJcI1.s:2      *ABS*:0000003f __SREG__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccBhJcI1.s:3      *ABS*:0000003e __SP_H__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccBhJcI1.s:4      *ABS*:0000003d __SP_L__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccBhJcI1.s:5      *ABS*:00000034 __CCP__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccBhJcI1.s:6      *ABS*:00000000 __tmp_reg__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccBhJcI1.s:7      *ABS*:00000001 __zero_reg__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccBhJcI1.s:236    .text:00000000 Axis2PMDChipset
+C:\DOCUME~1\David\LOCALS~1\Temp/ccBhJcI1.s:276    .text:00000026 Axis2PMDAxis
+C:\DOCUME~1\David\LOCALS~1\Temp/ccBhJcI1.s:348    .text:00000088 PMDParallel_GetStatus
+C:\DOCUME~1\David\LOCALS~1\Temp/ccBhJcI1.s:373    .text:00000098 PMDParallel_IsReady
+C:\DOCUME~1\David\LOCALS~1\Temp/ccBhJcI1.s:420    .text:000000d2 PMDParallel_HasInterrupt
+C:\DOCUME~1\David\LOCALS~1\Temp/ccBhJcI1.s:467    .text:0000010c PMDParallel_HasError
+C:\DOCUME~1\David\LOCALS~1\Temp/ccBhJcI1.s:515    .text:00000146 PMDParallel_HardReset
+C:\DOCUME~1\David\LOCALS~1\Temp/ccBhJcI1.s:542    .text:00000158 PMDParallel_InitData
+C:\DOCUME~1\David\LOCALS~1\Temp/ccBhJcI1.s:1613   .text:000006b4 OutP8Bit
+C:\DOCUME~1\David\LOCALS~1\Temp/ccBhJcI1.s:1594   .text:000006ae OutP8BitCmd
+C:\DOCUME~1\David\LOCALS~1\Temp/ccBhJcI1.s:1575   .text:000006a8 InP8Bit
+C:\DOCUME~1\David\LOCALS~1\Temp/ccBhJcI1.s:1557   .text:000006a2 InP8BitStatus
+C:\DOCUME~1\David\LOCALS~1\Temp/ccBhJcI1.s:1539   .text:0000069c OutP8BitHard
+C:\DOCUME~1\David\LOCALS~1\Temp/ccBhJcI1.s:632    .text:000001ba PMDParallel_Init
+C:\DOCUME~1\David\LOCALS~1\Temp/ccBhJcI1.s:986    .text:0000032a PMDParallel_Send
+C:\DOCUME~1\David\LOCALS~1\Temp/ccBhJcI1.s:783    .text:0000026c PMDParallel_Close
+C:\DOCUME~1\David\LOCALS~1\Temp/ccBhJcI1.s:693    .text:000001f6 PMDSetupAxisInterface_Parallel
+C:\DOCUME~1\David\LOCALS~1\Temp/ccBhJcI1.s:805    .text:00000272 PMDParallel_WaitForReady
+C:\DOCUME~1\David\LOCALS~1\Temp/ccBhJcI1.s:892    .text:000002d0 PMDParallel_GetCommandStatus
+
+UNDEFINED SYMBOLS
+malloc
+free
+Led_on
+puts
+printf
+PMDGetOpcodeText
+putchar
+writePMDreset
+readPMDstatus
+readPMDdata
+writePMDcommand
+writePMDdata
+__do_copy_data

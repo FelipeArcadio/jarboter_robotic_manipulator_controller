@@ -1,0 +1,826 @@
+   1               		.file	"gripper.c"
+   2               	__SREG__ = 0x3f
+   3               	__SP_H__ = 0x3e
+   4               	__SP_L__ = 0x3d
+   5               	__CCP__  = 0x34
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   9               		.text
+  10               	.Ltext0:
+ 223               	.global	openGripper
+ 225               	openGripper:
+   1:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** #include <avr/io.h>
+   2:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** #include <stdio.h>
+   3:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** #include <avr/sfr_defs.h>
+   4:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** #include <util/delay.h>
+   5:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 
+   6:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** #include "macros.h"
+   7:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** #include "types.h"
+   8:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** //#define DEBUGGRIPPER
+   9:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 
+  10:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 
+  11:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 
+  12:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** void openGripper(void) 
+  13:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** {
+ 226               	,13,.LM0-.LFBB1
+ 227               	.LM0:
+ 228               	.LFBB1:
+ 229               	/* prologue: function */
+ 230               	/* frame size = 0 */
+  14:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 	uint16 timer;
+  15:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 	int16 pin;
+  16:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 	timer 		= 10; 	
+  17:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c ****  
+  18:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c ****  
+  19:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 	// Los switch son normalmente Abierto. (Se necesitan de alguna resistencia de pullup para estos)
+  20:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c ****     
+  21:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c ****     //abriendo el gripper
+  22:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 	GRIPPERCTL |= _BV(DER);  		//1
+ 231               	bn	68,0,22,.LM1-.LFBB1
+ 232               	.LM1:
+ 233 0000 889A      		sbi 49-32,0
+  23:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c ****     GRIPPERCTL &= ~(_BV(IZQ)); 	//0
+ 234               	tabn	68,0,23,.LM2-.LFBB1
+ 235               	.LM2:
+ 236 0002 8998      		cbi 49-32,1
+  24:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 	pin=PINF;
+ 237               	tabn	68,0,24,.LM3-.LFBB1
+ 238               	.LM3:
+ 239 0004 8FB1      		in r24,47-32
+ 240 0006 2AE0      		ldi r18,lo8(10)
+ 241 0008 30E0      		ldi r19,hi8(10)
+ 242               	.LBB30:
+ 243               	.LBB31:
+ 244               	.LBB32:
+ 245               	.LBB33:
+ 247               	.Ltext1:
+   1:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** /* Copyright (c) 2002, Marek Michalkiewicz
+   2:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****    Copyright (c) 2007 Joerg Wunsch
+   3:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****    All rights reserved.
+   4:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+   5:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****    Redistribution and use in source and binary forms, with or without
+   6:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****    modification, are permitted provided that the following conditions are met:
+   7:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+   8:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****    * Redistributions of source code must retain the above copyright
+   9:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****      notice, this list of conditions and the following disclaimer.
+  10:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  11:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****    * Redistributions in binary form must reproduce the above copyright
+  12:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****      notice, this list of conditions and the following disclaimer in
+  13:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****      the documentation and/or other materials provided with the
+  14:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****      distribution.
+  15:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  16:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****    * Neither the name of the copyright holders nor the names of
+  17:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****      contributors may be used to endorse or promote products derived
+  18:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****      from this software without specific prior written permission.
+  19:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  20:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  21:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****   AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  22:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+  23:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****   ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+  24:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****   LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+  25:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+  26:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****   SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+  27:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+  28:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+  29:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+  30:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****   POSSIBILITY OF SUCH DAMAGE. */
+  31:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  32:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** /* $Id: delay_basic.h,v 1.1 2007/05/13 21:23:20 joerg_wunsch Exp $ */
+  33:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  34:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** #ifndef _UTIL_DELAY_BASIC_H_
+  35:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** #define _UTIL_DELAY_BASIC_H_ 1
+  36:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  37:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** #include <inttypes.h>
+  38:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  39:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** /** \file */
+  40:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** /** \defgroup util_delay_basic <util/delay_basic.h>: Basic busy-wait delay loops
+  41:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     \code
+  42:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     #include <util/delay_basic.h>
+  43:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     \endcode
+  44:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  45:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     The functions in this header file implement simple delay loops
+  46:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     that perform a busy-waiting.  They are typically used to
+  47:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     facilitate short delays in the program execution.  They are
+  48:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     implemented as count-down loops with a well-known CPU cycle
+  49:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     count per loop iteration.  As such, no other processing can
+  50:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     occur simultaneously.  It should be kept in mind that the
+  51:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     functions described here do not disable interrupts.
+  52:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  53:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     In general, for long delays, the use of hardware timers is
+  54:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     much preferrable, as they free the CPU, and allow for
+  55:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     concurrent processing of other events while the timer is
+  56:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     running.  However, in particular for very short delays, the
+  57:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     overhead of setting up a hardware timer is too much compared
+  58:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     to the overall delay time.
+  59:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  60:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     Two inline functions are provided for the actual delay algorithms.
+  61:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  62:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** */
+  63:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  64:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** #if !defined(__DOXYGEN__)
+  65:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** static inline void _delay_loop_1(uint8_t __count) __attribute__((always_inline));
+  66:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** static inline void _delay_loop_2(uint16_t __count) __attribute__((always_inline));
+  67:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** #endif
+  68:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  69:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** /** \ingroup util_delay_basic
+  70:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  71:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     Delay loop using an 8-bit counter \c __count, so up to 256
+  72:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     iterations are possible.  (The value 256 would have to be passed
+  73:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     as 0.)  The loop executes three CPU cycles per iteration, not
+  74:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     including the overhead the compiler needs to setup the counter
+  75:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     register.
+  76:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  77:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     Thus, at a CPU speed of 1 MHz, delays of up to 768 microseconds
+  78:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     can be achieved.
+  79:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** */
+  80:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** void
+  81:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** _delay_loop_1(uint8_t __count)
+  82:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** {
+  83:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 	__asm__ volatile (
+  84:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 		"1: dec %0" "\n\t"
+  85:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 		"brne 1b"
+  86:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 		: "=r" (__count)
+  87:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 		: "0" (__count)
+  88:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 	);
+  89:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** }
+  90:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  91:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** /** \ingroup util_delay_basic
+  92:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  93:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     Delay loop using a 16-bit counter \c __count, so up to 65536
+  94:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     iterations are possible.  (The value 65536 would have to be
+  95:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     passed as 0.)  The loop executes four CPU cycles per iteration,
+  96:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     not including the overhead the compiler requires to setup the
+  97:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     counter register pair.
+  98:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  99:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     Thus, at a CPU speed of 1 MHz, delays of up to about 262.1
+ 100:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     milliseconds can be achieved.
+ 101:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****  */
+ 102:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** void
+ 103:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** _delay_loop_2(uint16_t __count)
+ 104:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** {
+ 105:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 	__asm__ volatile (
+ 248               	0,105,.LM4-.LFBB1
+ 249               	.LM4:
+ 250 000a 48EC      		ldi r20,lo8(200)
+ 251 000c 50E0      		ldi r21,hi8(200)
+ 252               	.L5:
+ 253               	.LBE33:
+ 254               	.LBE32:
+ 255               	.LBE31:
+ 256               	.LBE30:
+ 258               	.Ltext2:
+  25:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 	
+  26:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 	#ifdef DEBUGGRIPPER
+  27:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 	printf("openGripper=> Abriendo Gripper= %#X\n",pin);
+  28:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 	#endif	
+  29:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 	for(;;) 
+  30:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 	{
+  31:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 		
+  32:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 		if (!bit_is_set(PINF,FINDER))
+ 259               	0,32,.LM5-.LFBB1
+ 260               	.LM5:
+ 261 000e 7E9B      		sbis 47-32,6
+ 262 0010 00C0      		rjmp .L9
+ 263               	.L2:
+  33:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 		{
+  34:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 			//Parar Motor
+  35:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 			//Mantener el motor apadado
+  36:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 			PORTF     |=	_BV(DER) | _BV(IZQ);
+  37:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 			#ifdef DEBUGGRIPPER
+  38:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 			printf("openGripper=> El motor del Gripper se ha detenido accionando switch \n");
+  39:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 			#endif	
+  40:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 			return;
+  41:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 		}
+  42:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 		
+  43:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 		else// not ready 
+  44:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 		{ 
+  45:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 			timer--;
+ 264               	bn	68,0,45,.LM6-.LFBB1
+ 265               	.LM6:
+ 266 0012 2150      		subi r18,lo8(-(-1))
+ 267 0014 3040      		sbci r19,hi8(-(-1))
+ 268 0016 88EE      		ldi r24,lo8(1000)
+ 269 0018 93E0      		ldi r25,hi8(1000)
+ 270               	.L4:
+ 271               	.LBB37:
+ 272               	.LBB36:
+ 273               	.LBB35:
+ 274               	.LBB34:
+ 276               	.Ltext3:
+ 278               	.LM7:
+ 279 001a FA01      		movw r30,r20
+ 280               	/* #APP */
+ 281               	 ;  105 "c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h" 1
+ 282 001c 3197      		1: sbiw r30,1
+ 283 001e 01F4      		brne 1b
+ 284               	 ;  0 "" 2
+ 285               	/* #NOAPP */
+ 286               	.LBE34:
+ 287               	.LBE35:
+ 289               	.Ltext4:
+   1:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** /* Copyright (c) 2002, Marek Michalkiewicz
+   2:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****    Copyright (c) 2004,2005,2007 Joerg Wunsch
+   3:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****    Copyright (c) 2007  Florin-Viorel Petrov
+   4:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****    All rights reserved.
+   5:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+   6:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****    Redistribution and use in source and binary forms, with or without
+   7:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****    modification, are permitted provided that the following conditions are met:
+   8:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+   9:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****    * Redistributions of source code must retain the above copyright
+  10:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****      notice, this list of conditions and the following disclaimer.
+  11:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+  12:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****    * Redistributions in binary form must reproduce the above copyright
+  13:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****      notice, this list of conditions and the following disclaimer in
+  14:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****      the documentation and/or other materials provided with the
+  15:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****      distribution.
+  16:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+  17:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****    * Neither the name of the copyright holders nor the names of
+  18:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****      contributors may be used to endorse or promote products derived
+  19:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****      from this software without specific prior written permission.
+  20:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+  21:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  22:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****   AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  23:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+  24:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****   ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+  25:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****   LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+  26:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+  27:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****   SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+  28:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+  29:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+  30:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+  31:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****   POSSIBILITY OF SUCH DAMAGE. */
+  32:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+  33:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** /* $Id: delay.h,v 1.5.2.1 2009/02/25 10:14:03 joerg_wunsch Exp $ */
+  34:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+  35:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** #ifndef _UTIL_DELAY_H_
+  36:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** #define _UTIL_DELAY_H_ 1
+  37:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+  38:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** #include <inttypes.h>
+  39:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** #include <util/delay_basic.h>
+  40:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+  41:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** /** \file */
+  42:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** /** \defgroup util_delay <util/delay.h>: Convenience functions for busy-wait delay loops
+  43:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     \code
+  44:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     #define F_CPU 1000000UL  // 1 MHz
+  45:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     //#define F_CPU 14.7456E6
+  46:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     #include <util/delay.h>
+  47:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     \endcode
+  48:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+  49:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     \note As an alternative method, it is possible to pass the
+  50:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     F_CPU macro down to the compiler from the Makefile.
+  51:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     Obviously, in that case, no \c \#define statement should be
+  52:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     used.
+  53:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+  54:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     The functions in this header file are wrappers around the basic
+  55:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     busy-wait functions from <util/delay_basic.h>.  They are meant as
+  56:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     convenience functions where actual time values can be specified
+  57:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     rather than a number of cycles to wait for.  The idea behind is
+  58:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     that compile-time constant expressions will be eliminated by
+  59:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     compiler optimization so floating-point expressions can be used
+  60:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     to calculate the number of delay cycles needed based on the CPU
+  61:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     frequency passed by the macro F_CPU.
+  62:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+  63:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     \note In order for these functions to work as intended, compiler
+  64:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     optimizations <em>must</em> be enabled, and the delay time
+  65:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     <em>must</em> be an expression that is a known constant at
+  66:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     compile-time.  If these requirements are not met, the resulting
+  67:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     delay will be much longer (and basically unpredictable), and
+  68:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     applications that otherwise do not use floating-point calculations
+  69:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     will experience severe code bloat by the floating-point library
+  70:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     routines linked into the application.
+  71:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+  72:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     The functions available allow the specification of microsecond, and
+  73:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     millisecond delays directly, using the application-supplied macro
+  74:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     F_CPU as the CPU clock frequency (in Hertz).
+  75:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+  76:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** */
+  77:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+  78:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** #if !defined(__DOXYGEN__)
+  79:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** static inline void _delay_us(double __us) __attribute__((always_inline));
+  80:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** static inline void _delay_ms(double __ms) __attribute__((always_inline));
+  81:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** #endif
+  82:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+  83:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** #ifndef F_CPU
+  84:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** /* prevent compiler error by supplying a default */
+  85:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** # warning "F_CPU not defined for <util/delay.h>"
+  86:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** # define F_CPU 1000000UL
+  87:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** #endif
+  88:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+  89:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** #ifndef __OPTIMIZE__
+  90:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** # warning "Compiler optimizations disabled; functions from <util/delay.h> won't work as designed"
+  91:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** #endif
+  92:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+  93:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** /**
+  94:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****    \ingroup util_delay
+  95:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+  96:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****    Perform a delay of \c __ms milliseconds, using _delay_loop_2().
+  97:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+  98:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****    The macro F_CPU is supposed to be defined to a
+  99:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****    constant defining the CPU clock frequency (in Hertz).
+ 100:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+ 101:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****    The maximal possible delay is 262.14 ms / F_CPU in MHz.
+ 102:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+ 103:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****    When the user request delay which exceed the maximum possible one,
+ 104:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****    _delay_ms() provides a decreased resolution functionality. In this
+ 105:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****    mode _delay_ms() will work with a resolution of 1/10 ms, providing
+ 106:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****    delays up to 6.5535 seconds (independent from CPU frequency).  The
+ 107:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****    user will not be informed about decreased resolution.
+ 108:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****  */
+ 109:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** void
+ 110:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** _delay_ms(double __ms)
+ 111:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** {
+ 112:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 	uint16_t __ticks;
+ 113:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 	double __tmp = ((F_CPU) / 4e3) * __ms;
+ 114:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 	if (__tmp < 1.0)
+ 115:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 		__ticks = 1;
+ 116:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 	else if (__tmp > 65535)
+ 117:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 	{
+ 118:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 		//	__ticks = requested delay in 1/10 ms
+ 119:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 		__ticks = (uint16_t) (__ms * 10.0);
+ 120:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 		while(__ticks)
+ 121:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 		{
+ 122:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 			// wait 1/10 ms
+ 123:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 			_delay_loop_2(((F_CPU) / 4e3) / 10);
+ 124:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 			__ticks --;
+ 290               	B1
+ 291               	.LM8:
+ 292 0020 0197      		sbiw r24,1
+ 294               	.LM9:
+ 295 0022 01F4      		brne .L4
+ 296               	.LBE36:
+ 297               	.LBE37:
+ 299               	.Ltext5:
+  46:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 			_delay_ms(100);
+  47:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 	
+  48:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 			if(timer == 0) 
+ 300               	,0,48,.LM10-.LFBB1
+ 301               	.LM10:
+ 302 0024 2115      		cp r18,__zero_reg__
+ 303 0026 3105      		cpc r19,__zero_reg__
+ 304 0028 01F4      		brne .L5
+ 305               	.L9:
+  49:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 			{
+  50:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 				//Parar Motor
+  51:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 				//Mantener el motor apadado
+  52:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 				PORTF     |=	_BV(DER) | _BV(IZQ);
+ 306               	n	68,0,52,.LM11-.LFBB1
+ 307               	.LM11:
+ 308 002a 81B3      		in r24,49-32
+ 309 002c 8360      		ori r24,lo8(3)
+ 310 002e 81BB      		out 49-32,r24
+ 311 0030 0895      		ret
+ 328               	.Lscope1:
+ 331               	.global	openGripper_time
+ 333               	openGripper_time:
+  53:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 				#ifdef DEBUGGRIPPER
+  54:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 				printf("openGripper=> El motor del Gripper se ha detenido por timeotu \n");	
+  55:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 				#endif			
+  56:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 				return;
+  57:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 			} // if timer == 0
+  58:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 		}
+  59:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c ****   	} // for EVER      
+  60:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** } // openGripper
+  61:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 
+  62:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** void openGripper_time(int tiempo) 
+  63:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** {
+ 334               	
+ 335               	.LM12:
+ 336               	.LFBB2:
+ 337               	/* prologue: function */
+ 338               	/* frame size = 0 */
+ 339 0032 AC01      		movw r20,r24
+  64:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 	uint8 i;
+  65:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 	
+  66:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 	//se abre el gripper por un periodo de tiempo
+  67:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 	
+  68:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 	GRIPPERCTL |= _BV(DER);  		//1
+ 340               	bn	68,0,68,.LM13-.LFBB2
+ 341               	.LM13:
+ 342 0034 889A      		sbi 49-32,0
+  69:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c ****     GRIPPERCTL &= ~(_BV(IZQ)); 	//0
+ 343               	tabn	68,0,69,.LM14-.LFBB2
+ 344               	.LM14:
+ 345 0036 8998      		cbi 49-32,1
+ 346 0038 20E0      		ldi r18,lo8(0)
+ 347               	.LBB38:
+ 348               	.LBB39:
+ 349               	.LBB40:
+ 350               	.LBB41:
+ 352               	.Ltext6:
+ 354               	.LM15:
+ 355 003a 68EC      		ldi r22,lo8(200)
+ 356 003c 70E0      		ldi r23,hi8(200)
+ 357 003e 00C0      		rjmp .L11
+ 358               	.L13:
+ 359               	.LBE41:
+ 360               	.LBE40:
+ 361               	.LBE39:
+ 362               	.LBE38:
+ 364               	.Ltext7:
+  70:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 	
+  71:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 	
+  72:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 
+  73:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 	for (i = 0; i < tiempo; i++)   
+ 365               	.LFBB2
+ 366               	.LM16:
+ 367 0040 88EE      		ldi r24,lo8(1000)
+ 368 0042 93E0      		ldi r25,hi8(1000)
+ 369               	.L12:
+ 370               	.LBB45:
+ 371               	.LBB44:
+ 372               	.LBB43:
+ 373               	.LBB42:
+ 375               	.Ltext8:
+ 377               	.LM17:
+ 378 0044 FB01      		movw r30,r22
+ 379               	/* #APP */
+ 380               	 ;  105 "c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h" 1
+ 381 0046 3197      		1: sbiw r30,1
+ 382 0048 01F4      		brne 1b
+ 383               	 ;  0 "" 2
+ 384               	/* #NOAPP */
+ 385               	.LBE42:
+ 386               	.LBE43:
+ 388               	.Ltext9:
+ 390               	.LM18:
+ 391 004a 0197      		sbiw r24,1
+ 393               	.LM19:
+ 394 004c 01F4      		brne .L12
+ 395               	.LBE44:
+ 396               	.LBE45:
+ 398               	.Ltext10:
+ 400               	.LM20:
+ 401 004e 2F5F      		subi r18,lo8(-(1))
+ 402               	.L11:
+ 403 0050 822F      		mov r24,r18
+ 404 0052 90E0      		ldi r25,lo8(0)
+ 405 0054 8417      		cp r24,r20
+ 406 0056 9507      		cpc r25,r21
+ 407 0058 04F0      		brlt .L13
+  74:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 			_delay_ms(100);
+  75:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 	
+  76:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 	//Parar Motor
+  77:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 	//Mantener el motor apadado
+  78:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 	PORTF     |=	_BV(DER) | _BV(IZQ);
+ 408               	,49-32
+ 409               		ori r24,lo8(3)
+ 410 005a 81B3      		out 49-32,r24
+ 411 005c 8360      	/* epilogue start */
+ 413               	.LM22:
+  79:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 	#ifdef DEBUGGRIPPER
+  80:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 	printf("openGripper=> El motor del Gripper se ha detenido \n");
+  81:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 	#endif	
+  82:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 
+  83:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 	
+  84:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 	
+  85:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 	
+  86:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c ****     
+  87:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** } // openGripper_time
+ 430               	.Lscope2:
+ 432               	.global	closeGripper
+ 434               	closeGripper:
+ 436               	.LM23:
+ 437               	.LFBB3:
+  88:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 
+  89:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 
+  90:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** void closeGripper(void) 
+  91:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** {
+ 438               	
+ 439               	/* frame size = 0 */
+ 441               	.LM24:
+ 442               		cbi 49-32,0
+  92:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 
+  93:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 	uint16 timer;
+  94:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 	int16 pin;
+  95:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 
+  96:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 		
+  97:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 	timer 		= 10; 	
+  98:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 	
+  99:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 	
+ 100:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 	
+ 101:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 	
+ 102:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 	//cerrando el gripper
+ 103:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 	GRIPPERCTL &= ~(_BV(DER));  	//0
+ 443               	abn	68,0,104,.LM25-.LFBB3
+ 444               	.LM25:
+ 445 0062 8898      		sbi 49-32,1
+ 104:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c ****     GRIPPERCTL |= _BV(IZQ); 	//1
+ 446               	tabn	68,0,105,.LM26-.LFBB3
+ 447               	.LM26:
+ 448 0064 899A      		in r24,47-32
+ 105:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 	pin=PINF;
+ 449               	i r18,lo8(10)
+ 450               		ldi r19,hi8(10)
+ 451 0066 8FB1      	.LBB46:
+ 452 0068 2AE0      	.LBB47:
+ 453 006a 30E0      	.LBB48:
+ 454               	.LBB49:
+ 456               	.Ltext11:
+ 458               	.LM27:
+ 459               		ldi r20,lo8(200)
+ 460               		ldi r21,hi8(200)
+ 461               	.L20:
+ 462 006c 48EC      	.LBE49:
+ 463 006e 50E0      	.LBE48:
+ 464               	.LBE47:
+ 465               	.LBE46:
+ 467               	.Ltext12:
+ 469               	.LM28:
+ 470               		sbis 47-32,7
+ 106:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 	
+ 107:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 	#ifdef DEBUGGRIPPER
+ 108:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 	printf("closeGripper=> Cerrando Gripper= %#X\n",pin);
+ 109:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 	#endif	
+ 110:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 	
+ 111:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 		
+ 112:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 	for(;;) 
+ 113:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 	{
+ 114:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 		
+ 115:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 		if (!bit_is_set(PINF,FINIZQ))
+ 471               	bn	68,0,128,.LM29-.LFBB3
+ 472               	.LM29:
+ 473 0070 7F9B      		subi r18,lo8(-(-1))
+ 474 0072 00C0      		sbci r19,hi8(-(-1))
+ 475               		ldi r24,lo8(1000)
+ 116:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 		{
+ 117:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 			//Parar Motor
+ 118:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 			//Mantener el motor apadado
+ 119:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 			PORTF     |=	_BV(DER) | _BV(IZQ);
+ 120:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 			#ifdef DEBUGGRIPPER
+ 121:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 			printf("closeGripper=> El motor del Gripper se ha detenido accionando switch \n");
+ 122:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 			#endif	
+ 123:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 			return;
+ 124:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 		}
+ 125:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 		
+ 126:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 		else// not ready 
+ 127:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 		{ 
+ 128:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 			timer--;
+ 476               	r25,hi8(1000)
+ 477               	.L19:
+ 478 0074 2150      	.LBB53:
+ 479 0076 3040      	.LBB52:
+ 480 0078 88EE      	.LBB51:
+ 481 007a 93E0      	.LBB50:
+ 483               	.Ltext13:
+ 485               	.LM30:
+ 486               		movw r30,r20
+ 487               	/* #APP */
+ 488               	 ;  105 "c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h" 1
+ 489               		1: sbiw r30,1
+ 490               		brne 1b
+ 491 007c FA01      	 ;  0 "" 2
+ 492               	/* #NOAPP */
+ 493               	.LBE50:
+ 494 007e 3197      	.LBE51:
+ 496               	.Ltext14:
+ 498               	.LM31:
+ 499               		sbiw r24,1
+ 501               	.LM32:
+ 502               		brne .L19
+ 503               	.LBE52:
+ 504 0082 0197      	.LBE53:
+ 506               	.Ltext15:
+ 508               	.LM33:
+ 509               		cp r18,__zero_reg__
+ 510               		cpc r19,__zero_reg__
+ 511               		brne .L20
+ 129:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 			_delay_ms(100);
+ 130:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 			
+ 131:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 			if(timer == 0) 
+ 512               	.LM34:
+ 513               		in r24,49-32
+ 514 0086 2115      		ori r24,lo8(3)
+ 515 0088 3105      		out 49-32,r24
+ 516 008a 01F4      		ret
+ 132:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 			{
+ 133:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 				//Parar Motor
+ 134:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 				//Mantener el motor apadado
+ 135:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 				PORTF     |=	_BV(DER) | _BV(IZQ);
+ 518               	,__zero_reg__
+ 519               		cpc r19,__zero_reg__
+ 520 008c 81B3      		brne .L20
+ 521 008e 8360      	.L24:
+ 523 0092 0895      	.LM34:
+ 524               		in r24,49-32
+ 525               		ori r24,lo8(3)
+ 526               		out 49-32,r24
+ 527               		ret
+ 544               	.Lscope3:
+ 136:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 				#ifdef DEBUGGRIPPER
+ 137:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 					printf("closeGripper=> El motor del Gripper se ha detenido por timeotu \n");				
+ 138:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 				#endif	
+ 139:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 				
+ 140:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 				return;
+ 141:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 			} // if timer == 0
+ 142:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 		}
+ 143:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c ****   	} // for EVER  
+ 144:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c ****  
+ 145:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c ****  
+ 146:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 
+ 147:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** } // closeGripper
+ 148:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 
+ 149:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 
+ 150:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** void closeGripper_time(int tiempo) 
+ 151:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** {
+ 546               	abn	192,0,0,.LBB52-.LFBB3
+ 549               	.Lscope3:
+ 152:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 	uint8 i;
+ 153:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 	
+ 154:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 	//se cierra el gripper por un periodo de tiempo
+ 155:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 	
+ 156:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 	GRIPPERCTL &= ~(_BV(DER));  	//0
+ 552               	24,0,0,.LBE52-.LFBB3
+ 554 0096 8898      	.Lscope3:
+ 157:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c ****     GRIPPERCTL |= _BV(IZQ); 		//1
+ 555               		224,0,0,.LBE47-.LFBB3
+ 560               	.Lscope3:
+ 563               	.global	closeGripper_time
+ 565               	closeGripper_time:
+ 567 009c 68EC      	.LM35:
+ 568 009e 70E0      	.LFBB4:
+ 569 00a0 00C0      	/* prologue: function */
+ 570               	/* frame size = 0 */
+ 571               		movw r20,r24
+ 573               	.LM36:
+ 574               		cbi 49-32,0
+ 576               	.LM37:
+ 158:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 	
+ 159:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 	
+ 160:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 
+ 161:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 	for (i = 0; i < tiempo; i++)   
+ 577               	prologue: function */
+ 578               	/* frame size = 0 */
+ 579 00a2 88EE      		movw r20,r24
+ 581               	.LM36:
+ 582               		cbi 49-32,0
+ 584               	.LM37:
+ 585               		sbi 49-32,1
+ 586               		ldi r18,lo8(0)
+ 587               	.LBB54:
+ 588               	.LBB55:
+ 589               	.LBB56:
+ 590 00a6 FB01      	.LBB57:
+ 592               	.Ltext16:
+ 594 00aa 01F4      	.LM38:
+ 595               		ldi r22,lo8(200)
+ 596               		ldi r23,hi8(200)
+ 597               		rjmp .L26
+ 598               	.L28:
+ 599               	.LBE57:
+ 600               	.LBE56:
+ 601               	.LBE55:
+ 602               	.LBE54:
+ 604               	.Ltext17:
+ 606 00ae 01F4      	.LM39:
+ 607               		ldi r24,lo8(1000)
+ 608               		ldi r25,hi8(1000)
+ 609               	.L27:
+ 610               	.LBB61:
+ 611               	.LBB60:
+ 612               	.LBB59:
+ 613 00b0 2F5F      	.LBB58:
+ 615 00b2 822F      	.Ltext18:
+ 617 00b6 8417      	.LM40:
+ 618 00b8 9507      		movw r30,r22
+ 619 00ba 04F0      	/* #APP */
+ 162:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 			_delay_ms(100);
+ 163:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 	
+ 164:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 	//Parar Motor
+ 165:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 	//Mantener el motor apadado
+ 166:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 	PORTF     |=	_BV(DER) | _BV(IZQ);
+ 620               	util/delay_basic.h",132,0,0,.Ltext18
+ 621               	.Ltext18:
+ 623 00be 8360      	.LM40:
+ 624 00c0 81BB      		movw r30,r22
+ 625               	/* #APP */
+ 167:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 	#ifdef DEBUGGRIPPER
+ 168:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 		printf("closeGripper_time=> El motor del Gripper se ha detenido \n");
+ 169:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 	#endif	
+ 170:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 	
+ 171:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 	
+ 172:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 	
+ 173:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 	
+ 174:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c ****     
+ 175:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** } // closeGripper_time
+ 626               	util/delay_basic.h",132,0,0,.Ltext18
+ 627               	.Ltext18:
+ 629               	.LM40:
+ 630               		movw r30,r22
+ 631               	/* #APP */
+ 632               	 ;  105 "c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h" 1
+ 633               		1: sbiw r30,1
+ 634               		brne 1b
+ 635               	 ;  0 "" 2
+ 636               	/* #NOAPP */
+ 637               	.LBE58:
+ 638               	.LBE59:
+ 640               	.Ltext19:
+ 642               	.LM41:
+ 643               		sbiw r24,1
+ 645               	.LM42:
+ 646               		brne .L27
+ 647               	.LBE60:
+ 648 0000 4573 7461 	.LBE61:
+ 648      646F 5F67 
+ 648      7269 7070 
+ 648      6572 3D3E 
+ 648      2045 6C20 
+ 650 002b 4573 7461 	.Ltext20:
+ 650      646F 5F67 
+ 650      7269 7070 
+ 650      6572 3D3E 
+ 650      2045 6C20 
+ 652 0056 4573 7461 	.LM43:
+ 652      646F 5F67 
+ 652      7269 7070 
+ 652      6572 3D3E 
+ 652      2045 6C20 
+ 653               		subi r18,lo8(-(1))
+ 654               	.L26:
+ 655               		mov r24,r18
+ 656               		ldi r25,lo8(0)
+ 657               		cp r24,r20
+ 176:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 
+ 177:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 
+ 178:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** //Si el gripper tiene CARGA una pieza, la funcion retorn abierto asi el gripper este cerrado.......
+ 179:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** int8 Estado_gripper(void)
+ 180:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** {
+ 658               	3-.LFBB4
+ 659               	.LM43:
+ 660               		subi r18,lo8(-(1))
+ 661               	.L26:
+ 662               		mov r24,r18
+ 181:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 
+ 182:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 	if (!bit_is_set(PINF,FINIZQ))
+ 663               	Ltext20:
+ 665 00c4 7F99      	.LM43:
+ 666 00c6 00C0      		subi r18,lo8(-(1))
+ 183:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 	{
+ 184:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 		//#ifdef DEBUGGRIPPER
+ 185:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 		printf("Estado_gripper=> El Gripper esta cerrado. \n");
+ 667               	c",132,0,0,.Ltext20
+ 668               	.Ltext20:
+ 670 00ca 90E0      	.LM43:
+ 671 00cc 0E94 0000 		subi r18,lo8(-(1))
+ 672 00d0 81E0      	.L26:
+ 673 00d2 0895      		mov r24,r18
+ 674               		ldi r25,lo8(0)
+ 186:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 		//#endif
+ 187:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 		return 1;
+ 188:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 	}
+ 189:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 	if (!bit_is_set(PINF,FINDER))
+ 675               	68,0,161,.LM43-.LFBB4
+ 676               	.LM43:
+ 677 00d4 7E99      		subi r18,lo8(-(1))
+ 678 00d6 00C0      	.L26:
+ 190:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 	{
+ 191:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 		//#ifdef DEBUGGRIPPER
+ 192:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 		printf("Estado_gripper=> El Gripper esta abierto. \n");
+ 679               	0,0,.Ltext20
+ 680               	.Ltext20:
+ 682 00da 90E0      	.LM43:
+ 683 00dc 0E94 0000 		subi r18,lo8(-(1))
+ 684 00e0 80E0      	.L26:
+ 685 00e2 0895      		mov r24,r18
+ 686               		ldi r25,lo8(0)
+ 193:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 		//#endif		
+ 194:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 		return 0;
+ 195:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 	}
+ 196:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 	//#ifdef DEBUGGRIPPER
+ 197:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 	printf("Estado_gripper=> El Gripper no esta definido. \n");
+ 687               	68,0,161,.LM43-.LFBB4
+ 688               	.LM43:
+ 689 00e4 80E0      		subi r18,lo8(-(1))
+ 690 00e6 90E0      	.L26:
+ 691 00e8 0E94 0000 		mov r24,r18
+ 692 00ec 8FEF      		ldi r25,lo8(0)
+ 198:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 	//#endif
+ 199:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 	return -1;
+ 200:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 
+ 201:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** 
+ 202:C:/Jarboter_V_2_1/Firmware/Efector_Final/C/gripper.c **** }...
+ 693               	68,0,161,.LM43-.LFBB4
+ 694               	.LM43:
+ 695 00ee 0895      		subi r18,lo8(-(1))
+ 696               	.L26:
+ 697               		mov r24,r18
+ 698               		ldi r25,lo8(0)
+ 699               		cp r24,r20
+ 700               		cpc r25,r21
+DEFINED SYMBOLS
+                            *ABS*:00000000 gripper.c
+C:\DOCUME~1\David\LOCALS~1\Temp/ccd928TY.s:2      *ABS*:0000003f __SREG__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccd928TY.s:3      *ABS*:0000003e __SP_H__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccd928TY.s:4      *ABS*:0000003d __SP_L__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccd928TY.s:5      *ABS*:00000034 __CCP__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccd928TY.s:6      *ABS*:00000000 __tmp_reg__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccd928TY.s:7      *ABS*:00000001 __zero_reg__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccd928TY.s:225    .text:00000000 openGripper
+C:\DOCUME~1\David\LOCALS~1\Temp/ccd928TY.s:333    .text:00000032 openGripper_time
+C:\DOCUME~1\David\LOCALS~1\Temp/ccd928TY.s:437    .text:00000062 closeGripper
+C:\DOCUME~1\David\LOCALS~1\Temp/ccd928TY.s:545    .text:00000094 closeGripper_time
+C:\DOCUME~1\David\LOCALS~1\Temp/ccd928TY.s:657    .text:000000c4 Estado_gripper
+
+UNDEFINED SYMBOLS
+puts
+__do_copy_data

@@ -1,0 +1,810 @@
+   1               		.file	"robotData.c"
+   2               	__SREG__ = 0x3f
+   3               	__SP_H__ = 0x3e
+   4               	__SP_L__ = 0x3d
+   5               	__CCP__  = 0x34
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   9               		.text
+  10               	.Ltext0:
+ 235               	.global	defaultAxisSettings
+ 237               	defaultAxisSettings:
+   1:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** 
+   2:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** #include "robotData.h"
+   3:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** #include "types.h"
+   4:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** #include "conversion.h"
+   5:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** #if !defined(_AVR_IO_H_)
+   6:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** #include <windows.h>			//funciones basicas de ventanas graficas
+   7:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** #endif
+   8:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** 
+   9:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** #if defined(_AVR_IO_H_)
+  10:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** #include <avr/eeprom.h>
+  11:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** 
+  12:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** 
+  13:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** 
+  14:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** //Variable en eeprom que contiene la configuracion 
+  15:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** tAxisSettings EEMEM EEprom_axisSettings[DOF];
+  16:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** //Le indica al el programa si utilizar la configuracion por defecto o la reconfigurada.
+  17:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** int16 EEMEM EEprom_Reconf_Indicator=0;
+  18:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** 
+  19:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** #endif
+  20:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** 
+  21:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** 
+  22:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c ****  void defaultAxisSettings(int16 axis, tAxisSettings *paxisSettings)
+  23:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** {
+ 238               	.LM0:
+ 239               	.LFBB1:
+ 240               		push r28
+ 241 0000 CF93      		push r29
+ 242 0002 DF93      	/* prologue: function */
+ 243               	/* frame size = 0 */
+ 244               		movw r18,r24
+ 245 0004 9C01      		movw r28,r22
+  24:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** //General Settings:
+  25:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c ****   paxisSettings->axisEnabled = TRUE;      
+ 247               	i r24,lo8(1)
+ 248               		st Y,r24
+ 250 000a 8883      	.LM2:
+  26:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c ****   paxisSettings->interruptEnable=TRUE;
+ 251               	 Y+1,r24
+ 253 000c 8983      	.LM3:
+  27:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c ****   paxisSettings->switchEnable=TRUE;
+ 254               	i r20,lo8(1)
+ 255               		ldi r21,hi8(1)
+ 256 000e 41E0      		std Y+3,r21
+ 257 0010 50E0      		std Y+2,r20
+ 259 0014 4A83      	.LM4:
+  28:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c ****   paxisSettings->encoderEnable=FALSE; 
+ 260               	+5,__zero_reg__
+ 261               		std Y+4,__zero_reg__
+ 263 0018 1C82      	.LM5:
+  29:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c ****   paxisSettings->ustepsPerStep = 32; //Quiere decir que 32 uP hacen un paso
+ 264               	 r22,lo8(32)
+ 265               		ldi r23,hi8(32)
+ 266 001a 60E2      		std Y+11,r23
+ 267 001c 70E0      		std Y+10,r22
+ 269 0020 6A87      	.LM6:
+  30:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c ****   paxisSettings->motorStepsPerRevolution = 200;//El angulo de paso es 15ª 360/15 = 24, oseo que con
+ 270               	24,lo8(200)
+ 271               		ldi r25,hi8(200)
+ 272 0022 88EC      		std Y+13,r25
+ 273 0024 90E0      		std Y+12,r24
+ 275 0028 8C87      	.LM7:
+  31:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c ****   paxisSettings->encoderStepsPerRevolution = 480;
+ 276               	24,lo8(480)
+ 277               		ldi r25,hi8(480)
+ 278 002a 80EE      		std Y+15,r25
+ 279 002c 91E0      		std Y+14,r24
+ 281 0030 8E87      	.LM8:
+  32:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c ****   paxisSettings->ErrorLimit=200;
+ 282               	24,lo8(200)
+ 283               		ldi r25,hi8(200)
+ 284 0032 88EC      		ldi r26,hlo8(200)
+ 285 0034 90E0      		ldi r27,hhi8(200)
+ 286 0036 A0E0      		std Y+32,r24
+ 287 0038 B0E0      		std Y+33,r25
+ 288 003a 88A3      		std Y+34,r26
+ 289 003c 99A3      		std Y+35,r27
+ 291 0040 BBA3      	.LM9:
+  33:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c ****   paxisSettings->TrackingWindow	= 30;
+ 292               	o8(30)
+ 293               		ldi r25,hi8(30)
+ 294 0042 8EE1      		std Y+17,r25
+ 295 0044 90E0      		std Y+16,r24
+ 297 0048 888B      	.LM10:
+  34:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c ****   paxisSettings->SettleWindow = 22; //
+ 298               	24,lo8(22)
+ 299               		ldi r25,hi8(22)
+ 300 004a 86E1      		std Y+19,r25
+ 301 004c 90E0      		std Y+18,r24
+ 303 0050 8A8B      	.LM11:
+  35:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c ****   paxisSettings->SettleTime	= 833; // 0.5 seg  
+ 304               	24,lo8(833)
+ 305               		ldi r25,hi8(833)
+ 306 0052 81E4      		std Y+21,r25
+ 307 0054 93E0      		std Y+20,r24
+ 309 0058 8C8B      	.LM12:
+  36:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c ****   paxisSettings->motorPower = 98; // % of full power
+ 310               	24,lo8(98)
+ 311               		ldi r25,hi8(98)
+ 312 005a 82E6      		std Y+23,r25
+ 313 005c 90E0      		std Y+22,r24
+ 315 0060 8E8B      	.LM13:
+  37:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c ****   paxisSettings->numberPhases = 2;
+ 316               	24,lo8(2)
+ 317               		ldi r25,hi8(2)
+ 318 0062 82E0      		std Y+25,r25
+ 319 0064 90E0      		std Y+24,r24
+ 321 0068 888F      	.LM14:
+  38:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c ****   paxisSettings->limitVelocity = 1310720; //20*65536;    // (2500rpm/60s)*48spr*16usps/1623cycle/s)
+ 322               	24,lo8(1310720)
+ 323               		ldi r25,hi8(1310720)
+ 324 006a 80E0      		ldi r26,hlo8(1310720)
+ 325 006c 90E0      		ldi r27,hhi8(1310720)
+ 326 006e A4E1      		std Y+40,r24
+ 327 0070 B0E0      		std Y+41,r25
+ 328 0072 88A7      		std Y+42,r26
+ 329 0074 99A7      		std Y+43,r27
+ 331 0078 BBA7      	.LM15:
+  39:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c ****   paxisSettings->limitAcceleration = 786; //0.012*65536;  // absolute maximum values which the hard
+ 332               	o8(786)
+ 333               		ldi r25,hi8(786)
+ 334 007a 82E1      		ldi r26,hlo8(786)
+ 335 007c 93E0      		ldi r27,hhi8(786)
+ 336 007e A0E0      		std Y+36,r24
+ 337 0080 B0E0      		std Y+37,r25
+ 338 0082 8CA3      		std Y+38,r26
+ 339 0084 9DA3      		std Y+39,r27
+ 341 0088 BFA3      	.LM16:
+  40:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c ****   paxisSettings->limitJerk = 128849; //0.00003*4294967296;  // default value for S-curve profile...
+ 342               	o8(128849)
+ 343               		ldi r25,hi8(128849)
+ 344 008a 81E5      		ldi r26,hlo8(128849)
+ 345 008c 97EF      		ldi r27,hhi8(128849)
+ 346 008e A1E0      		std Y+44,r24
+ 347 0090 B0E0      		std Y+45,r25
+ 348 0092 8CA7      		std Y+46,r26
+ 349 0094 9DA7      		std Y+47,r27
+ 351 0098 BFA7      	.LM17:
+  41:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c ****   paxisSettings->maxVelocity = 327680; //0.25*paxisSettings->limitVelocity;  // 25% of maximum
+ 352               	o8(327680)
+ 353               		ldi r25,hi8(327680)
+ 354 009a 80E0      		ldi r26,hlo8(327680)
+ 355 009c 90E0      		ldi r27,hhi8(327680)
+ 356 009e A5E0      		std Y+52,r24
+ 357 00a0 B0E0      		std Y+53,r25
+ 358 00a2 8CAB      		std Y+54,r26
+ 359 00a4 9DAB      		std Y+55,r27
+ 361 00a8 BFAB      	.LM18:
+  42:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c ****   paxisSettings->minVelocity = 13107; //0.01*paxisSettings->limitVelocity;  // 1%, for initial find
+ 362               	o8(13107)
+ 363               		ldi r25,hi8(13107)
+ 364 00aa 83E3      		ldi r26,hlo8(13107)
+ 365 00ac 93E3      		ldi r27,hhi8(13107)
+ 366 00ae A0E0      		std Y+56,r24
+ 367 00b0 B0E0      		std Y+57,r25
+ 368 00b2 88AF      		std Y+58,r26
+ 369 00b4 99AF      		std Y+59,r27
+ 371 00b8 BBAF      	.LM19:
+  43:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c ****   paxisSettings->maxAcceleration = 197; //0.25*paxisSettings->limitAcceleration; // 25% of maximum
+ 372               	o8(197)
+ 373               		ldi r25,hi8(197)
+ 374 00ba 85EC      		ldi r26,hlo8(197)
+ 375 00bc 90E0      		ldi r27,hhi8(197)
+ 376 00be A0E0      		std Y+48,r24
+ 377 00c0 B0E0      		std Y+49,r25
+ 378 00c2 88AB      		std Y+50,r26
+ 379 00c4 99AB      		std Y+51,r27
+ 381 00c8 BBAB      	.LM20:
+  44:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c ****   paxisSettings->homeSwitchHandling = 0; // 3 switches: for neg. limit, pos. limit and home
+ 382               	__zero_reg__
+ 383               		std Y+26,__zero_reg__
+ 385 00cc 1A8E      	.LM21:
+  45:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c ****   paxisSettings->gearNominator = 1;      // PC needs that to change rad into usteps
+ 386               	 Y+29,r21
+ 387               		std Y+28,r20
+ 389 00d0 4C8F      	.LM22:
+  46:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c ****   paxisSettings->gearDenominator = 1;    // gear=Nominator/Denominator, step=rad*gear*other_stuff
+ 390               	 Y+31,r21
+ 391               		std Y+30,r20
+ 393 00d4 4E8F      	.LM23:
+  47:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c ****   // specific settings:
+  48:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c ****   switch(axis) 
+ 394               	 r18,5
+ 395               		cpc r19,__zero_reg__
+ 396 00d6 2530      		brne .+2
+ 397 00d8 3105      		rjmp .L14
+ 398 00da 01F4      		cpi r18,6
+ 399 00dc 00C0      		cpc r19,__zero_reg__
+ 400 00de 2630      		brge .L15
+ 401 00e0 3105      		cpi r18,2
+ 402 00e2 04F4      		cpc r19,__zero_reg__
+ 403 00e4 2230      		brne .+2
+ 404 00e6 3105      		rjmp .L5
+ 405 00e8 01F4      		cpi r18,3
+ 406 00ea 00C0      		cpc r19,__zero_reg__
+ 407 00ec 2330      		brge .L16
+ 408 00ee 3105      		cp r18,__zero_reg__
+ 409 00f0 04F4      		cpc r19,__zero_reg__
+ 410 00f2 2115      		breq .L3
+ 411 00f4 3105      		cpi r18,1
+ 412 00f6 01F0      		cpc r19,__zero_reg__
+ 413 00f8 2130      		breq .+2
+ 414 00fa 3105      		rjmp .L18
+ 415 00fc 01F0      		rjmp .L20
+ 416 00fe 00C0      	.L16:
+ 417 0100 00C0      		cpi r18,3
+ 418               		cpc r19,__zero_reg__
+ 419 0102 2330      		brne .+2
+ 420 0104 3105      		rjmp .L6
+ 421 0106 01F4      		cpi r18,4
+ 422 0108 00C0      		cpc r19,__zero_reg__
+ 423 010a 2430      		breq .+2
+ 424 010c 3105      		rjmp .L18
+ 425 010e 01F0      		rjmp .L21
+ 426 0110 00C0      	.L15:
+ 427 0112 00C0      		cpi r18,8
+ 428               		cpc r19,__zero_reg__
+ 429 0114 2830      		brne .+2
+ 430 0116 3105      		rjmp .L14
+ 431 0118 01F4      		cpi r18,9
+ 432 011a 00C0      		cpc r19,__zero_reg__
+ 433 011c 2930      		brge .L17
+ 434 011e 3105      		cpi r18,6
+ 435 0120 04F4      		cpc r19,__zero_reg__
+ 436 0122 2630      		brne .+2
+ 437 0124 3105      		rjmp .L14
+ 438 0126 01F4      		cpi r18,7
+ 439 0128 00C0      		cpc r19,__zero_reg__
+ 440 012a 2730      		breq .+2
+ 441 012c 3105      		rjmp .L18
+ 442 012e 01F0      		rjmp .L14
+ 443 0130 00C0      	.L17:
+ 444 0132 00C0      		cpi r18,10
+ 445               		cpc r19,__zero_reg__
+ 446 0134 2A30      		brne .+2
+ 447 0136 3105      		rjmp .L14
+ 448 0138 01F4      		cpi r18,10
+ 449 013a 00C0      		cpc r19,__zero_reg__
+ 450 013c 2A30      		brge .+2
+ 451 013e 3105      		rjmp .L14
+ 452 0140 04F4      		cpi r18,11
+ 453 0142 00C0      		cpc r19,__zero_reg__
+ 454 0144 2B30      		breq .+2
+ 455 0146 3105      		rjmp .L18
+ 456 0148 01F0      		rjmp .L14
+ 457 014a 00C0      	.L3:
+ 459               	.LM24:
+  49:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** {
+  50:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c ****    case AxisWaist:
+  51:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** 		paxisSettings->motorStepsPerRevolution = 32;
+ 460               	di r24,lo8(3)
+ 461               		ldi r25,hi8(3)
+ 462 014e 7D87      		std Y+25,r25
+ 463 0150 6C87      		std Y+24,r24
+  52:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** 		paxisSettings->numberPhases = 3;
+ 464               	abn	68,0,53,.LM26-.LFBB1
+ 465               	.LM26:
+ 466 0152 83E0      		ldi r24,lo8(9959)
+ 467 0154 90E0      		ldi r25,hi8(9959)
+ 468 0156 998F      		std Y+29,r25
+ 469 0158 888F      		std Y+28,r24
+  53:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** 		paxisSettings->gearNominator = 9959;      // PC needs that to change rad into usteps
+ 470               	n	68,0,54,.LM27-.LFBB1
+ 471               	.LM27:
+ 472 015a 87EE      		ldi r24,lo8(1000)
+ 473 015c 96E2      		ldi r25,hi8(1000)
+ 474 015e 9D8F      		std Y+31,r25
+ 475 0160 8C8F      		std Y+30,r24
+  54:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** 		paxisSettings->gearDenominator = 1000;	  
+ 476               	n	68,0,55,.LM28-.LFBB1
+ 477               	.LM28:
+ 478 0162 88EE      		movw r24,r28
+ 479 0164 93E0      		ldi r20,lo8(0x428fa354)
+ 480 0166 9F8F      		ldi r21,hi8(0x428fa354)
+ 481 0168 8E8F      		ldi r22,hlo8(0x428fa354)
+  55:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** 		paxisSettings->maxVelocity = gradrosTOuPasos(paxisSettings,71.819,VELOCIDAD_TYPE);//80000; 
+ 482               	23,hhi8(0x428fa354)
+ 483               		ldi r18,lo8(1)
+ 484 016a CE01      		ldi r19,hi8(1)
+ 485 016c 44E5      		call gradrosTOuPasos
+ 486 016e 53EA      		std Y+52,r22
+ 487 0170 6FE8      		std Y+53,r23
+ 488 0172 72E4      		std Y+54,r24
+ 489 0174 21E0      		std Y+55,r25
+ 491 0178 0E94 0000 	.LM29:
+ 492 017c 6CAB      		movw r24,r28
+ 493 017e 7DAB      		ldi r20,lo8(0x425774bc)
+ 494 0180 8EAB      		ldi r21,hi8(0x425774bc)
+ 495 0182 9FAB      		ldi r22,hlo8(0x425774bc)
+  56:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** 		paxisSettings->minVelocity = gradrosTOuPasos(paxisSettings,53.864,VELOCIDAD_TYPE);//60000; 
+ 496               	0x425774bc)
+ 497               		ldi r18,lo8(1)
+ 498 0184 CE01      		ldi r19,hi8(1)
+ 499 0186 4CEB      		call gradrosTOuPasos
+ 500 0188 54E7      		std Y+56,r22
+ 501 018a 67E5      		std Y+57,r23
+ 502 018c 72E4      		std Y+58,r24
+ 503 018e 21E0      		std Y+59,r25
+ 505 0192 0E94 0000 	.LM30:
+ 506 0196 68AF      		movw r24,r28
+ 507 0198 79AF      		ldi r20,lo8(0x428c0000)
+ 508 019a 8AAF      		ldi r21,hi8(0x428c0000)
+ 509 019c 9BAF      		ldi r22,hlo8(0x428c0000)
+  57:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** 		paxisSettings->homeVelocity = gradrosTOuPasos(paxisSettings,70,VELOCIDAD_TYPE);//  89111?
+ 510               	0x428c0000)
+ 511               		ldi r18,lo8(1)
+ 512 019e CE01      		ldi r19,hi8(1)
+ 513 01a0 40E0      		call gradrosTOuPasos
+ 514 01a2 50E0      		std Y+60,r22
+ 515 01a4 6CE8      		std Y+61,r23
+ 516 01a6 72E4      		std Y+62,r24
+ 517 01a8 21E0      		std Y+63,r25
+ 519 01ac 0E94 0000 	.LM31:
+ 520 01b0 6CAF      		movw r24,r28
+ 521 01b2 7DAF      		ldi r20,lo8(0x426c676d)
+ 522 01b4 8EAF      		ldi r21,hi8(0x426c676d)
+ 523 01b6 9FAF      		ldi r22,hlo8(0x426c676d)
+  58:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** 		paxisSettings->homeAcceleration= gradrosTOuPasos(paxisSettings,59.101,ACELERACION_TYPE); //40; 
+ 524               	0x426c676d)
+ 525               		ldi r18,lo8(2)
+ 526 01b8 CE01      		ldi r19,hi8(2)
+ 527 01ba 4DE6      		call gradrosTOuPasos
+ 528 01bc 57E6      		subi r28,lo8(-(64))
+ 529 01be 6CE6      		sbci r29,hi8(-(64))
+ 530 01c0 72E4      		st Y,r22
+ 531 01c2 22E0      		std Y+1,r23
+ 532 01c4 30E0      		std Y+2,r24
+ 533 01c6 0E94 0000 		std Y+3,r25
+ 534 01ca C05C      		subi r28,lo8(-(-64))
+ 535 01cc DF4F      		sbci r29,hi8(-(-64))
+ 537 01d0 7983      	.LM32:
+ 538 01d2 8A83      		ldi r24,lo8(122)
+ 539 01d4 9B83      		ldi r25,hi8(122)
+ 540 01d6 C054      		std Y+7,r25
+ 541 01d8 D040      		std Y+6,r24
+  59:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** 		paxisSettings->maxAxisAngle=122;
+ 542               	M33-.LFBB1
+ 543               	.LM33:
+ 544 01da 8AE7      		ldi r24,lo8(-136)
+ 545 01dc 90E0      		ldi r25,hi8(-136)
+ 546 01de 9F83      		rjmp .L19
+ 547 01e0 8E83      	.L20:
+  60:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** 		paxisSettings->minAxisAngle=-136;
+ 548               	n	68,0,64,.LM34-.LFBB1
+ 549               	.LM34:
+ 550 01e2 88E7      		ldi r24,lo8(-1)
+ 551 01e4 9FEF      		ldi r25,hi8(-1)
+ 552 01e6 00C0      		std Y+27,r25
+ 553               		std Y+26,r24
+  61:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** 
+  62:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c ****     break;
+  63:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c ****     case AxisShoulder://HOMBRO
+  64:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** 		paxisSettings->homeSwitchHandling = -1; // home = neg. limit
+ 554               	n	68,0,65,.LM35-.LFBB1
+ 555               	.LM35:
+ 556 01e8 8FEF      		ldi r24,lo8(11769)
+ 557 01ea 9FEF      		ldi r25,hi8(11769)
+ 558 01ec 9B8F      		std Y+29,r25
+ 559 01ee 8A8F      		std Y+28,r24
+  65:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** 		paxisSettings->gearNominator = 11769;
+ 560               	n	68,0,66,.LM36-.LFBB1
+ 561               	.LM36:
+ 562 01f0 89EF      		ldi r24,lo8(100)
+ 563 01f2 9DE2      		ldi r25,hi8(100)
+ 564 01f4 9D8F      		std Y+31,r25
+ 565 01f6 8C8F      		std Y+30,r24
+  66:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** 		paxisSettings->gearDenominator = 100;
+ 566               	n	68,0,67,.LM37-.LFBB1
+ 567               	.LM37:
+ 568 01f8 84E6      		movw r24,r28
+ 569 01fa 90E0      		ldi r20,lo8(0x40270d84)
+ 570 01fc 9F8F      		ldi r21,hi8(0x40270d84)
+ 571 01fe 8E8F      		ldi r22,hlo8(0x40270d84)
+  67:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** 		paxisSettings->maxVelocity = gradrosTOuPasos(paxisSettings,2.6102,VELOCIDAD_TYPE);//214748; 
+ 572               	23,hhi8(0x40270d84)
+ 573               		ldi r18,lo8(1)
+ 574 0200 CE01      		ldi r19,hi8(1)
+ 575 0202 44E8      		call gradrosTOuPasos
+ 576 0204 5DE0      		std Y+52,r22
+ 577 0206 67E2      		std Y+53,r23
+ 578 0208 70E4      		std Y+54,r24
+ 579 020a 21E0      		std Y+55,r25
+ 581 020e 0E94 0000 	.LM38:
+ 582 0212 6CAB      		movw r24,r28
+ 583 0214 7DAB      		ldi r20,lo8(0x3f597f63)
+ 584 0216 8EAB      		ldi r21,hi8(0x3f597f63)
+ 585 0218 9FAB      		ldi r22,hlo8(0x3f597f63)
+  68:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** 		paxisSettings->minVelocity = gradrosTOuPasos(paxisSettings,0.8496,VELOCIDAD_TYPE);//69905; 
+ 586               	0x3f597f63)
+ 587               		ldi r18,lo8(1)
+ 588 021a CE01      		ldi r19,hi8(1)
+ 589 021c 43E6      		call gradrosTOuPasos
+ 590 021e 5FE7      		std Y+56,r22
+ 591 0220 69E5      		std Y+57,r23
+ 592 0222 7FE3      		std Y+58,r24
+ 593 0224 21E0      		std Y+59,r25
+ 595 0228 0E94 0000 	.LM39:
+ 596 022c 68AF      		movw r24,r28
+ 597 022e 79AF      		ldi r20,lo8(0x41a00000)
+ 598 0230 8AAF      		ldi r21,hi8(0x41a00000)
+ 599 0232 9BAF      		ldi r22,hlo8(0x41a00000)
+  69:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** 	    paxisSettings->homeVelocity = gradrosTOuPasos(paxisSettings,20,VELOCIDAD_TYPE);//2468138?; 
+ 600               	0x41a00000)
+ 601               		ldi r18,lo8(1)
+ 602 0234 CE01      		ldi r19,hi8(1)
+ 603 0236 40E0      		call gradrosTOuPasos
+ 604 0238 50E0      		std Y+60,r22
+ 605 023a 60EA      		std Y+61,r23
+ 606 023c 71E4      		std Y+62,r24
+ 607 023e 21E0      		std Y+63,r25
+ 609 0242 0E94 0000 	.LM40:
+ 610 0246 6CAF      		movw r24,r28
+ 611 0248 7DAF      		ldi r20,lo8(0x411ff55a)
+ 612 024a 8EAF      		ldi r21,hi8(0x411ff55a)
+ 613 024c 9FAF      		ldi r22,hlo8(0x411ff55a)
+  70:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** 		paxisSettings->homeAcceleration= gradrosTOuPasos(paxisSettings,9.9974,ACELERACION_TYPE);//494;  
+ 614               	0x411ff55a)
+ 615               		ldi r18,lo8(2)
+ 616 024e CE01      		ldi r19,hi8(2)
+ 617 0250 4AE5      		call gradrosTOuPasos
+ 618 0252 55EF      		subi r28,lo8(-(64))
+ 619 0254 6FE1      		sbci r29,hi8(-(64))
+ 620 0256 71E4      		st Y,r22
+ 621 0258 22E0      		std Y+1,r23
+ 622 025a 30E0      		std Y+2,r24
+ 623 025c 0E94 0000 		std Y+3,r25
+ 624 0260 C05C      		subi r28,lo8(-(-64))
+ 625 0262 DF4F      		sbci r29,hi8(-(-64))
+ 627 0266 7983      	.LM41:
+ 628 0268 8A83      		ldi r24,lo8(10)
+ 629 026a 9B83      		ldi r25,hi8(10)
+ 630 026c C054      		std Y+7,r25
+ 631 026e D040      		std Y+6,r24
+  71:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** 		paxisSettings->maxAxisAngle=10;
+ 632               	M42-.LFBB1
+ 633               	.LM42:
+ 634 0270 8AE0      		ldi r24,lo8(-140)
+ 635 0272 90E0      		ldi r25,hi8(-140)
+ 636 0274 9F83      	.L19:
+ 637 0276 8E83      		std Y+9,r25
+  72:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** 		paxisSettings->minAxisAngle=-140;
+ 638               	+8,r24
+ 639               		rjmp .L18
+ 640 0278 84E7      	.L5:
+ 642               	.LM43:
+ 643 027c 9987      		std Y+27,r21
+ 644 027e 8887      		std Y+26,r20
+ 646               	.LM44:
+  73:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** 		
+  74:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c ****     break;
+  75:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c ****     case AxisElbow://CODO
+  76:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** 		paxisSettings->homeSwitchHandling = 1; // home = rigth. limit
+ 647               	lo8(11805)
+ 648               		ldi r25,hi8(11805)
+ 649 0282 5B8F      		std Y+29,r25
+ 650 0284 4A8F      		std Y+28,r24
+  77:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** 		paxisSettings->gearNominator = 11805;//11805//11768;//11955;  //12105;
+ 651               	abn	68,0,78,.LM45-.LFBB1
+ 652               	.LM45:
+ 653 0286 8DE1      		ldi r24,lo8(100)
+ 654 0288 9EE2      		ldi r25,hi8(100)
+ 655 028a 9D8F      		std Y+31,r25
+ 656 028c 8C8F      		std Y+30,r24
+  78:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** 		paxisSettings->gearDenominator = 100;
+ 657               	n	68,0,79,.LM46-.LFBB1
+ 658               	.LM46:
+ 659 028e 84E6      		movw r24,r28
+ 660 0290 90E0      		ldi r20,lo8(0x3f9b18fc)
+ 661 0292 9F8F      		ldi r21,hi8(0x3f9b18fc)
+ 662 0294 8E8F      		ldi r22,hlo8(0x3f9b18fc)
+  79:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** 		paxisSettings->maxVelocity = gradrosTOuPasos(paxisSettings,1.2117,VELOCIDAD_TYPE);//100000; 
+ 663               	23,hhi8(0x3f9b18fc)
+ 664               		ldi r18,lo8(1)
+ 665 0296 CE01      		ldi r19,hi8(1)
+ 666 0298 4CEF      		call gradrosTOuPasos
+ 667 029a 58E1      		std Y+52,r22
+ 668 029c 6BE9      		std Y+53,r23
+ 669 029e 7FE3      		std Y+54,r24
+ 670 02a0 21E0      		std Y+55,r25
+ 672 02a4 0E94 0000 	.LM47:
+ 673 02a8 6CAB      		movw r24,r28
+ 674 02aa 7DAB      		ldi r20,lo8(0x3f18b439)
+ 675 02ac 8EAB      		ldi r21,hi8(0x3f18b439)
+ 676 02ae 9FAB      		ldi r22,hlo8(0x3f18b439)
+  80:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** 		paxisSettings->minVelocity = gradrosTOuPasos(paxisSettings,0.5965,VELOCIDAD_TYPE);//49231; 
+ 677               	0x3f18b439)
+ 678               		ldi r18,lo8(1)
+ 679 02b0 CE01      		ldi r19,hi8(1)
+ 680 02b2 49E3      		call gradrosTOuPasos
+ 681 02b4 54EB      		std Y+56,r22
+ 682 02b6 68E1      		std Y+57,r23
+ 683 02b8 7FE3      		std Y+58,r24
+ 684 02ba 21E0      		std Y+59,r25
+ 686 02be 0E94 0000 	.LM48:
+ 687 02c2 68AF      		movw r24,r28
+ 688 02c4 79AF      		ldi r20,lo8(0x41a00000)
+ 689 02c6 8AAF      		ldi r21,hi8(0x41a00000)
+ 690 02c8 9BAF      		ldi r22,hlo8(0x41a00000)
+  81:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** 		paxisSettings->homeVelocity = gradrosTOuPasos(paxisSettings,20,VELOCIDAD_TYPE);//2475688?; 
+ 691               	0x41a00000)
+ 692               		ldi r18,lo8(1)
+ 693 02ca CE01      		ldi r19,hi8(1)
+ 694 02cc 40E0      		call gradrosTOuPasos
+ 695 02ce 50E0      		std Y+60,r22
+ 696 02d0 60EA      		std Y+61,r23
+ 697 02d2 71E4      		std Y+62,r24
+ 698 02d4 21E0      		std Y+63,r25
+ 700 02d8 0E94 0000 	.LM49:
+ 701 02dc 6CAF      		movw r24,r28
+ 702 02de 7DAF      		ldi r20,lo8(0x411fcb29)
+ 703 02e0 8EAF      		ldi r21,hi8(0x411fcb29)
+ 704 02e2 9FAF      		ldi r22,hlo8(0x411fcb29)
+  82:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** 		paxisSettings->homeAcceleration= gradrosTOuPasos(paxisSettings,9.9871,ACELERACION_TYPE);//495;  
+ 705               	0x411fcb29)
+ 706               		ldi r18,lo8(2)
+ 707 02e4 CE01      		ldi r19,hi8(2)
+ 708 02e6 49E2      		call gradrosTOuPasos
+ 709 02e8 5BEC      		subi r28,lo8(-(64))
+ 710 02ea 6FE1      		sbci r29,hi8(-(64))
+ 711 02ec 71E4      		st Y,r22
+ 712 02ee 22E0      		std Y+1,r23
+ 713 02f0 30E0      		std Y+2,r24
+ 714 02f2 0E94 0000 		std Y+3,r25
+ 715 02f6 C05C      		subi r28,lo8(-(-64))
+ 716 02f8 DF4F      		sbci r29,hi8(-(-64))
+ 718 02fc 7983      	.LM50:
+ 719 02fe 8A83      		ldi r24,lo8(120)
+ 720 0300 9B83      		ldi r25,hi8(120)
+ 721 0302 C054      		std Y+7,r25
+ 722 0304 D040      		std Y+6,r24
+  83:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** 		paxisSettings->maxAxisAngle=120;
+ 723               	M51-.LFBB1
+ 724               	.LM51:
+ 725 0306 88E7      		ldi r24,lo8(-126)
+ 726 0308 90E0      		ldi r25,hi8(-126)
+ 727 030a 9F83      		rjmp .L19
+ 728 030c 8E83      	.L6:
+  84:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** 		paxisSettings->minAxisAngle=-126;
+ 729               	i8(-(-64))
+ 731 030e 82E8      	.LM50:
+ 732 0310 9FEF      		ldi r24,lo8(120)
+ 733 0312 00C0      		ldi r25,hi8(120)
+ 734               		std Y+7,r25
+  85:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** 		//paxisSettings->ustepsPerStep = 128;
+  86:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** 		
+  87:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c ****     break;
+  88:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c ****     case AxisPitch://PITCH
+  89:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** 		paxisSettings->homeSwitchHandling = 1; // home = rigth. limit
+ 735               	-(64))
+ 736               		sbci r29,hi8(-(64))
+ 737 0314 5B8F      		st Y,r22
+ 738 0316 4A8F      		std Y+1,r23
+  90:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** 		paxisSettings->gearNominator = 20256;
+ 739               	20,lo8(0x411fcb29)
+ 740               		ldi r21,hi8(0x411fcb29)
+ 741 0318 80E2      		ldi r22,hlo8(0x411fcb29)
+ 742 031a 9FE4      		ldi r23,hhi8(0x411fcb29)
+ 743 031c 9D8F      		ldi r18,lo8(2)
+ 744 031e 8C8F      		ldi r19,hi8(2)
+  91:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** 		paxisSettings->gearDenominator = 10000;// PC needs that to change rad into usteps
+ 745               	gradrosTOuPasos
+ 746               		subi r28,lo8(-(64))
+ 747 0320 80E1      		sbci r29,hi8(-(64))
+ 748 0322 97E2      		st Y,r22
+ 749 0324 9F8F      		std Y+1,r23
+ 750 0326 8E8F      		std Y+2,r24
+  92:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** 		paxisSettings->homeVelocity = gradrosTOuPasos(paxisSettings,76.3825,VELOCIDAD_TYPE);//108158; // 
+ 751               	+3,r25
+ 752               		subi r28,lo8(-(-64))
+ 753 0328 CE01      		sbci r29,hi8(-(-64))
+ 755 032c 53EC      	.LM50:
+ 756 032e 68E9      		ldi r24,lo8(120)
+ 757 0330 72E4      		ldi r25,hi8(120)
+ 758 0332 21E0      		std Y+7,r25
+ 759 0334 30E0      		std Y+6,r24
+ 761 033a 6CAF      	.LM51:
+ 762 033c 7DAF      		ldi r24,lo8(-126)
+ 763 033e 8EAF      		ldi r25,hi8(-126)
+ 764 0340 9FAF      		rjmp .L19
+  93:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** 		paxisSettings->homeAcceleration= gradrosTOuPasos(paxisSettings,57.0858,ACELERACION_TYPE);//49;  /
+ 765               	 r29,hi8(-(-64))
+ 767 0342 CE01      	.LM50:
+ 768 0344 4CED      		ldi r24,lo8(120)
+ 769 0346 57E5      		ldi r25,hi8(120)
+ 770 0348 64E6      		std Y+7,r25
+ 771 034a 72E4      		std Y+6,r24
+ 773 034e 30E0      	.LM51:
+ 774 0350 0E94 0000 		ldi r24,lo8(-126)
+ 775 0354 C05C      		ldi r25,hi8(-126)
+ 776 0356 DF4F      		rjmp .L19
+ 777 0358 6883      	.L6:
+ 779 035c 8A83      	.LM52:
+ 780 035e 9B83      		std Y+27,r21
+ 781 0360 C054      		std Y+26,r20
+  94:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** 		paxisSettings->maxAxisAngle=174;
+ 783               	td Y+6,r24
+ 785 0364 8EEA      	.LM51:
+ 786 0366 90E0      		ldi r24,lo8(-126)
+ 787 0368 9F83      		ldi r25,hi8(-126)
+ 788 036a 8E83      		rjmp .L19
+  95:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** 		paxisSettings->minAxisAngle=-20;
+ 789               	 r29,hi8(-(-64))
+ 791 036c 8CEE      	.LM50:
+ 792 036e 9FEF      		ldi r24,lo8(120)
+ 793 0370 00C0      		ldi r25,hi8(120)
+ 794               		std Y+7,r25
+  96:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c ****     break;
+  97:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c ****     case AxisRoll:
+  98:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c ****      	paxisSettings->interruptEnable= FALSE;
+ 795               	-(64))
+ 796               		sbci r29,hi8(-(64))
+ 797 0372 1982      		st Y,r22
+  99:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** 		paxisSettings->gearNominator = 1327;
+ 798               	r24,r28
+ 799               		ldi r20,lo8(0x411fcb29)
+ 800 0374 8FE2      		ldi r21,hi8(0x411fcb29)
+ 801 0376 95E0      		ldi r22,hlo8(0x411fcb29)
+ 802 0378 9D8F      		ldi r23,hhi8(0x411fcb29)
+ 803 037a 8C8F      		ldi r18,lo8(2)
+ 100:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** 		paxisSettings->gearDenominator = 1000;// PC needs that to change rad into usteps
+ 804               	19,hi8(2)
+ 805               		call gradrosTOuPasos
+ 806 037c 88EE      		subi r28,lo8(-(64))
+ 807 037e 93E0      		sbci r29,hi8(-(64))
+ 808 0380 9F8F      		st Y,r22
+ 809 0382 8E8F      		std Y+1,r23
+ 101:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** 		paxisSettings->homeVelocity = gradrosTOuPasos(paxisSettings,119.998,VELOCIDAD_TYPE);//111316; // 
+ 810               	+2,r24
+ 811               		std Y+3,r25
+ 812 0384 CE01      		subi r28,lo8(-(-64))
+ 813 0386 4AEF      		sbci r29,hi8(-(-64))
+ 815 038a 6FEE      	.LM50:
+ 816 038c 72E4      		ldi r24,lo8(120)
+ 817 038e 21E0      		ldi r25,hi8(120)
+ 818 0390 30E0      		std Y+7,r25
+ 819 0392 0E94 0000 		std Y+6,r24
+ 821 0398 7DAF      	.LM51:
+ 822 039a 8EAF      		ldi r24,lo8(-126)
+ 823 039c 9FAF      		ldi r25,hi8(-126)
+ 102:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** 		paxisSettings->homeAcceleration= gradrosTOuPasos(paxisSettings,58.3918,ACELERACION_TYPE);//33;  /
+ 824               	(-64))
+ 825               		sbci r29,hi8(-(-64))
+ 827 03a0 44E3      	.LM50:
+ 828 03a2 51E9      		ldi r24,lo8(120)
+ 829 03a4 69E6      		ldi r25,hi8(120)
+ 830 03a6 72E4      		std Y+7,r25
+ 831 03a8 22E0      		std Y+6,r24
+ 833 03ac 0E94 0000 	.LM51:
+ 834 03b0 C05C      		ldi r24,lo8(-126)
+ 835 03b2 DF4F      		ldi r25,hi8(-126)
+ 836 03b4 6883      		rjmp .L19
+ 837 03b6 7983      	.L6:
+ 839 03ba 9B83      	.LM52:
+ 840 03bc C054      		std Y+27,r21
+ 841 03be D040      		std Y+26,r20
+ 103:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** 		paxisSettings->maxAxisAngle=360;
+ 842               	i r25,hi8(120)
+ 843               		std Y+7,r25
+ 844 03c0 88E6      		std Y+6,r24
+ 846 03c4 9F83      	.LM51:
+ 847 03c6 8E83      		ldi r24,lo8(-126)
+ 104:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** 		paxisSettings->minAxisAngle=0;
+ 848               	,r25
+ 849               		subi r28,lo8(-(-64))
+ 850 03c8 1986      		sbci r29,hi8(-(-64))
+ 852 03cc 00C0      	.LM50:
+ 853               		ldi r24,lo8(120)
+ 105:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c ****     break;    
+ 106:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c ****     case AxisAux1:
+ 107:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** 		paxisSettings->axisEnabled = FALSE;
+ 108:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** 		paxisSettings->interruptEnable= FALSE;
+ 109:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** 		paxisSettings->encoderEnable=FALSE; 
+ 110:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c ****     break;
+ 111:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c ****     case AxisAux2:
+ 112:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** 		paxisSettings->axisEnabled = FALSE;
+ 113:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** 		paxisSettings->interruptEnable= FALSE;
+ 114:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** 		paxisSettings->encoderEnable=FALSE; 
+ 115:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c ****     break;
+ 116:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** 	case AxisAux3:
+ 117:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** 		paxisSettings->axisEnabled = FALSE;
+ 118:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** 		paxisSettings->interruptEnable= FALSE;
+ 119:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** 		paxisSettings->encoderEnable=FALSE; 
+ 120:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c ****     break;
+ 121:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c ****     case AxisAux4:
+ 122:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** 		paxisSettings->axisEnabled = FALSE;
+ 123:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** 		paxisSettings->interruptEnable= FALSE;
+ 124:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** 		paxisSettings->encoderEnable=FALSE; 
+ 125:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c ****     break;
+ 126:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** 	case AxisAux5:
+ 127:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** 		paxisSettings->axisEnabled = FALSE;
+ 128:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** 		paxisSettings->interruptEnable= FALSE;
+ 129:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** 		paxisSettings->encoderEnable=FALSE; 
+ 130:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c ****     break;
+ 131:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c ****     case AxisAux6:
+ 132:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** 		paxisSettings->axisEnabled = FALSE;
+ 133:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** 		paxisSettings->interruptEnable= FALSE;
+ 134:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** 		paxisSettings->encoderEnable=FALSE; 
+ 135:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c ****     break;
+ 136:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c ****     case AxisAux7:
+ 137:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** 		paxisSettings->axisEnabled = FALSE;
+ 854               	ll gradrosTOuPasos
+ 855               		subi r28,lo8(-(64))
+ 856 03ce 1882      		sbci r29,hi8(-(64))
+ 138:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** 		paxisSettings->interruptEnable= FALSE;
+ 857               	 Y,r22
+ 858               		std Y+1,r23
+ 859 03d0 1982      		std Y+2,r24
+ 139:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** 		paxisSettings->encoderEnable=FALSE; 
+ 860               	b29)
+ 861               		ldi r21,hi8(0x411fcb29)
+ 862 03d2 1D82      		ldi r22,hlo8(0x411fcb29)
+ 863 03d4 1C82      		ldi r23,hhi8(0x411fcb29)
+ 864               		ldi r18,lo8(2)
+ 865               		ldi r19,hi8(2)
+ 140:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c ****     break;
+ 141:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c ****   } // switch
+ 142:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** }// defaultAxisSettings
+ 866               	gradrosTOuPasos
+ 867               		subi r28,lo8(-(64))
+ 868 03d6 DF91      		sbci r29,hi8(-(64))
+ 869 03d8 CF91      		st Y,r22
+ 870 03da 0895      		std Y+1,r23
+ 871               		std Y+2,r24
+ 872               		std Y+3,r25
+ 873               		subi r28,lo8(-(-64))
+ 874               		sbci r29,hi8(-(-64))
+ 876               	.LM50:
+ 143:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** 
+ 144:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** /*****************************************************************************************/
+ 145:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** void setupAxisSettings(tAxisSettings *axisSettings) 
+ 146:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** {
+ 877               	8(120)
+ 878               		ldi r25,hi8(120)
+ 879               		std Y+7,r25
+ 880 03dc 0F93      		std Y+6,r24
+ 882 03e0 CF93      	.LM51:
+ 883 03e2 DF93      		ldi r24,lo8(-126)
+ 884               		ldi r25,hi8(-126)
+ 885               		rjmp .L19
+ 886               	.L6:
+ 888 03e4 8C01      	.LM52:
+ 889 03e6 C0E0      		std Y+27,r21
+ 890 03e8 D0E0      		std Y+26,r20
+ 147:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c ****   int16 i;
+ 148:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** 
+ 149:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c ****   for(i=0; i<DOF; i++) 
+ 150:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c ****   {
+ 151:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c ****     defaultAxisSettings(i,&(axisSettings[i]));
+ 892               	td Y+6,r24
+ 894 03ea CE01      	.LM51:
+ 895 03ec B801      		ldi r24,lo8(-126)
+ 896 03ee 0E94 0000 		ldi r25,hi8(-126)
+ 897               		rjmp .L19
+ 898               	.L6:
+ 900 03f4 0C5B      	.LM52:
+ 901 03f6 1F4F      		std Y+27,r21
+ 902 03f8 C530      		std Y+26,r20
+ 904 03fc 01F4      	.LM53:
+ 905               		ldi r24,lo8(20256)
+ 152:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c ****   }
+ 153:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/robotData.c **** } // setupAxisHandles
+ 906               	M51-.LFBB1
+ 907               	.LM51:
+ 908 03fe DF91      		ldi r24,lo8(-126)
+ 909 0400 CF91      		ldi r25,hi8(-126)
+ 910 0402 1F91      		rjmp .L19
+ 911 0404 0F91      	.L6:
+ 913               	.LM52:
+ 914               		std Y+27,r21
+ 915               		std Y+26,r20
+ 917               	.LM53:
+ 918               		ldi r24,lo8(20256)
+ 919               		ldi r25,hi8(20256)
+ 920               		std Y+29,r25
+ 921               		std Y+28,r24
+ 923 0000 0000      	.LM54:
+ 924               		ldi r24,lo8(10000)
+ 925               		ldi r25,hi8(10000)
+ 926               		std Y+31,r25
+ 927               		std Y+30,r24
+ 929               	.LM55:
+ 930               		movw r24,r28
+ 931               		ldi r20,lo8(0x4298c3d7)
+ 932               		ldi r21,hi8(0x4298c3d7)
+ 933               		ldi r22,hlo8(0x4298c3d7)
+DEFINED SYMBOLS
+                            *ABS*:00000000 robotData.c
+C:\DOCUME~1\David\LOCALS~1\Temp/ccdgzUgl.s:2      *ABS*:0000003f __SREG__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccdgzUgl.s:3      *ABS*:0000003e __SP_H__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccdgzUgl.s:4      *ABS*:0000003d __SP_L__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccdgzUgl.s:5      *ABS*:00000034 __CCP__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccdgzUgl.s:6      *ABS*:00000000 __tmp_reg__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccdgzUgl.s:7      *ABS*:00000001 __zero_reg__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccdgzUgl.s:237    .text:00000000 defaultAxisSettings
+C:\DOCUME~1\David\LOCALS~1\Temp/ccdgzUgl.s:876    .text:000003dc setupAxisSettings
+C:\DOCUME~1\David\LOCALS~1\Temp/ccdgzUgl.s:922    .eeprom:00000000 EEprom_Reconf_Indicator
+C:\DOCUME~1\David\LOCALS~1\Temp/ccdgzUgl.s:927    .eeprom:00000002 EEprom_axisSettings
+
+UNDEFINED SYMBOLS
+gradrosTOuPasos

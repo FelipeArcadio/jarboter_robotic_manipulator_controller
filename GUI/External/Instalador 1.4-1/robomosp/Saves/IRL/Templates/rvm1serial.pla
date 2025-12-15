@@ -1,0 +1,850 @@
+% El Lenguaje destino es C++
+
+% Bloque de Preprocesamiento
+% En este bloque se ubican las instrucciones necesarias en el lenguaje destino para la ejecución del
+% programa objeto.
+
+@{
+    #include <math.h>
+    #include <listrvm1.h>
+    #include <soporte.h>
+    #include <iostream.h>
+    #include <stdio.h>
+    #include <fstream.h>
+    #include <string.h>
+	#include <trigo.h>
+//    #include <Serial.cpp>    
+	
+    using namespace std;
+    
+    #define NumParalel 2 	/*Numero de puertos de conexion para robots*/
+    #define Abierto 0    	/*Grip*/
+    #define Inicio 10    	/*identificador inicial para almacenamoento de las posciciones*/
+
+    #define CJOINT  1	 	/*El punto especificado es un Joint*/
+    #define CTARGET 2	 	/*El punto especificado es un target*/
+    #define CMAINJOINT 3 	/*El ponto especifica el grip*/
+
+    char * pointer1;        /*Punteros para CAST*/
+    char * pointer2;
+    
+    int i,j;                /*Contadores*/ 
+    int posNumber = Inicio; 
+    int posActual = Inicio;
+    
+    double pitch,roll;      /*Angulos de rotacion del efector final*/
+
+    fstream filedatalist;   /*FileHandler del Data List*/
+    
+    /*Punto para efectuar movimiento*/
+    typedef struct{
+        int tipo;			/*Numero de posicion almacenada cuando es de tipo xyz*/
+        int posNumber;		/*Idenfificador del punto*/
+		char grip;			/*Estado del Grip*/
+        double valor[5];    /*Angulos o valores target*/
+    }punto;
+    punto  * point;
+        
+    /*Lista de almacenamiento de puntos del programa*/   
+    List <punto*>* posiciones = new List <punto *>;	  
+   
+    int port = 2;        /*Numero del Puerto serial por el cual se establecera comunicacion*/
+    
+    FILE * fp;
+   
+@}
+
+INT $ $ <nombrevariable> = "long <nombrevariable>;"
+;
+CHAR $ $ <nombrevariable> = "char <nombrevariable>;"
+;
+REAL $ $ <nombrevariable> = "double <nombrevariable>;"
+;
+STRING $ $ <nombrevariable> = "char <nombrevariable> [256];"
+;
+TEXT $ $ <nombrevariable> = "char * <nombrevariable> ;"
+;
+BOOL $ $ <nombrevariable> = "bool <nombrevariable> ;"
+;
+USER $ <tipo> <objeto> = "<tipo> <objeto>;"
+;
+ROBOT $ $ <objeto> = "R_SPEC_TYPE * <objeto>;"
+;
+LIST $ $ $ = " List <"
+;
+ENDLIST $ $ <variable> = " > <variable>;"
+;
+RECORD $ $ <nombre_variable> = "struct {"
+;
+ENDRECORD $ $ <nombrevariable> = "} <nombrevariable> ;"
+;
+FILE $ $ <nombrevariable> = "fstream <nombrevariable>;"
+;
+%SEMABOOL $ $ <nombrevariable> = "static bool <nombrevariable>;"
+%;
+%SEMAINT $ $ <nombrevariable> = "static int <nombrevariable>;"
+%;
+PARININT $ $ <nombrevariable> = "long <nombrevariable>"
+;
+PARINCHAR $ $ <nombrevariable> = "char <nombrevariable>"
+;
+PARINREAL $ $ <nombrevariable> = "double <nombrevariable>"
+;
+PARINSTRING $ $ <nombrevariable> = "char <nombrevariable> [256]"
+;
+PARINBOOL $ $ <nombrevariable> = "bool <nombrevariable>"
+;
+PARINENDRECORD $ $ <nombrevariable> = "} & <nombrevariable>"
+;
+PARINENDLIST $ $ <variable> = "> & <variable> "
+;
+PARINFILE $ $ <nombrevariable> = "fstream <nombrevariable>"
+;
+PARINUSER $ <tipo> <objeto> = "<tipo> <objeto>"
+;
+%PARINSEMABOOL $ $ <nombrevariable> = "static bool <nombrevariable>"
+%;
+%PARINSEMAINT $ $ <nombrevariable> = "static int <nombrevariable>"
+%;
+PAROUTINT $ $ <nombrevariable> = "long & <nombrevariable>"
+;
+PAROUTCHAR $ $ <nombrevariable> = "char & <nombrevariable>"
+;
+PAROUTREAL $ $ <nombrevariable> = "double & <nombrevariable>"
+;
+PAROUTSTRING $ $ <nombrevariable> = "char & <nombrevariable> [256]"
+;
+PAROUTBOOL $ $ <nombrevariable> = "bool & <nombrevariable>"
+;
+PAROUTENDLIST $ $ <variable> = "> & <variable> "
+;
+PAROUTENDRECORD $ $ <nombrevariable> = "} & <nombrevariable>"
+;
+PAROUTFILE $ $ <nombrevariable> = "fstream & <nombrevariable>"
+;
+PAROUTUSER $ <tipo> <objeto> = "<tipo> & <objeto>"
+;
+%PAROUTSEMABOOL $ $ <nombrevariable> = "static bool & <nombrevariable>"
+%;
+%PAROUTSEMAINT $ $ <nombrevariable> = "static int & <nombrevariable>"
+%;
+TYPE $ $ $ = "typedef "
+;
+ENDTYPE $ $ $ = " "
+;
+
+
+%
+% Programa
+%
+
+BEGINBLOCK $ $ $ = "{"
+;
+ENDBLOCK $ $ $ = "}"
+;
+LABEL <etiqueta> $ $ = "<etiqueta> : ;"
+;
+BEGINMAINBLOCK $ $ $ = "
+	#ifndef DATALIST
+	char datalist [250] = \"datalist.dls\";
+	#define DATALIST
+	#endif
+	int main()
+	{
+        //int inicio = linea;
+ 		filedatalist.open ( datalist, ios::in | ios::binary);
+
+ 		fp = fopen(\"programa.txt\",\"w\");
+        // fprintf(fp,\"DT 1, 2048\\r\\n%d OB +0\\r\\n%d NT\\r\\n\", inicio, inicio + 1);
+        //linea += 2;
+        sprintf(mensaje,\"TL 110\\r\\n\");
+        if(!TransmisionSerial(mensaje,strlen(mensaje)))
+            exit (-1);
+
+"
+;
+ENDMAINBLOCK $ $ $ = "
+        filedatalist.close ();       
+       // fprintf(fp,\"%d OB -0\\r\\n\RN\\r\\n\", linea);
+        fclose(fp);
+       // linea++;
+        return 1;
+        }
+"
+;
+
+BEGINPROGRAM $ $ $ = "
+    void RobtargetPath ( ROBTARGET rob );
+    void MainJointPath ( MAIN_JOINT j );
+    int TransmisionSerial(char mensaje[], int size);
+    void MovPointToPoint(AT parametros);    
+    R_SPEC_TYPE * robots[NumParalel];
+    int robot;   
+"
+;
+
+%
+% Arreglos
+%
+
+ARRAYASSIGNMENT <expresion> <indice> <objetoarreglo> = "<objetoarreglo> [ <indice> ] = <expresion> ;"
+;
+ARRAYASSIGNMENTCOPY <expresion> <indice> <objetoarreglo> = "
+    pointer1 = (char *)&<expresion>;
+    pointer2 = (char *)&(<objetoarreglo>[ <indice> ]);
+    for ( i = 0; i < sizeof ( <expresion> ) ; i ++ )
+            pointer2[i] = pointer1[i];
+"
+;
+ARRAYUSER <tamano> <tipo> <variable> = "<tipo> <variable> [ <tamano> ];"
+;
+ARRAYINT <tamano> $ <variable> = "long <variable> [ <tamano> ];"
+;
+ARRAYREAL <tamano> $ <variable> = "double <variable> [ <tamano> ];"
+;
+ARRAYENDRECORD <tamano> $ <nombrevariable> = "} <nombrevariable> [ <tamano> ];"
+;
+COPYARRAY <origen> <indice> <destino> = "<destino> [ <indice> ] = <origen> [ <indice> ];"
+;
+COPYARRAYHARD <origen> <indice> <destino> = "
+    pointer1 = (char *)&(<origen> [ <indice> ]);
+    pointer2 = (char *)&(<destino> [ <indice> ]);
+    for ( i = 0; i < sizeof ( <destino> [ <indice> ] ) ; i ++ )
+        pointer2[i] = pointer1[i];
+"
+;
+ARRAYINDEX <indice> <objetoarreglo> <respuesta> = "<respuesta> = <objetoarreglo> [<indice>] ;"
+;
+ARRAYINDEXCOPY <indice> <objetoarreglo> <respuesta> = "
+    pointer1 = (char *)&(<objetoarreglo> [<indice>]);
+    pointer2 = (char *)&<respuesta>;
+    for ( i = 0; i < sizeof ( <respuesta> ) ; i ++ )
+        pointer2[i] = pointer1[i];
+"
+;
+
+
+%
+% Registros
+% Copia el valor de <expresion> en el componente <componente> del registro <registro>, el
+% tipo de dato del componente es simple
+%
+COMPONENTASSIGNMENT <expresion> <componente> <registro> = "<registro>.<componente> = <expresion>;"
+;
+
+% Copia el valor del registro2 en el componente <componente> del registro <record1>
+%<registro>.<componente> = <expresion>
+COMPONENTASSIGNMENTHARD <expresion> <componente> <registro> = "
+    pointer1 = (char *)&<expresion>;
+    pointer2 = (char *)&(<registro>.<componente>);
+    for ( i = 0; i < sizeof ( <expresion> ) ; i ++ )
+        pointer2[i] = pointer1[i];
+"
+;
+RECORDASSIGNMENT <record2> $ <record1> = "
+    pointer1 = (char *)&<record2>;
+    pointer2 = (char *)&<record1>;
+    for ( i = 0; i < sizeof ( <record1> ) ; i ++ )
+        pointer2[i] = pointer1[i];
+"
+;
+RECORDCOMPONENT <componente> <objetoregistro> <respuesta> = "<respuesta> = <objetoregistro>.<componente>;"
+;
+RECORDCOMPONENTCOPY <componente> <objetoregistro> <respuesta> = "
+    pointer1 = (char *)&(<objetoregistro>.<componente>);
+    pointer2 = (char *)&<respuesta>;
+    for ( i = 0; i < sizeof ( <respuesta> ) ; i ++ )
+        pointer2[i] = pointer1[i];
+"
+;
+ROBOTCOMPONENT <componente> <objetoregistro> <respuesta> = "<respuesta> = <objetoregistro>-><componente>;"
+;
+ROBOTCOMPONENTCOPY <componente> <objetoregistro> <respuesta> = "
+    pointer1 = (char *)&(<objetoregistro>-><componente>);
+    pointer2 = (char *)&<respuesta>;
+    for ( i = 0; i < sizeof ( <respuesta> ) ; i ++ )
+        pointer2[i] = pointer1[i];
+"
+;
+ROBOTCOMPONENTASSIGNMENT <expresion> <componente> <registro> = "<registro>.<componente> = <expresion>;"
+;
+
+% Copia el valor del registro2 en el componente <componente> del registro <record1>
+%<registro>.<componente> = <expresion>
+ROBOTCOMPONENTASSIGNMENTHARD <expresion> <componente> <registro> = "
+    pointer1 = (char *)&<expresion>;
+    pointer2 = (char *)&(<registro>.<componente>);
+    for ( i = 0; i < sizeof ( <expresion> ) ; i ++ )
+        pointer2[i] = pointer1[i];
+"
+;
+
+%
+% Comparaciones
+%
+IFGREATER <expresion1> <expresion2> <etiqueta> = "if( <expresion1> > <expresion2> ) goto <etiqueta>;"
+;
+IFSMALLER <expresion1> <expresion2> <etiqueta> = "if( <expresion1> < <expresion2> ) goto <etiqueta>;"
+;
+IFEQUAL <expresion1> <expresion2> <etiqueta> = "if( <expresion1> == <expresion2> ) goto <etiqueta>;"
+;
+IFDIFERENT <expresion1> <expresion2> <etiqueta> = "if( <expresion1> != <expresion2> ) goto <etiqueta>;"
+;
+IFGREATEREQUAL <expresion1> <expresion2> <etiqueta> = "if( <expresion1> >= <expresion2> ) goto <etiqueta>;"
+;
+IFSMALLEREQUAL <expresion1> <expresion2> <etiqueta> = "if( <expresion1> <= <expresion2> ) goto <etiqueta>;"
+;
+IFEQUALSTRING <cadena1> <cadena2> <etiqueta> = "if( strcmp ( <cadena1>, <cadena2> ) == 0 ) goto <etiqueta> ;"
+;
+IFTRUE <expresion> $ <etiqueta> = "if( <expresion> ) goto <etiqueta> ;"
+;
+IFFALSE <expresion> $ <etiqueta> = "if( !<expresion> ) goto <etiqueta> ;"
+;
+GOTO $ $ <etiqueta> = "goto <etiqueta> ;"
+;
+
+
+%
+% Operaciones Matematicas
+%
+
+ASSIGNMENT <expresion> $ <objeto> = "<objeto>  = <expresion> ;"
+;
+ADDITION <expresion1> <expresion2> <respuesta> = "<respuesta> = <expresion1> + <expresion2> ;"
+;
+SUBSTRACTION <expresion1> <expresion2> <respuesta> = "<respuesta>  = <expresion1> - <expresion2> ;"
+;
+MULTIPLICATION <expresion1> <expresion2> <respuesta> = "<respuesta> = <expresion1> * <expresion2>;"
+;
+DIVISION <expresion1> <expresion2> <respuesta> = "<respuesta> = <expresion1> / <expresion2> ;"
+;
+ABS <expresion> $ <respuesta> = "<respuesta> = ABS ( <expresion> );"
+;
+SQRT <expresion> $ <respuesta> = "<respuesta> = sqrt ( <expresion> );"
+;
+
+
+%
+% Operaciones a nivel de Bits
+%
+
+ORBIT <expresion1> <expresion2> <respuesta> = "<respuesta> = <expresion1> | <expresion2> ;"
+;
+ANDBIT <expresion1> <expresion2> <respuesta> = "<respuesta> = <expresion1> & <expresion2> ;"
+;
+XORBIT <expresion1> <expresion2> <respuesta> = "<respuesta> = <expresion1> ^ <expresion2> ;"
+;
+SIZEOF <objeto> $ <resp> = "<resp> = sizeof ( <objeto> );"
+;
+
+
+%
+% Operaciones Trigonometricas
+%
+
+TAN <expresion> $ <respuesta> = "<respuesta> = TAN ( <expresion> ); "
+;
+SIN <expresion> $ <respuesta> = "<respuesta> = SIN ( <expresion> ); "
+;
+COS <expresion> $ <respuesta> = "<respuesta> = COS ( <expresion> ); "
+;
+ATAN2 <expresion1> <expresion2> <respuesta> = "<respuesta> = ATAN2 ( <expresion1>, <expresion2> );"
+;
+ATAN <expresion> $ <respuesta> = "<respuesta> = ATAN ( <expresion> );"
+;
+ASIN <expresion> $ <respuesta> = "<respuesta> = ASIN ( <expresion> );"
+;
+ACOS <expresion> $ <respuesta> = "<respuesta> = ACOS ( <expresion> );"
+;
+
+
+%
+% Funciones, Procedimientos y Porcesos Paralelos
+%
+
+CALLFUNCTION <nombre> $ <respuesta> = "<respuesta> = <nombre> ( "
+;
+CALLPROCEDURE <nombre> $ $ = "<nombre> (  "
+;
+ENDCALL $ $ $ = " ) ; "
+;
+ENDPROCESS $ $ $ = " */ "
+;
+PARAMETER <objeto> $ $ = " <objeto> "
+;
+PARAMETERSEPARATOR $ $ $ = ","
+;
+PARAMETERBLOCK $ $ $ = "("
+;
+ENDPARAMETERBLOCK $ $ $ = ")"
+;
+START <proceso> $ $ = "/* Start */"
+;
+CANCEL <proceso> $ $ ="/* Cancel */"
+;
+STOP <proceso> $ $ ="/* Stop */"
+;
+CONTINUE <proceso> $ $ ="/* Continue */"
+;
+PROCESS <nombre> <prioridad> $ = "/* "
+;
+PROCEDURE <nombre> $ $ = "void <nombre> "
+;
+INTFUNCTION <nombre> $ $ = "long <nombre> "
+;
+REALFUNCTION <nombre> $ $ = "double <nombre> "
+;
+BOOLFUNCTION <nombre> $ $ = "bool <nombre> "
+;
+CHARFUNCTION <nombre> $ $ = "char <nombre> "
+;
+USERFUNCTION <nombre> $ <tipo> = "<tipo> & <nombre> "
+;
+RETURN <expresion> $ $ = "return <expresion>;"
+;
+EMPTYRETURN $ $ $ = "return;"
+;
+
+
+%
+% Strings
+%
+
+STRINGASSIGNMENT <stringfuente> $ <stringdestino> = "strcpy (<stringdestino>, <stringfuente>); "
+;
+COMPARESTRING <cadena1> <cadena2> <respuesta> = "<respuesta> = strcmp ( <cadena1>, <cadena2> );"
+;
+CONCATSTRING <cadena1> <cadena2> <respuesta> = "
+    strcpy ( <respuesta>, <cadena1> );
+    strcat ( <respuesta>, <cadena2> );
+"
+;
+GETCHARACTER <cadena> <indice> <respuesta> = "<respuesta> = <cadena> [ <indice> - 1 ];"
+;
+SETCHARACTER <cadena> <caracter> <indice> = "<cadena> [ <indice> - 1 ] = <caracter>;"
+;
+LENGTHSTRING <cadena> $ <respuesta> = "<respuesta> = strlen ( <cadena> );"
+;
+LOCATESTRING <cadena> <subcadena> <respuesta> = "<respuesta> = LocateString ( <cadena>, <subcadena> );"
+;
+DELETECHARACTERS <cadena> <inicio> <final> = "DeleteCharacteres ( <cadena>, <inicio>, <final> );"
+;
+EXTRACTSTRING <cadena> <inicio> <final> = "ExtractString ( <cadena>, <inicio>, <final> );"
+;
+APPENDCHAR <cadena> <caracter> <respuesta> = "
+    strcpy ( <respuesta>, <cadena> );
+    <respuesta> [ strlen ( <cadena> ) ] = <caracter> ;
+    <respuesta> [ strlen ( <cadena> ) + 1 ] = 0 ;
+"
+;
+
+
+%
+% Puntos y Movimientos del Robot
+%
+
+
+ROBTARGETPATH <robtarget> $ $ = "
+    RobtargetPath ( <robtarget> );    
+"
+;
+MAINJOINTPATH j $ $ = "
+    MainJointPath ( j );
+"
+;
+ADDJOINTPATH <mainjoint> $ $ ="
+    point = new punto;
+    point->tipo = CADDJOINT;
+    if(<mainjoint>.AA1 == Abierto)
+    	point->grip = 'O';
+    else
+       point->grip ='C';
+    posiciones->Listadd(point);"
+;
+ROBOTDEF <nombre> <inicializacion> <variable> = "
+    R_SPEC_TYPE * <variable>;
+    <variable> = & <inicializacion>;
+    robots[robot] = <variable>;
+    robot ++;
+    "
+;
+MOVELIN $ <parametros> $ = "
+    fprintf(fp,\"'%d SP %d\\r\\n\",linea, <parametros>.SPEED );
+    linea ++;
+    fprintf(fp,\"'%d WH\\r\\n\",linea);
+    linea++;
+    fscanf (fp,\"'%d%c%d%c%d%c%d%c%d\\r\\n\",x,c,y,c,z,c,pitch,c,roll);
+    fprintf(fp,\"'%d PD %d,%d,%d,%d,%.0f,%.0f\\r\\n\",linea,posActual,x,y,z,pitch,roll);
+    linea ++;
+    for(i = 1; i<= posiciones->Listlength(); i++)
+    {
+        point = (*posiciones)[i];
+        if(point->tipo == CTARGET)
+        {
+            fprintf(fp,\"'%d MS %d, %d\\r\\n\", linea, posActual, posNumber);
+            linea ++;
+            posActual = posNumber;
+        }
+        else
+        {
+        fprintf(fp,\"'%d MJ %.0f, %.0f, %.0f, %.0f, %.0f\\r\\n\",linea,point->valor[0], point->valor[1], point->valor[2], point->valor[3], point->valor[4]);
+        linea ++;
+        fprintf(fp,\"'%d WH\\r\\n\", linea);
+        linea++;
+        fscanf(fp,\"'%d%c%d%c%d%c%d%c%d\",x,c,y,c,z,c,pitch,c,roll);
+        fprintf(fp,\"'%d PD %d,%d,%d,%d,%.0f,%.0f\\r\\n\",linea,posActual,x,y,z,pitch,roll);
+        linea++;
+        }
+    }
+    posiciones->Listdestroy();
+    posNumber = Inicio;
+"
+;
+MOVEPTP $ <parametros> $ = "
+   MovPointToPoint(<parametros>);
+"
+;
+%MOVECIRCLE
+%;
+MOVEPTPINC $ <parametros> $ ="
+    //Lee la posicion actual
+    fprintf(fp,\"'%d WH\\r\\n\", linea);
+    linea++;
+    fscanf(fp,\"'%d%c%d%c%d%c%d%c%d\\r\\n\",x,c,y,c,z,c,pitch,c,roll);
+    
+    //Crea el punto con los datos de la posicion actual
+    fprintf(fp,\"'%d PD %d, %d, %d, %d, %.0f, %.0f\\r\\n\",linea,posActual,x,y,z,pitch,roll);
+    linea++;
+    fprintf(fp,\"'%d SP %d\\r\\n\",linea, <parametros>.SPEED );
+    linea++;
+    for(i = 1; i<= posiciones->Listlength(); i++)
+    {
+        point = (*posiciones)[i];
+        if(point->tipo == CTARGET){
+            fprintf(fp,\"'%d MA %d,%d\\r\\n\",linea, posActual,posNumber);
+            posActual = posNumber;
+        linea++;
+        }
+        else
+        {
+        fprintf(fp,\"'%d MJ %.0f, %.0f, %.0f, %.0f, %.0f\\r\\n\",linea,point->valor[0], point->valor[1], point->valor[2], point->valor[3], point->valor[4]);
+            linea ++;
+        fprintf(fp,\"'%d WH\\r\\n\", linea);
+        linea ++;
+        fscanf(fp,\"'%d%c%d%c%d%c%d%c%d\",x,c,y,c,z,c,pitch,c,roll);
+        fprintf(fp,\"'%d PD %d, %d, %d, %d, %.0f, %.0f\\r\\n\",linea,posActual,x,y,z,pitch,roll);
+        linea++;
+        }
+"
+;
+%MOVECIRCLEINC
+%;
+%MOVELININC
+%;
+
+%BRAKE <modo> <robot> $ = ""
+%;
+UNTIL $ $ $ ="/*"
+;
+ENDUNTIL $ $ $="*/"
+;
+
+%
+% Operaciones de lista
+%
+
+LISTADD <expresion> $ <objetolista> = "<objetolista>.Listadd(<expresion>) ;"
+;
+LISTDEL <indice> $ <objetolista> = "<objetolista>.Listdel(<indice>) ;"
+;
+LISTINS <expresion> <indice> <objetolista> = "<objetolista>.Listins(<expresion>,<indice>) ;"
+;
+LISTLENGTH <objetolista> $ <objetorespuesta> = " <objetorespuesta> = <objetolista>.Listlength() ;"
+;
+LISTINDEX <objeto_lista> <expresion> <objeto_respuesta> = "<objeto_respuesta>  = <objeto_lista>.Listindex (<expresion>);"
+;
+LISTDESTROY <objeto_lista> $ $ = "<objeto_lista>.Listdestroy (  );"
+;
+LISTELEMENT <indice> <lista> <destino> = "<destino> = <lista>[<indice>];"
+;
+LISTELEMENTCOPY <indice> <lista> <destino> = "
+    pointer1 = (char *)&<destino>;
+    pointer2 = (char *)&<lista>[<indice>];
+
+    for(i = 0; i < sizeof(<lista>[<indice>]); i++)
+        pointer1[i] = pointer2[i];
+"
+;
+
+
+%
+% Entrada y Salida (I/O)
+%
+OPENREAD <nombrearchivo> $ <objetoarchivo> = "<objetoarchivo>.open ( <nombrearchivo> , ios::in ); "
+;
+OPENNEW <nombrearchivo> $ <objetoarchivo> = "<objetoarchivo>.open ( <nombrearchivo>, ios::out ); "
+;
+OPENALEATORY <nombrearchivo> $ <objetoarchivo> = "<objetoarchivo>.open ( <nombrearchivo>, ios::in | ios::out | ios :: /*trunc*/ate | ios::binary );"
+;
+OPENEND <nombrearchivo> $ <objetoarchivo> = "<objetoarchivo>.open ( <nombrearchivo>, ios::in|ios::app ); "
+;
+FILEERROR <archivo> $ <variableerror> = "/*<variableerror> = errno;*/"
+;
+CLOSE <archivo> $ $ = "<archivo>.close ();"
+;
+FILEWRITE <dato> $ <file> = "<file> << <dato>;"
+;
+STDWRITE <dato> $ $ = "cout << <dato>;"
+;
+FILEWRITELN $ $ <file> = "<file> << endl;"
+;
+STDWRITELN $ $ $ = "cout << endl;"
+;
+FILESETPRECISION <file> $ <precision> = "<file>.precision( <precision> );"
+;
+FILESETWIDTH <file> $ <width> = "<file>.width ( <width> );"
+;
+FILESETRIGTH <file> $ $ = "//<file>.setf (ios::rigth);"
+;
+FILESETLEFT <file> $ $ = "//<file>.setf (ios::left);"
+;
+STDSETPRECISION $ $ <precision> = "cout.precision( <precision> );"
+;
+STDSETWIDTH $ $ <width> = "cout.width ( <width> );"
+;
+STDSETRIGTH $ $ $ = "//cout.setf (ios::rigth);"
+;
+STDSETLEFT $ $ $ = "//cout.setf (ios::left);"
+;
+ERROR $ $ $ = " /* ERROR */ "
+;
+FILESEEKW <file> <posicion> $ = "<file>.seekp ( <posicion>, ios::beg );"
+;
+FILESEEKR <file> <posicion> $ = "<file>.seekg ( <posicion>, ios::beg );"
+;
+FILEWRITERAC <file> <objeto> $ = "<file>.write((char *)&<objeto>, sizeof(<objeto>));"
+;
+FILEREADRAC <file> <objeto> $ = "<file>.read((char *)&<objeto>, sizeof(<objeto>));"
+;
+FILEREAD <file> $ <dato> = "<file> >> <dato>;"
+;
+STDREAD $ $ <dato> = "cin >> <dato>;"
+;
+FILEREADLN <file> $ $ = "<file>.get ( );"
+;
+STDREADLN $ $ $ = "cin.get();"
+;
+ENDOFFILE <archivo> $ <respuesta> = "<respuesta> = <archivo>.feof ( );"
+;
+TRUNC <expresion> $ <respuesta> = "<respuesta> = (int)trunc ( <expresion> );"
+;
+ROUND <expresion> $ <respuesta> = "<respuesta> = (int)round ( <expresion> );"
+;
+TEMPLATEINT $ $ $ = "long "
+;
+TEMPLATECHAR $ $ $ = "char "
+;
+TEMPLATEREAL $ $ $ = " double "
+;
+TEMPLATESTRING $ $ $ = "char [256]"
+;
+TEMPLATEBOOL $ $ $ = "bool "
+;
+TEMPLATEENDLIST $ $ $ = "> ;"
+;
+TEMPLATEENDRECORD $ $ $ = "}"
+;
+TEMPLATEFILE $ $ $ = "fstream "
+;
+TEMPLATESEMABOOL $ $ $ = "static bool"
+;
+TEMPLATESEMAINT $ $ $ = "static int "
+;
+% TEMPLATEORIENTATION
+% ;
+% TEMPLATEENDARRAY
+% ;
+TEMPLATEUSER  $ <tipo> $ = " <tipo> "
+;
+PAUSE <time> $ $ = "fprintf(fp,\"'%d TI <time>\\r\\n\", linea++);"
+;
+HALT $ $ $ = "fprintf(fp,\"'%d ED\\r\\n\", linea++);"
+;
+%RESUME
+%TIME
+% SEMASIGNAL
+% ;
+% SEMAWAIT
+% ;
+
+% INTERRUPT_ON
+% ;
+% INTERRUPT_OFF
+% ;
+% INTERRUPT_ENABLE
+% ;
+% INTERRUPT_DISABLE
+% ;
+% INTERRUPT_ON_ALL
+% ;
+% INTERRUPT_OFF_ALL
+% ;
+% INTERRUPT_ENABLE_ALL
+% ;
+% INTERRUPT_DISABLE_ALL
+% ;
+% GETTIME
+% ;
+% INTEXTERNALFUNCTION
+% ;
+% REALEXTERNALFUNCTION
+% ;
+% CHAREXTERNALFUNCTION
+% ;
+% BOOLEXTERNALFUNCTION
+% ;
+% USEREXTERNALFUNCTION
+% ;
+% EXTERNAL
+% ;
+% ENDEXTERNAL
+% ;
+DATALIST <archivo> $ $ = "char datalist [250] = <archivo>; 
+                        #define DATALIST"
+;
+
+DECLINTERRUPT <numero> $ $ = "/*DECLINTERRUPT ( <numero> ) { "
+;
+
+ENDDECLINTERRUPT $ $ $ = "return; }*/"
+;
+
+INPUTINT <byte> <direccion> <nombrevariable> = "long <nombrevariable>;"
+;
+INPUTREAL <byte> <direccion> <nombrevariable> = "double <nombrevariable>;"
+;
+INPUTBOOL <byte> <direccion> <nombrevariable> = "bool <nombrevariable> ;"
+;
+
+OUTPUTINT <byte> <direccion> <nombrevariable> = "long <nombrevariable>;"
+;
+OUTPUTREAL <byte> <direccion> <nombrevariable> = "double <nombrevariable>;"
+;
+OUTPUTBOOL <byte> <direccion> <nombrevariable> = "bool <nombrevariable> ;"
+;
+
+TEACH $ $ <nombrevariable> = "
+    filedatalist.read((char *)&<nombrevariable>, sizeof(<nombrevariable>));
+";
+
+@{
+void getMat(POSE p, double m[3][4])
+{
+    POSITION o,a,n;
+    a = VECTORA(p.ORI);
+    o = VECTORO(p.ORI);
+    n = VECTORN(p.ORI);
+    m[0][0] =  n.X;
+    m[0][1] =  n.Y;
+    m[0][2] =  n.Z;
+    m[1][0] =  o.X;
+    m[1][1] =  o.Y;
+    m[1][2] =  o.Z;
+    m[2][0] =  a.X;
+    m[2][1] =  a.Y;
+    m[2][2] =  a.Z;
+    m[3][0] =  p.POS.X;
+    m[3][1] =  p.POS.Y;
+    m[3][2] =  p.POS.Z;
+}
+void MovPointToPoint(AT parametros)
+ {
+     int tam = posiciones->Listlength();
+     static char mensaje[50];
+     mensaje[0]='\0';
+
+     for(i=1; i<=tam; i++){
+        sprintf(mensaje,"PD %d, %.0f, %.0f, %.0f, %.0f, %.0f\r\n",point->posNumber, point->valor[0],point->valor[1],point->valor[2],point->valor[3],point->valor[4]);
+        if(!TransmisionSerial(mensaje,strlen(mensaje)))
+            exit (-1);
+     }         
+     if(posiciones->Listlength() > 1){                                
+         punto * point1 = (*posiciones)[1];
+         punto * point2 = (*posiciones)[tam];         
+         sprintf(mensaje,"MS %.0f, %.0f, %c\r\n", point1->posNumber,point2->posNumber,point1->grip);          
+     }
+     else{ 
+        point = (*posiciones)[1];
+        if(point->tipo == CTARGET)	
+             sprintf(mensaje,"MO %d, %c\r\n",point->posNumber,point->grip);
+        else if(point->tipo == CJOINT)
+            sprintf(mensaje,"MJ %.0f,%.0f,%.0f,%.0f,%.0f\r\n",point->valor[0],point->valor[1],point->valor[2],point->valor[3],point->valor[4]);            
+        else
+            sprintf(mensaje,"G%c\r\n",point->grip);                
+    }    
+     posiciones->Listdestroy();
+     if(!TransmisionSerial(mensaje,strlen(mensaje)))
+         exit (-1);
+ }
+
+int TransmisionSerial(char mensaje[], int size)
+ {
+
+
+
+//     CSerial serial; /*Puerto de comunicacion serial*/
+
+//      if (!serial.Open(port, 9600)){
+//             cout<<"Falla abriendo el puerto de comunicacion #"<<port<<endl;
+//             return 0;
+//      }
+//      size = strlen(mensaje);
+//      if(!serial.SendData(mensaje, ) == size){
+//              cout<<"Error enviando los datos por el puerto #"<<port<<endl;
+//              return 0;
+//     }
+    fprintf(fp,"%s",mensaje);
+
+    return size;
+ }
+void RobtargetPath ( ROBTARGET rob )
+{
+    point = new punto();
+    point->tipo = CTARGET;
+    point->posNumber = posNumber;
+    point->valor[0]= rob.PSE.POS.X;
+    point->valor[1]= rob.PSE.POS.Y;
+    point->valor[2]= rob.PSE.POS.Z;
+    point->valor[3]= ANGLEX("ZYX",rob.PSE.ORI);
+    if ( point->valor[3] > 90.0 )
+        if ( point->valor[3] >= 270.0 )
+            point->valor[3] -= 360.0;
+    point->valor[4]= ANGLEZ("ZYX",rob.PSE.ORI);
+    if ( point->valor[4] > 180.0 )
+        point->valor[4] -= 360.0;
+    if(rob.A_JOINT.AA1 == Abierto)
+        point->grip = 'O';
+    else
+       point->grip ='C';
+    posiciones->Listadd(point);
+    posNumber ++;
+}
+void MainJointPath ( MAIN_JOINT j )
+{
+    point = new punto();
+    point->tipo = CJOINT;
+    point->valor[0]= j.A1;
+    point->valor[1]= j.A2;
+    point->valor[2]= j.A3;
+    point->valor[3]= j.A4;
+    if ( point->valor[3] > 90.0 )
+        if ( point->valor[3] >= 270.0 )
+            point->valor[3] -= 360.0;
+    point->valor[4]= j.A5;
+    if ( point->valor[4] > 180.0 )
+        point->valor[4] -= 360.0;
+    posiciones->Listadd(point);
+}    
+@}
+
+

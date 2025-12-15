@@ -1,0 +1,512 @@
+   1               		.file	"uart.c"
+   2               	__SREG__ = 0x3f
+   3               	__SP_H__ = 0x3e
+   4               	__SP_L__ = 0x3d
+   5               	__CCP__  = 0x34
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   9               		.text
+  10               	.Ltext0:
+  77               	.global	uart_init
+  79               	uart_init:
+   1:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** #include <stdint.h>
+   2:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** #include <stdio.h>
+   3:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 
+   4:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** #include <avr/io.h>
+   5:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 
+   6:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** #include "uart.h"
+   7:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c ****  
+   8:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 
+   9:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** #if defined(__AVR_ATmega162__)
+  10:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** #define USART_RXC_vect USART0_RXC_vect	
+  11:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** #define UDR     UDR0
+  12:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** #define UCSRA   UCSR0A
+  13:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** #define UCSRB   UCSR0B
+  14:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** #define FE      FE0
+  15:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** #define TXEN    TXEN0
+  16:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** #define RXEN    RXEN0
+  17:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** #define RXCIE   RXCIE0
+  18:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** #define UDRE    UDRE0
+  19:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** #define U2X     U2X0
+  20:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** #define UBRRL   UBRR0L
+  21:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** #define DOR		 DOR0
+  22:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** #define RXC		 RXC0
+  23:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** #endif
+  24:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 
+  25:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** #if defined(_AVR_IOM1280_H_)
+  26:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** #define USART_RXC_vect USART0_RXC_vect	
+  27:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** #define UDR     UDR2
+  28:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** #define UCSRA   UCSR2A
+  29:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** #define UCSRB   UCSR2B
+  30:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** #define FE      FE2
+  31:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** #define TXEN    TXEN2
+  32:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** #define RXEN    RXEN2
+  33:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** #define RXCIE   RXCIE2
+  34:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** #define UDRE    UDRE2
+  35:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** #define U2X     U2X2
+  36:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** #define UBRRL   UBRR2L
+  37:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** #define DOR		 DOR2
+  38:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** #define RXC		 RXC2
+  39:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** #endif
+  40:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 
+  41:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 
+  42:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** /*
+  43:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c ****  * Initialize the UART to 9600 Bd, tx/rx, 8N1.
+  44:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c ****  */
+  45:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** void
+  46:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** uart_init(void)
+  47:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** {
+  80               	e = 0 */
+  82               	.LM1:
+  83               		ldi r24,lo8(51)
+  84               		sts 212,r24
+  48:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** #if F_CPU < 2000000UL && defined(U2X)
+  49:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c ****   UCSRA = _BV(U2X);             /* improve baud rate error by using 2x clk */
+  50:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c ****   UBRRL = (F_CPU / (8UL * UART_BAUD)) - 1;
+  51:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** #else
+  52:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c ****   UBRRL = (F_CPU / (16UL * UART_BAUD)) - 1;
+  85               	bn	68,0,54,.LM2-.LFBB1
+  86               	.LM2:
+  87 0000 83E3      		ldi r24,lo8(24)
+  88 0002 8093 D400 		sts 209,r24
+  53:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** #endif
+  54:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c ****   UCSRB = _BV(TXEN) | _BV(RXEN); /* tx/rx enable */
+  89               	pilogue start */
+  91 0006 88E1      	.LM3:
+  92 0008 8093 D100 		ret
+  55:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** }
+  94               	pe1:
+  98               	.global	uart_putchar
+ 100               	uart_putchar:
+ 102               	.LM4:
+ 103               	.LFBB2:
+ 104               		push r17
+  56:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 
+  57:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** /*
+  58:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c ****  * Send character c down the UART Tx, wait until tx holding register
+  59:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c ****  * is empty.
+  60:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c ****  */
+  61:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** int
+  62:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** uart_putchar(char c, FILE *stream)
+  63:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** {
+ 105               	: function */
+ 106               	/* frame size = 0 */
+ 107               		mov r17,r24
+ 109               	.LM5:
+ 110               		cpi r24,lo8(10)
+ 111 0010 182F      		brne .L6
+  64:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 
+  65:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c ****   if (c == '\n')
+ 112               		68,0,66,.LM6-.LFBB2
+ 113               	.LM6:
+ 114 0012 8A30      		ldi r24,lo8(13)
+ 115 0014 01F4      		call uart_putchar
+  66:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c ****     uart_putchar('\r', stream);
+ 116               	
+ 118 0016 8DE0      	.LM7:
+ 119 0018 0E94 0000 		lds r24,208
+ 120               		sbrs r24,5
+  67:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c ****   loop_until_bit_is_set(UCSRA, UDRE);
+ 121               	p .L6
+ 123 001c 8091 D000 	.LM8:
+ 124 0020 85FF      		sts 214,r17
+  68:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c ****   UDR = c;
+ 126               	
+ 127               		ldi r24,lo8(0)
+ 128 0024 1093 D600 		ldi r25,hi8(0)
+  69:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 
+  70:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c ****   return 0;
+  71:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** }
+ 129               	 epilogue start */
+ 130               		pop r17
+ 131 0028 80E0      		ret
+ 133               	.Lscope2:
+ 136               	.global	uart_getchar
+ 138               	uart_getchar:
+ 140               	.LM10:
+ 141               	.LFBB3:
+ 142               		push r14
+  72:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 
+  73:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** /*
+  74:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c ****  * Receive a character from the UART Rx.
+  75:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c ****  *
+  76:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c ****  * This features a simple line-editor that allows to delete and
+  77:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c ****  * re-edit the characters entered, until either CR or NL is entered.
+  78:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c ****  * Printable characters entered will be echoed using uart_putchar().
+  79:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c ****  *
+  80:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c ****  * Editing characters:
+  81:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c ****  *
+  82:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c ****  * . \b (BS) or \177 (DEL) delete the previous character
+  83:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c ****  * . ^u kills the entire input buffer
+  84:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c ****  * . ^w deletes the previous word
+  85:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c ****  * . ^r sends a CR, and then reprints the buffer
+  86:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c ****  * . \t will be replaced by a single space
+  87:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c ****  *
+  88:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c ****  * All other control characters will be ignored.
+  89:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c ****  *
+  90:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c ****  * The internal line buffer is RX_BUFSIZE (80) characters long, which
+  91:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c ****  * includes the terminating \n (but no terminating \0).  If the buffer
+  92:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c ****  * is full (i. e., at RX_BUFSIZE-1 characters in order to keep space for
+  93:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c ****  * the trailing \n), any further input attempts will send a \a to
+  94:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c ****  * uart_putchar() (BEL character), although line editing is still
+  95:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c ****  * allowed.
+  96:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c ****  *
+  97:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c ****  * Input errors while talking to the UART will cause an immediate
+  98:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c ****  * return of -1 (error indication).  Notably, this will be caused by a
+  99:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c ****  * framing error (e. g. serial line "break" condition), by an input
+ 100:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c ****  * overrun, and by a parity error (if parity was enabled and automatic
+ 101:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c ****  * parity recognition is supported by hardware).
+ 102:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c ****  *
+ 103:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c ****  * Successive calls to uart_getchar() will be satisfied from the
+ 104:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c ****  * internal buffer until that buffer is emptied again.
+ 105:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c ****  */
+ 106:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** int
+ 107:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** uart_getchar(FILE *stream)
+ 108:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** {
+ 143               	h r16
+ 144               		push r17
+ 145               		push r28
+ 146 0030 EF92      		push r29
+ 147 0032 FF92      	/* prologue: function */
+ 148 0034 0F93      	/* frame size = 0 */
+ 149 0036 1F93      		movw r14,r24
+ 151 003a DF93      	.LM11:
+ 152               		lds r24,rxp.1401
+ 153               		lds r25,(rxp.1401)+1
+ 154 003c 7C01      		or r24,r25
+ 109:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c ****   uint8_t c;
+ 110:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c ****   char *cp, *cp2;
+ 111:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c ****   static char b[RX_BUFSIZE];
+ 112:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c ****   static char *rxp;
+ 113:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 
+ 114:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c ****   if (rxp == 0)
+ 155               	jmp .L9
+ 156               		ldi r16,lo8(b.1400)
+ 157 003e 8091 0000 		ldi r17,hi8(b.1400)
+ 158 0042 9091 0000 	.L35:
+ 160 0048 01F0      	.LM12:
+ 161 004a 00C0      		lds r24,208
+ 162 004c 00E0      		sbrs r24,7
+ 163 004e 10E0      		rjmp .L35
+ 115:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c ****     for (cp = b;;)
+ 116:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c ****       {
+ 117:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 	loop_until_bit_is_set(UCSRA, RXC);
+ 165               	s r24,208
+ 166               		sbrs r24,4
+ 167 0050 8091 D000 		rjmp .L11
+ 168 0054 87FF      		ldi r18,lo8(-2)
+ 169 0056 00C0      		ldi r19,hi8(-2)
+ 118:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 	if (UCSRA & _BV(FE))
+ 170               	 .L12
+ 171               	.L11:
+ 173 005c 84FF      	.LM14:
+ 174 005e 00C0      		lds r24,208
+ 175 0060 2EEF      		sbrc r24,3
+ 176 0062 3FEF      		rjmp .L13
+ 178               	.LM15:
+ 119:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 	  return _FDEV_EOF;
+ 120:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 	if (UCSRA & _BV(DOR))
+ 179               	214
+ 181 0066 8091 D000 	.LM16:
+ 182 006a 83FD      		cpi r25,lo8(13)
+ 183 006c 00C0      		breq .L14
+ 121:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 	  return _FDEV_ERR;
+ 122:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 	c = UDR;
+ 184               	jmp .L11
+ 185               		ldi r18,lo8(-2)
+ 186 006e 9091 D600 		ldi r19,hi8(-2)
+ 123:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 	/* behaviour similar to Unix stty ICRNL */
+ 124:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 	if (c == '\r')
+ 187               	mp .L12
+ 188               	.L11:
+ 190 0074 01F0      	.LM14:
+ 125:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 	  c = '\n';
+ 126:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 	if (c == '\n')
+ 191               	 r24,208
+ 192               		sbrc r24,3
+ 193 0076 9A30      		rjmp .L13
+ 195               	.LM15:
+ 127:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 	  {
+ 128:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 	    *cp = c;
+ 196               	r25,214
+ 198 007a 8AE0      	.LM16:
+ 199 007c F801      		cpi r25,lo8(13)
+ 200 007e 8083      		breq .L14
+ 129:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 	    uart_putchar(c, stream);
+ 201               	jmp .L11
+ 202               		ldi r18,lo8(-2)
+ 203 0080 B701      		ldi r19,hi8(-2)
+ 204 0082 0E94 0000 		rjmp .L12
+ 130:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 	    rxp = b;
+ 205               	:
+ 207 0086 80E0      	.LM14:
+ 208 0088 90E0      		lds r24,208
+ 209 008a 9093 0000 		sbrc r24,3
+ 210 008e 8093 0000 		rjmp .L13
+ 212               	.LM15:
+ 131:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 	    break;
+ 132:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 	  }
+ 133:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 	else if (c == '\t')
+ 213               	,214
+ 215 0094 9930      	.LM16:
+ 216 0096 01F4      		cpi r25,lo8(13)
+ 217 0098 90E2      		breq .L14
+ 134:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 	  c = ' ';
+ 135:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 
+ 136:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 	if ((c >= (uint8_t)' ' && c <= (uint8_t)'\x7e') ||
+ 219               	r19,hi8(-2)
+ 220               		rjmp .L12
+ 221 009a 892F      	.L11:
+ 223 009e 8F35      	.LM14:
+ 224 00a0 00F0      		lds r24,208
+ 225 00a2 903A      		sbrc r24,3
+ 226 00a4 00F0      		rjmp .L13
+ 137:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 	    c >= (uint8_t)'\xa0')
+ 138:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 	  {
+ 139:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 	    if (cp == b + RX_BUFSIZE - 1)
+ 228               	ds r25,214
+ 230 00a6 F0E0      	.LM16:
+ 231 00a8 0030      		cpi r25,lo8(13)
+ 232 00aa 1F07      		breq .L14
+ 140:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 	      uart_putchar('\a', stream);
+ 234               	r19,hi8(-2)
+ 235               		rjmp .L12
+ 236 00ae 87E0      	.L11:
+ 238               	.LM14:
+ 141:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 	    else
+ 142:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 	      {
+ 143:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 		*cp++ = c;
+ 239               	r24,208
+ 240               		sbrc r24,3
+ 241 00b2 F801      		rjmp .L13
+ 243 00b6 8F01      	.LM15:
+ 144:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 		uart_putchar(c, stream);
+ 244               	r25,214
+ 246 00b8 892F      	.LM16:
+ 247               		cpi r25,lo8(13)
+ 248 00ba B701      		breq .L14
+ 250 00c0 00C0      	.LM17:
+ 251               		cpi r25,lo8(10)
+ 145:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 	      }
+ 146:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 	    continue;
+ 147:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 	  }
+ 148:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 
+ 149:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 	switch (c)
+ 252               	1:
+ 254 00c2 9231      	.LM14:
+ 255 00c4 01F0      		lds r24,208
+ 256 00c6 9331      		sbrc r24,3
+ 257 00c8 00F4      		rjmp .L13
+ 259 00cc 01F4      	.LM15:
+ 260 00ce 00C0      		lds r25,214
+ 262 00d2 01F0      	.LM16:
+ 263 00d4 00C0      		cpi r25,lo8(13)
+ 264 00d6 00C0      		breq .L14
+ 266 00d8 9731      	.LM17:
+ 267 00da 01F4      		cpi r25,lo8(10)
+ 268 00dc 00C0      		brne .L15
+ 269 00de 9F37      	.L14:
+ 271 00e2 9531      	.LM18:
+ 272 00e4 01F0      		ldi r24,lo8(10)
+ 273 00e6 00C0      		movw r30,r16
+ 274 00e8 00C0      		st Z,r24
+ 150:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 	  {
+ 151:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 	  case 'c' & 0x1f:
+ 152:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 	    return -1;
+ 153:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 
+ 154:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 	  case '\b':
+ 155:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 	  case '\x7f':
+ 156:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 	    if (cp > b)
+ 276               	ll uart_putchar
+ 278 00ea F0E0      	.LM20:
+ 279 00ec 0030      		ldi r24,lo8(b.1400)
+ 280 00ee 1F07      		ldi r25,hi8(b.1400)
+ 281 00f0 01F0      		sts (rxp.1401)+1,r25
+ 282 00f2 00F4      		sts rxp.1401,r24
+ 283 00f4 00C0      		rjmp .L9
+ 157:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 	      {
+ 158:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 		uart_putchar('\b', stream);
+ 284               	10)
+ 285               		movw r30,r16
+ 286 00f6 88E0      		st Z,r24
+ 288 00fa 0E94 0000 	.LM19:
+ 159:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 		uart_putchar(' ', stream);
+ 289               	4,.LM16-.LFBB3
+ 290               	.LM16:
+ 291 00fe 80E2      		cpi r25,lo8(13)
+ 292 0100 B701      		breq .L14
+ 160:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 		uart_putchar('\b', stream);
+ 294               	r19,hi8(-2)
+ 295               		rjmp .L12
+ 296 0106 88E0      	.L11:
+ 298 010a 0E94 0000 	.LM14:
+ 161:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 		cp--;
+ 299               	r24,208
+ 300               		sbrc r24,3
+ 301 010e 0150      		rjmp .L13
+ 303 0112 00C0      	.LM15:
+ 304               		lds r25,214
+ 162:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 	      }
+ 163:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 	    break;
+ 164:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 
+ 165:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 	  case 'r' & 0x1f:
+ 166:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 	    uart_putchar('\r', stream);
+ 305               	n	68,0,124,.LM16-.LFBB3
+ 306               	.LM16:
+ 307 0114 8DE0      		cpi r25,lo8(13)
+ 308 0116 B701      		breq .L14
+ 310 011c C0E0      	.LM17:
+ 311 011e D0E0      		cpi r25,lo8(10)
+ 312 0120 00C0      		brne .L15
+ 313               	.L14:
+ 167:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 	    for (cp2 = b; cp2 < cp; cp2++)
+ 168:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 	      uart_putchar(*cp2, stream);
+ 314               	,.LM14-.LFBB3
+ 315               	.LM14:
+ 316 0122 8991      		lds r24,208
+ 317 0124 B701      		sbrc r24,3
+ 318 0126 0E94 0000 		rjmp .L13
+ 320               	.LM15:
+ 321               		lds r25,214
+ 323 012c D107      	.LM16:
+ 324 012e 00F0      		cpi r25,lo8(13)
+ 325 0130 00C0      		breq .L14
+ 169:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 	    break;
+ 170:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 
+ 171:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 	  case 'u' & 0x1f:
+ 172:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 	    while (cp > b)
+ 173:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 	      {
+ 174:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 		uart_putchar('\b', stream);
+ 327               	25,lo8(10)
+ 328               		brne .L15
+ 329 0132 88E0      	.L14:
+ 331 0136 0E94 0000 	.LM18:
+ 175:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 		uart_putchar(' ', stream);
+ 332               	 r24,3
+ 333               		rjmp .L13
+ 335 013c B701      	.LM15:
+ 336 013e 0E94 0000 		lds r25,214
+ 176:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 		uart_putchar('\b', stream);
+ 337               	bn	68,0,124,.LM16-.LFBB3
+ 338               	.LM16:
+ 339 0142 88E0      		cpi r25,lo8(13)
+ 340 0144 B701      		breq .L14
+ 177:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 		cp--;
+ 342               	r19,hi8(-2)
+ 343               		rjmp .L12
+ 344 014a 0150      	.L11:
+ 346               	.LM14:
+ 347               		lds r24,208
+ 348               		sbrc r24,3
+ 349 014e 80E0      		rjmp .L13
+ 351 0152 1807      	.LM15:
+ 352 0154 01F0      		lds r25,214
+ 354 0158 00C0      	.LM16:
+ 355               		cpi r25,lo8(13)
+ 178:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 	      }
+ 179:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 	    break;
+ 180:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 
+ 181:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 	  case 'w' & 0x1f:
+ 182:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 	    while (cp > b && cp[-1] != ' ')
+ 183:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 	      {
+ 184:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 		uart_putchar('\b', stream);
+ 356               	tabn	68,0,126,.LM17-.LFBB3
+ 357               	.LM17:
+ 358 015a 88E0      		cpi r25,lo8(10)
+ 359 015c B701      		brne .L15
+ 360 015e 0E94 0000 	.L14:
+ 185:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 		uart_putchar(' ', stream);
+ 361               	,.LM14-.LFBB3
+ 362               	.LM14:
+ 363 0162 80E2      		lds r24,208
+ 364 0164 B701      		sbrc r24,3
+ 365 0166 0E94 0000 		rjmp .L13
+ 186:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 		uart_putchar('\b', stream);
+ 366               	bn	68,0,122,.LM15-.LFBB3
+ 367               	.LM15:
+ 368 016a 88E0      		lds r25,214
+ 370 016e 0E94 0000 	.LM16:
+ 371 0172 8E01      		cpi r25,lo8(13)
+ 372               		breq .L14
+ 374               	.LM17:
+ 375 0174 E0E0      		cpi r25,lo8(10)
+ 376 0176 0030      		brne .L15
+ 377 0178 1E07      	.L14:
+ 379 017c 00F4      	.LM18:
+ 380 017e 00C0      		ldi r24,lo8(10)
+ 381 0180 E801      		movw r30,r16
+ 382 0182 8A91      		st Z,r24
+ 384 0186 01F4      	.LM19:
+ 385 0188 00C0      		movw r22,r14
+ 386               		call uart_putchar
+ 187:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 		cp--;
+ 188:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 	      }
+ 189:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 	    break;
+ 190:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 	  }
+ 191:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c ****       }
+ 192:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 
+ 193:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c ****   c = *rxp++;
+ 387               	0-.LFBB3
+ 388               	.LM20:
+ 389 018a E091 0000 		ldi r24,lo8(b.1400)
+ 390 018e F091 0000 		ldi r25,hi8(b.1400)
+ 391 0192 8191      		sts (rxp.1401)+1,r25
+ 392 0194 F093 0000 		sts rxp.1401,r24
+ 393 0198 E093 0000 		rjmp .L9
+ 194:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c ****   if (c == '\n')
+ 394               	10)
+ 395               		movw r30,r16
+ 396 019c 8A30      		st Z,r24
+ 195:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c ****     rxp = 0;
+ 398               		68,0,124,.LM16-.LFBB3
+ 399               	.LM16:
+ 400 01a0 1092 0000 		cpi r25,lo8(13)
+ 401 01a4 1092 0000 		breq .L14
+ 196:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** 
+ 197:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c ****   return c;
+ 403               	r19,hi8(-2)
+ 404               		rjmp .L12
+ 405 01a8 282F      	.L11:
+ 407 01ac 00C0      	.LM14:
+ 408               		lds r24,208
+ 409 01ae 2FEF      		sbrc r24,3
+ 410 01b0 3FEF      		rjmp .L13
+ 198:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/uart.c **** }
+ 412               	ds r25,214
+ 414 01b2 C901      	.LM16:
+ 415               		cpi r25,lo8(13)
+ 416 01b4 DF91      		breq .L14
+ 418 01b8 1F91      	.LM17:
+ 419 01ba 0F91      		cpi r25,lo8(10)
+ 420 01bc FF90      		brne .L15
+ 421 01be EF90      	.L14:
+ 423               	.LM18:
+ 424               		ldi r24,lo8(10)
+ 425               		movw r30,r16
+ 426               		st Z,r24
+ 428               	.LM19:
+ 429               		movw r22,r14
+ 430               		call uart_putchar
+ 432               	.LM20:
+ 433               		ldi r24,lo8(b.1400)
+ 434               		ldi r25,hi8(b.1400)
+ 435               		sts (rxp.1401)+1,r25
+ 436               		sts rxp.1401,r24
+ 437               		rjmp .L9
+ 438               	.L15:
+DEFINED SYMBOLS
+                            *ABS*:00000000 uart.c
+C:\DOCUME~1\David\LOCALS~1\Temp/ccn7guO6.s:2      *ABS*:0000003f __SREG__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccn7guO6.s:3      *ABS*:0000003e __SP_H__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccn7guO6.s:4      *ABS*:0000003d __SP_L__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccn7guO6.s:5      *ABS*:00000034 __CCP__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccn7guO6.s:6      *ABS*:00000000 __tmp_reg__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccn7guO6.s:7      *ABS*:00000001 __zero_reg__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccn7guO6.s:79     .text:00000000 uart_init
+C:\DOCUME~1\David\LOCALS~1\Temp/ccn7guO6.s:104    .text:0000000e uart_putchar
+C:\DOCUME~1\David\LOCALS~1\Temp/ccn7guO6.s:142    .text:00000030 uart_getchar
+                             .bss:00000000 rxp.1401
+C:\DOCUME~1\David\LOCALS~1\Temp/ccn7guO6.s:432    .bss:00000002 b.1400
+
+UNDEFINED SYMBOLS
+__do_clear_bss

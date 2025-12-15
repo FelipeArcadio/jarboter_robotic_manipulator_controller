@@ -1,0 +1,40 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: demo - Win32 Debug--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\DOCUME~1\David\LOCALS~1\Temp\RSP74.tmp" with contents
+[
+/nologo /MDd /W3 /Gm /GX /ZI /Od /I "newmat" /I "source" /D "_DEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D "_STANDARD_" /FR"demo___Win32_Debug/" /Fp"demo___Win32_Debug/demo.pch" /YX /Fo"demo___Win32_Debug/" /Fd"demo___Win32_Debug/" /FD /GZ /c 
+"C:\Jarboter_V_2_1\External\roboop\source\demo.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\David\LOCALS~1\Temp\RSP74.tmp" 
+Creating temporary file "C:\DOCUME~1\David\LOCALS~1\Temp\RSP75.tmp" with contents
+[
+kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /incremental:yes /pdb:"demo___Win32_Debug/demo.pdb" /debug /machine:I386 /out:"demo___Win32_Debug/demo.exe" /pdbtype:sept /libpath:"C:\Documents and Settings\David\Desktop\CMVC\include" 
+.\demo___Win32_Debug\demo.obj
+.\demo___Win32_Debug\gnugraph.obj
+.\Debug\newmat.lib
+.\roboop___Win32_Debug\roboop.lib
+]
+Creating command line "link.exe @C:\DOCUME~1\David\LOCALS~1\Temp\RSP75.tmp"
+<h3>Output Window</h3>
+Compiling...
+demo.cpp
+C:\Jarboter_V_2_1\External\roboop\source\demo.cpp(493) : warning C4101: 'nbad' : unreferenced local variable
+C:\Jarboter_V_2_1\External\roboop\source\demo.cpp(493) : warning C4101: 'nok' : unreferenced local variable
+Linking...
+Creating command line "bscmake.exe /nologo /o"demo___Win32_Debug/demo.bsc"  .\demo___Win32_Debug\demo.sbr .\demo___Win32_Debug\gnugraph.sbr"
+Creating browse info file...
+<h3>Output Window</h3>
+
+
+
+<h3>Results</h3>
+demo.exe - 0 error(s), 2 warning(s)
+</pre>
+</body>
+</html>

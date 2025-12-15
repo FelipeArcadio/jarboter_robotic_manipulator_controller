@@ -1,0 +1,1891 @@
+   1               		.file	"PMDinterrupt.c"
+   2               	__SREG__ = 0x3f
+   3               	__SP_H__ = 0x3e
+   4               	__SP_L__ = 0x3d
+   5               	__CCP__  = 0x34
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   9               		.text
+  10               	.Ltext0:
+ 241               		.data
+ 242               	.LC0:
+ 243 0000 4E        		.ascii	"N"
+ 244 0001 6567 6174 		.string	"egativehandling=> El eje de %s Produjo un Error de Instruccion \n"
+ 244      6976 6568 
+ 244      616E 646C 
+ 244      696E 673D 
+ 244      3E20 456C 
+ 245               		.text
+ 248               	.global	InstructionErrorhandling
+ 250               	InstructionErrorhandling:
+   1:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** #include <avr/io.h>
+   2:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** #include <stdio.h>
+   3:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** #include <avr/pgmspace.h>
+   4:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** #include <util/delay.h>
+   5:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 
+   6:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** #include "c-motion.h"
+   7:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** #include "PMDsetup.h"
+   8:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** #include "PMDrobotics.h"
+   9:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** #include "messages.h"
+  10:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** #include "robotData.h"
+  11:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** #include "debug.h"
+  12:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** #include "packetIO.h"
+  13:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 
+  14:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** //#define DEBUGINTERRUPT
+  15:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 
+  16:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 
+  17:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** extern PMDAxisHandle hAxis[DOF]; 
+  18:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 
+  19:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 
+  20:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 
+  21:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** /*******************************************************************************************/
+  22:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** void HostInterruptDisable(void)
+  23:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** {
+  24:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	int16 axis;
+  25:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	
+  26:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	for(axis=0; axis < DOF; axis++)
+  27:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	{
+  28:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		if((hAxis[axis].axisSettings.axisEnabled == TRUE) &&
+  29:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 			(hAxis[axis].axisSettings.interruptEnable==TRUE))
+  30:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		{
+  31:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 			PMDSetInterruptMask(&hAxis[axis],0);
+  32:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		}
+  33:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	}
+  34:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** } 
+  35:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** /*****************************************************************************************/
+  36:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** void HostInterruptEnable(void)
+  37:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** {
+  38:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	int16 axis;
+  39:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	
+  40:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	for(axis=0; axis < DOF; axis++)
+  41:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	{
+  42:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		if((hAxis[axis].axisSettings.axisEnabled == TRUE) &&
+  43:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 			(hAxis[axis].axisSettings.interruptEnable==TRUE))
+  44:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		{
+  45:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 			PMDSetInterruptMask(&hAxis[axis],	PMDEventMotionErrorMask		|
+  46:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 												PMDEventInPositiveLimitMask | 
+  47:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 												PMDEventInNegativeLimitMask	|
+  48:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 												PMDEventInstructionErrorMask);
+  49:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		}
+  50:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	}
+  51:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** }
+  52:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 
+  53:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** /*****************************************************************************************/
+  54:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** //Funcion NO UTILIZADA
+  55:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** void MotionCompletehandling(tAxis Axis)
+  56:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** {
+  57:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	#ifdef DEBUGINTERRUPT
+  58:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	printf("MotionCompletehandling=> El eje de %s ha completado el Movimiento \n", AxisName(Axis));
+  59:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	#endif
+  60:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	/*Se limpia el Event Status Register, borrando la interrupcion
+  61:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	should clear the motion complete bit, enabling the bit to indicate 
+  62:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	the end of motion for the next move*/	
+  63:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	PMDResetEventStatus(&hAxis[Axis],~PMDEventMotionCompleteMask);
+  64:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	
+  65:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	if(Axis==AxisPitch)
+  66:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	{	
+  67:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		PMDResetEventStatus(&hAxis[AxisRoll],~PMDEventMotionCompleteMask);		
+  68:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	}
+  69:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	
+  70:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	if(Axis==AxisRoll)
+  71:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	{	
+  72:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		PMDResetEventStatus(&hAxis[AxisPitch],~PMDEventMotionCompleteMask);		
+  73:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	}
+  74:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	
+  75:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** }
+  76:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 
+  77:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** /*****************************************************************************************/
+  78:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** void MotionErrorhandling(tAxis Axis)
+  79:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** {
+  80:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	PMDuint16 mode;
+  81:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	
+  82:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	/* Imprimir mensajes de Error*/	
+  83:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	printf("MotionErrorhandling=> El eje de %s Produjo un Error de Movimiento \n", AxisName(Axis));
+  84:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	fprintf_P(stderr,PSTR(" Error de Movimiento \n"));
+  85:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	/* se enciende el LED Rojo*/
+  86:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	Led_on(Rojo);
+  87:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	
+  88:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	
+  89:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	/*Se limpia el Event Status Register, borrando la interrupcion 	*/	
+  90:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	PMDResetEventStatus(&hAxis[Axis],~PMDEventMotionErrorMask);
+  91:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	
+  92:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	// reactivar el movimiento dependiendo de si existe parada automatica
+  93:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	PMDGetAutoStopMode(&hAxis[Axis], &mode);
+  94:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 			
+  95:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	if (mode==PMDEnable)
+  96:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	{
+  97:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		PMDSetMotorMode(&hAxis[Axis],PMDMotorOn);
+  98:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		if(Axis==AxisPitch)
+  99:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		{				
+ 100:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 			PMDSetMotorMode(&hAxis[AxisRoll],PMDMotorOn); 		
+ 101:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		}		
+ 102:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	}
+ 103:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	
+ 104:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** }
+ 105:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 
+ 106:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** /*****************************************************************************************/
+ 107:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** void Positivehandling(tAxis Axis)
+ 108:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** {
+ 109:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	PMDuint16  signal_status, Profile, Profile_roll, mask; 
+ 110:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	
+ 111:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	/* Imprimir mensajes de Error*/	
+ 112:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	#ifdef DEBUGINTERRUPT
+ 113:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	printf("Positivehandling=> El eje de %s ha llegado al Limite Positivo \n", AxisName(Axis));
+ 114:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	#endif
+ 115:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	
+ 116:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	//fprintf_P(stderr,PSTR("Se produjo un Evento de Limite Positivo \n"));
+ 117:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	
+ 118:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	/*Salvar el Perfil de Velocidad para no alterarlo.*/
+ 119:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	PMDGetProfileMode(&hAxis[Axis],&Profile);	
+ 120:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	
+ 121:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	/*Se limpia el Event Status Register, borrando la interrupcion 
+ 122:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	The limit switch bit(s) in the event status register should be cleared
+ 123:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	by issuing the ResetEventStatus command. No motion is possible in any 
+ 124:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	direction while either of the limit switch bits in the event status register
+ 125:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	is set.*/
+ 126:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	
+ 127:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	PMDResetEventStatus(&hAxis[Axis],~PMDEventInPositiveLimitMask);		
+ 128:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		
+ 129:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	// Mover el eje en la direccion opuesta del Límite Positivo.
+ 130:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		
+ 131:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	switch (Axis)
+ 132:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	{
+ 133:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		case (AxisPitch):
+ 134:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		
+ 135:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 			/*Si se produce un evento de limite positivo en el eje de pitch
+ 136:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 			entonces el eje roll producira un evento de Limite Negativo.*/
+ 137:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 			PMDResetEventStatus(&hAxis[AxisRoll],~PMDEventInNegativeLimitMask);	
+ 138:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 				
+ 139:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 			/*Se realiza un movimiento de pitch en la direccion negativa*/
+ 140:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 			PMDGetProfileMode(&hAxis[AxisRoll],&Profile_roll);
+ 141:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 			PMDSetProfileMode(&hAxis[Axis],  PMDVelocityContouringProfile ); 
+ 142:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 			PMDSetProfileMode(&hAxis[AxisRoll],  PMDVelocityContouringProfile ); 
+ 143:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 			PMDSetMotorMode(&hAxis[Axis],PMDMotorOn);  	
+ 144:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 			PMDSetMotorMode(&hAxis[AxisRoll],PMDMotorOn); 
+ 145:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 			pitch(none,-hAxis[Axis].axisSettings.homeVelocity,
+ 146:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 				hAxis[Axis].axisSettings.homeAcceleration, update,MOVIMIENTO_NORMAL );					
+ 147:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		break;
+ 148:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		
+ 149:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		case (AxisRoll):
+ 150:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		break;
+ 151:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 			
+ 152:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		default:				
+ 153:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 			PMDSetProfileMode(&hAxis[Axis],  PMDVelocityContouringProfile ); 
+ 154:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 			PMDSetMotorMode(&hAxis[Axis],PMDMotorOn);  				
+ 155:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 			mov_axis(Axis,none, -hAxis[Axis].axisSettings.homeVelocity,
+ 156:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 				hAxis[Axis].axisSettings.homeAcceleration, update);		
+ 157:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		break;
+ 158:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	}		
+ 159:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		
+ 160:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	PMDGetSignalStatus(&hAxis[Axis], &signal_status);
+ 161:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		
+ 162:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	do 
+ 163:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	{
+ 164:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		PMDGetSignalStatus(&hAxis[Axis], &signal_status);
+ 165:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		mask=signal_status& PMDSignalPositiveLimitMask;
+ 166:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		#ifdef DEBUGINTERRUPT
+ 167:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 			printf("Positivehandling=> El Estado de la senal del Switch Positivo del eje %s es : %#X \n ",
+ 168:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 					AxisName(Axis),mask);
+ 169:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		#endif
+ 170:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 			
+ 171:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	} 
+ 172:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	while ((signal_status & PMDSignalPositiveLimitMask)==0);
+ 173:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	
+ 174:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 
+ 175:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	//---------------- Detener suavemente el movimiento.	
+ 176:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	
+ 177:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	PMDSetStopMode(&hAxis[Axis], PMDSmoothStopMode ); 
+ 178:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	PMDUpdate(&hAxis[Axis]);
+ 179:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	
+ 180:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	if(Axis==AxisPitch)
+ 181:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	{
+ 182:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		PMDSetStopMode(&hAxis[AxisRoll], PMDSmoothStopMode ); 
+ 183:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		PMDUpdate(&hAxis[AxisRoll]);
+ 184:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		PMDSetProfileMode(&hAxis[AxisRoll],Profile_roll);
+ 185:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		PMDUpdate(&hAxis[AxisRoll]);
+ 186:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		
+ 187:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	}	
+ 188:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	
+ 189:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	//Se restaura el Valor inicial del Perfil de la trayectoria.
+ 190:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	PMDSetProfileMode(&hAxis[Axis],Profile);
+ 191:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	PMDUpdate(&hAxis[Axis]);	
+ 192:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	
+ 193:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** }
+ 194:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 
+ 195:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** /*****************************************************************************************/
+ 196:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** void Negativehandling(tAxis Axis)
+ 197:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** {
+ 198:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	PMDuint16  signal_status, Profile, Profile_roll, mask; 
+ 199:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	
+ 200:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	/* Imprimir mensajes de Error*/
+ 201:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	//#ifdef DEBUGINTERRUPT
+ 202:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	printf("Negativehandling=> El eje de %s ha llegado al Limite Negativo \n", AxisName(Axis));
+ 203:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	//#endif
+ 204:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	//fprintf_P(stderr,PSTR("Se produjo un Evento de Limite Negativo \n"));
+ 205:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 
+ 206:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 
+ 207:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	/*Salvar el Perfil de Velocidad para no alterarlo.*/
+ 208:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	PMDGetProfileMode(&hAxis[Axis],&Profile);
+ 209:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	
+ 210:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	
+ 211:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	/*Se limpia el Event Status Register, borrando la interrupcion 
+ 212:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	The limit switch bit(s) in the event status register should be cleared
+ 213:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	by issuing the ResetEventStatus command. No motion is possible in any 
+ 214:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	direction while either of the limit switch bits in the event status register
+ 215:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	is set.*/
+ 216:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	
+ 217:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	PMDResetEventStatus(&hAxis[Axis],~PMDEventInNegativeLimitMask);		
+ 218:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		
+ 219:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	//-----Mover el eje en la direccion opuesta del Límite Negativo.
+ 220:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		
+ 221:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	switch (Axis)
+ 222:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	{
+ 223:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		case (AxisPitch):
+ 224:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 				
+ 225:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 			/*Si se produce un evento de limite negativo en el eje de pitch
+ 226:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 			entonces el eje roll producira un evento de Limite Positivo.*/				
+ 227:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 			PMDResetEventStatus(&hAxis[AxisRoll],~PMDEventInPositiveLimitMask);	
+ 228:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 				
+ 229:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 			/*Se realiza un movimiento de pitch en la direccion positiva*/			
+ 230:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 			PMDGetProfileMode(&hAxis[AxisRoll],&Profile_roll);
+ 231:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 			PMDSetProfileMode(&hAxis[Axis],  PMDVelocityContouringProfile ); 
+ 232:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 			PMDSetProfileMode(&hAxis[AxisRoll],  PMDVelocityContouringProfile ); 
+ 233:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 			PMDSetMotorMode(&hAxis[Axis],PMDMotorOn);  	
+ 234:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 			PMDSetMotorMode(&hAxis[AxisRoll],PMDMotorOn); 
+ 235:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 			pitch(none,hAxis[Axis].axisSettings.homeVelocity,
+ 236:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 				hAxis[Axis].axisSettings.homeAcceleration, update,MOVIMIENTO_NORMAL );					
+ 237:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		break;
+ 238:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		case (AxisRoll):		
+ 239:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		break;
+ 240:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 			
+ 241:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		default:
+ 242:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 			PMDSetProfileMode(&hAxis[Axis],  PMDVelocityContouringProfile ); 
+ 243:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 			PMDSetMotorMode(&hAxis[Axis],PMDMotorOn);  				
+ 244:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 			mov_axis(Axis,none,hAxis[Axis].axisSettings.homeVelocity,
+ 245:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 				hAxis[Axis].axisSettings.homeAcceleration, update);	
+ 246:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		break;
+ 247:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	}		
+ 248:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 
+ 249:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	
+ 250:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	PMDGetSignalStatus(&hAxis[Axis], &signal_status);
+ 251:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	
+ 252:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	do 
+ 253:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	{
+ 254:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		PMDGetSignalStatus(&hAxis[Axis], &signal_status);
+ 255:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		mask=signal_status& PMDSignalNegativeLimitMask;
+ 256:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		//#ifdef DEBUGINTERRUPT
+ 257:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 			printf("Negativehandling=> El Estado de la senal del Switch Negativo del eje %s es : %#X \n ",
+ 258:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 					AxisName(Axis),mask);
+ 259:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		//#endif
+ 260:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	} 
+ 261:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	while ((signal_status & PMDSignalNegativeLimitMask)==0);
+ 262:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 
+ 263:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 
+ 264:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 
+ 265:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	//---------------- Detener suavemente el movimiento.------------------------------	
+ 266:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	
+ 267:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	PMDSetStopMode(&hAxis[Axis], PMDSmoothStopMode ); 
+ 268:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	PMDUpdate(&hAxis[Axis]);
+ 269:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	
+ 270:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	if(Axis==AxisPitch)
+ 271:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	{
+ 272:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		PMDSetStopMode(&hAxis[AxisRoll], PMDSmoothStopMode ); 	//detiene el Motor de Roll
+ 273:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		PMDUpdate(&hAxis[AxisRoll]);
+ 274:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		PMDSetProfileMode(&hAxis[AxisRoll],Profile_roll);			//restaura el perfil de moviemiento de Roll
+ 275:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		PMDUpdate(&hAxis[AxisRoll]);
+ 276:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		
+ 277:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	}
+ 278:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 
+ 279:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	//Se restaura el Valor inicial del Perfil de la trayectoria.
+ 280:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	PMDSetProfileMode(&hAxis[Axis],Profile);
+ 281:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	PMDUpdate(&hAxis[Axis]);	
+ 282:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	
+ 283:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** }
+ 284:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 
+ 285:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** /*****************************************************************************************/
+ 286:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** void InstructionErrorhandling(tAxis Axis)
+ 287:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** {
+ 251               	.LFBB1
+ 252               	.LM0:
+ 253               	.LFBB1:
+ 254 0000 0F93      		push r16
+ 255 0002 1F93      		push r17
+ 256               	/* prologue: function */
+ 257               	/* frame size = 0 */
+ 258 0004 8C01      		movw r16,r24
+ 288:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	
+ 289:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	
+ 290:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	/* Imprimir mensajes de Error*/	
+ 291:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	printf("Negativehandling=> El eje de %s Produjo un Error de Instruccion \n", AxisName(Axis));
+ 259               	68,0,291,.LM1-.LFBB1
+ 260               	.LM1:
+ 261 0006 0E94 0000 		call AxisName
+ 262 000a 00D0      		rcall .
+ 263 000c 00D0      		rcall .
+ 264 000e 20E0      		ldi r18,lo8(.LC0)
+ 265 0010 30E0      		ldi r19,hi8(.LC0)
+ 266 0012 EDB7      		in r30,__SP_L__
+ 267 0014 FEB7      		in r31,__SP_H__
+ 268 0016 3283      		std Z+2,r19
+ 269 0018 2183      		std Z+1,r18
+ 270 001a 9483      		std Z+4,r25
+ 271 001c 8383      		std Z+3,r24
+ 272 001e 0E94 0000 		call printf
+ 292:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	fprintf_P(stderr,PSTR("Error de Instruccion \n"));
+ 273               	92,.LM2-.LFBB1
+ 274               	.LM2:
+ 275 0022 8091 0000 		lds r24,__iob+4
+ 276 0026 9091 0000 		lds r25,(__iob+4)+1
+ 277 002a EDB7      		in r30,__SP_L__
+ 278 002c FEB7      		in r31,__SP_H__
+ 279 002e 9283      		std Z+2,r25
+ 280 0030 8183      		std Z+1,r24
+ 281 0032 80E0      		ldi r24,lo8(__c.3319)
+ 282 0034 90E0      		ldi r25,hi8(__c.3319)
+ 283 0036 9483      		std Z+4,r25
+ 284 0038 8383      		std Z+3,r24
+ 285 003a 0E94 0000 		call fprintf_P
+ 293:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	/* se enciende el LED Rojo*/
+ 294:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	Led_on(Rojo);
+ 286               	294,.LM3-.LFBB1
+ 287               	.LM3:
+ 288 003e 0F90      		pop __tmp_reg__
+ 289 0040 0F90      		pop __tmp_reg__
+ 290 0042 0F90      		pop __tmp_reg__
+ 291 0044 0F90      		pop __tmp_reg__
+ 292 0046 81E0      		ldi r24,lo8(1)
+ 293 0048 0E94 0000 		call Led_on
+ 295:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	
+ 296:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	
+ 297:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	
+ 298:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	/*Se limpia el Event Status Register, borrando la interrupcion 	*/	
+ 299:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	PMDResetEventStatus(&hAxis[Axis],~PMDEventInstructionErrorMask);
+ 294               	68,0,299,.LM4-.LFBB1
+ 295               	.LM4:
+ 296 004c 80E6      		ldi r24,lo8(96)
+ 297 004e 90E0      		ldi r25,hi8(96)
+ 298 0050 9C01      		movw r18,r24
+ 299 0052 029F      		mul r16,r18
+ 300 0054 C001      		movw r24,r0
+ 301 0056 039F      		mul r16,r19
+ 302 0058 900D      		add r25,r0
+ 303 005a 129F      		mul r17,r18
+ 304 005c 900D      		add r25,r0
+ 305 005e 1124      		clr r1
+ 306 0060 8050      		subi r24,lo8(-(hAxis))
+ 307 0062 9040      		sbci r25,hi8(-(hAxis))
+ 308 0064 6FE7      		ldi r22,lo8(-129)
+ 309 0066 7FEF      		ldi r23,hi8(-129)
+ 310 0068 0E94 0000 		call PMDResetEventStatus
+ 311               	/* epilogue start */
+ 300:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	
+ 301:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	
+ 302:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	
+ 303:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** }
+ 312               	LM5-.LFBB1
+ 313               	.LM5:
+ 314 006c 1F91      		pop r17
+ 315 006e 0F91      		pop r16
+ 316 0070 0895      		ret
+ 318               	.Lscope1:
+ 321               	.global	MotionCompletehandling
+ 323               	MotionCompletehandling:
+ 325               	.LM6:
+ 326               	.LFBB2:
+ 327 0072 CF93      		push r28
+ 328 0074 DF93      		push r29
+ 329               	/* prologue: function */
+ 330               	/* frame size = 0 */
+ 331 0076 EC01      		movw r28,r24
+ 333               	.LM7:
+ 334 0078 80E6      		ldi r24,lo8(96)
+ 335 007a 90E0      		ldi r25,hi8(96)
+ 336 007c 9C01      		movw r18,r24
+ 337 007e C29F      		mul r28,r18
+ 338 0080 C001      		movw r24,r0
+ 339 0082 C39F      		mul r28,r19
+ 340 0084 900D      		add r25,r0
+ 341 0086 D29F      		mul r29,r18
+ 342 0088 900D      		add r25,r0
+ 343 008a 1124      		clr r1
+ 344 008c 8050      		subi r24,lo8(-(hAxis))
+ 345 008e 9040      		sbci r25,hi8(-(hAxis))
+ 346 0090 6EEF      		ldi r22,lo8(-2)
+ 347 0092 7FEF      		ldi r23,hi8(-2)
+ 348 0094 0E94 0000 		call PMDResetEventStatus
+ 350               	.LM8:
+ 351 0098 C330      		cpi r28,3
+ 352 009a D105      		cpc r29,__zero_reg__
+ 353 009c 01F4      		brne .L4
+ 355               	.LM9:
+ 356 009e 80E0      		ldi r24,lo8(hAxis+384)
+ 357 00a0 90E0      		ldi r25,hi8(hAxis+384)
+ 358 00a2 00C0      		rjmp .L7
+ 359               	.L4:
+ 361               	.LM10:
+ 362 00a4 2497      		sbiw r28,4
+ 363 00a6 01F4      		brne .L6
+ 365               	.LM11:
+ 366 00a8 80E0      		ldi r24,lo8(hAxis+288)
+ 367 00aa 90E0      		ldi r25,hi8(hAxis+288)
+ 368               	.L7:
+ 369 00ac 6EEF      		ldi r22,lo8(-2)
+ 370 00ae 7FEF      		ldi r23,hi8(-2)
+ 371 00b0 0E94 0000 		call PMDResetEventStatus
+ 372               	.L6:
+ 373               	/* epilogue start */
+ 375               	.LM12:
+ 376 00b4 DF91      		pop r29
+ 377 00b6 CF91      		pop r28
+ 378 00b8 0895      		ret
+ 380               	.Lscope2:
+ 381               		.data
+ 382               	.LC1:
+ 383 0042 4E65 6761 		.string	"Negativehandling=> El eje de %s ha llegado al Limite Negativo \n"
+ 383      7469 7665 
+ 383      6861 6E64 
+ 383      6C69 6E67 
+ 383      3D3E 2045 
+ 384               	.LC2:
+ 385 0082 4E65 6761 		.ascii	"Negativehandling=> "
+ 385      7469 7665 
+ 385      6861 6E64 
+ 385      6C69 6E67 
+ 385      3D3E 20
+ 386 0095 456C 2045 		.string	"El Estado de la senal del Switch Negativo del eje %s es : %#X \n "
+ 386      7374 6164 
+ 386      6F20 6465 
+ 386      206C 6120 
+ 386      7365 6E61 
+ 387               		.text
+ 390               	.global	Negativehandling
+ 392               	Negativehandling:
+ 394               	.LM13:
+ 395               	.LFBB3:
+ 396 00ba 6F92      		push r6
+ 397 00bc 7F92      		push r7
+ 398 00be 8F92      		push r8
+ 399 00c0 9F92      		push r9
+ 400 00c2 AF92      		push r10
+ 401 00c4 BF92      		push r11
+ 402 00c6 CF92      		push r12
+ 403 00c8 DF92      		push r13
+ 404 00ca EF92      		push r14
+ 405 00cc FF92      		push r15
+ 406 00ce 0F93      		push r16
+ 407 00d0 1F93      		push r17
+ 408 00d2 DF93      		push r29
+ 409 00d4 CF93      		push r28
+ 410 00d6 00D0      		rcall .
+ 411 00d8 00D0      		rcall .
+ 412 00da 00D0      		rcall .
+ 413 00dc CDB7      		in r28,__SP_L__
+ 414 00de DEB7      		in r29,__SP_H__
+ 415               	/* prologue: function */
+ 416               	/* frame size = 6 */
+ 417 00e0 3C01      		movw r6,r24
+ 419               	.LM14:
+ 420 00e2 0E94 0000 		call AxisName
+ 421 00e6 00D0      		rcall .
+ 422 00e8 00D0      		rcall .
+ 423 00ea 20E0      		ldi r18,lo8(.LC1)
+ 424 00ec 30E0      		ldi r19,hi8(.LC1)
+ 425 00ee ADB7      		in r26,__SP_L__
+ 426 00f0 BEB7      		in r27,__SP_H__
+ 427 00f2 1296      		adiw r26,1+1
+ 428 00f4 3C93      		st X,r19
+ 429 00f6 2E93      		st -X,r18
+ 430 00f8 1197      		sbiw r26,1
+ 431 00fa 1496      		adiw r26,3+1
+ 432 00fc 9C93      		st X,r25
+ 433 00fe 8E93      		st -X,r24
+ 434 0100 1397      		sbiw r26,3
+ 435 0102 0E94 0000 		call printf
+ 437               	.LM15:
+ 438 0106 80E6      		ldi r24,lo8(96)
+ 439 0108 90E0      		ldi r25,hi8(96)
+ 440 010a 689E      		mul r6,r24
+ 441 010c 4001      		movw r8,r0
+ 442 010e 699E      		mul r6,r25
+ 443 0110 900C      		add r9,r0
+ 444 0112 789E      		mul r7,r24
+ 445 0114 900C      		add r9,r0
+ 446 0116 1124      		clr r1
+ 447 0118 E0E0      		ldi r30,lo8(hAxis)
+ 448 011a F0E0      		ldi r31,hi8(hAxis)
+ 449 011c 8E0E      		add r8,r30
+ 450 011e 9F1E      		adc r9,r31
+ 451 0120 0F90      		pop __tmp_reg__
+ 452 0122 0F90      		pop __tmp_reg__
+ 453 0124 0F90      		pop __tmp_reg__
+ 454 0126 0F90      		pop __tmp_reg__
+ 455 0128 C401      		movw r24,r8
+ 456 012a BE01      		movw r22,r28
+ 457 012c 6D5F      		subi r22,lo8(-(3))
+ 458 012e 7F4F      		sbci r23,hi8(-(3))
+ 459 0130 0E94 0000 		call PMDGetProfileMode
+ 461               	.LM16:
+ 462 0134 C401      		movw r24,r8
+ 463 0136 6FEB      		ldi r22,lo8(-65)
+ 464 0138 7FEF      		ldi r23,hi8(-65)
+ 465 013a 0E94 0000 		call PMDResetEventStatus
+ 467               	.LM17:
+ 468 013e F3E0      		ldi r31,lo8(3)
+ 469 0140 6F16      		cp r6,r31
+ 470 0142 7104      		cpc r7,__zero_reg__
+ 471 0144 01F0      		breq .L10
+ 472 0146 24E0      		ldi r18,lo8(4)
+ 473 0148 6216      		cp r6,r18
+ 474 014a 7104      		cpc r7,__zero_reg__
+ 475 014c 01F0      		breq .+2
+ 476 014e 00C0      		rjmp .L16
+ 477 0150 00C0      		rjmp .L11
+ 478               	.L10:
+ 480               	.LM18:
+ 481 0152 80E0      		ldi r24,lo8(hAxis+384)
+ 482 0154 90E0      		ldi r25,hi8(hAxis+384)
+ 483 0156 6FED      		ldi r22,lo8(-33)
+ 484 0158 7FEF      		ldi r23,hi8(-33)
+ 485 015a 0E94 0000 		call PMDResetEventStatus
+ 487               	.LM19:
+ 488 015e 80E0      		ldi r24,lo8(hAxis+384)
+ 489 0160 90E0      		ldi r25,hi8(hAxis+384)
+ 490 0162 BE01      		movw r22,r28
+ 491 0164 6B5F      		subi r22,lo8(-(5))
+ 492 0166 7F4F      		sbci r23,hi8(-(5))
+ 493 0168 0E94 0000 		call PMDGetProfileMode
+ 495               	.LM20:
+ 496 016c C401      		movw r24,r8
+ 497 016e 61E0      		ldi r22,lo8(1)
+ 498 0170 70E0      		ldi r23,hi8(1)
+ 499 0172 0E94 0000 		call PMDSetProfileMode
+ 501               	.LM21:
+ 502 0176 80E0      		ldi r24,lo8(hAxis+384)
+ 503 0178 90E0      		ldi r25,hi8(hAxis+384)
+ 504 017a 61E0      		ldi r22,lo8(1)
+ 505 017c 70E0      		ldi r23,hi8(1)
+ 506 017e 0E94 0000 		call PMDSetProfileMode
+ 508               	.LM22:
+ 509 0182 C401      		movw r24,r8
+ 510 0184 61E0      		ldi r22,lo8(1)
+ 511 0186 70E0      		ldi r23,hi8(1)
+ 512 0188 0E94 0000 		call PMDSetMotorMode
+ 514               	.LM23:
+ 515 018c 80E0      		ldi r24,lo8(hAxis+384)
+ 516 018e 90E0      		ldi r25,hi8(hAxis+384)
+ 517 0190 61E0      		ldi r22,lo8(1)
+ 518 0192 70E0      		ldi r23,hi8(1)
+ 519 0194 0E94 0000 		call PMDSetMotorMode
+ 521               	.LM24:
+ 522 0198 2091 0000 		lds r18,hAxis+352
+ 523 019c 3091 0000 		lds r19,(hAxis+352)+1
+ 524 01a0 4091 0000 		lds r20,(hAxis+352)+2
+ 525 01a4 5091 0000 		lds r21,(hAxis+352)+3
+ 526 01a8 E090 0000 		lds r14,hAxis+356
+ 527 01ac F090 0000 		lds r15,(hAxis+356)+1
+ 528 01b0 0091 0000 		lds r16,(hAxis+356)+2
+ 529 01b4 1091 0000 		lds r17,(hAxis+356)+3
+ 530 01b8 61EF      		ldi r22,lo8(-15)
+ 531 01ba 7FEF      		ldi r23,hi8(-15)
+ 532 01bc 8FEF      		ldi r24,hlo8(-15)
+ 533 01be 9FEF      		ldi r25,hhi8(-15)
+ 534 01c0 A0EF      		ldi r26,lo8(-16)
+ 535 01c2 CA2E      		mov r12,r26
+ 536 01c4 AFEF      		ldi r26,hi8(-16)
+ 537 01c6 DA2E      		mov r13,r26
+ 538 01c8 F1E0      		ldi r31,lo8(1)
+ 539 01ca AF2E      		mov r10,r31
+ 540 01cc B12C      		mov r11,__zero_reg__
+ 541 01ce 0E94 0000 		call pitch
+ 542 01d2 00C0      		rjmp .L11
+ 543               	.L16:
+ 545               	.LM25:
+ 546 01d4 C401      		movw r24,r8
+ 547 01d6 61E0      		ldi r22,lo8(1)
+ 548 01d8 70E0      		ldi r23,hi8(1)
+ 549 01da 0E94 0000 		call PMDSetProfileMode
+ 551               	.LM26:
+ 552 01de C401      		movw r24,r8
+ 553 01e0 61E0      		ldi r22,lo8(1)
+ 554 01e2 70E0      		ldi r23,hi8(1)
+ 555 01e4 0E94 0000 		call PMDSetMotorMode
+ 557               	.LM27:
+ 558 01e8 F401      		movw r30,r8
+ 559 01ea E05C      		subi r30,lo8(-(64))
+ 560 01ec FF4F      		sbci r31,hi8(-(64))
+ 561 01ee 0081      		ld r16,Z
+ 562 01f0 1181      		ldd r17,Z+1
+ 563 01f2 2281      		ldd r18,Z+2
+ 564 01f4 3381      		ldd r19,Z+3
+ 565 01f6 F401      		movw r30,r8
+ 566 01f8 EC5B      		subi r30,lo8(-(68))
+ 567 01fa FF4F      		sbci r31,hi8(-(68))
+ 568 01fc C080      		ld r12,Z
+ 569 01fe D180      		ldd r13,Z+1
+ 570 0200 E280      		ldd r14,Z+2
+ 571 0202 F380      		ldd r15,Z+3
+ 572 0204 C301      		movw r24,r6
+ 573 0206 41EF      		ldi r20,lo8(-15)
+ 574 0208 5FEF      		ldi r21,hi8(-15)
+ 575 020a 6FEF      		ldi r22,hlo8(-15)
+ 576 020c 7FEF      		ldi r23,hhi8(-15)
+ 577 020e E0EF      		ldi r30,lo8(-16)
+ 578 0210 AE2E      		mov r10,r30
+ 579 0212 EFEF      		ldi r30,hi8(-16)
+ 580 0214 BE2E      		mov r11,r30
+ 581 0216 0E94 0000 		call mov_axis
+ 582               	.L11:
+ 584               	.LM28:
+ 585 021a C401      		movw r24,r8
+ 586 021c 8E01      		movw r16,r28
+ 587 021e 0F5F      		subi r16,lo8(-(1))
+ 588 0220 1F4F      		sbci r17,hi8(-(1))
+ 589 0222 B801      		movw r22,r16
+ 590 0224 0E94 0000 		call PMDGetSignalStatus
+ 592               	.LM29:
+ 593 0228 6801      		movw r12,r16
+ 595               	.LM30:
+ 596 022a 80E0      		ldi r24,lo8(.LC2)
+ 597 022c E82E      		mov r14,r24
+ 598 022e 80E0      		ldi r24,hi8(.LC2)
+ 599 0230 F82E      		mov r15,r24
+ 600               	.L12:
+ 602               	.LM31:
+ 603 0232 C401      		movw r24,r8
+ 604 0234 B601      		movw r22,r12
+ 605 0236 0E94 0000 		call PMDGetSignalStatus
+ 607               	.LM32:
+ 608 023a 0981      		ldd r16,Y+1
+ 609 023c 1A81      		ldd r17,Y+2
+ 610 023e 0072      		andi r16,lo8(32)
+ 611 0240 1070      		andi r17,hi8(32)
+ 613               	.LM33:
+ 614 0242 C301      		movw r24,r6
+ 615 0244 0E94 0000 		call AxisName
+ 616 0248 00D0      		rcall .
+ 617 024a 00D0      		rcall .
+ 618 024c 00D0      		rcall .
+ 619 024e EDB7      		in r30,__SP_L__
+ 620 0250 FEB7      		in r31,__SP_H__
+ 621 0252 3196      		adiw r30,1
+ 622 0254 ADB7      		in r26,__SP_L__
+ 623 0256 BEB7      		in r27,__SP_H__
+ 624 0258 1296      		adiw r26,1+1
+ 625 025a FC92      		st X,r15
+ 626 025c EE92      		st -X,r14
+ 627 025e 1197      		sbiw r26,1
+ 628 0260 9383      		std Z+3,r25
+ 629 0262 8283      		std Z+2,r24
+ 630 0264 1583      		std Z+5,r17
+ 631 0266 0483      		std Z+4,r16
+ 632 0268 0E94 0000 		call printf
+ 634               	.LM34:
+ 635 026c 8981      		ldd r24,Y+1
+ 636 026e EDB7      		in r30,__SP_L__
+ 637 0270 FEB7      		in r31,__SP_H__
+ 638 0272 3696      		adiw r30,6
+ 639 0274 0FB6      		in __tmp_reg__,__SREG__
+ 640 0276 F894      		cli
+ 641 0278 FEBF      		out __SP_H__,r31
+ 642 027a 0FBE      		out __SREG__,__tmp_reg__
+ 643 027c EDBF      		out __SP_L__,r30
+ 644 027e 85FF      		sbrs r24,5
+ 645 0280 00C0      		rjmp .L12
+ 647               	.LM35:
+ 648 0282 C401      		movw r24,r8
+ 649 0284 62E0      		ldi r22,lo8(2)
+ 650 0286 70E0      		ldi r23,hi8(2)
+ 651 0288 0E94 0000 		call PMDSetStopMode
+ 653               	.LM36:
+ 654 028c C401      		movw r24,r8
+ 655 028e 0E94 0000 		call PMDUpdate
+ 657               	.LM37:
+ 658 0292 F3E0      		ldi r31,lo8(3)
+ 659 0294 6F16      		cp r6,r31
+ 660 0296 7104      		cpc r7,__zero_reg__
+ 661 0298 01F4      		brne .L13
+ 663               	.LM38:
+ 664 029a 80E0      		ldi r24,lo8(hAxis+384)
+ 665 029c 90E0      		ldi r25,hi8(hAxis+384)
+ 666 029e 62E0      		ldi r22,lo8(2)
+ 667 02a0 70E0      		ldi r23,hi8(2)
+ 668 02a2 0E94 0000 		call PMDSetStopMode
+ 670               	.LM39:
+ 671 02a6 80E0      		ldi r24,lo8(hAxis+384)
+ 672 02a8 90E0      		ldi r25,hi8(hAxis+384)
+ 673 02aa 0E94 0000 		call PMDUpdate
+ 675               	.LM40:
+ 676 02ae 6D81      		ldd r22,Y+5
+ 677 02b0 7E81      		ldd r23,Y+6
+ 678 02b2 80E0      		ldi r24,lo8(hAxis+384)
+ 679 02b4 90E0      		ldi r25,hi8(hAxis+384)
+ 680 02b6 0E94 0000 		call PMDSetProfileMode
+ 682               	.LM41:
+ 683 02ba 80E0      		ldi r24,lo8(hAxis+384)
+ 684 02bc 90E0      		ldi r25,hi8(hAxis+384)
+ 685 02be 0E94 0000 		call PMDUpdate
+ 686               	.L13:
+ 688               	.LM42:
+ 689 02c2 6B81      		ldd r22,Y+3
+ 690 02c4 7C81      		ldd r23,Y+4
+ 691 02c6 C401      		movw r24,r8
+ 692 02c8 0E94 0000 		call PMDSetProfileMode
+ 694               	.LM43:
+ 695 02cc C401      		movw r24,r8
+ 696 02ce 0E94 0000 		call PMDUpdate
+ 697               	/* epilogue start */
+ 699               	.LM44:
+ 700 02d2 2696      		adiw r28,6
+ 701 02d4 0FB6      		in __tmp_reg__,__SREG__
+ 702 02d6 F894      		cli
+ 703 02d8 DEBF      		out __SP_H__,r29
+ 704 02da 0FBE      		out __SREG__,__tmp_reg__
+ 705 02dc CDBF      		out __SP_L__,r28
+ 706 02de CF91      		pop r28
+ 707 02e0 DF91      		pop r29
+ 708 02e2 1F91      		pop r17
+ 709 02e4 0F91      		pop r16
+ 710 02e6 FF90      		pop r15
+ 711 02e8 EF90      		pop r14
+ 712 02ea DF90      		pop r13
+ 713 02ec CF90      		pop r12
+ 714 02ee BF90      		pop r11
+ 715 02f0 AF90      		pop r10
+ 716 02f2 9F90      		pop r9
+ 717 02f4 8F90      		pop r8
+ 718 02f6 7F90      		pop r7
+ 719 02f8 6F90      		pop r6
+ 720 02fa 0895      		ret
+ 728               	.Lscope3:
+ 731               	.global	Positivehandling
+ 733               	Positivehandling:
+ 735               	.LM45:
+ 736               	.LFBB4:
+ 737 02fc 6F92      		push r6
+ 738 02fe 7F92      		push r7
+ 739 0300 8F92      		push r8
+ 740 0302 9F92      		push r9
+ 741 0304 AF92      		push r10
+ 742 0306 BF92      		push r11
+ 743 0308 CF92      		push r12
+ 744 030a DF92      		push r13
+ 745 030c EF92      		push r14
+ 746 030e FF92      		push r15
+ 747 0310 0F93      		push r16
+ 748 0312 1F93      		push r17
+ 749 0314 DF93      		push r29
+ 750 0316 CF93      		push r28
+ 751 0318 00D0      		rcall .
+ 752 031a 00D0      		rcall .
+ 753 031c 00D0      		rcall .
+ 754 031e CDB7      		in r28,__SP_L__
+ 755 0320 DEB7      		in r29,__SP_H__
+ 756               	/* prologue: function */
+ 757               	/* frame size = 6 */
+ 758 0322 3C01      		movw r6,r24
+ 760               	.LM46:
+ 761 0324 80E6      		ldi r24,lo8(96)
+ 762 0326 90E0      		ldi r25,hi8(96)
+ 763 0328 689E      		mul r6,r24
+ 764 032a 4001      		movw r8,r0
+ 765 032c 699E      		mul r6,r25
+ 766 032e 900C      		add r9,r0
+ 767 0330 789E      		mul r7,r24
+ 768 0332 900C      		add r9,r0
+ 769 0334 1124      		clr r1
+ 770 0336 80E0      		ldi r24,lo8(hAxis)
+ 771 0338 90E0      		ldi r25,hi8(hAxis)
+ 772 033a 880E      		add r8,r24
+ 773 033c 991E      		adc r9,r25
+ 774 033e C401      		movw r24,r8
+ 775 0340 BE01      		movw r22,r28
+ 776 0342 6D5F      		subi r22,lo8(-(3))
+ 777 0344 7F4F      		sbci r23,hi8(-(3))
+ 778 0346 0E94 0000 		call PMDGetProfileMode
+ 780               	.LM47:
+ 781 034a C401      		movw r24,r8
+ 782 034c 6FED      		ldi r22,lo8(-33)
+ 783 034e 7FEF      		ldi r23,hi8(-33)
+ 784 0350 0E94 0000 		call PMDResetEventStatus
+ 786               	.LM48:
+ 787 0354 93E0      		ldi r25,lo8(3)
+ 788 0356 6916      		cp r6,r25
+ 789 0358 7104      		cpc r7,__zero_reg__
+ 790 035a 01F0      		breq .L19
+ 791 035c 84E0      		ldi r24,lo8(4)
+ 792 035e 6816      		cp r6,r24
+ 793 0360 7104      		cpc r7,__zero_reg__
+ 794 0362 01F0      		breq .+2
+ 795 0364 00C0      		rjmp .L25
+ 796 0366 00C0      		rjmp .L20
+ 797               	.L19:
+ 799               	.LM49:
+ 800 0368 80E0      		ldi r24,lo8(hAxis+384)
+ 801 036a 90E0      		ldi r25,hi8(hAxis+384)
+ 802 036c 6FEB      		ldi r22,lo8(-65)
+ 803 036e 7FEF      		ldi r23,hi8(-65)
+ 804 0370 0E94 0000 		call PMDResetEventStatus
+ 806               	.LM50:
+ 807 0374 80E0      		ldi r24,lo8(hAxis+384)
+ 808 0376 90E0      		ldi r25,hi8(hAxis+384)
+ 809 0378 BE01      		movw r22,r28
+ 810 037a 6B5F      		subi r22,lo8(-(5))
+ 811 037c 7F4F      		sbci r23,hi8(-(5))
+ 812 037e 0E94 0000 		call PMDGetProfileMode
+ 814               	.LM51:
+ 815 0382 C401      		movw r24,r8
+ 816 0384 61E0      		ldi r22,lo8(1)
+ 817 0386 70E0      		ldi r23,hi8(1)
+ 818 0388 0E94 0000 		call PMDSetProfileMode
+ 820               	.LM52:
+ 821 038c 80E0      		ldi r24,lo8(hAxis+384)
+ 822 038e 90E0      		ldi r25,hi8(hAxis+384)
+ 823 0390 61E0      		ldi r22,lo8(1)
+ 824 0392 70E0      		ldi r23,hi8(1)
+ 825 0394 0E94 0000 		call PMDSetProfileMode
+ 827               	.LM53:
+ 828 0398 C401      		movw r24,r8
+ 829 039a 61E0      		ldi r22,lo8(1)
+ 830 039c 70E0      		ldi r23,hi8(1)
+ 831 039e 0E94 0000 		call PMDSetMotorMode
+ 833               	.LM54:
+ 834 03a2 80E0      		ldi r24,lo8(hAxis+384)
+ 835 03a4 90E0      		ldi r25,hi8(hAxis+384)
+ 836 03a6 61E0      		ldi r22,lo8(1)
+ 837 03a8 70E0      		ldi r23,hi8(1)
+ 838 03aa 0E94 0000 		call PMDSetMotorMode
+ 840               	.LM55:
+ 841 03ae 2091 0000 		lds r18,hAxis+352
+ 842 03b2 3091 0000 		lds r19,(hAxis+352)+1
+ 843 03b6 4091 0000 		lds r20,(hAxis+352)+2
+ 844 03ba 5091 0000 		lds r21,(hAxis+352)+3
+ 845 03be 5095      		com r21
+ 846 03c0 4095      		com r20
+ 847 03c2 3095      		com r19
+ 848 03c4 2195      		neg r18
+ 849 03c6 3F4F      		sbci r19,lo8(-1)
+ 850 03c8 4F4F      		sbci r20,lo8(-1)
+ 851 03ca 5F4F      		sbci r21,lo8(-1)
+ 852 03cc E090 0000 		lds r14,hAxis+356
+ 853 03d0 F090 0000 		lds r15,(hAxis+356)+1
+ 854 03d4 0091 0000 		lds r16,(hAxis+356)+2
+ 855 03d8 1091 0000 		lds r17,(hAxis+356)+3
+ 856 03dc 61EF      		ldi r22,lo8(-15)
+ 857 03de 7FEF      		ldi r23,hi8(-15)
+ 858 03e0 8FEF      		ldi r24,hlo8(-15)
+ 859 03e2 9FEF      		ldi r25,hhi8(-15)
+ 860 03e4 F0EF      		ldi r31,lo8(-16)
+ 861 03e6 CF2E      		mov r12,r31
+ 862 03e8 FFEF      		ldi r31,hi8(-16)
+ 863 03ea DF2E      		mov r13,r31
+ 864 03ec E1E0      		ldi r30,lo8(1)
+ 865 03ee AE2E      		mov r10,r30
+ 866 03f0 B12C      		mov r11,__zero_reg__
+ 867 03f2 0E94 0000 		call pitch
+ 868 03f6 00C0      		rjmp .L20
+ 869               	.L25:
+ 871               	.LM56:
+ 872 03f8 C401      		movw r24,r8
+ 873 03fa 61E0      		ldi r22,lo8(1)
+ 874 03fc 70E0      		ldi r23,hi8(1)
+ 875 03fe 0E94 0000 		call PMDSetProfileMode
+ 877               	.LM57:
+ 878 0402 C401      		movw r24,r8
+ 879 0404 61E0      		ldi r22,lo8(1)
+ 880 0406 70E0      		ldi r23,hi8(1)
+ 881 0408 0E94 0000 		call PMDSetMotorMode
+ 883               	.LM58:
+ 884 040c F401      		movw r30,r8
+ 885 040e E05C      		subi r30,lo8(-(64))
+ 886 0410 FF4F      		sbci r31,hi8(-(64))
+ 887 0412 0081      		ld r16,Z
+ 888 0414 1181      		ldd r17,Z+1
+ 889 0416 2281      		ldd r18,Z+2
+ 890 0418 3381      		ldd r19,Z+3
+ 891 041a 3095      		com r19
+ 892 041c 2095      		com r18
+ 893 041e 1095      		com r17
+ 894 0420 0195      		neg r16
+ 895 0422 1F4F      		sbci r17,lo8(-1)
+ 896 0424 2F4F      		sbci r18,lo8(-1)
+ 897 0426 3F4F      		sbci r19,lo8(-1)
+ 898 0428 F401      		movw r30,r8
+ 899 042a EC5B      		subi r30,lo8(-(68))
+ 900 042c FF4F      		sbci r31,hi8(-(68))
+ 901 042e C080      		ld r12,Z
+ 902 0430 D180      		ldd r13,Z+1
+ 903 0432 E280      		ldd r14,Z+2
+ 904 0434 F380      		ldd r15,Z+3
+ 905 0436 C301      		movw r24,r6
+ 906 0438 41EF      		ldi r20,lo8(-15)
+ 907 043a 5FEF      		ldi r21,hi8(-15)
+ 908 043c 6FEF      		ldi r22,hlo8(-15)
+ 909 043e 7FEF      		ldi r23,hhi8(-15)
+ 910 0440 B0EF      		ldi r27,lo8(-16)
+ 911 0442 AB2E      		mov r10,r27
+ 912 0444 BFEF      		ldi r27,hi8(-16)
+ 913 0446 BB2E      		mov r11,r27
+ 914 0448 0E94 0000 		call mov_axis
+ 915               	.L20:
+ 917               	.LM59:
+ 918 044c C401      		movw r24,r8
+ 919 044e 8E01      		movw r16,r28
+ 920 0450 0F5F      		subi r16,lo8(-(1))
+ 921 0452 1F4F      		sbci r17,hi8(-(1))
+ 922 0454 B801      		movw r22,r16
+ 923 0456 0E94 0000 		call PMDGetSignalStatus
+ 925               	.LM60:
+ 926 045a F02E      		mov r15,r16
+ 927 045c 012F      		mov r16,r17
+ 928               	.L21:
+ 929 045e C401      		movw r24,r8
+ 930 0460 6F2D      		mov r22,r15
+ 931 0462 702F      		mov r23,r16
+ 932 0464 0E94 0000 		call PMDGetSignalStatus
+ 934               	.LM61:
+ 935 0468 8981      		ldd r24,Y+1
+ 936 046a 84FF      		sbrs r24,4
+ 937 046c 00C0      		rjmp .L21
+ 939               	.LM62:
+ 940 046e C401      		movw r24,r8
+ 941 0470 62E0      		ldi r22,lo8(2)
+ 942 0472 70E0      		ldi r23,hi8(2)
+ 943 0474 0E94 0000 		call PMDSetStopMode
+ 945               	.LM63:
+ 946 0478 C401      		movw r24,r8
+ 947 047a 0E94 0000 		call PMDUpdate
+ 949               	.LM64:
+ 950 047e 93E0      		ldi r25,lo8(3)
+ 951 0480 6916      		cp r6,r25
+ 952 0482 7104      		cpc r7,__zero_reg__
+ 953 0484 01F4      		brne .L22
+ 955               	.LM65:
+ 956 0486 80E0      		ldi r24,lo8(hAxis+384)
+ 957 0488 90E0      		ldi r25,hi8(hAxis+384)
+ 958 048a 62E0      		ldi r22,lo8(2)
+ 959 048c 70E0      		ldi r23,hi8(2)
+ 960 048e 0E94 0000 		call PMDSetStopMode
+ 962               	.LM66:
+ 963 0492 80E0      		ldi r24,lo8(hAxis+384)
+ 964 0494 90E0      		ldi r25,hi8(hAxis+384)
+ 965 0496 0E94 0000 		call PMDUpdate
+ 967               	.LM67:
+ 968 049a 6D81      		ldd r22,Y+5
+ 969 049c 7E81      		ldd r23,Y+6
+ 970 049e 80E0      		ldi r24,lo8(hAxis+384)
+ 971 04a0 90E0      		ldi r25,hi8(hAxis+384)
+ 972 04a2 0E94 0000 		call PMDSetProfileMode
+ 974               	.LM68:
+ 975 04a6 80E0      		ldi r24,lo8(hAxis+384)
+ 976 04a8 90E0      		ldi r25,hi8(hAxis+384)
+ 977 04aa 0E94 0000 		call PMDUpdate
+ 978               	.L22:
+ 980               	.LM69:
+ 981 04ae 6B81      		ldd r22,Y+3
+ 982 04b0 7C81      		ldd r23,Y+4
+ 983 04b2 C401      		movw r24,r8
+ 984 04b4 0E94 0000 		call PMDSetProfileMode
+ 986               	.LM70:
+ 987 04b8 C401      		movw r24,r8
+ 988 04ba 0E94 0000 		call PMDUpdate
+ 989               	/* epilogue start */
+ 991               	.LM71:
+ 992 04be 2696      		adiw r28,6
+ 993 04c0 0FB6      		in __tmp_reg__,__SREG__
+ 994 04c2 F894      		cli
+ 995 04c4 DEBF      		out __SP_H__,r29
+ 996 04c6 0FBE      		out __SREG__,__tmp_reg__
+ 997 04c8 CDBF      		out __SP_L__,r28
+ 998 04ca CF91      		pop r28
+ 999 04cc DF91      		pop r29
+ 1000 04ce 1F91      		pop r17
+ 1001 04d0 0F91      		pop r16
+ 1002 04d2 FF90      		pop r15
+ 1003 04d4 EF90      		pop r14
+ 1004 04d6 DF90      		pop r13
+ 1005 04d8 CF90      		pop r12
+ 1006 04da BF90      		pop r11
+ 1007 04dc AF90      		pop r10
+ 1008 04de 9F90      		pop r9
+ 1009 04e0 8F90      		pop r8
+ 1010 04e2 7F90      		pop r7
+ 1011 04e4 6F90      		pop r6
+ 1012 04e6 0895      		ret
+ 1019               	.Lscope4:
+ 1020               		.data
+ 1021               	.LC3:
+ 1022 00d6 4D6F 74   		.ascii	"Mot"
+ 1023 00d9 696F 6E45 		.string	"ionErrorhandling=> El eje de %s Produjo un Error de Movimiento \n"
+ 1023      7272 6F72 
+ 1023      6861 6E64 
+ 1023      6C69 6E67 
+ 1023      3D3E 2045 
+ 1024               		.text
+ 1027               	.global	MotionErrorhandling
+ 1029               	MotionErrorhandling:
+ 1031               	.LM72:
+ 1032               	.LFBB5:
+ 1033 04e8 EF92      		push r14
+ 1034 04ea FF92      		push r15
+ 1035 04ec 0F93      		push r16
+ 1036 04ee 1F93      		push r17
+ 1037 04f0 DF93      		push r29
+ 1038 04f2 CF93      		push r28
+ 1039 04f4 00D0      		rcall .
+ 1040 04f6 CDB7      		in r28,__SP_L__
+ 1041 04f8 DEB7      		in r29,__SP_H__
+ 1042               	/* prologue: function */
+ 1043               	/* frame size = 2 */
+ 1044 04fa 7C01      		movw r14,r24
+ 1046               	.LM73:
+ 1047 04fc 0E94 0000 		call AxisName
+ 1048 0500 00D0      		rcall .
+ 1049 0502 00D0      		rcall .
+ 1050 0504 20E0      		ldi r18,lo8(.LC3)
+ 1051 0506 30E0      		ldi r19,hi8(.LC3)
+ 1052 0508 EDB7      		in r30,__SP_L__
+ 1053 050a FEB7      		in r31,__SP_H__
+ 1054 050c 3283      		std Z+2,r19
+ 1055 050e 2183      		std Z+1,r18
+ 1056 0510 9483      		std Z+4,r25
+ 1057 0512 8383      		std Z+3,r24
+ 1058 0514 0E94 0000 		call printf
+ 1060               	.LM74:
+ 1061 0518 8091 0000 		lds r24,__iob+4
+ 1062 051c 9091 0000 		lds r25,(__iob+4)+1
+ 1063 0520 EDB7      		in r30,__SP_L__
+ 1064 0522 FEB7      		in r31,__SP_H__
+ 1065 0524 9283      		std Z+2,r25
+ 1066 0526 8183      		std Z+1,r24
+ 1067 0528 80E0      		ldi r24,lo8(__c.3257)
+ 1068 052a 90E0      		ldi r25,hi8(__c.3257)
+ 1069 052c 9483      		std Z+4,r25
+ 1070 052e 8383      		std Z+3,r24
+ 1071 0530 0E94 0000 		call fprintf_P
+ 1073               	.LM75:
+ 1074 0534 0F90      		pop __tmp_reg__
+ 1075 0536 0F90      		pop __tmp_reg__
+ 1076 0538 0F90      		pop __tmp_reg__
+ 1077 053a 0F90      		pop __tmp_reg__
+ 1078 053c 81E0      		ldi r24,lo8(1)
+ 1079 053e 0E94 0000 		call Led_on
+ 1081               	.LM76:
+ 1082 0542 80E6      		ldi r24,lo8(96)
+ 1083 0544 90E0      		ldi r25,hi8(96)
+ 1084 0546 E89E      		mul r14,r24
+ 1085 0548 8001      		movw r16,r0
+ 1086 054a E99E      		mul r14,r25
+ 1087 054c 100D      		add r17,r0
+ 1088 054e F89E      		mul r15,r24
+ 1089 0550 100D      		add r17,r0
+ 1090 0552 1124      		clr r1
+ 1091 0554 0050      		subi r16,lo8(-(hAxis))
+ 1092 0556 1040      		sbci r17,hi8(-(hAxis))
+ 1093 0558 C801      		movw r24,r16
+ 1094 055a 6FEE      		ldi r22,lo8(-17)
+ 1095 055c 7FEF      		ldi r23,hi8(-17)
+ 1096 055e 0E94 0000 		call PMDResetEventStatus
+ 1098               	.LM77:
+ 1099 0562 C801      		movw r24,r16
+ 1100 0564 BE01      		movw r22,r28
+ 1101 0566 6F5F      		subi r22,lo8(-(1))
+ 1102 0568 7F4F      		sbci r23,hi8(-(1))
+ 1103 056a 0E94 0000 		call PMDGetAutoStopMode
+ 1105               	.LM78:
+ 1106 056e 8981      		ldd r24,Y+1
+ 1107 0570 9A81      		ldd r25,Y+2
+ 1108 0572 0197      		sbiw r24,1
+ 1109 0574 01F4      		brne .L28
+ 1111               	.LM79:
+ 1112 0576 C801      		movw r24,r16
+ 1113 0578 61E0      		ldi r22,lo8(1)
+ 1114 057a 70E0      		ldi r23,hi8(1)
+ 1115 057c 0E94 0000 		call PMDSetMotorMode
+ 1117               	.LM80:
+ 1118 0580 F3E0      		ldi r31,lo8(3)
+ 1119 0582 EF16      		cp r14,r31
+ 1120 0584 F104      		cpc r15,__zero_reg__
+ 1121 0586 01F4      		brne .L28
+ 1123               	.LM81:
+ 1124 0588 80E0      		ldi r24,lo8(hAxis+384)
+ 1125 058a 90E0      		ldi r25,hi8(hAxis+384)
+ 1126 058c 61E0      		ldi r22,lo8(1)
+ 1127 058e 70E0      		ldi r23,hi8(1)
+ 1128 0590 0E94 0000 		call PMDSetMotorMode
+ 1129               	.L28:
+ 1130               	/* epilogue start */
+ 1132               	.LM82:
+ 1133 0594 0F90      		pop __tmp_reg__
+ 1134 0596 0F90      		pop __tmp_reg__
+ 1135 0598 CF91      		pop r28
+ 1136 059a DF91      		pop r29
+ 1137 059c 1F91      		pop r17
+ 1138 059e 0F91      		pop r16
+ 1139 05a0 FF90      		pop r15
+ 1140 05a2 EF90      		pop r14
+ 1141 05a4 0895      		ret
+ 1146               	.Lscope5:
+ 1149               	.global	interruptAxisHandling
+ 1151               	interruptAxisHandling:
+ 304:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 
+ 305:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** /*****************************************************************************************/
+ 306:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** void interruptAxisHandling(tAxis Axis)
+ 307:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** {
+ 1152               	H__
+ 1153               	/* prologue: function */
+ 1154               	/* frame size = 2 */
+ 1155 05a6 0F93      		movw r16,r24
+ 1157 05aa DF93      	.LM84:
+ 1158 05ac CF93      		ldi r24,lo8(96)
+ 1159 05ae 00D0      		ldi r25,hi8(96)
+ 1160 05b0 CDB7      		movw r18,r24
+ 1161 05b2 DEB7      		mul r16,r18
+ 1162               		movw r24,r0
+ 1163               		mul r16,r19
+ 1164 05b4 8C01      		add r25,r0
+ 308:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	PMDuint16 status;
+ 309:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	
+ 310:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	
+ 311:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	/* ----Verificar La causa de la Interrupcion a traves de Event Status REgister*/
+ 312:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	
+ 313:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	PMDGetEventStatus(&hAxis[Axis],&status);
+ 1165               		add r25,r0
+ 1166               		clr r1
+ 1167 05b6 80E6      		subi r24,lo8(-(hAxis))
+ 1168 05b8 90E0      		sbci r25,hi8(-(hAxis))
+ 1169 05ba 9C01      		movw r22,r28
+ 1170 05bc 029F      		subi r22,lo8(-(1))
+ 1171 05be C001      		sbci r23,hi8(-(1))
+ 1172 05c0 039F      		call PMDGetEventStatus
+ 1174 05c4 129F      	.LM85:
+ 1175 05c6 900D      		ldd r24,Y+1
+ 1176 05c8 1124      		sbrs r24,4
+ 1177 05ca 8050      		rjmp .L30
+ 1179 05ce BE01      	.LM86:
+ 1180 05d0 6F5F      		ldi r22,lo8(500)
+ 1181 05d2 7F4F      		ldi r23,hi8(500)
+ 1182 05d4 0E94 0000 		ldi r24,hlo8(500)
+ 314:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	#ifdef DEBUGINTERRUPT
+ 315:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	printf("interruptAxisHandling=> El Event Status Register del eje %s despues de la interupccion es 
+ 316:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 				,AxisName(Axis),status);
+ 317:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	#endif	
+ 318:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	
+ 319:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	
+ 320:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	/*--------La causa de la Interrupcion es un Error de Movimiento */
+ 321:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	
+ 322:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	if((status & PMDEventMotionErrorMask)!=0)
+ 1183               	
+ 1184               		call buzzer_ms
+ 1186 05da 84FF      	.LM87:
+ 1187 05dc 00C0      		movw r24,r16
+ 323:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	{
+ 324:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		buzzer_ms(500);
+ 1188               	l MotionErrorhandling
+ 1189               	.L30:
+ 1191 05e0 71E0      	.LM88:
+ 1192 05e2 80E0      		ldd r24,Y+1
+ 1193 05e4 90E0      		sbrs r24,5
+ 1194 05e6 0E94 0000 		rjmp .L31
+ 325:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		MotionErrorhandling(Axis);		
+ 1195               		68,0,332,.LM89-.LFBB6
+ 1196               	.LM89:
+ 1197 05ea C801      		ldi r22,lo8(100)
+ 1198 05ec 0E94 0000 		ldi r23,hi8(100)
+ 1199               		ldi r24,hlo8(100)
+ 326:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	}	
+ 327:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	
+ 328:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	/*--------La causa de la Interrupcion es el Evento de Limite Positivo */
+ 329:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	
+ 330:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	if((status & PMDEventInPositiveLimitMask)!=0)
+ 1200               	r25,hhi8(100)
+ 1201               		call buzzer_ms
+ 1203 05f2 85FF      	.LM90:
+ 1204 05f4 00C0      		movw r24,r16
+ 331:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	{
+ 332:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		buzzer_ms(100);
+ 1205               	 Positivehandling
+ 1206               	.L31:
+ 1208 05f8 70E0      	.LM91:
+ 1209 05fa 80E0      		ldd r24,Y+1
+ 1210 05fc 90E0      		sbrs r24,6
+ 1211 05fe 0E94 0000 		rjmp .L32
+ 333:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		Positivehandling(Axis);		
+ 1212               		68,0,340,.LM92-.LFBB6
+ 1213               	.LM92:
+ 1214 0602 C801      		ldi r22,lo8(100)
+ 1215 0604 0E94 0000 		ldi r23,hi8(100)
+ 1216               		ldi r24,hlo8(100)
+ 334:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	}		
+ 335:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	
+ 336:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	/*--------La causa de la Interrupcion es el Evento de Limite Negativo */
+ 337:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	
+ 338:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	if((status & PMDEventInNegativeLimitMask)!=0)
+ 1217               	r25,hhi8(100)
+ 1218               		call buzzer_ms
+ 1220 060a 86FF      	.LM93:
+ 1221 060c 00C0      		movw r24,r16
+ 339:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	{
+ 340:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		buzzer_ms(100);
+ 1222               	 Negativehandling
+ 1223               	.L32:
+ 1225 0610 70E0      	.LM94:
+ 1226 0612 80E0      		ldd r24,Y+1
+ 1227 0614 90E0      		sbrs r24,7
+ 1228 0616 0E94 0000 		rjmp .L34
+ 341:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		Negativehandling(Axis);		
+ 1229               		68,0,350,.LM95-.LFBB6
+ 1230               	.LM95:
+ 1231 061a C801      		ldi r22,lo8(500)
+ 1232 061c 0E94 0000 		ldi r23,hi8(500)
+ 1233               		ldi r24,hlo8(500)
+ 342:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	}
+ 343:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	
+ 344:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	
+ 345:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	
+ 346:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	/*--------La causa de la Interrupcion es un Error de Instruccion */
+ 347:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	
+ 348:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	if((status & PMDEventInstructionErrorMask)!=0)
+ 1234               	r25,hhi8(500)
+ 1235               		call buzzer_ms
+ 1237 0622 87FF      	.LM96:
+ 1238 0624 00C0      		movw r24,r16
+ 349:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	{
+ 350:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		buzzer_ms(500);
+ 1239               	 InstructionErrorhandling
+ 1240               	.L34:
+ 1241 0626 64EF      	/* epilogue start */
+ 1243 062a 80E0      	.LM97:
+ 1244 062c 90E0      		pop __tmp_reg__
+ 1245 062e 0E94 0000 		pop __tmp_reg__
+ 351:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		InstructionErrorhandling(Axis);		
+ 1246               	8
+ 1247               		pop r29
+ 1248 0632 C801      		pop r17
+ 1249 0634 0E94 0000 		pop r16
+ 1250               		ret
+ 352:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	}	
+ 353:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 
+ 354:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 
+ 355:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	
+ 356:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** }
+ 1252               	s	"status:(4,4)",128,0,0,1
+ 1255 063a 0F90      	.Lscope6:
+ 1257 063e DF91      	.global	InterruptHandling_chipset2
+ 1259 0642 0F91      	InterruptHandling_chipset2:
+ 1261               	.LM98:
+ 1262               	.LFBB7:
+ 1263               		push r16
+ 1264               		push r17
+ 1265               		push r29
+ 1266               		push r28
+ 1267               		rcall .
+ 1268               		in r28,__SP_L__
+ 1269               		in r29,__SP_H__
+ 357:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 
+ 358:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** /*****************************************************************************************/
+ 359:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** void InterruptHandling_chipset1(void)
+ 360:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** {
+ 361:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	PMDuint16 interruptingAxisMask1;
+ 362:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	PMDresult rc;	
+ 363:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	interruptingAxisMask1=0;
+ 364:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	
+ 365:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	
+ 366:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 
+ 367:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	
+ 368:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	//Verificar que eje produjo la Interrupcion
+ 369:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 
+ 370:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	do
+ 371:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	{
+ 372:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		rc=PMDGetInterruptAxis(&hAxis[AxisWaist],  &interruptingAxisMask1);
+ 373:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	}
+ 374:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	while (rc!=PMD_ERR_OK);		
+ 375:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	
+ 376:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	
+ 377:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		
+ 378:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	#ifdef DEBUGINTERRUPT
+ 379:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		printf("InterruptHandling_chipset1=> La mascara 1 de interrupcion es %X \n",interruptingAxisMask1
+ 380:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	#endif
+ 381:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	
+ 382:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	
+ 383:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	
+ 384:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	if ((interruptingAxisMask1 & PMDAxis1Mask)!=0)					//Eje de cintura Causo la Interrupcion?
+ 385:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	{
+ 386:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		interruptAxisHandling(AxisWaist);
+ 387:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		//Limpio el bit correspondiente con el eje
+ 388:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		interruptingAxisMask1 = interruptingAxisMask1 & ~(PMDAxis1Mask);
+ 389:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		#ifdef DEBUGINTERRUPT
+ 390:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		printf("InterruptHandling_chipset1=> La mascara 1 de interrupcion despues de limpiar es  %X \n",i
+ 391:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		#endif
+ 392:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		
+ 393:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		/* resets the HostInterrupt signal to its inactive state*/	 
+ 394:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		do
+ 395:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		{
+ 396:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 			rc=PMDClearInterrupt(&hAxis[AxisWaist]);	
+ 397:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		}
+ 398:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		while (rc!=PMD_ERR_OK);			
+ 399:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		
+ 400:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		return;
+ 401:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	}
+ 402:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	
+ 403:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	
+ 404:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	if ((interruptingAxisMask1 & PMDAxis2Mask)!=0)					//Eje de HOmbro Causo la Interrupcion?
+ 405:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	{
+ 406:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		interruptAxisHandling(AxisShoulder);
+ 407:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		//Limpio el bit correspondiente con el eje
+ 408:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		interruptingAxisMask1 = interruptingAxisMask1 & ~(PMDAxis2Mask);
+ 409:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		#ifdef DEBUGINTERRUPT
+ 410:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		printf("InterruptHandling_chipset1=> La mascara 1 de interrupcion despues de limpiar es  %X \n",i
+ 411:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		#endif
+ 412:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		
+ 413:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		/* resets the HostInterrupt signal to its inactive state*/	 
+ 414:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		do
+ 415:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		{
+ 416:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 			rc=PMDClearInterrupt(&hAxis[AxisShoulder]);	
+ 417:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		}
+ 418:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		while (rc!=PMD_ERR_OK);	
+ 419:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		
+ 420:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		return;
+ 421:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	}
+ 422:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 
+ 423:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	if ((interruptingAxisMask1 & PMDAxis3Mask)!=0)					//Eje de Codo Causo la Interrupcion?
+ 424:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	{
+ 425:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		interruptAxisHandling(AxisElbow);
+ 426:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		//Limpio el bit correspondiente con el eje
+ 427:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		interruptingAxisMask1 = interruptingAxisMask1 & ~(PMDAxis3Mask);
+ 428:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		#ifdef DEBUGINTERRUPT
+ 429:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		printf("InterruptHandling_chipset1=> La mascara 1 de interrupcion despues de limpiar es  %X \n",i
+ 430:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		#endif
+ 431:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		
+ 432:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		/* resets the HostInterrupt signal to its inactive state*/	 
+ 433:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		do
+ 434:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		{
+ 435:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 			rc=PMDClearInterrupt(&hAxis[AxisElbow]);	
+ 436:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		}
+ 437:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		while (rc!=PMD_ERR_OK);	
+ 438:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		
+ 439:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		return;
+ 440:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	}
+ 441:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 
+ 442:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	if ((interruptingAxisMask1 & PMDAxis4Mask)!=0)					//Eje de Pitch Causo la Interrupcion?
+ 443:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	{
+ 444:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		interruptAxisHandling(AxisPitch);
+ 445:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		//Limpio el bit correspondiente con el eje
+ 446:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		interruptingAxisMask1 = interruptingAxisMask1 & ~(PMDAxis4Mask);
+ 447:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		#ifdef DEBUGINTERRUPT
+ 448:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		printf("InterruptHandling_chipset1=> La mascara 1 de interrupcion despues de limpiar es  %X \n",i
+ 449:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		#endif
+ 450:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		
+ 451:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		/* resets the HostInterrupt signal to its inactive state*/	 
+ 452:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		do
+ 453:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		{
+ 454:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 			rc=PMDClearInterrupt(&hAxis[AxisPitch]);	
+ 455:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		}
+ 456:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		while (rc!=PMD_ERR_OK);	
+ 457:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		
+ 458:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		return;
+ 459:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	}
+ 460:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	
+ 461:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** }
+ 462:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	
+ 463:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 
+ 464:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** /*****************************************************************************************/
+ 465:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** void InterruptHandling_chipset2(void)
+ 466:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** {
+ 1270               	ion */
+ 1271               	/* frame size = 2 */
+ 1273 0646 0F93      	.LM99:
+ 1274 0648 1F93      		std Y+2,__zero_reg__
+ 1275 064a DF93      		std Y+1,__zero_reg__
+ 1277 064e 00D0      	.LM100:
+ 1278 0650 CDB7      		movw r16,r28
+ 1279 0652 DEB7      		subi r16,lo8(-(1))
+ 1280               		sbci r17,hi8(-(1))
+ 1281               	.L36:
+ 467:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	PMDuint16 interruptingAxisMask2;
+ 468:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	PMDresult rc;
+ 469:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	
+ 470:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	interruptingAxisMask2=0;
+ 1282               	(hAxis+384)
+ 1283               		ldi r25,hi8(hAxis+384)
+ 1284 0654 1A82      		movw r22,r16
+ 1285 0656 1982      		call PMDGetInterruptAxis
+ 471:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	
+ 472:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	//Verificar que eje produjo la Interrupcion	
+ 473:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	do
+ 474:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	{
+ 475:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		rc=PMDGetInterruptAxis(&hAxis[AxisRoll],  &interruptingAxisMask2);
+ 1286               	abn	68,0,477,.LM101-.LFBB7
+ 1287               	.LM101:
+ 1288 0658 8E01      		or r24,r25
+ 1289 065a 0F5F      		brne .L36
+ 1291               	.LM102:
+ 1292 065e 80E0      		ldd r24,Y+1
+ 1293 0660 90E0      		sbrs r24,0
+ 1294 0662 B801      		rjmp .L37
+ 476:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	}
+ 477:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	while (rc!=PMD_ERR_OK);			
+ 1296               	di r24,lo8(4)
+ 1297               		ldi r25,hi8(4)
+ 1298 0668 892B      		call interruptAxisHandling
+ 478:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	
+ 479:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	
+ 480:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	
+ 481:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	#ifdef DEBUGINTERRUPT
+ 482:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		printf("InterruptHandling_chipset2=> La mascara 2 de interrupcion es %X \n",interruptingAxisMask2
+ 483:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	#endif
+ 484:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	
+ 485:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	
+ 486:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	if ((interruptingAxisMask2 & PMDAxis1Mask)!=0)					//Eje de Roll Causo la Interrupcion?
+ 1300               	04:
+ 1301               		ldd r24,Y+1
+ 1302 066c 8981      		ldd r25,Y+2
+ 1303 066e 80FF      		andi r24,lo8(-2)
+ 1304 0670 00C0      		std Y+2,r25
+ 487:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	{
+ 488:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		interruptAxisHandling(AxisRoll);
+ 1305               	Y+1,r24
+ 1306               	.L38:
+ 1308 0674 90E0      	.LM105:
+ 1309 0676 0E94 0000 		ldi r24,lo8(hAxis+384)
+ 489:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		//Limpio el bit correspondiente con el eje
+ 490:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		interruptingAxisMask2 = interruptingAxisMask2 & ~(PMDAxis1Mask);
+ 1310               	r25,hi8(hAxis+384)
+ 1311               		call PMDClearInterrupt
+ 1313 067c 9A81      	.LM106:
+ 1314 067e 8E7F      		or r24,r25
+ 1315 0680 9A83      		brne .L38
+ 1316 0682 8983      		rjmp .L45
+ 1317               	.L37:
+ 491:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		
+ 492:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		#ifdef DEBUGINTERRUPT
+ 493:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 			printf("InterruptHandling_chipset2=> La mascara 2 de interrupcion despues de limpiar es  %X \n",
+ 494:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		#endif	
+ 495:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		
+ 496:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		/* resets the HostInterrupt signal to its inactive state*/	 
+ 497:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		do
+ 498:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		{
+ 499:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 			rc=PMDClearInterrupt(&hAxis[AxisRoll]);	
+ 1318               	68,0,506,.LM107-.LFBB7
+ 1319               	.LM107:
+ 1320 0684 80E0      		sbrs r24,1
+ 1321 0686 90E0      		rjmp .L40
+ 500:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		}
+ 501:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		while (rc!=PMD_ERR_OK);	
+ 1323               	8:
+ 1324               		ldi r24,lo8(5)
+ 1325 068c 892B      		ldi r25,hi8(5)
+ 1326 068e 01F4      		call interruptAxisHandling
+ 1328               	.LM109:
+ 502:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		
+ 503:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		return;
+ 504:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	}
+ 505:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		
+ 506:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	if ((interruptingAxisMask2 & PMDAxis2Mask)!=0)					//Eje Aux1 Causo la Interrupcion?
+ 1329               	24,Y+1
+ 1330               		ldd r25,Y+2
+ 1331 0692 81FF      		andi r24,lo8(-3)
+ 1332 0694 00C0      		std Y+2,r25
+ 507:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	{
+ 508:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		interruptAxisHandling(AxisAux1);
+ 1333               	 Y+1,r24
+ 1334               	.L41:
+ 1336 0698 90E0      	.LM110:
+ 1337 069a 0E94 0000 		ldi r24,lo8(hAxis+480)
+ 509:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		//Limpio el bit correspondiente con el eje
+ 510:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		interruptingAxisMask2 = interruptingAxisMask2 & ~(PMDAxis2Mask);
+ 1338               	r25,hi8(hAxis+480)
+ 1339               		call PMDClearInterrupt
+ 1341 06a0 9A81      	.LM111:
+ 1342 06a2 8D7F      		or r24,r25
+ 1343 06a4 9A83      		brne .L41
+ 1344 06a6 8983      		rjmp .L45
+ 1345               	.L40:
+ 511:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		
+ 512:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		#ifdef DEBUGINTERRUPT
+ 513:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 			printf("InterruptHandling_chipset2=> La mascara 2 de interrupcion despues de limpiar es  %X \n",
+ 514:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		#endif	
+ 515:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		
+ 516:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		/* resets the HostInterrupt signal to its inactive state*/	 
+ 517:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		do
+ 518:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		{
+ 519:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 			rc=PMDClearInterrupt(&hAxis[AxisAux1]);	
+ 1346               	68,0,526,.LM112-.LFBB7
+ 1347               	.LM112:
+ 1348 06a8 80E0      		sbrs r24,2
+ 1349 06aa 90E0      		rjmp .L42
+ 520:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		}
+ 521:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		while (rc!=PMD_ERR_OK);		
+ 1351               	3:
+ 1352               		ldi r24,lo8(6)
+ 1353 06b0 892B      		ldi r25,hi8(6)
+ 1354 06b2 01F4      		call interruptAxisHandling
+ 1356               	.LM114:
+ 522:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		
+ 523:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		return;
+ 524:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	}
+ 525:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		
+ 526:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	if ((interruptingAxisMask2 & PMDAxis3Mask)!=0)					//Eje Aux2 Causo la Interrupcion?
+ 1357               	24,Y+1
+ 1358               		ldd r25,Y+2
+ 1359 06b6 82FF      		andi r24,lo8(-5)
+ 1360 06b8 00C0      		std Y+2,r25
+ 527:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	{
+ 528:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		interruptAxisHandling(AxisAux2);
+ 1361               	 Y+1,r24
+ 1362               	.L43:
+ 1364 06bc 90E0      	.LM115:
+ 1365 06be 0E94 0000 		ldi r24,lo8(hAxis+576)
+ 529:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		//Limpio el bit correspondiente con el eje
+ 530:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		interruptingAxisMask2 = interruptingAxisMask2 & ~(PMDAxis3Mask);
+ 1366               	r25,hi8(hAxis+576)
+ 1367               		call PMDClearInterrupt
+ 1369 06c4 9A81      	.LM116:
+ 1370 06c6 8B7F      		or r24,r25
+ 1371 06c8 9A83      		brne .L43
+ 1372 06ca 8983      		rjmp .L45
+ 1373               	.L42:
+ 531:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		
+ 532:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		#ifdef DEBUGINTERRUPT
+ 533:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 			printf("InterruptHandling_chipset2=> La mascara 2 de interrupcion despues de limpiar es  %X \n",
+ 534:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		#endif	
+ 535:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		
+ 536:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		/* resets the HostInterrupt signal to its inactive state*/	 
+ 537:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		do
+ 538:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		{
+ 539:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 			rc=PMDClearInterrupt(&hAxis[AxisAux2]);	
+ 1374               	68,0,546,.LM117-.LFBB7
+ 1375               	.LM117:
+ 1376 06cc 80E0      		sbrs r24,3
+ 1377 06ce 90E0      		rjmp .L45
+ 540:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		}
+ 541:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		while (rc!=PMD_ERR_OK);	
+ 1379               	8:
+ 1380               		ldi r24,lo8(7)
+ 1381 06d4 892B      		ldi r25,hi8(7)
+ 1382 06d6 01F4      		call interruptAxisHandling
+ 1384               	.LM119:
+ 542:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		
+ 543:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		return;
+ 544:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	}
+ 545:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		
+ 546:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	if ((interruptingAxisMask2 & PMDAxis4Mask)!=0)					//Eje Aux3 Causo la Interrupcion?
+ 1385               	24,Y+1
+ 1386               		ldd r25,Y+2
+ 1387 06da 83FF      		andi r24,lo8(-9)
+ 1388 06dc 00C0      		std Y+2,r25
+ 547:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	{
+ 548:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		interruptAxisHandling(AxisAux3);
+ 1389               	 Y+1,r24
+ 1390               	.L44:
+ 1392 06e0 90E0      	.LM120:
+ 1393 06e2 0E94 0000 		ldi r24,lo8(hAxis+672)
+ 549:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		//Limpio el bit correspondiente con el eje
+ 550:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		interruptingAxisMask2 = interruptingAxisMask2 & ~(PMDAxis4Mask);
+ 1394               	r25,hi8(hAxis+672)
+ 1395               		call PMDClearInterrupt
+ 1397 06e8 9A81      	.LM121:
+ 1398 06ea 877F      		or r24,r25
+ 1399 06ec 9A83      		brne .L44
+ 1400 06ee 8983      	.L45:
+ 1401               	/* epilogue start */
+ 551:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		
+ 552:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		#ifdef DEBUGINTERRUPT
+ 553:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 			printf("InterruptHandling_chipset2=> La mascara 2 de interrupcion despues de limpiar es  %X \n",
+ 554:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		#endif	
+ 555:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		
+ 556:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		/* resets the HostInterrupt signal to its inactive state*/	 
+ 557:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		do
+ 558:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		{
+ 559:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 			rc=PMDClearInterrupt(&hAxis[AxisAux3]);	
+ 1402               	68,0,568,.LM122-.LFBB7
+ 1403               	.LM122:
+ 1404 06f0 80E0      		pop __tmp_reg__
+ 1405 06f2 90E0      		pop __tmp_reg__
+ 1406 06f4 0E94 0000 		pop r28
+ 560:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		}
+ 561:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		while (rc!=PMD_ERR_OK);	
+ 1407               	r29
+ 1408               		pop r17
+ 1409 06f8 892B      		pop r16
+ 1410 06fa 01F4      		ret
+ 562:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		
+ 563:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		
+ 564:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 		return;
+ 565:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	}
+ 566:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	
+ 567:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** 	
+ 568:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinterrupt.c **** }...
+ 1413               	n	192,0,0,.LFBB7-.LFBB7
+ 1415 06fc 0F90      	.Lscope7:
+ 1417 0700 CF91      	.global	InterruptHandling_chipset1
+ 1419 0704 1F91      	InterruptHandling_chipset1:
+ 1421 0708 0895      	.LM123:
+ 1422               	.LFBB8:
+ 1423               		push r16
+ 1424               		push r17
+ 1425               		push r29
+ 1426               		push r28
+ 1427               		rcall .
+ 1428               		in r28,__SP_L__
+ 1429               		in r29,__SP_H__
+ 1430               	/* prologue: function */
+ 1431               	/* frame size = 2 */
+ 1433               	.LM124:
+ 1434 070a 0F93      		std Y+2,__zero_reg__
+ 1435 070c 1F93      		std Y+1,__zero_reg__
+ 1437 0710 CF93      	.LM125:
+ 1438 0712 00D0      		movw r16,r28
+ 1439 0714 CDB7      		subi r16,lo8(-(1))
+ 1440 0716 DEB7      		sbci r17,hi8(-(1))
+ 1441               	.L52:
+ 1442               		ldi r24,lo8(hAxis)
+ 1443               		ldi r25,hi8(hAxis)
+ 1444               		movw r22,r16
+ 1445 0718 1A82      		call PMDGetInterruptAxis
+ 1447               	.LM126:
+ 1448               		or r24,r25
+ 1449 071c 8E01      		brne .L52
+ 1451 0720 1F4F      	.LM127:
+ 1452               		ldd r24,Y+1
+ 1453 0722 80E0      		sbrs r24,0
+ 1454 0724 90E0      		rjmp .L53
+ 1456 0728 0E94 0000 	.LM128:
+ 1457               		ldi r24,lo8(0)
+ 1458               		ldi r25,hi8(0)
+ 1459 072c 892B      		call interruptAxisHandling
+ 1461               	.LM129:
+ 1462               		ldd r24,Y+1
+ 1463 0730 8981      		ldd r25,Y+2
+ 1464 0732 80FF      		andi r24,lo8(-2)
+ 1465 0734 00C0      		std Y+2,r25
+ 1466               		std Y+1,r24
+ 1467               	.L54:
+ 1469 0738 90E0      	.LM130:
+ 1470 073a 0E94 0000 		ldi r24,lo8(hAxis)
+ 1471               		ldi r25,hi8(hAxis)
+ 1472               		call PMDClearInterrupt
+ 1474 0740 9A81      	.LM131:
+ 1475 0742 8E7F      		or r24,r25
+ 1476 0744 9A83      		brne .L54
+ 1477 0746 8983      		rjmp .L61
+ 1478               	.L53:
+ 1480               	.LM132:
+ 1481 0748 80E0      		sbrs r24,1
+ 1482 074a 90E0      		rjmp .L56
+ 1484               	.LM133:
+ 1485               		ldi r24,lo8(1)
+ 1486 0750 892B      		ldi r25,hi8(1)
+ 1487 0752 01F4      		call interruptAxisHandling
+ 1489               	.LM134:
+ 1490               		ldd r24,Y+1
+ 1491               		ldd r25,Y+2
+ 1492 0756 81FF      		andi r24,lo8(-3)
+ 1493 0758 00C0      		std Y+2,r25
+ 1494               		std Y+1,r24
+ 1495               	.L57:
+ 1497 075c 90E0      	.LM135:
+ 1498 075e 0E94 0000 		ldi r24,lo8(hAxis+96)
+ 1499               		ldi r25,hi8(hAxis+96)
+ 1500               		call PMDClearInterrupt
+ 1502 0764 9A81      	.LM136:
+ 1503 0766 8D7F      		or r24,r25
+ 1504 0768 9A83      		brne .L57
+ 1505 076a 8983      		rjmp .L61
+ 1506               	.L56:
+ 1508               	.LM137:
+ 1509 076c 80E0      		sbrs r24,2
+ 1510 076e 90E0      		rjmp .L58
+ 1512               	.LM138:
+ 1513               		ldi r24,lo8(2)
+ 1514 0774 892B      		ldi r25,hi8(2)
+ 1515 0776 01F4      		call interruptAxisHandling
+ 1517               	.LM139:
+ 1518               		ldd r24,Y+1
+ 1519               		ldd r25,Y+2
+ 1520 077a 82FF      		andi r24,lo8(-5)
+ 1521 077c 00C0      		std Y+2,r25
+ 1522               		std Y+1,r24
+ 1523               	.L59:
+ 1525 0780 90E0      	.LM140:
+ 1526 0782 0E94 0000 		ldi r24,lo8(hAxis+192)
+ 1527               		ldi r25,hi8(hAxis+192)
+ 1528               		call PMDClearInterrupt
+ 1530 0788 9A81      	.LM141:
+ 1531 078a 8B7F      		or r24,r25
+ 1532 078c 9A83      		brne .L59
+ 1533 078e 8983      		rjmp .L61
+ 1534               	.L58:
+ 1536               	.LM142:
+ 1537 0790 80E0      		sbrs r24,3
+ 1538 0792 90E0      		rjmp .L61
+ 1540               	.LM143:
+ 1541               		ldi r24,lo8(3)
+ 1542 0798 892B      		ldi r25,hi8(3)
+ 1543 079a 01F4      		call interruptAxisHandling
+ 1545               	.LM144:
+ 1546               		ldd r24,Y+1
+ 1547               		ldd r25,Y+2
+ 1548 079e 83FF      		andi r24,lo8(-9)
+ 1549 07a0 00C0      		std Y+2,r25
+ 1550               		std Y+1,r24
+ 1551               	.L60:
+ 1553 07a4 90E0      	.LM145:
+ 1554 07a6 0E94 0000 		ldi r24,lo8(hAxis+288)
+ 1555               		ldi r25,hi8(hAxis+288)
+ 1556               		call PMDClearInterrupt
+ 1558 07ac 9A81      	.LM146:
+ 1559 07ae 877F      		or r24,r25
+ 1560 07b0 9A83      		brne .L60
+ 1561 07b2 8983      	.L61:
+ 1562               	/* epilogue start */
+ 1564               	.LM147:
+ 1565 07b4 80E0      		pop __tmp_reg__
+ 1566 07b6 90E0      		pop __tmp_reg__
+ 1567 07b8 0E94 0000 		pop r28
+ 1568               		pop r29
+ 1569               		pop r17
+ 1570 07bc 892B      		pop r16
+ 1571 07be 01F4      		ret
+ 1576 07c0 0F90      	.Lscope8:
+ 1578 07c4 CF91      	.global	HostInterruptEnable
+ 1580 07c8 1F91      	HostInterruptEnable:
+ 1582 07cc 0895      	.LM148:
+ 1583               	.LFBB9:
+ 1584               		push r28
+ 1585               		push r29
+ 1586               	/* prologue: function */
+ 1587               	/* frame size = 0 */
+ 1589               	.LM149:
+ 1590               		ldi r28,lo8(hAxis)
+ 1591               		ldi r29,hi8(hAxis)
+ 1592               	.L69:
+ 1594               	.LM150:
+ 1595 07ce CF93      		ldd r24,Y+4
+ 1596 07d0 DF93      		cpi r24,lo8(1)
+ 1597               		brne .L68
+ 1598               		ldd r24,Y+5
+ 1599               		cpi r24,lo8(1)
+ 1600               		brne .L68
+ 1602 07d4 D0E0      	.LM151:
+ 1603               		movw r24,r28
+ 1604               		ldi r22,lo8(240)
+ 1605               		ldi r23,hi8(240)
+ 1606 07d6 8C81      		call PMDSetInterruptMask
+ 1607 07d8 8130      	.L68:
+ 1608 07da 01F4      		subi r28,lo8(-(96))
+ 1609 07dc 8D81      		sbci r29,hi8(-(96))
+ 1611 07e0 01F4      	.LM152:
+ 1612               		ldi r24,hi8(hAxis+480)
+ 1613               		cpi r28,lo8(hAxis+480)
+ 1614 07e2 CE01      		cpc r29,r24
+ 1615 07e4 60EF      		brne .L69
+ 1616 07e6 70E0      	/* epilogue start */
+ 1618               	.LM153:
+ 1619 07ec C05A      		pop r29
+ 1620 07ee DF4F      		pop r28
+ 1621               		ret
+ 1623 07f0 80E0      	.Lscope9:
+ 1625 07f4 D807      	.global	HostInterruptDisable
+ 1627               	HostInterruptDisable:
+ 1629               	.LM154:
+ 1630 07f8 DF91      	.LFBB10:
+ 1631 07fa CF91      		push r28
+ 1632 07fc 0895      		push r29
+ 1633               	/* prologue: function */
+ 1634               	/* frame size = 0 */
+ 1636               	.LM155:
+ 1637               		ldi r28,lo8(hAxis)
+ 1638               		ldi r29,hi8(hAxis)
+ 1639               	.L74:
+ 1641               	.LM156:
+ 1642 07fe CF93      		ldd r24,Y+4
+ 1643 0800 DF93      		cpi r24,lo8(1)
+ 1644               		brne .L73
+ 1645               		ldd r24,Y+5
+ 1646               		cpi r24,lo8(1)
+ 1647               		brne .L73
+ 1649 0804 D0E0      	.LM157:
+ 1650               		movw r24,r28
+ 1651               		ldi r22,lo8(0)
+ 1652               		ldi r23,hi8(0)
+ 1653 0806 8C81      		call PMDSetInterruptMask
+ 1654 0808 8130      	.L73:
+ 1655 080a 01F4      		subi r28,lo8(-(96))
+ 1656 080c 8D81      		sbci r29,hi8(-(96))
+ 1658 0810 01F4      	.LM158:
+ 1659               		ldi r24,hi8(hAxis+480)
+ 1660               		cpi r28,lo8(hAxis+480)
+ 1661 0812 CE01      		cpc r29,r24
+ 1662 0814 60E0      		brne .L74
+ 1663 0816 70E0      	/* epilogue start */
+ 1665               	.LM159:
+ 1666 081c C05A      		pop r29
+ 1667 081e DF4F      		pop r28
+ 1668               		ret
+ 1670 0820 80E0      	.Lscope10:
+ 1671 0822 C030      		.section	.progmem.data,"a",@progbits
+ 1674               	__c.3319:
+ 1675               		.string	"Error de Instruccion \n"
+ 1678 082a CF91      	__c.3257:
+ 1679 082c 0895      		.string	" Error de Movimiento \n"
+ 1680               		.comm hAxis,480,1
+ 1681               		.comm rxAxisSettings,340,1
+ 1682               		.comm rxTraceBuffer,2,1
+ 1683               		.comm rxPosesActual,2,1
+ 1690 0017 2045 7272 		.text
+ 1690      6F72 2064 
+ 1690      6520 4D6F 
+ 1690      7669 6D69 
+ 1690      656E 746F 
+ 1692               	.Letext0:
+ 1693               	.global __do_copy_data
+ 1694               	.global __do_clear_bss
+ 1695               	...
+DEFINED SYMBOLS
+                            *ABS*:00000000 PMDinterrupt.c
+C:\DOCUME~1\David\LOCALS~1\Temp/ccgrQNfW.s:2      *ABS*:0000003f __SREG__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccgrQNfW.s:3      *ABS*:0000003e __SP_H__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccgrQNfW.s:4      *ABS*:0000003d __SP_L__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccgrQNfW.s:5      *ABS*:00000034 __CCP__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccgrQNfW.s:6      *ABS*:00000000 __tmp_reg__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccgrQNfW.s:7      *ABS*:00000001 __zero_reg__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccgrQNfW.s:250    .text:00000000 InstructionErrorhandling
+C:\DOCUME~1\David\LOCALS~1\Temp/ccgrQNfW.s:1685   .progmem.data:00000000 __c.3319
+                            *COM*:000001e0 hAxis
+C:\DOCUME~1\David\LOCALS~1\Temp/ccgrQNfW.s:323    .text:00000072 MotionCompletehandling
+C:\DOCUME~1\David\LOCALS~1\Temp/ccgrQNfW.s:392    .text:000000ba Negativehandling
+C:\DOCUME~1\David\LOCALS~1\Temp/ccgrQNfW.s:733    .text:000002fc Positivehandling
+C:\DOCUME~1\David\LOCALS~1\Temp/ccgrQNfW.s:1029   .text:000004e8 MotionErrorhandling
+C:\DOCUME~1\David\LOCALS~1\Temp/ccgrQNfW.s:1689   .progmem.data:00000017 __c.3257
+C:\DOCUME~1\David\LOCALS~1\Temp/ccgrQNfW.s:1151   .text:000005a6 interruptAxisHandling
+C:\DOCUME~1\David\LOCALS~1\Temp/ccgrQNfW.s:1269   .text:00000646 InterruptHandling_chipset2
+C:\DOCUME~1\David\LOCALS~1\Temp/ccgrQNfW.s:1430   .text:0000070a InterruptHandling_chipset1
+C:\DOCUME~1\David\LOCALS~1\Temp/ccgrQNfW.s:1591   .text:000007ce HostInterruptEnable
+C:\DOCUME~1\David\LOCALS~1\Temp/ccgrQNfW.s:1638   .text:000007fe HostInterruptDisable
+                            *COM*:00000154 rxAxisSettings
+                            *COM*:00000002 rxTraceBuffer
+                            *COM*:00000002 rxPosesActual
+
+UNDEFINED SYMBOLS
+AxisName
+printf
+__iob
+fprintf_P
+Led_on
+PMDResetEventStatus
+PMDGetProfileMode
+PMDSetProfileMode
+PMDSetMotorMode
+pitch
+mov_axis
+PMDGetSignalStatus
+PMDSetStopMode
+PMDUpdate
+PMDGetAutoStopMode
+PMDGetEventStatus
+buzzer_ms
+PMDGetInterruptAxis
+PMDClearInterrupt
+PMDSetInterruptMask
+__do_copy_data
+__do_clear_bss

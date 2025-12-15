@@ -1,0 +1,735 @@
+   1               		.file	"tw_rtc.c"
+   2               	__SREG__ = 0x3f
+   3               	__SP_H__ = 0x3e
+   4               	__SP_L__ = 0x3d
+   5               	__CCP__  = 0x34
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   9               		.text
+  10               	.Ltext0:
+ 222               		.data
+ 223               	.LC0:
+ 224 0000 5243 545F 		.string	"RCT_task=> Ejecutando TAST_IDVectorTrajectory"
+ 224      7461 736B 
+ 224      3D3E 2045 
+ 224      6A65 6375 
+ 224      7461 6E64 
+ 225               	.LC1:
+ 226 002e 5243 545F 		.string	"RCT_task=> No hay una trajectoryVector Valido"
+ 226      7461 736B 
+ 226      3D3E 204E 
+ 226      6F20 6861 
+ 226      7920 756E 
+ 227               		.text
+ 230               	.global	RCT_task
+ 232               	RCT_task:
+   1:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** #include <avr/io.h>
+   2:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** #include <stdint.h>
+   3:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** #include <util/twi.h>		
+   4:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** #include <stdio.h>
+   5:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** #include "types.h"
+   6:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** #include "tw_rtc.h"
+   7:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** #include "gripper.h"
+   8:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** #include "packetIO.h"
+   9:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** #include "PMDrobotics.h"
+  10:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** #include "tw_teach_pendant.h"
+  11:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** //#define DEBUG_TAREAS_PROG
+  12:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 
+  13:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 
+  14:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 
+  15:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** /** \ingroup Interface_uC_Peripherical
+  16:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	\brief Arreglo que contiene los valores que se deben escribir al SR (Status Register) 
+  17:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	con el fin de realizar una operacion de escritura sobre los registros de control del reloj
+  18:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	(CCR)*/
+  19:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	uint8 Conf_SR[2]={0x02,0x06};
+  20:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 
+  21:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 
+  22:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** /**************************************************************************************************
+  23:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** int16 isl1207_write_Conf_SR(void)
+  24:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** {
+  25:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	uint8 sla,PAGE_SIZE;
+  26:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	int16 rv;
+  27:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	uint8 *pWSR;
+  28:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	
+  29:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	pWSR= Conf_SR;									/* Apunta a la direccion de la Variable Conf_SR */
+  30:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 
+  31:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	PAGE_SIZE=8;									/* El tamano de Pagina en los registros de Control*/
+  32:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 													/* CCR es de 8 bytes*/
+  33:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	sla= TWI_SLA_RTC;								/* Direccion del Dispositivo Esclavo*/
+  34:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	
+  35:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	/* Escribir 02h al Status Register */
+  36:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	rv= write_bytes_I2C(PAGE_SIZE,sla, SR_CCR, 1, pWSR);
+  37:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	
+  38:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	if(rv)
+  39:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	{
+  40:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 		/* Escribir 06h al Status Register */
+  41:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 		pWSR++;
+  42:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 		rv=write_bytes_I2C(PAGE_SIZE,sla, SR_CCR, 1, pWSR);
+  43:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	}
+  44:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 
+  45:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	return rv;
+  46:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** }
+  47:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 
+  48:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** /**************************************************************************************************
+  49:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** int16 write_Fecha(tFecha Fecha)
+  50:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** {
+  51:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	uint8 sla,PAGE_SIZE;
+  52:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	int16 rv;
+  53:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	
+  54:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	PAGE_SIZE=8;									/* El tamano de Pagina en los registros de Control*/
+  55:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 													/* CCR es de 8 bytes*/
+  56:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	sla= TWI_SLA_RTC;								/* Direccion del Dispositivo Esclavo*/
+  57:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	
+  58:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	rv=isl1207_write_Conf_SR();
+  59:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	
+  60:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	if(rv)
+  61:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	{
+  62:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 		/* 0x30 es el comienzo de la direccion en donde estasn los Registros del RTC*/
+  63:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 		rv= write_bytes_I2C(PAGE_SIZE,sla, 0x30, sizeof(tFecha),(uint8 *)&Fecha);
+  64:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	}
+  65:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 
+  66:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	return rv;
+  67:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** }
+  68:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** /**************************************************************************************************
+  69:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** int16 Read_Fecha(tFecha *Fecha)
+  70:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** {
+  71:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	uint8 sla;
+  72:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	int16 rv;
+  73:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	
+  74:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	sla= TWI_SLA_RTC;								/* Direccion del Dispositivo Esclavo*/
+  75:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	
+  76:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	/* 0x30 es el comienzo de la direccion en donde estasn los Registros del RTC*/
+  77:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	rv= read_bytes_I2C(sla, 0x30, sizeof(tFecha), (uint8 *)Fecha);
+  78:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	
+  79:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	return rv;
+  80:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** }
+  81:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 
+  82:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** /**************************************************************************************************
+  83:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** int16 Read_SR(uint8* SR)
+  84:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** {
+  85:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	uint8 sla;
+  86:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	int16 rv;
+  87:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	
+  88:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	sla= TWI_SLA_RTC;								/* Direccion del Dispositivo Esclavo*/
+  89:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 
+  90:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	rv= read_bytes_I2C(sla, SR_CCR, sizeof(uint8), (uint8 *)SR);
+  91:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	
+  92:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	return rv;
+  93:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** }
+  94:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** /**************************************************************************************************
+  95:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** int16 write_control(tcontrol_RTC ctr)
+  96:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** {
+  97:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	uint8 sla,PAGE_SIZE;
+  98:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	int16 rv;
+  99:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	
+ 100:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	PAGE_SIZE=8;									/* El tamano de Pagina en los registros de Control*/
+ 101:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 													/* CCR es de 8 bytes*/
+ 102:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	sla= TWI_SLA_RTC;								/* Direccion del Dispositivo Esclavo*/
+ 103:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	
+ 104:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	rv=isl1207_write_Conf_SR();
+ 105:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	
+ 106:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	if(rv)
+ 107:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	{
+ 108:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 		/* 0x10 es el comienzo de la direccion en donde estasn los Registros de control del RTC*/
+ 109:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 		rv= write_bytes_I2C(PAGE_SIZE,sla, 0x10, sizeof(tcontrol_RTC),(uint8 *)&ctr);
+ 110:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	}
+ 111:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 
+ 112:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	return rv;
+ 113:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** }
+ 114:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** /**************************************************************************************************
+ 115:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** int16 read_control(tcontrol_RTC *ctr)
+ 116:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** {
+ 117:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	uint8 sla;
+ 118:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	int16 rv;
+ 119:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	
+ 120:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	sla= TWI_SLA_RTC;								/* Direccion del Dispositivo Esclavo*/
+ 121:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 
+ 122:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	/* 0x10 es el comienzo de la direccion en donde estasn los Registros de control del RTC*/
+ 123:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	rv= read_bytes_I2C(sla, 0x10, sizeof(tcontrol_RTC), (uint8 *)ctr);
+ 124:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	
+ 125:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	return rv;
+ 126:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** }
+ 127:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** /**************************************************************************************************
+ 128:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** int16 write_alarm(tAlarm alarma)
+ 129:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** {
+ 130:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	uint8 sla,PAGE_SIZE;
+ 131:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	int16 rv,buffersizertc;
+ 132:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	
+ 133:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	PAGE_SIZE=16;									/* El tamano de Pagina en los registros de Alarma*/
+ 134:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 													/* es de 16 bytes*/
+ 135:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	sla= TWI_SLA_RTC;								/* Direccion del Dispositivo Esclavo*/
+ 136:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	
+ 137:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	rv=isl1207_write_Conf_SR();
+ 138:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** /*Esto es  para guardar solo hasta el campo uint8 MOA0;*/
+ 139:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	buffersizertc=sizeof(tAlarm)-sizeof(uint8)-sizeof(uint8);
+ 140:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	
+ 141:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	if(rv)
+ 142:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	{
+ 143:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 		/* 0x00 es el comienzo de la direccion en donde estan los Registros de configuracion de Alarma*/
+ 144:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 		rv= write_bytes_I2C(PAGE_SIZE,sla, 0x00, buffersizertc,(uint8 *)&alarma);
+ 145:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	}
+ 146:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 
+ 147:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	return rv;
+ 148:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** }
+ 149:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** /**************************************************************************************************
+ 150:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** int16 read_alarm(tAlarm *alarma)
+ 151:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** {
+ 152:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	uint8 sla;
+ 153:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	int16 rv,buffersizertc;
+ 154:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	
+ 155:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	sla= TWI_SLA_RTC;
+ 156:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	buffersizertc=sizeof(tAlarm)-sizeof(uint8)-sizeof(uint8);								/* Direccion del Dispositivo Escl
+ 157:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 
+ 158:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	/* 0x00 es el comienzo de la direccion en donde estasn los Registros de configuracion de Alarma*/
+ 159:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	rv= read_bytes_I2C(sla, 0x00, buffersizertc, (uint8 *)alarma);
+ 160:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	
+ 161:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	return rv;
+ 162:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** }
+ 163:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 
+ 164:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** /**************************************************************************************************
+ 165:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** void rtc_init(void)
+ 166:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** {
+ 167:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	tcontrol_RTC ctr;
+ 168:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	
+ 169:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	ctr.PWR=RTC_PWR(1,1);
+ 170:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	ctr.DTR=0;
+ 171:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	ctr.ATR=0;
+ 172:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	ctr.INT=RTC_INT(0,0);
+ 173:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	ctr.BL =0x18;
+ 174:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	write_control(ctr);
+ 175:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	
+ 176:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** }
+ 177:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** /**************************************************************************************************
+ 178:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** void RCT_task(uint8 TASK)
+ 179:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** {
+ 233               	M0-.LFBB1
+ 234               	.LM0:
+ 235               	.LFBB1:
+ 236               	/* prologue: function */
+ 237               	/* frame size = 0 */
+ 180:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	extern int16   FlagrxVectorok;
+ 181:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	extern uint16  *rxvector;
+ 182:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	extern tTrajectory  Trajectoryvector;
+ 183:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	int maxdata;
+ 184:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	#ifdef DEBUG_TAREAS_PROG
+ 185:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	int i;
+ 186:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	#endif
+ 187:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c ****   
+ 188:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	switch (TASK)
+ 238               	bn	68,0,188,.LM1-.LFBB1
+ 239               	.LM1:
+ 240 0000 8130      		cpi r24,lo8(1)
+ 241 0002 01F0      		breq .L4
+ 242 0004 8130      		cpi r24,lo8(1)
+ 243 0006 00F0      		brlo .L3
+ 244 0008 8230      		cpi r24,lo8(2)
+ 245 000a 01F4      		brne .L7
+ 246 000c 00C0      		rjmp .L8
+ 247               	.L3:
+ 189:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 	{
+ 190:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 		case (TAST_Opengripper):
+ 191:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 			openGripper();  
+ 248               	,0,191,.LM2-.LFBB1
+ 249               	.LM2:
+ 250 000e 0E94 0000 		call openGripper
+ 251 0012 0895      		ret
+ 252               	.L4:
+ 192:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 		break;
+ 193:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 		
+ 194:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 		case (TAST_Closegripper):
+ 195:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 			closeGripper();
+ 253               	bn	68,0,195,.LM3-.LFBB1
+ 254               	.LM3:
+ 255 0014 0E94 0000 		call closeGripper
+ 256 0018 0895      		ret
+ 257               	.L8:
+ 196:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 		break;
+ 197:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 		
+ 198:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 		case (TAST_IDVectorTrajectory):
+ 199:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 			#ifdef DEBUG_TAREAS_PROG
+ 200:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 			printf("RCT_task=> FlagrxVectorok %d\n",FlagrxVectorok);
+ 201:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 			#endif
+ 202:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 			if(FlagrxVectorok)
+ 258               	bn	68,0,202,.LM4-.LFBB1
+ 259               	.LM4:
+ 260 001a 8091 0000 		lds r24,FlagrxVectorok
+ 261 001e 9091 0000 		lds r25,(FlagrxVectorok)+1
+ 262 0022 892B      		or r24,r25
+ 263 0024 01F0      		breq .L6
+ 203:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 			{
+ 204:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 				maxdata=rxvector[0];
+ 205:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 				#ifdef DEBUG_TAREAS_PROG				
+ 206:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 				printf("RCT_task=>  maxdata= %d\n",maxdata);
+ 207:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 				for(i=0;i<maxdata;i++)
+ 208:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 				
+ 209:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 					printf("RCT_task=> rxvector[%d]= %d\n",i,rxvector[i]);
+ 210:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 				#endif
+ 211:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 				printf("RCT_task=> Ejecutando TAST_IDVectorTrajectory\n");
+ 264               	n	68,0,211,.LM5-.LFBB1
+ 265               	.LM5:
+ 266 0026 80E0      		ldi r24,lo8(.LC0)
+ 267 0028 90E0      		ldi r25,hi8(.LC0)
+ 268 002a 0E94 0000 		call puts
+ 212:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 				
+ 213:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 				/*Copiar el rxvector que se mando en la ultima transferencia
+ 214:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 				utilizando los datos de la eeprom*/
+ 215:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 				Vector2Trajectory(rxvector);
+ 269               	bn	68,0,215,.LM6-.LFBB1
+ 270               	.LM6:
+ 271 002e 8091 0000 		lds r24,rxvector
+ 272 0032 9091 0000 		lds r25,(rxvector)+1
+ 273 0036 0E94 0000 		call Vector2Trajectory
+ 216:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 				
+ 217:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 				/*utilizo esos datos para ejecutar la trajectoria*/
+ 218:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 				PMDprocessTrajectory(&Trajectoryvector,0);
+ 274               	bn	68,0,218,.LM7-.LFBB1
+ 275               	.LM7:
+ 276 003a 80E0      		ldi r24,lo8(Trajectoryvector)
+ 277 003c 90E0      		ldi r25,hi8(Trajectoryvector)
+ 278 003e 60E0      		ldi r22,lo8(0)
+ 279 0040 70E0      		ldi r23,hi8(0)
+ 280 0042 0E94 0000 		call PMDprocessTrajectory
+ 281 0046 0895      		ret
+ 282               	.L6:
+ 219:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 			}
+ 220:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 			else 
+ 221:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_rtc.c **** 				printf("RCT_task=> No hay una trajectoryVector Valido\n");
+ 283               	8,0,221,.LM8-.LFBB1
+ 284               	.LM8:
+ 285 0048 80E0      		ldi r24,lo8(.LC1)
+ 286 004a 90E0      		ldi r25,hi8(.LC1)
+ 287 004c 0E94 0000 		call puts
+ 288               	.L7:
+ 289 0050 0895      		ret
+ 291               	.Lscope1:
+ 294               	.global	read_alarm
+ 296               	read_alarm:
+ 298               	.LM9:
+ 299               	.LFBB2:
+ 300 0052 0F93      		push r16
+ 301 0054 1F93      		push r17
+ 302               	/* prologue: function */
+ 303               	/* frame size = 0 */
+ 304 0056 8C01      		movw r16,r24
+ 306               	.LM10:
+ 307 0058 8EED      		ldi r24,lo8(-34)
+ 308 005a 40E0      		ldi r20,lo8(0)
+ 309 005c 50E0      		ldi r21,hi8(0)
+ 310 005e 60E0      		ldi r22,hlo8(0)
+ 311 0060 70E0      		ldi r23,hhi8(0)
+ 312 0062 25E0      		ldi r18,lo8(5)
+ 313 0064 30E0      		ldi r19,hi8(5)
+ 314 0066 0E94 0000 		call read_bytes_I2C
+ 315               	/* epilogue start */
+ 317               	.LM11:
+ 318 006a 1F91      		pop r17
+ 319 006c 0F91      		pop r16
+ 320 006e 0895      		ret
+ 322               	.Lscope2:
+ 325               	.global	read_control
+ 327               	read_control:
+ 329               	.LM12:
+ 330               	.LFBB3:
+ 331 0070 0F93      		push r16
+ 332 0072 1F93      		push r17
+ 333               	/* prologue: function */
+ 334               	/* frame size = 0 */
+ 335 0074 8C01      		movw r16,r24
+ 337               	.LM13:
+ 338 0076 8EED      		ldi r24,lo8(-34)
+ 339 0078 40E1      		ldi r20,lo8(16)
+ 340 007a 50E0      		ldi r21,hi8(16)
+ 341 007c 60E0      		ldi r22,hlo8(16)
+ 342 007e 70E0      		ldi r23,hhi8(16)
+ 343 0080 25E0      		ldi r18,lo8(5)
+ 344 0082 30E0      		ldi r19,hi8(5)
+ 345 0084 0E94 0000 		call read_bytes_I2C
+ 346               	/* epilogue start */
+ 348               	.LM14:
+ 349 0088 1F91      		pop r17
+ 350 008a 0F91      		pop r16
+ 351 008c 0895      		ret
+ 353               	.Lscope3:
+ 356               	.global	Read_SR
+ 358               	Read_SR:
+ 360               	.LM15:
+ 361               	.LFBB4:
+ 362 008e 0F93      		push r16
+ 363 0090 1F93      		push r17
+ 364               	/* prologue: function */
+ 365               	/* frame size = 0 */
+ 366 0092 8C01      		movw r16,r24
+ 368               	.LM16:
+ 369 0094 8EED      		ldi r24,lo8(-34)
+ 370 0096 4FE3      		ldi r20,lo8(63)
+ 371 0098 50E0      		ldi r21,hi8(63)
+ 372 009a 60E0      		ldi r22,hlo8(63)
+ 373 009c 70E0      		ldi r23,hhi8(63)
+ 374 009e 21E0      		ldi r18,lo8(1)
+ 375 00a0 30E0      		ldi r19,hi8(1)
+ 376 00a2 0E94 0000 		call read_bytes_I2C
+ 377               	/* epilogue start */
+ 379               	.LM17:
+ 380 00a6 1F91      		pop r17
+ 381 00a8 0F91      		pop r16
+ 382 00aa 0895      		ret
+ 384               	.Lscope4:
+ 387               	.global	Read_Fecha
+ 389               	Read_Fecha:
+ 391               	.LM18:
+ 392               	.LFBB5:
+ 393 00ac 0F93      		push r16
+ 394 00ae 1F93      		push r17
+ 395               	/* prologue: function */
+ 396               	/* frame size = 0 */
+ 397 00b0 8C01      		movw r16,r24
+ 399               	.LM19:
+ 400 00b2 8EED      		ldi r24,lo8(-34)
+ 401 00b4 40E3      		ldi r20,lo8(48)
+ 402 00b6 50E0      		ldi r21,hi8(48)
+ 403 00b8 60E0      		ldi r22,hlo8(48)
+ 404 00ba 70E0      		ldi r23,hhi8(48)
+ 405 00bc 28E0      		ldi r18,lo8(8)
+ 406 00be 30E0      		ldi r19,hi8(8)
+ 407 00c0 0E94 0000 		call read_bytes_I2C
+ 408               	/* epilogue start */
+ 410               	.LM20:
+ 411 00c4 1F91      		pop r17
+ 412 00c6 0F91      		pop r16
+ 413 00c8 0895      		ret
+ 415               	.Lscope5:
+ 417               	.global	isl1207_write_Conf_SR
+ 419               	isl1207_write_Conf_SR:
+ 421               	.LM21:
+ 422               	.LFBB6:
+ 423 00ca EF92      		push r14
+ 424 00cc FF92      		push r15
+ 425 00ce 0F93      		push r16
+ 426 00d0 1F93      		push r17
+ 427               	/* prologue: function */
+ 428               	/* frame size = 0 */
+ 430               	.LM22:
+ 431 00d2 88E0      		ldi r24,lo8(8)
+ 432 00d4 6EED      		ldi r22,lo8(-34)
+ 433 00d6 2FE3      		ldi r18,lo8(63)
+ 434 00d8 30E0      		ldi r19,hi8(63)
+ 435 00da 40E0      		ldi r20,hlo8(63)
+ 436 00dc 50E0      		ldi r21,hhi8(63)
+ 437 00de 01E0      		ldi r16,lo8(1)
+ 438 00e0 10E0      		ldi r17,hi8(1)
+ 439 00e2 70E0      		ldi r23,lo8(Conf_SR)
+ 440 00e4 E72E      		mov r14,r23
+ 441 00e6 70E0      		ldi r23,hi8(Conf_SR)
+ 442 00e8 F72E      		mov r15,r23
+ 443 00ea 0E94 0000 		call write_bytes_I2C
+ 444 00ee 9C01      		movw r18,r24
+ 446               	.LM23:
+ 447 00f0 0097      		sbiw r24,0
+ 448 00f2 01F0      		breq .L18
+ 450               	.LM24:
+ 451 00f4 88E0      		ldi r24,lo8(8)
+ 452 00f6 6EED      		ldi r22,lo8(-34)
+ 453 00f8 2FE3      		ldi r18,lo8(63)
+ 454 00fa 30E0      		ldi r19,hi8(63)
+ 455 00fc 40E0      		ldi r20,hlo8(63)
+ 456 00fe 50E0      		ldi r21,hhi8(63)
+ 457 0100 90E0      		ldi r25,lo8(Conf_SR+1)
+ 458 0102 E92E      		mov r14,r25
+ 459 0104 90E0      		ldi r25,hi8(Conf_SR+1)
+ 460 0106 F92E      		mov r15,r25
+ 461 0108 0E94 0000 		call write_bytes_I2C
+ 462 010c 9C01      		movw r18,r24
+ 463               	.L18:
+ 465               	.LM25:
+ 466 010e C901      		movw r24,r18
+ 467               	/* epilogue start */
+ 468 0110 1F91      		pop r17
+ 469 0112 0F91      		pop r16
+ 470 0114 FF90      		pop r15
+ 471 0116 EF90      		pop r14
+ 472 0118 0895      		ret
+ 477               	.Lscope6:
+ 480               	.global	write_alarm
+ 482               	write_alarm:
+ 484               	.LM26:
+ 485               	.LFBB7:
+ 486 011a EF92      		push r14
+ 487 011c FF92      		push r15
+ 488 011e 0F93      		push r16
+ 489 0120 1F93      		push r17
+ 490 0122 DF93      		push r29
+ 491 0124 CF93      		push r28
+ 492 0126 CDB7      		in r28,__SP_L__
+ 493 0128 DEB7      		in r29,__SP_H__
+ 494 012a 2797      		sbiw r28,7
+ 495 012c 0FB6      		in __tmp_reg__,__SREG__
+ 496 012e F894      		cli
+ 497 0130 DEBF      		out __SP_H__,r29
+ 498 0132 0FBE      		out __SREG__,__tmp_reg__
+ 499 0134 CDBF      		out __SP_L__,r28
+ 500               	/* prologue: function */
+ 501               	/* frame size = 7 */
+ 502 0136 2983      		std Y+1,r18
+ 503 0138 3A83      		std Y+2,r19
+ 504 013a 4B83      		std Y+3,r20
+ 505 013c 5C83      		std Y+4,r21
+ 506 013e 6D83      		std Y+5,r22
+ 507 0140 7E83      		std Y+6,r23
+ 508 0142 8F83      		std Y+7,r24
+ 510               	.LM27:
+ 511 0144 0E94 0000 		call isl1207_write_Conf_SR
+ 512 0148 9C01      		movw r18,r24
+ 514               	.LM28:
+ 515 014a 0097      		sbiw r24,0
+ 516 014c 01F0      		breq .L21
+ 518               	.LM29:
+ 519 014e 80E1      		ldi r24,lo8(16)
+ 520 0150 6EED      		ldi r22,lo8(-34)
+ 521 0152 20E0      		ldi r18,lo8(0)
+ 522 0154 30E0      		ldi r19,hi8(0)
+ 523 0156 40E0      		ldi r20,hlo8(0)
+ 524 0158 50E0      		ldi r21,hhi8(0)
+ 525 015a 05E0      		ldi r16,lo8(5)
+ 526 015c 10E0      		ldi r17,hi8(5)
+ 527 015e 7E01      		movw r14,r28
+ 528 0160 0894      		sec
+ 529 0162 E11C      		adc r14,__zero_reg__
+ 530 0164 F11C      		adc r15,__zero_reg__
+ 531 0166 0E94 0000 		call write_bytes_I2C
+ 532 016a 9C01      		movw r18,r24
+ 533               	.L21:
+ 535               	.LM30:
+ 536 016c C901      		movw r24,r18
+ 537               	/* epilogue start */
+ 538 016e 2796      		adiw r28,7
+ 539 0170 0FB6      		in __tmp_reg__,__SREG__
+ 540 0172 F894      		cli
+ 541 0174 DEBF      		out __SP_H__,r29
+ 542 0176 0FBE      		out __SREG__,__tmp_reg__
+ 543 0178 CDBF      		out __SP_L__,r28
+ 544 017a CF91      		pop r28
+ 545 017c DF91      		pop r29
+ 546 017e 1F91      		pop r17
+ 547 0180 0F91      		pop r16
+ 548 0182 FF90      		pop r15
+ 549 0184 EF90      		pop r14
+ 550 0186 0895      		ret
+ 555               	.Lscope7:
+ 558               	.global	write_control
+ 560               	write_control:
+ 562               	.LM31:
+ 563               	.LFBB8:
+ 564 0188 EF92      		push r14
+ 565 018a FF92      		push r15
+ 566 018c 0F93      		push r16
+ 567 018e 1F93      		push r17
+ 568 0190 DF93      		push r29
+ 569 0192 CF93      		push r28
+ 570 0194 00D0      		rcall .
+ 571 0196 00D0      		rcall .
+ 572 0198 0F92      		push __tmp_reg__
+ 573 019a CDB7      		in r28,__SP_L__
+ 574 019c DEB7      		in r29,__SP_H__
+ 575               	/* prologue: function */
+ 576               	/* frame size = 5 */
+ 577 019e 4983      		std Y+1,r20
+ 578 01a0 5A83      		std Y+2,r21
+ 579 01a2 6B83      		std Y+3,r22
+ 580 01a4 7C83      		std Y+4,r23
+ 581 01a6 8D83      		std Y+5,r24
+ 583               	.LM32:
+ 584 01a8 0E94 0000 		call isl1207_write_Conf_SR
+ 585 01ac 9C01      		movw r18,r24
+ 587               	.LM33:
+ 588 01ae 0097      		sbiw r24,0
+ 589 01b0 01F0      		breq .L24
+ 591               	.LM34:
+ 592 01b2 88E0      		ldi r24,lo8(8)
+ 593 01b4 6EED      		ldi r22,lo8(-34)
+ 594 01b6 20E1      		ldi r18,lo8(16)
+ 595 01b8 30E0      		ldi r19,hi8(16)
+ 596 01ba 40E0      		ldi r20,hlo8(16)
+ 597 01bc 50E0      		ldi r21,hhi8(16)
+ 598 01be 05E0      		ldi r16,lo8(5)
+ 599 01c0 10E0      		ldi r17,hi8(5)
+ 600 01c2 7E01      		movw r14,r28
+ 601 01c4 0894      		sec
+ 602 01c6 E11C      		adc r14,__zero_reg__
+ 603 01c8 F11C      		adc r15,__zero_reg__
+ 604 01ca 0E94 0000 		call write_bytes_I2C
+ 605 01ce 9C01      		movw r18,r24
+ 606               	.L24:
+ 608               	.LM35:
+ 609 01d0 C901      		movw r24,r18
+ 610               	/* epilogue start */
+ 611 01d2 0F90      		pop __tmp_reg__
+ 612 01d4 0F90      		pop __tmp_reg__
+ 613 01d6 0F90      		pop __tmp_reg__
+ 614 01d8 0F90      		pop __tmp_reg__
+ 615 01da 0F90      		pop __tmp_reg__
+ 616 01dc CF91      		pop r28
+ 617 01de DF91      		pop r29
+ 618 01e0 1F91      		pop r17
+ 619 01e2 0F91      		pop r16
+ 620 01e4 FF90      		pop r15
+ 621 01e6 EF90      		pop r14
+ 622 01e8 0895      		ret
+ 627               	.Lscope8:
+ 629               	.global	rtc_init
+ 631               	rtc_init:
+ 633               	.LM36:
+ 634               	.LFBB9:
+ 635 01ea DF93      		push r29
+ 636 01ec CF93      		push r28
+ 637 01ee 00D0      		rcall .
+ 638 01f0 00D0      		rcall .
+ 639 01f2 0F92      		push __tmp_reg__
+ 640 01f4 CDB7      		in r28,__SP_L__
+ 641 01f6 DEB7      		in r29,__SP_H__
+ 642               	/* prologue: function */
+ 643               	/* frame size = 5 */
+ 645               	.LM37:
+ 646 01f8 80EC      		ldi r24,lo8(-64)
+ 647 01fa 8D83      		std Y+5,r24
+ 649               	.LM38:
+ 650 01fc 1C82      		std Y+4,__zero_reg__
+ 652               	.LM39:
+ 653 01fe 1B82      		std Y+3,__zero_reg__
+ 655               	.LM40:
+ 656 0200 1A82      		std Y+2,__zero_reg__
+ 658               	.LM41:
+ 659 0202 88E1      		ldi r24,lo8(24)
+ 660 0204 8983      		std Y+1,r24
+ 662               	.LM42:
+ 663 0206 48E1      		ldi r20,lo8(24)
+ 664 0208 50E0      		ldi r21,lo8(0)
+ 665 020a 60E0      		ldi r22,lo8(0)
+ 666 020c 70E0      		ldi r23,lo8(0)
+ 667 020e 80EC      		ldi r24,lo8(-64)
+ 668 0210 0E94 0000 		call write_control
+ 669               	/* epilogue start */
+ 671               	.LM43:
+ 672 0214 0F90      		pop __tmp_reg__
+ 673 0216 0F90      		pop __tmp_reg__
+ 674 0218 0F90      		pop __tmp_reg__
+ 675 021a 0F90      		pop __tmp_reg__
+ 676 021c 0F90      		pop __tmp_reg__
+ 677 021e CF91      		pop r28
+ 678 0220 DF91      		pop r29
+ 679 0222 0895      		ret
+ 684               	.Lscope9:
+ 687               	.global	write_Fecha
+ 689               	write_Fecha:
+ 691               	.LM44:
+ 692               	.LFBB10:
+ 693 0224 EF92      		push r14
+ 694 0226 FF92      		push r15
+ 695 0228 0F93      		push r16
+ 696 022a 1F93      		push r17
+ 697 022c DF93      		push r29
+ 698 022e CF93      		push r28
+ 699 0230 CDB7      		in r28,__SP_L__
+ 700 0232 DEB7      		in r29,__SP_H__
+ 701 0234 2897      		sbiw r28,8
+ 702 0236 0FB6      		in __tmp_reg__,__SREG__
+ 703 0238 F894      		cli
+ 704 023a DEBF      		out __SP_H__,r29
+ 705 023c 0FBE      		out __SREG__,__tmp_reg__
+ 706 023e CDBF      		out __SP_L__,r28
+ 707               	/* prologue: function */
+ 708               	/* frame size = 8 */
+ 709 0240 2983      		std Y+1,r18
+ 710 0242 3A83      		std Y+2,r19
+ 711 0244 4B83      		std Y+3,r20
+ 712 0246 5C83      		std Y+4,r21
+ 713 0248 6D83      		std Y+5,r22
+ 714 024a 7E83      		std Y+6,r23
+ 715 024c 8F83      		std Y+7,r24
+ 716 024e 9887      		std Y+8,r25
+ 718               	.LM45:
+ 719 0250 0E94 0000 		call isl1207_write_Conf_SR
+ 720 0254 9C01      		movw r18,r24
+ 722               	.LM46:
+ 723 0256 0097      		sbiw r24,0
+ 724 0258 01F0      		breq .L29
+ 726               	.LM47:
+ 727 025a 88E0      		ldi r24,lo8(8)
+ 728 025c 6EED      		ldi r22,lo8(-34)
+ 729 025e 20E3      		ldi r18,lo8(48)
+ 730 0260 30E0      		ldi r19,hi8(48)
+ 731 0262 40E0      		ldi r20,hlo8(48)
+ 732 0264 50E0      		ldi r21,hhi8(48)
+ 733 0266 08E0      		ldi r16,lo8(8)
+ 734 0268 10E0      		ldi r17,hi8(8)
+ 735 026a 7E01      		movw r14,r28
+ 736 026c 0894      		sec
+ 737 026e E11C      		adc r14,__zero_reg__
+ 738 0270 F11C      		adc r15,__zero_reg__
+ 739 0272 0E94 0000 		call write_bytes_I2C
+ 740 0276 9C01      		movw r18,r24
+ 741               	.L29:
+ 743               	.LM48:
+ 744 0278 C901      		movw r24,r18
+ 745               	/* epilogue start */
+ 746 027a 2896      		adiw r28,8
+ 747 027c 0FB6      		in __tmp_reg__,__SREG__
+ 748 027e F894      		cli
+ 749 0280 DEBF      		out __SP_H__,r29
+ 750 0282 0FBE      		out __SREG__,__tmp_reg__
+ 751 0284 CDBF      		out __SP_L__,r28
+ 752 0286 CF91      		pop r28
+ 753 0288 DF91      		pop r29
+ 754 028a 1F91      		pop r17
+ 755 028c 0F91      		pop r16
+ 756 028e FF90      		pop r15
+ 757 0290 EF90      		pop r14
+ 758 0292 0895      		ret
+ 763               	.Lscope10:
+ 764               	.global	Conf_SR
+ 765               		.data
+ 768               	Conf_SR:
+ 769 005c 02        		.byte	2
+ 770 005d 06        		.byte	6
+ 771               		.comm rxAxisSettings,340,1
+ 772               		.comm rxTraceBuffer,2,1
+ 773               		.comm rxPosesActual,2,1
+ 778               		.text
+ 780               	.Letext0:
+ 781               	.global __do_copy_data
+ 782               	.global __do_clear_bss
+DEFINED SYMBOLS
+                            *ABS*:00000000 tw_rtc.c
+C:\DOCUME~1\David\LOCALS~1\Temp/ccevoU81.s:2      *ABS*:0000003f __SREG__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccevoU81.s:3      *ABS*:0000003e __SP_H__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccevoU81.s:4      *ABS*:0000003d __SP_L__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccevoU81.s:5      *ABS*:00000034 __CCP__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccevoU81.s:6      *ABS*:00000000 __tmp_reg__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccevoU81.s:7      *ABS*:00000001 __zero_reg__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccevoU81.s:232    .text:00000000 RCT_task
+C:\DOCUME~1\David\LOCALS~1\Temp/ccevoU81.s:296    .text:00000052 read_alarm
+C:\DOCUME~1\David\LOCALS~1\Temp/ccevoU81.s:327    .text:00000070 read_control
+C:\DOCUME~1\David\LOCALS~1\Temp/ccevoU81.s:358    .text:0000008e Read_SR
+C:\DOCUME~1\David\LOCALS~1\Temp/ccevoU81.s:389    .text:000000ac Read_Fecha
+C:\DOCUME~1\David\LOCALS~1\Temp/ccevoU81.s:419    .text:000000ca isl1207_write_Conf_SR
+C:\DOCUME~1\David\LOCALS~1\Temp/ccevoU81.s:768    .data:0000005c Conf_SR
+C:\DOCUME~1\David\LOCALS~1\Temp/ccevoU81.s:482    .text:0000011a write_alarm
+C:\DOCUME~1\David\LOCALS~1\Temp/ccevoU81.s:560    .text:00000188 write_control
+C:\DOCUME~1\David\LOCALS~1\Temp/ccevoU81.s:631    .text:000001ea rtc_init
+C:\DOCUME~1\David\LOCALS~1\Temp/ccevoU81.s:689    .text:00000224 write_Fecha
+                            *COM*:00000154 rxAxisSettings
+                            *COM*:00000002 rxTraceBuffer
+                            *COM*:00000002 rxPosesActual
+
+UNDEFINED SYMBOLS
+openGripper
+closeGripper
+FlagrxVectorok
+puts
+rxvector
+Vector2Trajectory
+Trajectoryvector
+PMDprocessTrajectory
+read_bytes_I2C
+write_bytes_I2C
+__do_copy_data
+__do_clear_bss

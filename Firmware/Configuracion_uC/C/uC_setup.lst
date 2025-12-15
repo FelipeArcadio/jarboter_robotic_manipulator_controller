@@ -1,0 +1,211 @@
+   1               		.file	"uC_setup.c"
+   2               	__SREG__ = 0x3f
+   3               	__SP_H__ = 0x3e
+   4               	__SP_L__ = 0x3d
+   5               	__CCP__  = 0x34
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   9               		.text
+  10               	.Ltext0:
+  69               	.global	initCard
+  71               	initCard:
+   1:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** #include <avr/io.h>
+   2:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** #include <avr/interrupt.h>
+   3:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** 
+   4:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** #include "uC_setup.h"
+   5:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** 
+   6:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** 
+   7:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** /****************************************************************************************/ 
+   8:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** void initCard(void)
+   9:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** {
+  72               	ame size = 0 */
+  74               	.LM1:
+  75               		ldi r18,lo8(-116)
+  76               		out 45-32,r18
+  10:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c ****  /////////////LED
+  11:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c ****  DDRE		=	_BV(LED1) | _BV(LED2) | _BV(Reset);				//Salidas
+  77               	B1
+  78               	.LM0:
+  79 0000 2CE8      	.LFBB1:
+  80 0002 2DB9      	/* prologue: function */
+  12:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c ****  PORTE		=	_BV(LED1) | _BV(LED2);				                //Condiciones Iniciales							
+  81               	36,0,0,initCard
+  82               	.global	initCard
+  84 0006 8EB9      	initCard:
+  13:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c ****  
+  14:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** 
+  15:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c ****  DDRB		=	_BV(LED0);
+  85               	,0,0,0
+  16:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c ****  PORTB		=	_BV(LED0);											//Condiciones Iniciales
+  89               	ow:(0,11),0,8;high:(0,11),8,8;extended:(0,11),16,8;;",128,0,0,0
+  17:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c ****  
+  18:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c ****  //////////////PMDS
+  19:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c ****  PORTE      &= 	~(_BV(Reset));						                //Mantenido reset
+  92               	130,0,0,0
+  20:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c ****  DDRD		=	_BV(HostSlct1) | _BV(HostSlct2) | _BV(HostSlct3) | _BV(Alarma); // Salidas.
+  95               	nclude/avr/fuse.h",130,0,0,0
+  21:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c ****  PORTD		=	_BV(HostSlct1) | _BV(HostSlct2) | _BV(HostSlct3);	//Condiciones Iniciales
+  99               	130,0,0,0
+  22:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** 
+  23:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c ****  
+  24:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c ****  
+  25:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c ****  DDRG 		= 	_BV(HostCmd) | _BV(HostWrite) | _BV(HostRead); 			// HostCmd,HostWrite,HostRead,Reset Sa
+ 103               	130,0,0,0
+  26:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c ****  PORTG		= 	_BV(HostWrite) | _BV(HostRead);							//Condiciones Iniciales
+ 107               	130,0,0,0
+  27:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** 
+  28:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** 
+  29:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c ****  DDRH		=	_BV(USB_EN) | _BV(USB_WRITE) | _BV(USB_READ);		//Salidas
+ 111               	130,0,0,0
+  30:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c ****  PORTH		=	_BV(USB_EN) | _BV(USB_WRITE) | _BV(USB_READ);   	//Condiciones Iniciales
+ 115               	130,0,0,0
+  31:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c ****  
+  32:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c ****  /****************************** GRIPEER***************************************/
+  33:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c ****  
+  34:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c ****   //coloco como entrada el puerto de gripper para no colocar esta tarjeta. El puerto esta en
+  35:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c ****   //Hi-Z
+  36:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c ****    //DDRF		=	0x00;
+  37:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c ****   // PORTF    =	0x00;
+  38:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c ****  
+  39:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c ****  
+  40:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c ****   
+  41:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c ****   
+  42:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c ****   //Mantener el motor apadado y coloca resistencias de Pull up en FINDER E FINDIZQ
+  43:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c ****   PORTF     =	_BV(DER) | _BV(IZQ) | _BV(FINDER) | _BV(FINIZQ);
+ 118               	nclude/avr/fuse.h",130,0,0,0
+  44:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c ****   
+  45:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c ****    //Solo Salidas DER y IQZ 
+  46:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c ****   DDRF		=	_BV(DER) | _BV(IZQ);
+ 122               	130,0,0,0
+  47:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c ****  
+  48:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c ****   
+  49:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c ****  //Necesito que las entradas tengan resistencia de pull up
+  50:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c ****  // MCUCR		 &= 	~(_BV(PUD));	
+  51:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c ****   
+  52:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** 
+  53:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c ****  
+  54:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** /****************************** oTROS***************************************/
+  55:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** 
+  56:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** /** La interrupcion 3 (INT3) se activa en flanco de SUBIDA y la Interrupcion 2 (INT2)
+  57:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** 	 se activa en flanco de Subida.*/
+  58:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** 
+  59:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** 	EICRA		=	_BV(ISC31) | _BV(ISC30) | _BV(ISC21) | _BV(ISC20);
+ 126               	130,0,0,0
+  60:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** 
+  61:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** /** Las interrupciones INT4 E INT5 ( PMD1 y PMD2) se activan en flanco de Bajada.*/	
+  62:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** 	
+  63:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** 	EICRB		=	_BV(ISC51) | _BV(ISC41);
+ 129               	nclude/avr/fuse.h",130,0,0,0
+  64:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** 
+  65:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** /**Habilito la Interrupcion Externa 2 (interrupción Botón Parada Emergencia)
+  66:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** 			la Interrupcion Externa 3 (interrupción USB)
+  67:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** 			la Interrupcion Externa 4 (interrupción PMD1)
+  68:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** 			la Interrupcion Externa 5 (interrupción PMD2)*/
+  69:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** 		
+  70:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** 	EIMSK		=	_BV(INT5) | _BV(INT4) | _BV(INT3) | _BV(INT2);
+ 133               	130,0,0,0
+  71:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** 
+  72:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** /** Habilito la Memoria RAM Externa con las siguientes características:
+  73:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** 	-Toda la Memoria Ocupa un solo sector: SRL2, SRL1, y SRL0 están en Cero.
+  74:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** 	-con dos ciclos de espera: SRW11 y SRW10 bits están en ALTO.  */
+  75:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** 	
+  76:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** 	XMCRA		=	_BV(SRE) | _BV(SRW11) | _BV(SRW10);
+ 137               	130,0,0,0
+  77:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** 
+  78:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** 
+  79:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** /** Configuracion Timer 1 (Timer de 16 bits) */
+  80:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** 
+  81:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** /** Timer/ Counter 1 Interrrupt Mask Register. Activo el Bit Timer/Counter1, Overflow
+  82:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c ****     interrupt Enable*/
+  83:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** 
+  84:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** 
+  85:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** 	TIMSK1		=	_BV(TOIE1);	
+ 140               	nclude/avr/fuse.h",130,0,0,0
+  86:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** 	
+  87:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** /** Modo de Operacion Normal, con un prescaler de CLK/1024 osea que trabaja con un reloj 
+  88:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** de 7.8125Khz por lo tanto cada 0,000128 seg aumenta se desborda cada 8,38848 seg*/	
+  89:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** 
+  90:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** 	TCCR1B 		=	_BV(CS12) | _BV(CS10);
+ 144               	130,0,0,0
+  91:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** 	
+  92:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** 	
+  93:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** /** Configuracion Timer 3 (Timer de 16 bits) */
+  94:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** 
+  95:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** /** Timer/ Counter 3 Interrrupt Mask Register. Activo el Bit Timer/Counter3, Overflow
+  96:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c ****     interrupt Enable*/
+  97:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** 
+  98:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** 
+  99:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** 	TIMSK3		=	_BV(TOIE3);	
+ 148               	130,0,0,0
+ 100:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** 	
+ 101:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** /** Modo de Operacion Normal, con un prescaler de CLK/1024*/	
+ 102:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** 
+ 103:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** 	TCCR3B 		=	_BV(CS32) | _BV(CS30);
+ 151               	nclude/avr/fuse.h",130,0,0,0
+ 104:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** 	
+ 105:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** 	
+ 106:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** 
+ 107:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c ****  }
+ 155               	130,0,0,0
+ 160               	.global	initCard
+ 162               	initCard:
+ 108:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c ****  
+ 109:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c ****  
+ 110:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c ****  
+ 111:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c ****  //agregado por david el 19/05/2014 para hacer la prueba del boton de emergencia.
+ 112:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c ****  ////////////////////////////////////////////////////////////////////////////
+ 113:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** //Returna el registro del TIMER1 y lo borra
+ 114:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** //Si esta funcion es utilizada periodicamente antes que se
+ 115:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** //cumpla la INT del timer1 nunca este se va adesvordar y NUNCA se 
+ 116:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** //genera la INT por desvorde...
+ 117:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** /////////////////////////////////////////////////////////////////////////////
+ 118:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** unsigned int TIM16_ReadTCNTn(void)
+ 119:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** {
+ 164               	tabn	162,0,0,0
+ 166               	.global	initCard
+ 168               	initCard:
+ 120:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** 	unsigned char sreg;
+ 121:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** 	unsigned int i;
+ 122:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** 	
+ 123:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** 	/* Save global interrupt flag */
+ 124:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** 	sreg = SREG;
+ 169               	,0,0,0
+ 125:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** 	/* Disable interrupts */
+ 126:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** 	cli();
+ 172               	130,0,0,0
+ 177               	.global	initCard
+ 127:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** 	/* Read TCNTn into i */
+ 128:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** 	i = TCNT1;
+ 178               	:(0,11),8,8;extended:(0,11),16,8;;",128,0,0,0
+ 182 0060 F0E0      	.global	initCard
+ 184 0064 3181      	initCard:
+ 129:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** 	TCNT1=0;
+ 185               	,0,0,0
+ 130:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** 	/* Restore global interrupt flag */
+ 131:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** 	SREG = sreg;
+ 189               	ow:(0,11),0,8;high:(0,11),8,8;extended:(0,11),16,8;;",128,0,0,0
+ 132:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** 	sei();
+ 192               	130,0,0,0
+ 197               	.global	initCard
+ 133:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** 	return i;
+ 134:C:/Jarboter_V_2_1/Firmware/Configuracion_uC/C/uC_setup.c **** }
+ 198               	:(0,11),8,8;extended:(0,11),16,8;;",128,0,0,0
+ 202               	.global	initCard
+ 204               	initCard:
+ 206               	.LM0:
+ 207               	.LFBB1:
+ 208               	/* prologue: function */
+ 209               	/* frame size = 0 */
+ 211               	.LM1:
+DEFINED SYMBOLS
+                            *ABS*:00000000 uC_setup.c
+C:\DOCUME~1\David\LOCALS~1\Temp/ccAdNjwB.s:2      *ABS*:0000003f __SREG__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccAdNjwB.s:3      *ABS*:0000003e __SP_H__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccAdNjwB.s:4      *ABS*:0000003d __SP_L__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccAdNjwB.s:5      *ABS*:00000034 __CCP__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccAdNjwB.s:6      *ABS*:00000000 __tmp_reg__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccAdNjwB.s:7      *ABS*:00000001 __zero_reg__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccAdNjwB.s:71     .text:00000000 initCard
+C:\DOCUME~1\David\LOCALS~1\Temp/ccAdNjwB.s:163    .text:0000005a TIM16_ReadTCNTn
+
+NO UNDEFINED SYMBOLS

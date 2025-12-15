@@ -1,0 +1,936 @@
+#include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include "DialogoTechPendant.h"
+
+//Variable global que contiene los theta para cada articulacion
+double Result[5];
+    
+/*****************************************************************************************
+Habilitar_campostech: Habilita o desabilita los controles graficos edit para la  posicion 
+velocidad  y aceleracion de un eje determinado, al desabilitar un campo el usuario no puede 
+ingresar datos en el 
+
+HWND hDlg Apuntador a la ventana donde este el control
+int op Corresponde a el eje seleccionado
+int habilitar con un 1 habilita el campo con 0 lo desalita
+*/
+
+void Habilitar_campostech(HWND hDlg,int op,int habilitar)
+{
+
+	HWND  CINPOS= GetDlgItem (hDlg,IDC_EPOS);
+	HWND  CINVEL= GetDlgItem (hDlg,IDC_EVELO);
+	HWND  CINACE= GetDlgItem (hDlg,IDC_EACE);
+
+	HWND  HOMPOS= GetDlgItem (hDlg,IDC_EPOS2);
+	HWND  HOMVEL= GetDlgItem (hDlg,IDC_EVELO2);
+	HWND  HOMACE= GetDlgItem (hDlg,IDC_EACE2);
+
+	HWND  CODPOS= GetDlgItem (hDlg,IDC_EPOS3);
+	HWND  CODVEL= GetDlgItem (hDlg,IDC_EVELO3);
+	HWND  CODACE= GetDlgItem (hDlg,IDC_EACE3);
+
+	HWND  PITCHPOS= GetDlgItem (hDlg,IDC_EPOS4);
+	HWND  PITCHVEL= GetDlgItem (hDlg,IDC_EVELO4);
+	HWND  PITCHACE= GetDlgItem (hDlg,IDC_EACE4);
+
+	HWND  ROLPOS= GetDlgItem (hDlg,IDC_EPOS5);
+	HWND  ROLVEL= GetDlgItem (hDlg,IDC_EVELO5);
+	HWND  ROLACE= GetDlgItem (hDlg,IDC_EACE5);
+
+	switch(op)
+	{
+	    case AxisWaist:
+			if (habilitar==1)
+			{
+			    EnableWindow (CINPOS, TRUE);
+		        EnableWindow (CINVEL, TRUE );
+			    EnableWindow (CINACE, TRUE);
+			}
+			else
+            {
+                EnableWindow (CINPOS, FALSE);
+		        EnableWindow (CINVEL, FALSE);
+			    EnableWindow (CINACE, FALSE);
+			}
+		break;
+        case  AxisShoulder:
+			if (habilitar==1)
+			{
+			    EnableWindow (HOMPOS,TRUE);
+		        EnableWindow (HOMVEL, TRUE);
+			    EnableWindow (HOMACE, TRUE);
+			}
+            else
+			{
+                EnableWindow (HOMPOS,FALSE);
+		        EnableWindow (HOMVEL,FALSE);
+			    EnableWindow (HOMACE,FALSE);
+			}
+		break;
+        case  AxisElbow:
+			if (habilitar==1)
+			{
+			    EnableWindow (CODPOS,TRUE);
+		        EnableWindow (CODVEL, TRUE );
+			    EnableWindow (CODACE, TRUE);
+			}
+            else
+			{
+                EnableWindow (CODPOS,FALSE);
+		        EnableWindow (CODVEL,FALSE );
+			    EnableWindow (CODACE,FALSE);
+			}
+        break;
+        case  AxisPitch:	
+			if (habilitar==1)
+			{
+			    EnableWindow (PITCHPOS, TRUE);
+		        EnableWindow (PITCHVEL, TRUE);
+			    EnableWindow (PITCHACE, TRUE);
+			}
+            else
+			{
+                EnableWindow (PITCHPOS, FALSE);
+		        EnableWindow (PITCHVEL, FALSE);
+			    EnableWindow (PITCHACE, FALSE);
+			}
+        break;
+        case  AxisRoll:	
+			if (habilitar==1)
+			{
+			    EnableWindow (ROLPOS, TRUE);
+		        EnableWindow (ROLVEL, TRUE );
+			    EnableWindow (ROLACE, TRUE);
+			}
+			else
+			{
+                EnableWindow (ROLPOS, FALSE);
+		        EnableWindow (ROLVEL, FALSE );
+			    EnableWindow (ROLACE, FALSE);
+			}
+        break;
+	}
+}
+
+/****************************************************************************************
+manejador_Campostech: Revisa si se ha chekeado el control grafico que selecciona un 
+eje, si es asi habilita sus repectivos campos de posicion velocidad y aceleracion 
+o los desabilita en caso contrario, ademas actualiza el vector axisOP cuya funcion es 
+grabar que ejes seleccionador por el usuario para usar luego como referencia
+
+HWND hDlg: Apuntador a la ventana
+int nIDDlgItem: Identificador del control a habilitar o desabilirar
+int op: Corresponde a el eje seleccionado
+int *axisOP: Apuntador a el vector de eje seleccionados
+*/
+void manejador_Campostech(HWND hDlg,int nIDDlgItem,int op,int *axisOP)
+{
+	if(SendDlgItemMessage(hDlg,nIDDlgItem,BM_GETCHECK,0,0) == BST_CHECKED)
+	{
+		Habilitar_campostech(hDlg,op,1);
+		axisOP[op]=1;
+	}
+	else
+	{
+		Habilitar_campostech(hDlg,op,0);
+		axisOP[op]=0;
+	}
+}
+
+/*****************************************************************************************
+Configurar_techTraj: Convierte la informacion ingresa por el usuario en grados a el 
+formato PMD, con el fin que este pueda entender esta informacion.
+
+tTrajectory * ptrajectoryTECH: Estructura a ser llenada
+LPARAM parametro: Para poder leer que botones de movimiento se le a hecho click (para lo del paso)
+double posicion : Valor leeido del control edit para el restivo eje Axis
+double velocidad: Valor leeido del control edit para el restivo eje Axis
+double aceleracion: Valor leeido del control edit para el restivo eje Axis
+tAxis Axis: Eje en que se estan actualizadon los datos
+int *veces: TRabaja simultaneamente con Paso (NO se ha probado)
+*/
+void Configurar_techTraj(tTrajectory * ptrajectoryTECH,tAxisSettings *axisSettings,double posicion,
+						double velocidad,double aceleracion,tAxis Axis)
+{
+	
+    /*Leeo los datos del cuadro de dialogo haciendo las conversiones desde grado -> uP*/
+	posicion=grados2rad(posicion);
+	posicion=rad2usteps(&axisSettings[Axis],posicion);
+    posicion=positionPCtoUC(posicion);
+    velocidad=grados2rad(velocidad); 
+	velocidad=rad2usteps(&axisSettings[Axis],velocidad);	
+	velocidad=velocityPCtoUC(velocidad);
+    aceleracion=grados2rad(aceleracion);
+    aceleracion=rad2usteps(&axisSettings[Axis],aceleracion);	
+	aceleracion=accelerationPCtoUC(aceleracion);   
+    
+	/*Lleno la estructura para mandar todo la informacion hacia el uC*/
+	ptrajectoryTECH->point[0].axis[Axis].position=(int32)posicion;
+	ptrajectoryTECH->point[0].axis[Axis].velocity=(int32)velocidad;
+	ptrajectoryTECH->point[0].axis[Axis].acceleration=(int32)aceleracion;
+}
+
+/*****************************************************************************************/
+int GetDatosTech(HWND hDlg,int Axis, int nIDDlgItempos,int nIDDlgItemace,int nIDDlgItemvel,
+				 double *posicion,double *velocidad,double *aceleracion)
+{
+	int DatosOK=1;
+
+	
+	switch (Axis)                  /* manipulador del mensaje */
+    {
+		case AxisShoulder:
+			*posicion = getlong(hDlg,nIDDlgItempos);	
+			*posicion = *posicion+140;
+			*velocidad = getlong(hDlg,nIDDlgItemvel);
+			if(*velocidad<=0)
+				DatosOK=0;
+			*aceleracion = getlong(hDlg,nIDDlgItemace);
+			if(*aceleracion<=0)
+				DatosOK=0;
+		break;
+		case AxisElbow:
+			*posicion = getlong(hDlg,nIDDlgItempos);
+			*posicion = *posicion-124;
+			*velocidad = getlong(hDlg,nIDDlgItemvel);
+			if(*velocidad<=0)
+				DatosOK=0;
+			*aceleracion = getlong(hDlg,nIDDlgItemace);
+			if(*aceleracion<=0)
+				DatosOK=0;
+		break;
+		case AxisPitch:
+			*posicion = getlong(hDlg,nIDDlgItempos);
+			*posicion = *posicion-170;
+			*velocidad = getlong(hDlg,nIDDlgItemvel);
+			if(*velocidad<=0)
+				DatosOK=0;
+			*aceleracion = getlong(hDlg,nIDDlgItemace);
+			if(*aceleracion<=0)
+				DatosOK=0;
+		break;
+		default: 
+			*posicion = getlong(hDlg,nIDDlgItempos);
+			*velocidad = getlong(hDlg,nIDDlgItemvel);
+			if(*velocidad<=0)
+				DatosOK=0;
+			*aceleracion = getlong(hDlg,nIDDlgItemace);
+			if(*aceleracion<=0)
+				DatosOK=0;
+		break;
+	}
+
+	return DatosOK;
+
+}
+
+/*****************************************************************************************/
+/*  Llenar_campos_tech: Lena los campos de estructura tipo tTrajectory, utiliza la 
+funcion  Configurar_techTraj para la conversion a la notacion  numerica de los 
+PMD y basandosede en eje seleccionado graficamente actualiza invalidmask.
+HWND hDlg: Apuntador a la ventana grafia para poder extraer su imformacion
+tTrajectory * pTECH: Trayectoria a modificar
+int *axisOP: Apuntador a el vector que contiene que ejes se han selecionados
+Retorna 1 si la interfaz ha sido llenada correctamente.
+*/
+int Llenar_campos_tech(HWND hDlg,tTrajectory * pTECH,tAxisSettings *axisSettings,int *axisOP)
+{
+    double posicion,velocidad,aceleracion;
+	int	HAYDATOS=0,test;
+
+   		
+    if(axisOP[AxisWaist])
+	{ 
+		HAYDATOS=GetDatosTech(hDlg,AxisWaist,IDC_EPOS,IDC_EACE,IDC_EVELO,
+				 &posicion,&velocidad,&aceleracion);
+		Configurar_techTraj(pTECH,&axisSettings[0],posicion,velocidad,aceleracion,AxisWaist);
+		test=(pTECH->invalidmask)&(0x0001);
+		if(test!=1)
+			pTECH->invalidmask=pTECH->invalidmask+WaistMask;
+	}
+    if(axisOP[AxisShoulder])
+	{		
+		HAYDATOS=GetDatosTech(hDlg,AxisShoulder,IDC_EPOS2,IDC_EACE2,IDC_EVELO2,
+				 &posicion,&velocidad,&aceleracion);
+		Configurar_techTraj(pTECH,&axisSettings[0],posicion,velocidad,aceleracion,AxisShoulder);
+        test=(pTECH->invalidmask)&(0x0002);
+		if(test!=2)
+			pTECH->invalidmask=pTECH->invalidmask+ShoulderMask;
+	}
+	if(axisOP[AxisElbow])
+	{
+		HAYDATOS=GetDatosTech(hDlg,AxisElbow,IDC_EPOS3,IDC_EACE3,IDC_EVELO3,
+				 &posicion,&velocidad,&aceleracion);		
+        Configurar_techTraj(pTECH,&axisSettings[0],posicion,velocidad,aceleracion,AxisElbow); 
+		test=(pTECH->invalidmask)&(0x0004);
+		if(test!=4)
+			pTECH->invalidmask=pTECH->invalidmask+ElbowMask;
+
+	}
+    if(axisOP[AxisPitch])
+	{
+		HAYDATOS=GetDatosTech(hDlg,AxisPitch,IDC_EPOS4,IDC_EACE4,IDC_EVELO4,
+				&posicion,&velocidad,&aceleracion);		
+		Configurar_techTraj(pTECH,&axisSettings[0],posicion,velocidad,aceleracion,AxisPitch);
+	  	test=(pTECH->invalidmask)&(0x0008);
+		if(test!=8)
+			pTECH->invalidmask=pTECH->invalidmask+PitchMask;
+	}
+	if(axisOP[AxisRoll])
+	{
+		HAYDATOS=GetDatosTech(hDlg,AxisRoll,IDC_EPOS5,IDC_EACE5,IDC_EVELO5,
+				&posicion,&velocidad,&aceleracion);		
+		Configurar_techTraj(pTECH,&axisSettings[0],posicion,velocidad,aceleracion,AxisRoll);
+	  	test=(pTECH->invalidmask)&(0x0010);
+		if(test!=16)
+			pTECH->invalidmask=pTECH->invalidmask+RollMask;
+	}
+	return HAYDATOS;
+}
+
+/*****************************************************************************************/
+/* RobotGoto: envia un Trayectoria de un punto para mover el robot, esta funcion traja en 
+tres modos, que son lo siguientes:
+-Modo 0: Moviemto Normal usando la informacion intruducida por el usuario 
+-Modo 1: Moviento preprogramado para NEST
+_Modo 2: Moviento preporgramado para ORIGEN
+
+HWND hDlg: Utilizado para desplegar  algun error en pantalla
+LPARAM wParam: Utilizado para enviar el paso 
+int *axisOP: Apuntador a el vector que contiene que ejes se han selecionados
+int Caso: Para seleccionar el modo
+*/
+
+int RobotGoto(HWND hDlg,tAxisSettings *axisSettings,int *axisOP,int Caso)
+{
+	int HAYDATOS,rc=0;
+	tTrajectory pTECH;
+	char    Devicename[MAX_DRIVER_NAME]   = "EZUSB-0";   //Por defaul
+
+
+
+	pTECH.point=(tpoint*)declarar(sizeof(tpoint));  
+	pTECH.size=1; 
+	pTECH.invalidmask=0;
+		
+	if(Caso==0)	//Por Defecto
+		HAYDATOS=Llenar_campos_tech(hDlg,&pTECH,&axisSettings[0],axisOP);
+	if(Caso==1) //NEST
+	{
+		Configurar_techTraj(&pTECH,&axisSettings[0],0,30,98,AxisWaist);
+		pTECH.invalidmask=pTECH.invalidmask+WaistMask;
+                      //Hombro
+		Configurar_techTraj(&pTECH,&axisSettings[0],0,5,3,AxisShoulder);
+		pTECH.invalidmask=pTECH.invalidmask+ShoulderMask;
+					  //Codo
+		Configurar_techTraj(&pTECH,&axisSettings[0],0,8,12,AxisElbow);
+		pTECH.invalidmask=pTECH.invalidmask+ElbowMask;
+	}
+	if(Caso==2) //ORIGEN
+	{
+      	//Cintura
+		Configurar_techTraj(&pTECH,&axisSettings[0],0,30,98,AxisWaist);
+		pTECH.invalidmask=pTECH.invalidmask+WaistMask;
+        //Hombro
+		//0+140=140
+		Configurar_techTraj(&pTECH,&axisSettings[0],140,6,3,AxisShoulder);
+		pTECH.invalidmask=pTECH.invalidmask+ShoulderMask;
+		//Codo
+		//0-120=-120 				
+		//Correccion intrinsica "el codo no esta paralelo a la base como se pinta en robomosp = -14
+		Configurar_techTraj(&pTECH,&axisSettings[0],-124,4,12,AxisElbow);
+		pTECH.invalidmask=pTECH.invalidmask+ElbowMask;
+		//PITCH ERRADO DEBE SER 80
+						
+		Configurar_techTraj(&pTECH,&axisSettings[0],-60,400,300,AxisPitch);
+		pTECH.invalidmask=pTECH.invalidmask+PitchMask;
+		//ROLL				
+		Configurar_techTraj(&pTECH,&axisSettings[0],-10,400,300,AxisRoll);
+		pTECH.invalidmask=pTECH.invalidmask+RollMask;
+
+	}
+	if(HAYDATOS==0)
+	   MessageBox(hDlg, "Colocar alguna posición o datos válidos", "Información", MB_OK); 
+	if( HAYDATOS!=0||Caso==1||Caso==2)
+	{
+	//	pTECH->invalidmask=pTECH->invalidmask+ElbowMask;  //pTECH->invalidmask=6;
+		rc=dispatchPacket(PacketTeachPendant,(byte*)&pTECH,Devicename,hDlg); 
+		HAYDATOS=0;
+		if(rc!=rcOK)
+		{
+			/*El problema no fue cauzado por el cable*/
+			if(rc!=rcCommunicationError)
+			{
+				Abortar(hDlg,0,Devicename);
+				MessageBox(hDlg, "El controlador está desarrollando un proceso actualmente. Intente más tarde", "Información", MB_OK); //significa que hubo un problema del proceso de 
+			}
+		}
+		else 
+			return 1;
+	}
+	return 0;
+}
+
+/*****************************************************************************************/
+/* CargoBotonTechPendal: Carga cada de la imagenes en sus respectivos botones 
+del  cuadro de dialogo tech_pendal 
+
+HWND hDlg: apuntador a la ventana donde se quiere colocar las igamenes
+HINSTANCE hInstance: apuntador a el programa como tal (La instancia)
+*/
+void cargoBotonTechPendal(HWND hDlg,HINSTANCE hInstance)
+{
+	/* HANDLE GRAFICO DE  LOS BOTONES*/
+    HWND  EMEB= GetDlgItem (hDlg,IDC_EMER);
+	HWND  ORIGEN=GetDlgItem (hDlg,IDC_ORIGEN);
+    HWND  NEST=GetDlgItem (hDlg,IDC_NEST);
+	HWND  BACK=GetDlgItem (hDlg,IDC_BACK);
+	HWND  PLAY=GetDlgItem (hDlg,IDC_BENVIAR);
+	HWND  FOWRD=GetDlgItem (hDlg,IDC_FORWARD);
+	HWND  OPENGRIPPER=GetDlgItem (hDlg,IDC_GRIOPEN);
+	HWND  CLOSEGRIPPER=GetDlgItem (hDlg,IDC_GRICLOSE);
+
+    /*Creo una asignacion entre al imagen y el boton BM_SETIMAGE 
+	no funciona sin activar  BS_ICON or BS_BITMAP en las propiedades de boton */
+	SendMessage(ORIGEN, BM_SETIMAGE,IMAGE_BITMAP,
+     /*Cargo el BMP a el boton*/
+    (LPARAM)LoadBitmap(hInstance, MAKEINTRESOURCE(IDB_ORIGEN)));        
+
+	SendMessage(EMEB, BM_SETIMAGE,IMAGE_BITMAP,
+    (LPARAM)LoadBitmap(hInstance, MAKEINTRESOURCE(IDB_EMERGENCY_STOP)));        
+	SendMessage(NEST, BM_SETIMAGE,IMAGE_BITMAP,
+    (LPARAM)LoadBitmap(hInstance, MAKEINTRESOURCE(IDB_NEST)));        
+	SendMessage(BACK, BM_SETIMAGE,IMAGE_BITMAP,
+    (LPARAM)LoadBitmap(hInstance, MAKEINTRESOURCE(IDB_BACK)));        
+	SendMessage(FOWRD, BM_SETIMAGE,IMAGE_BITMAP,
+    (LPARAM)LoadBitmap(hInstance, MAKEINTRESOURCE(IDB_FORWARD)));     
+	SendMessage(PLAY, BM_SETIMAGE,IMAGE_BITMAP,
+    (LPARAM)LoadBitmap(hInstance, MAKEINTRESOURCE(IDB_SET)));        
+	SendMessage(OPENGRIPPER,BM_SETIMAGE,IMAGE_BITMAP,
+    (LPARAM)LoadBitmap(hInstance, MAKEINTRESOURCE(IDB_OPENGRIPPER))); 
+	SendMessage(CLOSEGRIPPER,BM_SETIMAGE,IMAGE_BITMAP,
+    (LPARAM)LoadBitmap(hInstance, MAKEINTRESOURCE(IDB_CLOSEGRIPPER)));
+    
+}
+
+/*****************************************************************************************/
+/*getlong: Permite optener un numero tipo long de una cadena de caracteres 
+intruducida en un control tipo edit
+
+HWND hDlg: Apuntador a la ventana donde se encuentra el control edit
+int IDItem: Identificador del control
+*/
+double getlong(HWND hDlg,int IDItem)
+{   
+	char* numero;
+	int len;
+                   
+	len = GetWindowTextLength(GetDlgItem(hDlg, IDItem));
+	numero = (char*)GlobalAlloc(GPTR, len + 1);
+	GetDlgItemText(hDlg, IDItem,numero, len + 1);
+                    
+	return atof(numero);
+
+}
+
+/*****************************************************************************************/
+void setlong(HWND hDlg,int IDC_EDIT,double Numero)
+{   
+	
+	char info[100];
+		
+   	sprintf(info,"%3.3f",Numero);
+	SetDlgItemText(hDlg,IDC_EDIT,info);
+}
+
+/*****************************************************************************************/
+BOOLEAN ExisteIDPose(int16 *GrabadoIDPose,int PoseID,int Maxpose)
+{
+	int i=0;
+	 
+	for(i=1;i<Maxpose;i++) 
+	{
+		if(GrabadoIDPose[i]==PoseID)
+			return TRUE;
+	}
+	return FALSE;
+}
+
+
+/*****************************************************************************************/
+int BuscarIndexPose(int16 *GrabadoIDPose,int PoseID,int Maxpose)
+{
+	int i=0;
+	 
+	for(i=1;i<Maxpose;i++) 
+	{
+		if(GrabadoIDPose[i]==PoseID)
+			return i;
+	}
+	return -1;
+}
+
+
+/*****************************************************************************************/
+int return_id(int16 *GrabadoIDPose,int PoseIndex)
+{
+	int PoseID;
+
+	PoseID=GrabadoIDPose[PoseIndex];
+
+	return PoseID;
+	      
+}
+
+/*****************************************************************************************/
+/* La razon principal para utilizar un doble apuntador fue para modificar el apuntador 
+principal. 
+
+   int *p   = 0x30    *p  = 0x80 => 0x30 hay 0x80
+   0x600  hay 0x30          
+
+   
+   int **p1 = & p     *p1=0x100  => 0x600 hay 0x100,  p=0x100 Modifique el Apuntador
+   0x700 hay 0x600    **p1=0x300 => 0x100 hay 0x300,		  Modifique la Variable a la que apunta p.
+
+*/
+
+void Actualizar_Vector(int16** P_pvectorIDs,int mode,int PoseID)
+{
+	int16* tempVector;
+	int16* tempVector2;
+	int Maxdata,i;
+	extern  int16          *rxvector;
+ 
+	/*Necesitamos leer  las poses en EEprom*/
+	if(mode==1)
+	{
+		Maxdata=rxvector[0];
+		/*Crea un vector de Maxdata posiciones, utiltimo valor 
+		de index es Maxdata porque el index del vector empieza en 0*/        
+		*P_pvectorIDs=declarar(sizeof(int16)*Maxdata);
+		tempVector=*P_pvectorIDs;
+		for(i=0;i<Maxdata;i++) 
+			tempVector[i]=rxvector[i];
+	}
+	/*Estamos agregando una etiqueta el vector, creamos un vector temporal para hacer backup y luego 
+	creamos un vector maxdata+1 agregando la nueva poseID, en este modo *P_pvectorIDs[0], es el 
+	primer valor del vector que se manda para ejecutar una trayectoria con poses*/
+	if(mode==2)
+	{
+		/*Leemos el mumero de bytes maximo que guarda el vector*/
+		Maxdata=*P_pvectorIDs[0];
+		/*Declaramos un vector temporal para hacer backup a los datos existentes*/
+        tempVector=declarar(sizeof(int16)*(Maxdata));
+		/*Asignamos un apuntador para poder acceder a los datos*/
+		tempVector2=*P_pvectorIDs;
+		/*Copiamos los datos*/
+		for(i=0;i<Maxdata;i++) 
+			tempVector[i]=tempVector2[i];
+		/*Borramos el vector original de Ids*/
+		free(*P_pvectorIDs);
+		/*Caso en la memoria EEprom esta Vacia y queremos adicionar una pose nueva*/
+		if(tempVector[1]==-1) //Maxdata=2
+		{
+			/*Creamos un Nuevo vector para guardar la pose del mismo tamano*/
+			*P_pvectorIDs=declarar(sizeof(int16)*Maxdata);
+			/*Asignamos un apuntador para poder acceder a el nuevo vector creado*/    
+			tempVector2=*P_pvectorIDs;
+			tempVector2[0]=2;
+			tempVector2[Maxdata-1]=PoseID;
+		}
+		/* Tenemos que crear un vector Maxdata+1 para almacenar el nuevo dato*/
+		else 
+		{
+			*P_pvectorIDs=declarar(sizeof(int16)*(Maxdata+1));
+		    tempVector[0]=tempVector[0]+1;
+			/*Asignamos un apuntador para poder acceder a el nuevo vector creado*/    
+			tempVector2=*P_pvectorIDs;
+			/*Graba en la ultima posicion del nuevo vector la PoseID*/
+			tempVector2[Maxdata]=PoseID;
+			/*Copiamos la vieja informacion en el nuevo vector, Maxdata tiene el 
+			la logitud del vector antiguio*/
+			for(i=0;i<Maxdata;i++) 
+				tempVector2[i]=tempVector[i];        
+			
+		}
+		/*Borramos el backup*/
+		free(tempVector);
+	}
+	/*Estamos quitando una etiqueta el vector*/
+	if(mode==3)
+	{
+		/*Leemos el mumero de bytes maximo que guarda el vector de IdsFinales*/
+		Maxdata=*P_pvectorIDs[0];
+		/*Declaramos un vector temporal para hacer backup a los datos existentes
+		hasta Maxdata-1*/
+		if(Maxdata>2)
+		{
+			tempVector2=declarar(sizeof(int16)*(Maxdata-1));
+			/*Asignamos un apuntador para poder acceder a los datos*/
+			tempVector=*P_pvectorIDs;
+			/*Copiamos los datos desde idfinal hacia tempVector2*/
+			for(i=0;i<(Maxdata-1);i++) 
+				tempVector2[i]=tempVector[i];
+			/*Disminuimos la cantidad de datos*/
+			tempVector2[0]=tempVector2[0]-1;
+			/*Asignamos el nuevo apuntador*/
+			*P_pvectorIDs=tempVector2;			
+			/*Borramos el vector original*/
+			free(tempVector);
+		}
+	}
+
+}
+
+/*****************************************************************************************/
+double* GetGradosAxis(HWND hDlg)
+{
+
+	Result[0]=grados2rad(getlong(hDlg,IDC_EPOS));
+	Result[1]=grados2rad(getlong(hDlg,IDC_EPOS2));
+	Result[2]=grados2rad(getlong(hDlg,IDC_EPOS3));
+	Result[3]=grados2rad(getlong(hDlg,IDC_EPOS4));
+	Result[4]=grados2rad(getlong(hDlg,IDC_EPOS5));
+
+
+	return Result;		
+
+}
+
+/*****************************************************************************************/
+/*Coloca los maximos y minimos de los Scrollbar*/
+void SetScrollBottons(HWND hDlg,tAxisSettings *axisSettings)
+{
+	
+	/*Handel del scroll bar*/
+	HWND  SCB_CINPOS = GetDlgItem(hDlg,IDC_SCBCINPOS);
+	HWND  SCB_CINVEL = GetDlgItem(hDlg,IDC_SCBCINVEL);
+	HWND  SCB_CINACE = GetDlgItem(hDlg,IDC_SCBCINACE);
+	HWND  SCB_HOMPOS = GetDlgItem(hDlg,IDC_SCBHOMPOS);
+	HWND  SCB_HOMVEL = GetDlgItem(hDlg,IDC_SCBHOMVEL);
+	HWND  SCB_HOMACE = GetDlgItem(hDlg,IDC_SCBHOMACE);
+	HWND  SCB_CODOPOS = GetDlgItem(hDlg,IDC_SCBCODOPOS);
+	HWND  SCB_CODOVEL = GetDlgItem(hDlg,IDC_SCBCODOVEL);
+	HWND  SCB_CODOACE = GetDlgItem(hDlg,IDC_SCBCODOACE);
+	HWND  SCB_PIPOS = GetDlgItem(hDlg,IDC_SCBPITCHPOS);
+	HWND  SCB_PIVEL = GetDlgItem(hDlg,IDC_SCBPITCHVEL);
+	HWND  SCB_PIACE = GetDlgItem(hDlg,IDC_SCBPITCHACE);
+	HWND  SCB_ROLLPOS = GetDlgItem(hDlg,IDC_SCBROLLPOS);
+	HWND  SCB_ROLLVEL = GetDlgItem(hDlg,IDC_SCBROLLVEL);
+	HWND  SCB_ROLLACE = GetDlgItem(hDlg,IDC_SCBROLLACE);
+    /*Configuracion CINTURA*/
+	SCROLLINFO sih = { sizeof(SCROLLINFO), SIF_ALL, axisSettings[AxisWaist].minAxisAngle, 
+													axisSettings[AxisWaist].maxAxisAngle, 1, 0, 0};
+	SCROLLINFO sih2 = { sizeof(SCROLLINFO), SIF_ALL, 0, 100, 1, 0, 0};
+	SCROLLINFO sih3 = { sizeof(SCROLLINFO), SIF_ALL, 0, 100, 1, 0, 0};
+	/*Configuracion HOMBRO*/
+   	SCROLLINFO sih4 = { sizeof(SCROLLINFO), SIF_ALL,axisSettings[AxisShoulder].minAxisAngle,
+													axisSettings[AxisShoulder].maxAxisAngle, 1, 0, 0};
+	SCROLLINFO sih5 = { sizeof(SCROLLINFO), SIF_ALL, 0,10, 1, 0, 0};
+	SCROLLINFO sih6 = { sizeof(SCROLLINFO), SIF_ALL, 0,10, 1, 0, 0};
+	/*Configuracion CODO*/
+	SCROLLINFO sih7 = { sizeof(SCROLLINFO), SIF_ALL,axisSettings[AxisElbow].minAxisAngle,
+													axisSettings[AxisElbow].maxAxisAngle, 1, 0, 0};
+	SCROLLINFO sih8 = { sizeof(SCROLLINFO), SIF_ALL, 0,10, 1, 0, 0};
+	SCROLLINFO sih9 = { sizeof(SCROLLINFO), SIF_ALL, 0,10, 1, 0, 0};
+	//*Configuracion PITCH*/
+	SCROLLINFO sih10 = { sizeof(SCROLLINFO), SIF_ALL,axisSettings[AxisPitch].minAxisAngle,
+													axisSettings[AxisPitch].maxAxisAngle, 1, 0, 0};
+	SCROLLINFO sih11 = { sizeof(SCROLLINFO), SIF_ALL, 0,360, 1, 0, 0};
+	SCROLLINFO sih12 = { sizeof(SCROLLINFO), SIF_ALL, 0,360, 1, 0, 0};
+	/*Configuracion ROLL*/
+	SCROLLINFO sih13 = { sizeof(SCROLLINFO), SIF_ALL,axisSettings[AxisRoll].minAxisAngle,
+													axisSettings[AxisRoll].maxAxisAngle, 1, 0, 0};
+	SCROLLINFO sih14 = { sizeof(SCROLLINFO), SIF_ALL, 0,360, 1, 0, 0};
+	SCROLLINFO sih15 = { sizeof(SCROLLINFO), SIF_ALL, 0,360, 1, 0, 0};
+	//*Inicializo los Srollbar*/
+	/*CINTURA*/
+	SetScrollInfo(SCB_CINPOS, SB_CTL, &sih, TRUE);
+	SetScrollInfo(SCB_CINVEL, SB_CTL, &sih2, TRUE);
+	SetScrollInfo(SCB_CINACE, SB_CTL, &sih3, TRUE);
+    /*HOMBRO*/
+	SetScrollInfo(SCB_HOMPOS, SB_CTL, &sih4, TRUE);
+	SetScrollInfo(SCB_HOMVEL, SB_CTL, &sih5, TRUE);
+	SetScrollInfo(SCB_HOMACE, SB_CTL, &sih6, TRUE);
+	/*CODO*/
+	SetScrollInfo(SCB_CODOPOS, SB_CTL, &sih7, TRUE);
+	SetScrollInfo(SCB_CODOVEL, SB_CTL, &sih8, TRUE);
+	SetScrollInfo(SCB_CODOACE, SB_CTL, &sih9, TRUE);
+	/*PITCH*/
+	SetScrollInfo(SCB_PIPOS, SB_CTL, &sih10, TRUE);
+	SetScrollInfo(SCB_PIVEL, SB_CTL, &sih11, TRUE);
+	SetScrollInfo(SCB_PIACE, SB_CTL, &sih12, TRUE);
+	/*ROLL*/
+	SetScrollInfo(SCB_ROLLPOS, SB_CTL, &sih13, TRUE);
+	SetScrollInfo(SCB_ROLLVEL, SB_CTL, &sih14, TRUE);
+	SetScrollInfo(SCB_ROLLACE, SB_CTL, &sih15, TRUE);
+
+}
+
+/*****************************************************************************************/
+/*****************************************************************************************/
+/*Si se esta utilizando un Scrollbar Hombro por ejemplo tengo que revisar si esta activado ese eje*/
+/*int* axisOP por que necesito acceder a los datos vector*/
+void ActualizarScrollBar(HWND hDlg,tAxisSettings *axisSettings, HWND ControlScrollbar,int Codigo, int Posicion,int* AxisOP)
+{
+
+	int max,min,Control_ID;
+	
+
+	Control_ID=GetDlgCtrlID(ControlScrollbar);
+
+	switch(Control_ID)
+	{
+		/*Caso Cintura*/
+		case IDC_SCBCINPOS:
+		case IDC_SCBCINVEL:
+		case IDC_SCBCINACE:
+			/*Si esta activado*/
+			if(AxisOP[AxisWaist])
+			{
+				if(Control_ID==IDC_SCBCINPOS)
+				{
+					/*Obtengo los maximos y minimos*/
+					max=axisSettings[AxisWaist].maxAxisAngle;
+					min=axisSettings[AxisWaist].minAxisAngle;
+					ProcesarScrollH(hDlg,ControlScrollbar,IDC_EPOS,Codigo,Posicion,max,min);
+				}
+				if(Control_ID==IDC_SCBCINVEL)
+				{
+					max=100;
+					min=0;
+					ProcesarScrollH(hDlg,ControlScrollbar,IDC_EVELO,Codigo,Posicion,max,min);
+				 }
+				if(Control_ID==IDC_SCBCINACE)
+				{
+					max=100;
+					min=0;
+					ProcesarScrollH(hDlg,ControlScrollbar,IDC_EACE,Codigo,Posicion,max,min);
+				}
+			}
+		break;
+		/*Caso hombro*/
+		case IDC_SCBHOMPOS:
+		case IDC_SCBHOMVEL:
+		case IDC_SCBHOMACE:
+			/*Si esta activado*/
+			if(AxisOP[AxisShoulder])
+			{
+				if(Control_ID==IDC_SCBHOMPOS)
+				{
+					max=axisSettings[AxisShoulder].maxAxisAngle;
+					min=axisSettings[AxisShoulder].minAxisAngle;
+					ProcesarScrollH(hDlg,ControlScrollbar,IDC_EPOS2,Codigo,Posicion,max,min);
+				}
+				if(Control_ID==IDC_SCBHOMVEL)
+				{
+					max=360;
+					min=0;
+					ProcesarScrollH(hDlg,ControlScrollbar,IDC_EVELO2,Codigo,Posicion,max,min);
+				}
+				if(Control_ID==IDC_SCBHOMACE)
+				{
+					max=360;
+					min=0;
+					ProcesarScrollH(hDlg,ControlScrollbar,IDC_EACE2,Codigo,Posicion,max,min);
+				}
+			}
+		break;
+		/*Caso Codo*/
+		case IDC_SCBCODOPOS:
+		case IDC_SCBCODOVEL:
+		case IDC_SCBCODOACE:
+			/*Si esta activado*/
+			if(AxisOP[AxisElbow])
+			{
+		
+				if(Control_ID==IDC_SCBCODOPOS)
+				{
+					max=axisSettings[AxisElbow].maxAxisAngle;
+					min=axisSettings[AxisElbow].minAxisAngle;
+					ProcesarScrollH(hDlg,ControlScrollbar,IDC_EPOS3,Codigo,Posicion,max,min);
+				}
+				if(Control_ID==IDC_SCBCODOVEL)
+				{
+					max=360;
+					min=0;
+					ProcesarScrollH(hDlg,ControlScrollbar,IDC_EVELO3,Codigo,Posicion,max,min);
+				}
+				if(Control_ID==IDC_SCBCODOACE)
+				{
+					max=360;
+					min=0;
+					
+				ProcesarScrollH(hDlg,ControlScrollbar,IDC_EACE3,Codigo,Posicion,max,min);
+				}
+			}
+
+		break;
+		/*Caso PICH*/
+		case IDC_SCBPITCHPOS:
+		case IDC_SCBPITCHVEL:
+		case IDC_SCBPITCHACE:
+						/*Si esta activado*/
+			if(AxisOP[AxisPitch])
+			{
+				
+				if(Control_ID==IDC_SCBPITCHPOS)
+				{
+					max=axisSettings[AxisPitch].maxAxisAngle;
+					min=axisSettings[AxisPitch].minAxisAngle;
+					ProcesarScrollH(hDlg,ControlScrollbar,IDC_EPOS4,Codigo,Posicion,max,min);
+				}
+				if(Control_ID==IDC_SCBPITCHVEL)
+				{
+					max=360;
+					min=0;	
+					ProcesarScrollH(hDlg,ControlScrollbar,IDC_EVELO4,Codigo,Posicion,max,min);
+				}
+				if(Control_ID==IDC_SCBPITCHACE)
+				{
+					max=360;
+					min=0;					
+					ProcesarScrollH(hDlg,ControlScrollbar,IDC_EACE4,Codigo,Posicion,max,min);
+				}
+			}
+
+		break;
+		/*Caso ROLL*/
+		case IDC_SCBROLLPOS:
+		case IDC_SCBROLLVEL:
+		case IDC_SCBROLLACE:
+						/*Si esta activado*/
+			if(AxisOP[ AxisRoll])
+			{
+				/*Obtengo los maximos y minimos*/
+				if(Control_ID==IDC_SCBROLLPOS)
+				{
+					max=axisSettings[ AxisRoll].maxAxisAngle;
+					min=axisSettings[ AxisRoll].minAxisAngle;			
+					ProcesarScrollH(hDlg,ControlScrollbar,IDC_EPOS5,Codigo,Posicion,max,min);
+				}
+				if(Control_ID==IDC_SCBROLLVEL)
+				{
+					max=360;
+					min=0;					
+					ProcesarScrollH(hDlg,ControlScrollbar,IDC_EVELO5,Codigo,Posicion,max,min);
+				}
+				if(Control_ID==IDC_SCBROLLACE)
+				{
+					max=360;
+					min=0;					
+					ProcesarScrollH(hDlg,ControlScrollbar,IDC_EACE5,Codigo,Posicion,max,min);
+				}
+			}
+
+		break;
+	}
+}
+
+
+/*****************************************************************************************/
+/*Procesa el comportamiento del scroll*/
+void ProcesarScrollH(HWND hDlg, HWND ControlScrollbar, int ControlEdit,int Codigo, int Posicion,int max, int min)
+{
+	
+	/*Obtenemos la poccion del scrollbar*/
+   int Pos = GetScrollPos(ControlScrollbar,SB_CTL);
+
+   /*Analizamos del codigo de compoartamiento*/
+   switch(Codigo)
+   {
+
+		//FLECHA DERECHA
+		case SB_LINERIGHT:
+			Pos++;
+        break;
+		//FLECHA IZQUIERDA
+		case SB_LINELEFT:
+			Pos--;
+        break;
+		//ZONA DESPUES DEL BOTON
+		case SB_PAGERIGHT:
+			Pos += 5;
+        break;
+		//ZONA ANTES DEL BOTON
+		case SB_PAGELEFT:
+			Pos -= 5;
+        break;
+		/*Hay problema cuando se usan numeros negativos*/
+		case SB_THUMBPOSITION:
+		case SB_THUMBTRACK:
+			if(Posicion>max)
+				Pos = Posicion-65536;
+			else
+				Pos = Posicion;
+		break;
+		case SB_ENDSCROLL:
+        break;
+   }
+   //Es necesario para que la pos del scrollbar no este fuera de los limites establecidos
+   /*Debug */
+   //if(Pos < min) Pos = min;
+   /*Debug */
+  // if(Pos > max) Pos = max;
+   /*Colocamos el numero el control edit*/
+   SetDlgItemInt(hDlg,ControlEdit, (UINT)Pos,TRUE);
+   /*Abanzamos el control*/
+   SetScrollPos(ControlScrollbar, SB_CTL, Pos, TRUE);          
+}
+
+
+/*****************************************************************************************/
+void SetAngle(HWND hDlg,int * axisOP,double * q)
+{
+
+	int i;
+	
+	/*Habilito todos los campos del modo grafico*/
+	for(i=0;i<DOF;i++)
+	{
+		Habilitar_campostech(hDlg,i,1);
+		axisOP[i]=1;
+	}
+	/*Coloca las marcas del checkbox*/
+	CheckDlgButton(hDlg,IDC_RCINTURA,BST_CHECKED);
+	CheckDlgButton(hDlg,IDC_RHOMBRO,BST_CHECKED);
+	CheckDlgButton(hDlg,IDC_RCODO,BST_CHECKED);
+	CheckDlgButton(hDlg,IDC_RPITCH,BST_CHECKED);
+	CheckDlgButton(hDlg,IDC_RROLL,BST_CHECKED);
+	/*Colo los angulos*/
+	setlong(hDlg,IDC_EPOS ,q[0]);
+	setlong(hDlg,IDC_EPOS2,q[1]);
+	setlong(hDlg,IDC_EPOS3,q[2]);
+	setlong(hDlg,IDC_EPOS4,q[3]);
+	setlong(hDlg,IDC_EPOS5,q[4]);
+
+}
+
+
+void Put_ID(HWND hDlg,int16* pvectorIDs,int ComboxID)
+{
+	int CPoses,PosesID,i;
+	char Texto[10]="0";
+
+
+	CPoses=pvectorIDs[0];
+	if(pvectorIDs[1]==-1)
+	{
+		SendDlgItemMessage(hDlg,ComboxID, CB_RESETCONTENT, 0,0);
+	}
+	else
+	{
+		for(i=1;i<CPoses;i++)
+		{
+			PosesID=pvectorIDs[i];
+			itoa(PosesID,Texto,10);
+			SendDlgItemMessage(hDlg,ComboxID, CB_ADDSTRING, 0, (LPARAM)Texto);				
+		}
+		SendDlgItemMessage(hDlg,ComboxID,CB_SETCURSEL, 0,0);	
+	}
+
+
+}

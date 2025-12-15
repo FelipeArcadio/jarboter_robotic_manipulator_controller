@@ -1,0 +1,14 @@
+;---------------------------------------------------
+;Topic Authors
+;---------------------------------------------------
+.topic authors
+.title About the authors
+;<p>
+;<img src=logo>
+;</p>
+<p>
+(c) Copyright by <kbd>Andres Jaramillo Botero</kbd>,
+<kbd>Inc</kbd>,
+<kbd>2000 - </kbd>.<br>
+E-mail: <kbd><a href=mailto:ajaramil@puj.edu.co>ajaramil@puj.edu.co</a></kbd>.
+</p>

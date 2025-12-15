@@ -1,0 +1,152 @@
+   1               		.file	"mem.c"
+   2               	__SREG__ = 0x3f
+   3               	__SP_H__ = 0x3e
+   4               	__SP_L__ = 0x3d
+   5               	__CCP__  = 0x34
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   9               		.text
+  10               	.Ltext0:
+ 231               	.global	maxavail
+ 233               	maxavail:
+   1:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/mem.c **** #include "mem.h"
+   2:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/mem.c **** #include "types.h"
+   3:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/mem.c **** 
+   4:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/mem.c **** #ifdef _AVR_IO_H_
+   5:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/mem.c **** 	#include <stdlib.h>
+   6:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/mem.c **** 	#include <string.h>
+   7:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/mem.c **** 	#include <stdio.h>    		//salida estandar
+   8:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/mem.c **** 	#define stepsize 2          // test in byte steps
+   9:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/mem.c **** #else
+  10:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/mem.c **** 	#include <memory.h>
+  11:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/mem.c **** #endif
+  12:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/mem.c **** 
+  13:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/mem.c **** 
+  14:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/mem.c **** /*****************************************************************************************/
+  15:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/mem.c **** void* declarar(size_t x)
+  16:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/mem.c **** {
+  17:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/mem.c ****   void* p = malloc(x);
+  18:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/mem.c ****   if(p==NULL)
+  19:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/mem.c ****   {
+  20:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/mem.c **** 	#ifdef _AVR_IO_H_
+  21:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/mem.c **** 		printf("declarar=> ERROR NO HAY MEMORIA\n");
+  22:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/mem.c **** 	#endif
+  23:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/mem.c ****   }
+  24:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/mem.c ****   else						    
+  25:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/mem.c ****    memset(p, 0,x);
+  26:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/mem.c ****   
+  27:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/mem.c ****  return p;
+  28:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/mem.c **** }
+  29:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/mem.c **** 
+  30:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/mem.c **** /*****************************************************************************************/
+  31:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/mem.c **** #ifdef _AVR_IO_H_
+  32:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/mem.c **** uint16 maxavail(void) 
+  33:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/mem.c **** {
+ 235               	.global	maxavail
+ 237 0000 CF93      	maxavail:
+ 239               	.LM0:
+ 240               	.LFBB1:
+ 241               		push r28
+ 242               		push r29
+ 243 0004 C0E0      	/* prologue: function */
+ 244 0006 D0E0      	/* frame size = 0 */
+  34:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/mem.c **** 	uint8 *ptr;                // pointer to allocated memory
+  35:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/mem.c **** 	uint16 testsize;    // what we guess
+  36:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/mem.c **** 	
+  37:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/mem.c **** 	for(testsize=0; testsize < 65536;testsize++) //64K
+  38:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/mem.c **** 	{ 
+  39:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/mem.c **** 		ptr = (uint8*)malloc(testsize);
+ 246               	r28
+ 247               		push r29
+ 248 0008 CE01      	/* prologue: function */
+ 249 000a 0E94 0000 	/* frame size = 0 */
+  40:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/mem.c **** 		if(ptr==NULL)  // failed, not enough memory... 
+ 250               	0-.LFBB1
+ 251               	.LM0:
+ 252 000e 0097      	.LFBB1:
+ 253 0010 01F0      		push r28
+  41:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/mem.c **** 		{
+  42:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/mem.c **** 			break;
+  43:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/mem.c **** 		}
+  44:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/mem.c **** 		else 
+  45:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/mem.c **** 		{
+  46:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/mem.c **** 		free(ptr);
+ 254               	il
+ 256 0012 0E94 0000 	maxavail:
+ 258               	.LM0:
+ 259 0016 2196      	.LFBB1:
+ 260 0018 00C0      		push r28
+ 261               		push r29
+  47:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/mem.c **** 		}
+  48:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/mem.c **** 	}
+  49:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/mem.c **** 	return testsize;  // the previous value was ok...
+  50:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/mem.c **** } // maxavail
+ 262               	axavail, @function
+ 263               	maxavail:
+ 265               	.LM0:
+ 266 001c DF91      	.LFBB1:
+ 267 001e CF91      		push r28
+ 268 0020 0895      		push r29
+ 269               	/* prologue: function */
+ 270               	/* frame size = 0 */
+ 272               	.LM1:
+ 273               		ldi r28,lo8(0)
+ 274               		ldi r29,hi8(0)
+ 275               	.L3:
+ 277               	.LM2:
+ 278               		movw r24,r28
+ 279               		call malloc
+ 281               	.LM3:
+ 282               		sbiw r24,0
+ 283               		breq .L2
+ 285 0022 0F93      	.LM4:
+ 286 0024 1F93      		call free
+ 288 0028 DF93      	.LM5:
+ 289               		adiw r28,1
+ 290               		rjmp .L3
+ 291 002a 182F      	.L2:
+ 293               	.LM6:
+ 294               		movw r24,r28
+ 295 002e 0E94 0000 	/* epilogue start */
+ 296 0032 EC01      		pop r29
+ 297               		pop r28
+ 298               		ret
+ 303 0038 80E0      	.Lscope1:
+ 304 003a 90E0      		.data
+ 305 003c 0E94 0000 	.LC0:
+ 306 0040 00C0      		.string	"declarar=> ERROR NO HAY MEMORIA"
+ 307               		.text
+ 309               	.global	declarar
+ 311 0044 70E0      	declarar:
+ 313 0048 502F      	.LM7:
+ 314 004a 0E94 0000 	.LFBB2:
+ 315               		push r16
+ 316               		push r17
+ 317               		push r28
+ 318 004e CE01      		push r29
+ 319               	/* prologue: function */
+ 320 0050 DF91      	/* frame size = 0 */
+ 321 0052 CF91      		mov r17,r24
+ 322 0054 1F91      		mov r16,r25
+ 324 0058 0895      	.LM8:
+ 325               		call malloc
+ 326               		movw r28,r24
+ 328               	.LM9:
+ 329               		sbiw r24,0
+DEFINED SYMBOLS
+                            *ABS*:00000000 mem.c
+C:\DOCUME~1\David\LOCALS~1\Temp/cc2kWrGk.s:2      *ABS*:0000003f __SREG__
+C:\DOCUME~1\David\LOCALS~1\Temp/cc2kWrGk.s:3      *ABS*:0000003e __SP_H__
+C:\DOCUME~1\David\LOCALS~1\Temp/cc2kWrGk.s:4      *ABS*:0000003d __SP_L__
+C:\DOCUME~1\David\LOCALS~1\Temp/cc2kWrGk.s:5      *ABS*:00000034 __CCP__
+C:\DOCUME~1\David\LOCALS~1\Temp/cc2kWrGk.s:6      *ABS*:00000000 __tmp_reg__
+C:\DOCUME~1\David\LOCALS~1\Temp/cc2kWrGk.s:7      *ABS*:00000001 __zero_reg__
+C:\DOCUME~1\David\LOCALS~1\Temp/cc2kWrGk.s:233    .text:00000000 maxavail
+C:\DOCUME~1\David\LOCALS~1\Temp/cc2kWrGk.s:281    .text:00000022 declarar
+
+UNDEFINED SYMBOLS
+malloc
+free
+puts
+memset
+__do_copy_data

@@ -1,0 +1,17 @@
+# Description
+""
+# Target
+( 0.00000000, 0.00000000, 0.00000000, 0.00000000, 0.00000000, 0.00000000 ) 0 3 0
+# Objects List
+(
+)
+# Robots List
+(
+  "./Saves/Robots/Jarboter - Meters.rbt" "" ( 0.00000000, 0.00000000, 0.00000000, 0.00000000, 0.00000000, 0.00000000 ) 0 3 0
+  ( 0.00000000, -130.00000014, 130.00000014, 119.99999986, 0.00000000 ) 
+Fixed
+)
+# Trajectories List
+(
+  "./Saves/Trajectories/Jarboter - Three sections straight line - Meters .tjc" "Jarboter - Three sections straight line - Meters " ( -0.17500000, -0.04000000, 0.30000000, 0.00000000, 180.00000000, 0.00000000 ) 0 3 0
+)

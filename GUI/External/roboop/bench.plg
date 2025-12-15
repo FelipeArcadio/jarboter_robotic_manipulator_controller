@@ -1,0 +1,78 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: newmat - Win32 Debug--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\DOCUME~1\Felipe\LOCALS~1\Temp\RSP1BD.tmp" with contents
+[
+/nologo /MDd /W3 /Gm /GX /ZI /Od /I "newmat" /I "source" /D "_DEBUG" /D "WIN32" /D "_MBCS" /D "_LIB" /D "_STANDARD_" /Fp"Debug/newmat.pch" /YX /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
+"C:\Documents and Settings\Felipe\Desktop\Librerias Robotica\ROBOOP\Program Source\roboop\roboop\newmat\newfft.cpp"
+"C:\Documents and Settings\Felipe\Desktop\Librerias Robotica\ROBOOP\Program Source\roboop\roboop\newmat\newmat9.cpp"
+"C:\Documents and Settings\Felipe\Desktop\Librerias Robotica\ROBOOP\Program Source\roboop\roboop\newmat\newmatex.cpp"
+"C:\Documents and Settings\Felipe\Desktop\Librerias Robotica\ROBOOP\Program Source\roboop\roboop\newmat\newmatnl.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\Felipe\LOCALS~1\Temp\RSP1BD.tmp" 
+Creating temporary file "C:\DOCUME~1\Felipe\LOCALS~1\Temp\RSP1BE.tmp" with contents
+[
+/nologo /out:"Debug\newmat.lib" 
+".\Debug\bandmat.obj"
+".\Debug\cholesky.obj"
+".\Debug\evalue.obj"
+".\Debug\fft.obj"
+".\Debug\hholder.obj"
+".\Debug\jacobi.obj"
+".\Debug\myexcept.obj"
+".\Debug\newfft.obj"
+".\Debug\newmat1.obj"
+".\Debug\newmat2.obj"
+".\Debug\newmat3.obj"
+".\Debug\newmat4.obj"
+".\Debug\newmat5.obj"
+".\Debug\newmat6.obj"
+".\Debug\newmat7.obj"
+".\Debug\newmat8.obj"
+".\Debug\newmat9.obj"
+".\Debug\newmatex.obj"
+".\Debug\newmatnl.obj"
+".\Debug\newmatrm.obj"
+".\Debug\nm_misc.obj"
+".\Debug\solution.obj"
+".\Debug\sort.obj"
+".\Debug\submat.obj"
+".\Debug\svd.obj"
+]
+Creating command line "link.exe -lib @C:\DOCUME~1\Felipe\LOCALS~1\Temp\RSP1BE.tmp"
+<h3>Output Window</h3>
+Compiling...
+newfft.cpp
+c:\documents and settings\felipe\desktop\librerias robotica\roboop\program source\roboop\roboop\newmat\newmat.h(1592) : fatal error C1001: INTERNAL COMPILER ERROR
+        (compiler file 'msc1.cpp', line 1786) 
+         Please choose the Technical Support command on the Visual C++ 
+         Help menu, or open the Technical Support help file for more information
+newmat9.cpp
+c:\documents and settings\felipe\desktop\librerias robotica\roboop\program source\roboop\roboop\newmat\newmat.h(1592) : fatal error C1001: INTERNAL COMPILER ERROR
+        (compiler file 'msc1.cpp', line 1786) 
+         Please choose the Technical Support command on the Visual C++ 
+         Help menu, or open the Technical Support help file for more information
+newmatex.cpp
+c:\documents and settings\felipe\desktop\librerias robotica\roboop\program source\roboop\roboop\newmat\newmat.h(1592) : fatal error C1001: INTERNAL COMPILER ERROR
+        (compiler file 'msc1.cpp', line 1786) 
+         Please choose the Technical Support command on the Visual C++ 
+         Help menu, or open the Technical Support help file for more information
+newmatnl.cpp
+c:\documents and settings\felipe\desktop\librerias robotica\roboop\program source\roboop\roboop\newmat\newmat.h(1592) : fatal error C1001: INTERNAL COMPILER ERROR
+        (compiler file 'msc1.cpp', line 1786) 
+         Please choose the Technical Support command on the Visual C++ 
+         Help menu, or open the Technical Support help file for more information
+Error executing cl.exe.
+
+
+
+<h3>Results</h3>
+bench.exe - 4 error(s), 0 warning(s)
+</pre>
+</body>
+</html>

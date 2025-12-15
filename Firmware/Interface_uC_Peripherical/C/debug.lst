@@ -1,0 +1,2043 @@
+   1               		.file	"debug.c"
+   2               	__SREG__ = 0x3f
+   3               	__SP_H__ = 0x3e
+   4               	__SP_L__ = 0x3d
+   5               	__CCP__  = 0x34
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   9               		.text
+  10               	.Ltext0:
+ 232               	.global	delay_1s
+ 234               	delay_1s:
+   1:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** #include <avr/io.h>
+   2:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** #include <avr/eeprom.h>
+   3:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** /**Standard Integer Types*/
+   4:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** #include <stdint.h>
+   5:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** #include <stdlib.h>
+   6:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** #include <stdio.h> 
+   7:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** #include <util/delay.h>
+   8:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** #include "types.h"
+   9:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** #include "macros.h"
+  10:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** #include "tw_teach_pendant.h"
+  11:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** #include "COMMONtypes.h"
+  12:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** #include "tw_rtc.h"
+  13:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** #include "messages.h"
+  14:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 
+  15:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 
+  16:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** PMDint32 EEMEM ATmegaEEPROM_var=0;
+  17:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 
+  18:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** /****************************************************************************************/  
+  19:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** void delay_1s(void)
+  20:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** {
+ 235               	20,.LM0-.LFBB1
+ 236               	.LM0:
+ 237               	.LFBB1:
+ 238               	/* prologue: function */
+ 239               	/* frame size = 0 */
+ 241               	.LM1:
+ 242 0000 20E0      		ldi r18,lo8(0)
+ 243               	.LBB46:
+ 244               	.LBB47:
+ 245               	.LBB48:
+ 246               	.LBB49:
+ 248               	.Ltext1:
+   1:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** /* Copyright (c) 2002, Marek Michalkiewicz
+   2:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****    Copyright (c) 2007 Joerg Wunsch
+   3:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****    All rights reserved.
+   4:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+   5:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****    Redistribution and use in source and binary forms, with or without
+   6:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****    modification, are permitted provided that the following conditions are met:
+   7:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+   8:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****    * Redistributions of source code must retain the above copyright
+   9:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****      notice, this list of conditions and the following disclaimer.
+  10:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  11:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****    * Redistributions in binary form must reproduce the above copyright
+  12:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****      notice, this list of conditions and the following disclaimer in
+  13:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****      the documentation and/or other materials provided with the
+  14:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****      distribution.
+  15:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  16:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****    * Neither the name of the copyright holders nor the names of
+  17:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****      contributors may be used to endorse or promote products derived
+  18:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****      from this software without specific prior written permission.
+  19:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  20:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  21:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****   AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  22:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+  23:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****   ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+  24:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****   LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+  25:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+  26:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****   SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+  27:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+  28:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+  29:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+  30:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****   POSSIBILITY OF SUCH DAMAGE. */
+  31:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  32:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** /* $Id: delay_basic.h,v 1.1 2007/05/13 21:23:20 joerg_wunsch Exp $ */
+  33:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  34:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** #ifndef _UTIL_DELAY_BASIC_H_
+  35:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** #define _UTIL_DELAY_BASIC_H_ 1
+  36:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  37:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** #include <inttypes.h>
+  38:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  39:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** /** \file */
+  40:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** /** \defgroup util_delay_basic <util/delay_basic.h>: Basic busy-wait delay loops
+  41:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     \code
+  42:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     #include <util/delay_basic.h>
+  43:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     \endcode
+  44:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  45:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     The functions in this header file implement simple delay loops
+  46:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     that perform a busy-waiting.  They are typically used to
+  47:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     facilitate short delays in the program execution.  They are
+  48:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     implemented as count-down loops with a well-known CPU cycle
+  49:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     count per loop iteration.  As such, no other processing can
+  50:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     occur simultaneously.  It should be kept in mind that the
+  51:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     functions described here do not disable interrupts.
+  52:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  53:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     In general, for long delays, the use of hardware timers is
+  54:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     much preferrable, as they free the CPU, and allow for
+  55:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     concurrent processing of other events while the timer is
+  56:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     running.  However, in particular for very short delays, the
+  57:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     overhead of setting up a hardware timer is too much compared
+  58:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     to the overall delay time.
+  59:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  60:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     Two inline functions are provided for the actual delay algorithms.
+  61:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  62:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** */
+  63:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  64:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** #if !defined(__DOXYGEN__)
+  65:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** static inline void _delay_loop_1(uint8_t __count) __attribute__((always_inline));
+  66:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** static inline void _delay_loop_2(uint16_t __count) __attribute__((always_inline));
+  67:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** #endif
+  68:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  69:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** /** \ingroup util_delay_basic
+  70:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  71:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     Delay loop using an 8-bit counter \c __count, so up to 256
+  72:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     iterations are possible.  (The value 256 would have to be passed
+  73:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     as 0.)  The loop executes three CPU cycles per iteration, not
+  74:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     including the overhead the compiler needs to setup the counter
+  75:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     register.
+  76:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  77:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     Thus, at a CPU speed of 1 MHz, delays of up to 768 microseconds
+  78:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     can be achieved.
+  79:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** */
+  80:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** void
+  81:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** _delay_loop_1(uint8_t __count)
+  82:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** {
+  83:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 	__asm__ volatile (
+  84:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 		"1: dec %0" "\n\t"
+  85:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 		"brne 1b"
+  86:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 		: "=r" (__count)
+  87:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 		: "0" (__count)
+  88:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 	);
+  89:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** }
+  90:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  91:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** /** \ingroup util_delay_basic
+  92:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  93:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     Delay loop using a 16-bit counter \c __count, so up to 65536
+  94:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     iterations are possible.  (The value 65536 would have to be
+  95:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     passed as 0.)  The loop executes four CPU cycles per iteration,
+  96:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     not including the overhead the compiler requires to setup the
+  97:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     counter register pair.
+  98:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  99:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     Thus, at a CPU speed of 1 MHz, delays of up to about 262.1
+ 100:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     milliseconds can be achieved.
+ 101:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****  */
+ 102:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** void
+ 103:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** _delay_loop_2(uint16_t __count)
+ 104:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** {
+ 105:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 	__asm__ volatile (
+ 249               	05,.LM2-.LFBB1
+ 250               	.LM2:
+ 251 0002 40E2      		ldi r20,lo8(20000)
+ 252 0004 5EE4      		ldi r21,hi8(20000)
+ 253               	.L2:
+ 254 0006 CA01      		movw r24,r20
+ 255               	/* #APP */
+ 256               	 ;  105 "c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h" 1
+ 257 0008 0197      		1: sbiw r24,1
+ 258 000a 01F4      		brne 1b
+ 259               	 ;  0 "" 2
+ 260               	/* #NOAPP */
+ 261               	.LBE49:
+ 262               	.LBE48:
+ 263               	.LBE47:
+ 264               	.LBE46:
+ 266               	.Ltext2:
+  21:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c ****   uint8 i;
+  22:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 
+  23:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c ****   for (i = 0; i < 100; i++)   
+ 267               	M3-.LFBB1
+ 268               	.LM3:
+ 269 000c 2F5F      		subi r18,lo8(-(1))
+ 270 000e 2436      		cpi r18,lo8(100)
+ 271 0010 01F4      		brne .L2
+ 272               	/* epilogue start */
+  24:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c ****     _delay_ms(10);
+  25:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** }
+ 273               	n	68,0,25,.LM4-.LFBB1
+ 274               	.LM4:
+ 275 0012 0895      		ret
+ 280               	.Lscope1:
+ 283               	.global	buzzer
+ 285               	buzzer:
+  26:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 
+  27:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** /****************************************************************************************/ 
+  28:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** void buzzer(uint16 valor_s)
+  29:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** {
+ 286               	29,.LM5-.LFBB2
+ 287               	.LM5:
+ 288               	.LFBB2:
+ 289               	/* prologue: function */
+ 290               	/* frame size = 0 */
+ 291 0014 AC01      		movw r20,r24
+  30:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	uint8 i;	
+  31:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	
+  32:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	PORTD 	|= 	_BV(Alarma);
+ 292               	n	68,0,32,.LM6-.LFBB2
+ 293               	.LM6:
+ 294 0016 5F9A      		sbi 43-32,7
+ 295 0018 30E0      		ldi r19,lo8(0)
+ 296               	.LBB50:
+ 297               	.LBB51:
+ 298               	.LBB52:
+ 299               	.LBB53:
+ 300               	.LBB54:
+ 301               	.LBB55:
+ 303               	.Ltext3:
+ 305               	.LM7:
+ 306 001a 60E2      		ldi r22,lo8(20000)
+ 307 001c 7EE4      		ldi r23,hi8(20000)
+ 308 001e 00C0      		rjmp .L6
+ 309               	.L8:
+ 310               	.LBE55:
+ 311               	.LBE54:
+ 312               	.LBE53:
+ 313               	.LBE52:
+ 314               	.LBE51:
+ 315               	.LBE50:
+ 317               	.Ltext4:
+  33:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	
+  34:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	for(i = 0; i < valor_s; i++)
+ 318               	2
+ 319               	.LM8:
+ 320 0020 20E0      		ldi r18,lo8(0)
+ 321               	.L7:
+ 322               	.LBB61:
+ 323               	.LBB60:
+ 324               	.LBB59:
+ 325               	.LBB58:
+ 326               	.LBB57:
+ 327               	.LBB56:
+ 329               	.Ltext5:
+ 331               	.LM9:
+ 332 0022 CB01      		movw r24,r22
+ 333               	/* #APP */
+ 334               	 ;  105 "c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h" 1
+ 335 0024 0197      		1: sbiw r24,1
+ 336 0026 01F4      		brne 1b
+ 337               	 ;  0 "" 2
+ 338               	/* #NOAPP */
+ 339               	.LBE56:
+ 340               	.LBE57:
+ 341               	.LBE58:
+ 342               	.LBE59:
+ 344               	.Ltext6:
+ 346               	.LM10:
+ 347 0028 2F5F      		subi r18,lo8(-(1))
+ 348 002a 2436      		cpi r18,lo8(100)
+ 349 002c 01F4      		brne .L7
+ 350               	.LBE60:
+ 351               	.LBE61:
+ 353               	.LM11:
+ 354 002e 3F5F      		subi r19,lo8(-(1))
+ 355               	.L6:
+ 356 0030 832F      		mov r24,r19
+ 357 0032 90E0      		ldi r25,lo8(0)
+ 358 0034 8417      		cp r24,r20
+ 359 0036 9507      		cpc r25,r21
+ 360 0038 00F0      		brlo .L8
+  35:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	{
+  36:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 		delay_1s();
+  37:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	}
+  38:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	
+  39:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	PORTD 	&= 	~(_BV(Alarma));
+ 361               	-32,7
+ 362               	/* epilogue start */
+ 364               	.LM13:
+  40:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** }
+ 365               	
+ 376               	.Lscope2:
+ 379               	.global	buzzer_ms
+ 381               	buzzer_ms:
+ 383               	.LM14:
+  41:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** /****************************************************************************************/ 
+  42:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** void buzzer_ms(uint32 valor_ms)
+  43:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** {
+ 384               		push r11
+ 385               		push r12
+ 386               		push r13
+ 387 003e AF92      		push r14
+ 388 0040 BF92      		push r15
+ 389 0042 CF92      		push r16
+ 390 0044 DF92      		push r17
+ 391 0046 EF92      	/* prologue: function */
+ 392 0048 FF92      	/* frame size = 0 */
+ 394 004c 1F93      	.LM15:
+ 395               		sbi 43-32,7
+  44:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	
+  45:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	
+  46:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	PORTD 	|= 	_BV(Alarma);
+ 397               	__floatunsisf
+ 398               		movw r10,r22
+ 399 004e 5F9A      		movw r12,r24
+  47:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	
+  48:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	_delay_ms((double)valor_ms);
+ 400               	B62:
+ 401               	.LBB63:
+ 403 0054 5B01      	.Ltext7:
+ 405               	.LM17:
+ 406               		ldi r18,lo8(0x44fa0000)
+ 407               		ldi r19,hi8(0x44fa0000)
+ 408               		ldi r20,hlo8(0x44fa0000)
+   1:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** /* Copyright (c) 2002, Marek Michalkiewicz
+   2:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****    Copyright (c) 2004,2005,2007 Joerg Wunsch
+   3:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****    Copyright (c) 2007  Florin-Viorel Petrov
+   4:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****    All rights reserved.
+   5:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+   6:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****    Redistribution and use in source and binary forms, with or without
+   7:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****    modification, are permitted provided that the following conditions are met:
+   8:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+   9:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****    * Redistributions of source code must retain the above copyright
+  10:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****      notice, this list of conditions and the following disclaimer.
+  11:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+  12:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****    * Redistributions in binary form must reproduce the above copyright
+  13:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****      notice, this list of conditions and the following disclaimer in
+  14:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****      the documentation and/or other materials provided with the
+  15:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****      distribution.
+  16:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+  17:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****    * Neither the name of the copyright holders nor the names of
+  18:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****      contributors may be used to endorse or promote products derived
+  19:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****      from this software without specific prior written permission.
+  20:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+  21:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  22:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****   AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  23:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+  24:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****   ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+  25:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****   LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+  26:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+  27:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****   SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+  28:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+  29:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+  30:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+  31:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****   POSSIBILITY OF SUCH DAMAGE. */
+  32:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+  33:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** /* $Id: delay.h,v 1.5.2.1 2009/02/25 10:14:03 joerg_wunsch Exp $ */
+  34:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+  35:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** #ifndef _UTIL_DELAY_H_
+  36:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** #define _UTIL_DELAY_H_ 1
+  37:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+  38:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** #include <inttypes.h>
+  39:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** #include <util/delay_basic.h>
+  40:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+  41:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** /** \file */
+  42:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** /** \defgroup util_delay <util/delay.h>: Convenience functions for busy-wait delay loops
+  43:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     \code
+  44:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     #define F_CPU 1000000UL  // 1 MHz
+  45:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     //#define F_CPU 14.7456E6
+  46:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     #include <util/delay.h>
+  47:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     \endcode
+  48:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+  49:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     \note As an alternative method, it is possible to pass the
+  50:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     F_CPU macro down to the compiler from the Makefile.
+  51:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     Obviously, in that case, no \c \#define statement should be
+  52:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     used.
+  53:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+  54:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     The functions in this header file are wrappers around the basic
+  55:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     busy-wait functions from <util/delay_basic.h>.  They are meant as
+  56:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     convenience functions where actual time values can be specified
+  57:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     rather than a number of cycles to wait for.  The idea behind is
+  58:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     that compile-time constant expressions will be eliminated by
+  59:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     compiler optimization so floating-point expressions can be used
+  60:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     to calculate the number of delay cycles needed based on the CPU
+  61:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     frequency passed by the macro F_CPU.
+  62:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+  63:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     \note In order for these functions to work as intended, compiler
+  64:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     optimizations <em>must</em> be enabled, and the delay time
+  65:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     <em>must</em> be an expression that is a known constant at
+  66:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     compile-time.  If these requirements are not met, the resulting
+  67:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     delay will be much longer (and basically unpredictable), and
+  68:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     applications that otherwise do not use floating-point calculations
+  69:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     will experience severe code bloat by the floating-point library
+  70:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     routines linked into the application.
+  71:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+  72:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     The functions available allow the specification of microsecond, and
+  73:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     millisecond delays directly, using the application-supplied macro
+  74:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     F_CPU as the CPU clock frequency (in Hertz).
+  75:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+  76:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** */
+  77:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+  78:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** #if !defined(__DOXYGEN__)
+  79:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** static inline void _delay_us(double __us) __attribute__((always_inline));
+  80:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** static inline void _delay_ms(double __ms) __attribute__((always_inline));
+  81:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** #endif
+  82:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+  83:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** #ifndef F_CPU
+  84:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** /* prevent compiler error by supplying a default */
+  85:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** # warning "F_CPU not defined for <util/delay.h>"
+  86:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** # define F_CPU 1000000UL
+  87:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** #endif
+  88:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+  89:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** #ifndef __OPTIMIZE__
+  90:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** # warning "Compiler optimizations disabled; functions from <util/delay.h> won't work as designed"
+  91:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** #endif
+  92:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+  93:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** /**
+  94:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****    \ingroup util_delay
+  95:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+  96:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****    Perform a delay of \c __ms milliseconds, using _delay_loop_2().
+  97:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+  98:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****    The macro F_CPU is supposed to be defined to a
+  99:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****    constant defining the CPU clock frequency (in Hertz).
+ 100:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+ 101:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****    The maximal possible delay is 262.14 ms / F_CPU in MHz.
+ 102:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+ 103:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****    When the user request delay which exceed the maximum possible one,
+ 104:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****    _delay_ms() provides a decreased resolution functionality. In this
+ 105:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****    mode _delay_ms() will work with a resolution of 1/10 ms, providing
+ 106:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****    delays up to 6.5535 seconds (independent from CPU frequency).  The
+ 107:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****    user will not be informed about decreased resolution.
+ 108:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****  */
+ 109:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** void
+ 110:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** _delay_ms(double __ms)
+ 111:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** {
+ 112:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 	uint16_t __ticks;
+ 113:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 	double __tmp = ((F_CPU) / 4e3) * __ms;
+ 409               	hhi8(0x44fa0000)
+ 410               		call __mulsf3
+ 411 0058 20E0      		movw r14,r22
+ 412 005a 30E0      		movw r16,r24
+ 414 005e 54E4      	.LM18:
+ 415 0060 0E94 0000 		ldi r18,lo8(0x3f800000)
+ 416 0064 7B01      		ldi r19,hi8(0x3f800000)
+ 417 0066 8C01      		ldi r20,hlo8(0x3f800000)
+ 114:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 	if (__tmp < 1.0)
+ 418               	hhi8(0x3f800000)
+ 419               		call __ltsf2
+ 420 0068 20E0      		tst r24
+ 421 006a 30E0      		brge .L23
+ 422 006c 40E8      		ldi r22,lo8(1)
+ 423 006e 5FE3      		ldi r23,hi8(1)
+ 424 0070 0E94 0000 		rjmp .L14
+ 425 0074 8823      	.L23:
+ 427 0078 61E0      	.LM19:
+ 428 007a 70E0      		movw r24,r16
+ 429 007c 00C0      		movw r22,r14
+ 430               		ldi r18,lo8(0x477fff00)
+ 115:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 		__ticks = 1;
+ 116:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 	else if (__tmp > 65535)
+ 431               	0x477fff00)
+ 432               		ldi r20,hlo8(0x477fff00)
+ 433 007e C801      		ldi r21,hhi8(0x477fff00)
+ 434 0080 B701      		call __gtsf2
+ 435 0082 20E0      		cp __zero_reg__,r24
+ 436 0084 3FEF      		brge .L24
+ 438 0088 57E4      	.LM20:
+ 439 008a 0E94 0000 		movw r24,r12
+ 440 008e 1816      		movw r22,r10
+ 441 0090 04F4      		ldi r18,lo8(0x41200000)
+ 117:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 	{
+ 118:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 		//	__ticks = requested delay in 1/10 ms
+ 119:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 		__ticks = (uint16_t) (__ms * 10.0);
+ 442               	8(0x41200000)
+ 443               		ldi r20,hlo8(0x41200000)
+ 444 0092 C601      		ldi r21,hhi8(0x41200000)
+ 445 0094 B501      		call __mulsf3
+ 446 0096 20E0      		call __fixunssfsi
+ 447 0098 30E0      	.LBB64:
+ 448 009a 40E2      	.LBB65:
+ 450 009e 0E94 0000 	.Ltext8:
+ 452               	.LM21:
+ 453               		ldi r24,lo8(200)
+ 454               		ldi r25,hi8(200)
+ 455               		rjmp .L17
+ 456               	.L18:
+ 457               		movw r30,r24
+ 458 00a6 88EC      	/* #APP */
+ 459 00a8 90E0      	 ;  105 "c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h" 1
+ 460 00aa 00C0      		1: sbiw r30,1
+ 461               		brne 1b
+ 462 00ac FC01      	 ;  0 "" 2
+ 463               	/* #NOAPP */
+ 464               	.LBE65:
+ 465 00ae 3197      	.LBE64:
+ 467               	.Ltext9:
+ 469               	.LM22:
+ 470               		subi r22,lo8(-(-1))
+ 471               		sbci r23,hi8(-(-1))
+ 472               	.L17:
+ 120:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 		while(__ticks)
+ 121:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 		{
+ 122:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 			// wait 1/10 ms
+ 123:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 			_delay_loop_2(((F_CPU) / 4e3) / 10);
+ 124:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 			__ticks --;
+ 473               	LM23:
+ 474               		cp r22,__zero_reg__
+ 475 00b2 6150      		cpc r23,__zero_reg__
+ 476 00b4 7040      		brne .L18
+ 477               		rjmp .L19
+ 478               	.L24:
+ 480 00b6 6115      	.LM24:
+ 481 00b8 7105      		movw r24,r16
+ 482 00ba 01F4      		movw r22,r14
+ 483 00bc 00C0      		call __fixunssfsi
+ 484               	.L14:
+ 125:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 		}
+ 126:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 		return;
+ 127:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 	}
+ 128:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 	else
+ 129:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 		__ticks = (uint16_t)__tmp;
+ 485               	67:
+ 487 00be C801      	.Ltext10:
+ 489 00c2 0E94 0000 	.LM25:
+ 490               		movw r24,r22
+ 491               	/* #APP */
+ 492               	 ;  105 "c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h" 1
+ 493               		1: sbiw r24,1
+ 494               		brne 1b
+ 495               	 ;  0 "" 2
+ 496               	/* #NOAPP */
+ 497 00c6 CB01      	.L19:
+ 498               	.LBE67:
+ 499               	.LBE66:
+ 500 00c8 0197      	.LBE63:
+ 501 00ca 01F4      	.LBE62:
+ 503               	.Ltext11:
+ 505               	.LM26:
+ 506               		cbi 43-32,7
+ 507               	/* epilogue start */
+ 509               	.LM27:
+ 510               		pop r17
+  49:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	
+  50:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	PORTD 	&= 	~(_BV(Alarma));
+ 511               	
+ 512               		pop r13
+ 513 00cc 5F98      		pop r12
+ 514               		pop r11
+  51:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** }
+ 515               	p r10
+ 516               		ret
+ 527               	.Lscope3:
+ 530               	.global	Led_on
+ 532               	Led_on:
+ 534               	.LM28:
+ 535               	.LFBB4:
+ 536               	/* prologue: function */
+ 537               	/* frame size = 0 */
+ 539               	.LM29:
+ 540               		sbi 36-32,7
+  52:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** /****************************************************************************************/  
+  53:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** void Led_on (tLeds color)
+  54:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** {
+ 542               		68,0,60,.LM31-.LFBB4
+ 543               	.LM31:
+ 544               		cpi r24,lo8(1)
+ 545               		breq .L28
+ 546               		cpi r24,lo8(1)
+  55:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	
+  56:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	/* Se Coloca el Bit LED0 del Puerto B en Modo de Salida y se le da un valor de 1*/	
+  57:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	DDRB		|=	_BV(LED0);
+ 547               	 .L27
+ 548               		cpi r24,lo8(2)
+ 549 00e0 279A      		brne .L32
+  58:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	PORTB		|=	_BV(LED0);							
+ 550               	tabn	68,0,63,.LM32-.LFBB4
+ 551               	.LM32:
+ 552 00e2 2F9A      		cbi 46-32,7
+  59:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 
+  60:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	switch (color)
+ 553               	t
+ 554               	.L27:
+ 556 00e6 01F0      	.LM33:
+ 557 00e8 8130      		cbi 46-32,2
+ 558 00ea 00F0      		ret
+ 559 00ec 8230      	.L28:
+  61:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	{
+  62:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 		case (Amarillo):
+  63:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 			PORTE		&= 	~(_BV(AMARILLOe)); 
+ 561               	cbi 37-32,7
+ 562               		ret
+ 563 00f0 7798      	.L32:
+ 565               	.LM35:
+  64:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 		break;
+  65:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 			
+  66:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 		case (Verde):
+  67:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 			PORTE		&= 	~(_BV(VERDEe)); 
+ 566               	46-32,7
+ 568 00f4 7298      	.LM36:
+ 569 00f6 0895      		sbi 46-32,2
+  68:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 		break;
+  69:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 			
+  70:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 		case (Rojo):
+  71:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 			PORTB		&= 	~(_BV(ROJOb));
+ 571               	:
+ 572               		sbi 37-32,7
+ 573 00f8 2F98      		ret
+ 575               	.Lscope4:
+  72:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 		break;
+  73:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 			
+  74:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 		default:
+  75:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 			PORTE		|=  _BV(AMARILLOe);
+ 576               	bs	"Led_off:F(0,15)",36,0,0,Led_off
+ 578 00fc 779A      	.global	Led_off
+  76:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 			PORTE		|=  _BV(VERDEe);
+ 579               	ype	Led_off, @function
+ 580               	Led_off:
+  77:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 			PORTB		|=  _BV(ROJOb);
+ 582               	38:
+ 583               	.LFBB5:
+ 584 0100 2F9A      	/* prologue: function */
+ 585 0102 0895      	/* frame size = 0 */
+ 587               	.LM39:
+ 588               		sbi 36-32,7
+ 590               	.LM40:
+ 591               		sbi 37-32,7
+  78:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 		break;
+  79:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	}
+  80:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 
+  81:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 
+  82:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** }
+  83:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 
+  84:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** /****************************************************************************************/  
+  85:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** void Led_off (int16 color)
+  86:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** {
+ 593               	 r24,1
+ 594               		cpc r25,__zero_reg__
+ 595               		breq .L41
+ 596               		cpi r24,2
+ 597               		cpc r25,__zero_reg__
+  87:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	/* Se Coloca el Bit LED0 del Puerto B en Modo de Salida y se le da un valor de 1*/	
+  88:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	DDRB		|=	_BV(LED0);
+ 598               	 .L37
+ 599               		or r24,r25
+ 600 0104 279A      		breq .L35
+  89:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	PORTB		|=	_BV(LED0);							
+ 601               	mp .L42
+ 602               	.L37:
+  90:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c ****  
+  91:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	switch (color)
+ 604               	42:
+ 605               		sbi 46-32,7
+ 606 0108 8130      		ret
+ 607 010a 9105      	.L35:
+ 609 010e 8230      	.LM43:
+ 610 0110 9105      		sbi 46-32,2
+ 611 0112 01F0      		ret
+ 612 0114 892B      	.L42:
+ 614 0118 00C0      	.LM44:
+ 615               		sbi 46-32,7
+  92:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	{
+  93:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 		case (Amarillo):
+  94:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 			PORTE		|= 	_BV(AMARILLOe); 
+ 616               	,107,.LM45-.LFBB5
+ 617               	.LM45:
+ 618 011a 779A      		sbi 46-32,2
+ 619 011c 0895      	.L41:
+  95:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 		break;
+  96:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 			
+  97:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 		case (Verde):
+  98:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 			PORTE		|= 	_BV(VERDEe); 
+ 621               	:
+ 622               		sbi 37-32,7
+ 623 011e 729A      		ret
+ 625               	.Lscope5:
+  99:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 		break;
+ 100:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 			
+ 101:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 		case (Rojo):
+ 102:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 			PORTB		|= 	_BV(ROJOb);
+ 103:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 		break;
+ 104:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 			
+ 105:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 		default:
+ 106:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 			PORTE		|=  _BV(AMARILLOe);
+ 626               	a
+ 627               	.LC0:
+ 628 0122 779A      		.string	"Iniciando secuencia de pruebas perifericos..."
+ 107:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 			PORTE		|=  _BV(VERDEe);
+ 629               	1:
+ 630               		.string	"Mensaje prueba LCD y LED ..."
+ 631 0124 729A      	.LC2:
+ 632               		.string	"T E S T   L C D.\n"
+ 108:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 			PORTB		|=  _BV(ROJOb);
+ 633               	:
+ 634               		.string	"Resultado corecto Y/N"
+ 635 0126 2F9A      	.LC4:
+ 636 0128 0895      		.string	"%s"
+ 637               	.LC5:
+ 638               		.string	"Prueba de EEPROM interna del Atmega1280..."
+ 639               	.LC6:
+ 640               		.string	"Leyando ATmegaEEPROM_var = %ld\n"
+ 641 0000 496E 6963 	.LC7:
+ 641      6961 6E64 
+ 641      6F20 7365 
+ 641      6375 656E 
+ 641      6369 6120 
+ 642               		.string	"Actualizando a 3032 ..."
+ 643 002e 4D65 6E73 	.LC8:
+ 643      616A 6520 
+ 643      7072 7565 
+ 643      6261 204C 
+ 643      4344 2079 
+ 644               		.string	"Comprobando, ATmegaEEPROM_var = %ld\n"
+ 645 004b 5420 4520 	.LC9:
+ 645      5320 5420 
+ 645      2020 4C20 
+ 645      4320 442E 
+ 645      0A00 
+ 646               		.string	"Prueba de EEPROM externa, Leyendo Pose en la direccion %ld...\n"
+ 647 005d 5265 7375 	.LC10:
+ 647      6C74 6164 
+ 647      6F20 636F 
+ 647      7265 6374 
+ 647      6F20 592F 
+ 648               		.string	"Pose_test->Pos_num = %d   \n"
+ 649 0073 2573 00   	.LC11:
+ 650               		.string	"Pose_test->Pos_Waist = %ld  \n "
+ 651 0076 5072 7565 	.LC12:
+ 651      6261 2064 
+ 651      6520 4545 
+ 651      5052 4F4D 
+ 651      2069 6E74 
+ 652               		.string	"Pose_test->Pos_Shoulder = %ld  \n "
+ 653 00a1 4C65 7961 	.LC13:
+ 653      6E64 6F20 
+ 653      4154 6D65 
+ 653      6761 4545 
+ 653      5052 4F4D 
+ 654               		.string	"Pose_test->Pos_Elbow = %ld  \n "
+ 655 00c1 4163 7475 	.LC14:
+ 655      616C 697A 
+ 655      616E 646F 
+ 655      2061 2033 
+ 655      3033 3220 
+ 656               		.string	"Pose_test->Pos_Pitch = %ld  \n "
+ 657 00d9 436F 6D70 	.LC15:
+ 657      726F 6261 
+ 657      6E64 6F2C 
+ 657      2041 546D 
+ 657      6567 6145 
+ 658               		.string	"Pose_test->Pos_Roll= %ld  \n "
+ 659 00fe 5072 7565 	.LC16:
+ 659      6261 2064 
+ 659      6520 4545 
+ 659      5052 4F4D 
+ 659      2065 7874 
+ 660               		.string	"Actualizando Pose_test a "
+ 661 013d 506F 7365 	.LC17:
+ 661      5F74 6573 
+ 661      742D 3E50 
+ 661      6F73 5F6E 
+ 661      756D 203D 
+ 662               		.string	"Pose_test->Pos_num = 3   "
+ 663 0159 506F 7365 	.LC18:
+ 663      5F74 6573 
+ 663      742D 3E50 
+ 663      6F73 5F57 
+ 663      6169 7374 
+ 664               		.string	"Pose_test->Pos_Waist = 5670 \n "
+ 665 0178 506F 7365 	.LC19:
+ 665      5F74 6573 
+ 665      742D 3E50 
+ 665      6F73 5F53 
+ 665      686F 756C 
+ 666               		.string	"Pose_test->Pos_Shoulder = 6000 \n "
+ 667 019a 506F 7365 	.LC20:
+ 667      5F74 6573 
+ 667      742D 3E50 
+ 667      6F73 5F45 
+ 667      6C62 6F77 
+ 668               		.string	"Pose_test->Pos_Elbow = 2400 \n "
+ 669 01b9 506F 7365 	.LC21:
+ 669      5F74 6573 
+ 669      742D 3E50 
+ 669      6F73 5F50 
+ 669      6974 6368 
+ 670               		.string	"Pose_test->Pos_Pitch = 1000 \n "
+ 671 01d8 506F 7365 	.LC22:
+ 671      5F74 6573 
+ 671      742D 3E50 
+ 671      6F73 5F52 
+ 671      6F6C 6C3D 
+ 672               		.string	"Pose_test->Pos_Roll= 10 \n "
+ 673 01f5 4163 7475 	.LC23:
+ 673      616C 697A 
+ 673      616E 646F 
+ 673      2050 6F73 
+ 673      655F 7465 
+ 674               		.string	"Numero de datos grabados corectamente al grabar Num_Poses => %d\n"
+ 675 020f 506F 7365 	.LC24:
+ 675      5F74 6573 
+ 675      742D 3E50 
+ 675      6F73 5F6E 
+ 675      756D 203D 
+ 676               		.string	"Comprobando, Pose_test..."
+ 677 0229 506F 7365 	.LC25:
+ 677      5F74 6573 
+ 677      742D 3E50 
+ 677      6F73 5F57 
+ 677      6169 7374 
+ 678               		.string	"Prueba RTC..."
+ 679 0248 506F 7365 	.LC26:
+ 679      5F74 6573 
+ 679      742D 3E50 
+ 679      6F73 5F53 
+ 679      686F 756C 
+ 680               		.string	"Fecha = Hoy es el dia %s %x de %s de 200%x. \n"
+ 681 026a 506F 7365 	.LC27:
+ 681      5F74 6573 
+ 681      742D 3E50 
+ 681      6F73 5F45 
+ 681      6C62 6F77 
+ 682               		.string	"Son las %x:%x:%x PM \n"
+ 683 0289 506F 7365 	.LC28:
+ 683      5F74 6573 
+ 683      742D 3E50 
+ 683      6F73 5F50 
+ 683      6974 6368 
+ 684               		.string	"Son las %x:%x:%x AM \n"
+ 685 02a8 506F 7365 		.text
+ 685      5F74 6573 
+ 685      742D 3E50 
+ 685      6F73 5F52 
+ 685      6F6C 6C3D 
+ 687 02c3 4E75 6D65 	.global	Test_perifericos
+ 687      726F 2064 
+ 687      6520 6461 
+ 687      746F 7320 
+ 687      6772 6162 
+ 689 0304 436F 6D70 	Test_perifericos:
+ 689      726F 6261 
+ 689      6E64 6F2C 
+ 689      2050 6F73 
+ 689      655F 7465 
+ 691 031e 5072 7565 	.LM47:
+ 691      6261 2052 
+ 691      5443 2E2E 
+ 691      2E00 
+ 692               	.LFBB6:
+ 693 032c 4665 6368 		push r8
+ 693      6120 3D20 
+ 693      486F 7920 
+ 693      6573 2065 
+ 693      6C20 6469 
+ 694               		push r9
+ 695 035a 536F 6E20 		push r10
+ 695      6C61 7320 
+ 695      2578 3A25 
+ 695      783A 2578 
+ 695      2050 4D20 
+ 696               		push r11
+ 697 0370 536F 6E20 		push r12
+ 697      6C61 7320 
+ 697      2578 3A25 
+ 697      783A 2578 
+ 697      2041 4D20 
+ 698               		push r13
+ 699               		push r14
+ 700               		push r15
+ 701               		push r16
+ 702               		push r17
+ 109:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 		break;
+ 110:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	}
+ 111:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** }
+ 112:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 
+ 113:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 
+ 114:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** void Test_perifericos(void)
+ 115:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** {
+ 703               	 __tmp_reg__,__SREG__
+ 704               		cli
+ 705               		out __SP_H__,r29
+ 706 012a 8F92      		out __SREG__,__tmp_reg__
+ 707 012c 9F92      		out __SP_L__,r28
+ 708 012e AF92      	/* prologue: function */
+ 709 0130 BF92      	/* frame size = 36 */
+ 711 0134 DF92      	.LM48:
+ 712 0136 EF92      		ldi r24,lo8(.LC0)
+ 713 0138 FF92      		ldi r25,hi8(.LC0)
+ 714 013a 0F93      		call puts
+ 716 013e DF93      	.LM49:
+ 717 0140 CF93      		ldi r24,lo8(.LC1)
+ 718 0142 CDB7      		ldi r25,hi8(.LC1)
+ 719 0144 DEB7      		call puts
+ 721 0148 0FB6      	.LM50:
+ 722 014a F894      		lds r22,__iob+4
+ 723 014c DEBF      		lds r23,(__iob+4)+1
+ 724 014e 0FBE      		ldi r24,lo8(.LC2)
+ 725 0150 CDBF      		ldi r25,hi8(.LC2)
+ 726               		call fputs
+ 116:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 
+ 117:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 
+ 118:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	PMDint32 RAM_var;
+ 119:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	PoseRobot Pose_test;
+ 120:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	int16 Num_Poses;
+ 121:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	int32 addr;
+ 122:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	int rv;
+ 123:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	char pause;
+ 124:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	tFecha Test_Fecha;
+ 125:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	
+ 126:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	
+ 127:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	printf("Iniciando secuencia de pruebas perifericos...\n");
+ 728               	all Led_on
+ 729               		ldi r18,lo8(0)
+ 730 0152 80E0      	.LBB68:
+ 731 0154 90E0      	.LBB69:
+ 732 0156 0E94 0000 	.LBB70:
+ 128:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	//Prueba LCD y LED...
+ 129:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	printf("Mensaje prueba LCD y LED ...\n");
+ 733               	1:
+ 734               	.LBB72:
+ 735 015a 80E0      	.LBB73:
+ 737 015e 0E94 0000 	.Ltext12:
+ 130:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	fprintf(stderr, "T E S T   L C D.\n");
+ 738               	bn	68,0,105,.LM52-.LFBB6
+ 739               	.LM52:
+ 740 0162 6091 0000 		ldi r20,lo8(20000)
+ 741 0166 7091 0000 		ldi r21,hi8(20000)
+ 742 016a 80E0      	.L44:
+ 743 016c 90E0      		movw r24,r20
+ 744 016e 0E94 0000 	/* #APP */
+ 131:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	Led_on(Amarillo);
+ 745               	 "c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h" 1
+ 746               		1: sbiw r24,1
+ 747 0172 82E0      		brne 1b
+ 748 0174 0E94 0000 	 ;  0 "" 2
+ 749 0178 20E0      	/* #NOAPP */
+ 750               	.LBE73:
+ 751               	.LBE72:
+ 752               	.LBE71:
+ 753               	.LBE70:
+ 755               	.Ltext13:
+ 757               	.LM53:
+ 758               		subi r18,lo8(-(1))
+ 759               		cpi r18,lo8(100)
+ 760 017a 40E2      		brne .L44
+ 761 017c 5EE4      	.LBE69:
+ 762               	.LBE68:
+ 764               	.LM54:
+ 765               		ldi r24,lo8(0)
+ 766 0180 0197      		call Led_on
+ 767 0182 01F4      		ldi r18,lo8(0)
+ 768               	.LBB74:
+ 769               	.LBB75:
+ 770               	.LBB76:
+ 771               	.LBB77:
+ 772               	.LBB78:
+ 773               	.LBB79:
+ 775               	.Ltext14:
+ 777               	.LM55:
+ 778 0184 2F5F      		ldi r20,lo8(20000)
+ 779 0186 2436      		ldi r21,hi8(20000)
+ 780 0188 01F4      	.L45:
+ 781               		movw r24,r20
+ 782               	/* #APP */
+ 132:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	delay_1s();	
+ 133:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	Led_on(Verde);	
+ 783               	/../avr/include/util/delay_basic.h" 1
+ 784               		1: sbiw r24,1
+ 785 018a 80E0      		brne 1b
+ 786 018c 0E94 0000 	 ;  0 "" 2
+ 787 0190 20E0      	/* #NOAPP */
+ 788               	.LBE79:
+ 789               	.LBE78:
+ 790               	.LBE77:
+ 791               	.LBE76:
+ 793               	.Ltext15:
+ 795               	.LM56:
+ 796               		subi r18,lo8(-(1))
+ 797               		cpi r18,lo8(100)
+ 798 0192 40E2      		brne .L45
+ 799 0194 5EE4      	.LBE75:
+ 800               	.LBE74:
+ 802               	.LM57:
+ 803               		ldi r24,lo8(1)
+ 804 0198 0197      		call Led_on
+ 805 019a 01F4      		ldi r18,lo8(0)
+ 806               	.LBB80:
+ 807               	.LBB81:
+ 808               	.LBB82:
+ 809               	.LBB83:
+ 810               	.LBB84:
+ 811               	.LBB85:
+ 813               	.Ltext16:
+ 815               	.LM58:
+ 816 019c 2F5F      		ldi r20,lo8(20000)
+ 817 019e 2436      		ldi r21,hi8(20000)
+ 818 01a0 01F4      	.L46:
+ 819               		movw r24,r20
+ 820               	/* #APP */
+ 134:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	delay_1s();	
+ 135:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	Led_on(Rojo);	
+ 821               	/../avr/include/util/delay_basic.h" 1
+ 822               		1: sbiw r24,1
+ 823 01a2 81E0      		brne 1b
+ 824 01a4 0E94 0000 	 ;  0 "" 2
+ 825 01a8 20E0      	/* #NOAPP */
+ 826               	.LBE85:
+ 827               	.LBE84:
+ 828               	.LBE83:
+ 829               	.LBE82:
+ 831               	.Ltext17:
+ 833               	.LM59:
+ 834               		subi r18,lo8(-(1))
+ 835               		cpi r18,lo8(100)
+ 836 01aa 40E2      		brne .L46
+ 837 01ac 5EE4      	.LBE81:
+ 838               	.LBE80:
+ 840               	.LM60:
+ 841               		ldi r24,lo8(1)
+ 842 01b0 0197      		ldi r25,hi8(1)
+ 843 01b2 01F4      		call Led_off
+ 845               	.LM61:
+ 846               		ldi r24,lo8(0)
+ 847               		ldi r25,hi8(0)
+ 848               		call Led_off
+ 850               	.LM62:
+ 851               		ldi r24,lo8(2)
+ 852               		ldi r25,hi8(2)
+ 853               		call Led_off
+ 855 01b6 2436      	.LM63:
+ 856 01b8 01F4      		ldi r24,lo8(.LC3)
+ 857               		ldi r25,hi8(.LC3)
+ 858               		call puts
+ 136:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	delay_1s();	
+ 137:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	Led_off(Rojo);
+ 859               	rcall .
+ 860               		rcall .
+ 861 01ba 81E0      		ldi r19,lo8(.LC4)
+ 862 01bc 90E0      		mov r12,r19
+ 863 01be 0E94 0000 		ldi r19,hi8(.LC4)
+ 138:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	Led_off(Verde);
+ 864               	r13,r19
+ 865               		in r26,__SP_L__
+ 866 01c2 80E0      		in r27,__SP_H__
+ 867 01c4 90E0      		adiw r26,1+1
+ 868 01c6 0E94 0000 		st X,r13
+ 139:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	Led_off(Amarillo);
+ 869               	X,r12
+ 870               		sbiw r26,1
+ 871 01ca 82E0      		movw r14,r28
+ 872 01cc 90E0      		sec
+ 873 01ce 0E94 0000 		adc r14,__zero_reg__
+ 140:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	printf("Resultado corecto Y/N\n");
+ 874               	r15,__zero_reg__
+ 875               		adiw r26,3+1
+ 876 01d2 80E0      		st X,r15
+ 877 01d4 90E0      		st -X,r14
+ 878 01d6 0E94 0000 		sbiw r26,3
+ 141:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	scanf("%s",&pause);
+ 879               	 scanf
+ 881 01da 00D0      	.LM65:
+ 882 01dc 00D0      		pop __tmp_reg__
+ 883 01de 30E0      		pop __tmp_reg__
+ 884 01e0 C32E      		pop __tmp_reg__
+ 885 01e2 30E0      		pop __tmp_reg__
+ 886 01e4 D32E      		ldi r24,lo8(.LC5)
+ 887 01e6 ADB7      		ldi r25,hi8(.LC5)
+ 888 01e8 BEB7      		call puts
+ 890 01ec DC92      	.LM66:
+ 891 01ee CE92      		movw r16,r28
+ 892 01f0 1197      		subi r16,lo8(-(2))
+ 893 01f2 7E01      		sbci r17,hi8(-(2))
+ 894 01f4 0894      		movw r24,r16
+ 895 01f6 E11C      		ldi r22,lo8(ATmegaEEPROM_var)
+ 896 01f8 F11C      		ldi r23,hi8(ATmegaEEPROM_var)
+ 897 01fa 1496      		ldi r20,lo8(4)
+ 898 01fc FC92      		ldi r21,hi8(4)
+ 899 01fe EE92      		call __eerd_block_m1280
+ 901 0202 0E94 0000 	.LM67:
+ 142:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 
+ 143:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	
+ 144:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	//Prueba EEPROM Y RAM ATME1280	
+ 145:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	printf("Prueba de EEPROM interna del Atmega1280...\n");
+ 902               	l .
+ 903               		ldi r24,lo8(.LC6)
+ 904 0206 0F90      		ldi r25,hi8(.LC6)
+ 905 0208 0F90      		in r30,__SP_L__
+ 906 020a 0F90      		in r31,__SP_H__
+ 907 020c 0F90      		std Z+2,r25
+ 908 020e 80E0      		std Z+1,r24
+ 909 0210 90E0      		ldd r24,Y+2
+ 910 0212 0E94 0000 		ldd r25,Y+3
+ 146:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	eeprom_read_block((void*)&RAM_var,(const void*)&ATmegaEEPROM_var,sizeof(PMDint32));
+ 911               	Y+4
+ 912               		ldd r27,Y+5
+ 913 0216 8E01      		std Z+3,r24
+ 914 0218 0E5F      		std Z+4,r25
+ 915 021a 1F4F      		std Z+5,r26
+ 916 021c C801      		std Z+6,r27
+ 917 021e 60E0      		call printf
+ 919 0222 44E0      	.LM68:
+ 920 0224 50E0      		in r18,__SP_L__
+ 921 0226 0E94 0000 		in r19,__SP_H__
+ 147:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	printf("Leyando ATmegaEEPROM_var = %ld\n",RAM_var);
+ 922               	o8(-(6))
+ 923               		sbci r19,hi8(-(6))
+ 924 022a 00D0      		in __tmp_reg__,__SREG__
+ 925 022c 00D0      		cli
+ 926 022e 00D0      		out __SP_H__,r19
+ 927 0230 80E0      		out __SREG__,__tmp_reg__
+ 928 0232 90E0      		out __SP_L__,r18
+ 929 0234 EDB7      		ldi r24,lo8(.LC7)
+ 930 0236 FEB7      		ldi r25,hi8(.LC7)
+ 931 0238 9283      		call puts
+ 933 023c 8A81      	.LM69:
+ 934 023e 9B81      		ldi r24,lo8(3032)
+ 935 0240 AC81      		ldi r25,hi8(3032)
+ 936 0242 BD81      		ldi r26,hlo8(3032)
+ 937 0244 8383      		ldi r27,hhi8(3032)
+ 938 0246 9483      		std Y+2,r24
+ 939 0248 A583      		std Y+3,r25
+ 940 024a B683      		std Y+4,r26
+ 941 024c 0E94 0000 		std Y+5,r27
+ 148:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	printf("Actualizando a 3032 ...\n");
+ 942               	70-.LFBB6
+ 943               	.LM70:
+ 944 0250 2DB7      		movw r24,r16
+ 945 0252 3EB7      		ldi r22,lo8(ATmegaEEPROM_var)
+ 946 0254 2A5F      		ldi r23,hi8(ATmegaEEPROM_var)
+ 947 0256 3F4F      		ldi r20,lo8(4)
+ 948 0258 0FB6      		ldi r21,hi8(4)
+ 949 025a F894      		call __eewr_block_m1280
+ 951 025e 0FBE      	.LM71:
+ 952 0260 2DBF      		movw r24,r16
+ 953 0262 80E0      		ldi r22,lo8(ATmegaEEPROM_var)
+ 954 0264 90E0      		ldi r23,hi8(ATmegaEEPROM_var)
+ 955 0266 0E94 0000 		ldi r20,lo8(4)
+ 149:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	RAM_var=3032;
+ 956               	)
+ 957               		call __eerd_block_m1280
+ 959 026c 9BE0      	.LM72:
+ 960 026e A0E0      		rcall .
+ 961 0270 B0E0      		rcall .
+ 962 0272 8A83      		rcall .
+ 963 0274 9B83      		ldi r24,lo8(.LC8)
+ 964 0276 AC83      		ldi r25,hi8(.LC8)
+ 965 0278 BD83      		in r26,__SP_L__
+ 150:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	eeprom_write_block((const void*)&RAM_var,(void*)&ATmegaEEPROM_var,sizeof(PMDint32));
+ 966               	SP_H__
+ 967               		adiw r26,1+1
+ 968 027a C801      		st X,r25
+ 969 027c 60E0      		st -X,r24
+ 970 027e 70E0      		sbiw r26,1
+ 971 0280 44E0      		ldd r24,Y+2
+ 972 0282 50E0      		ldd r25,Y+3
+ 973 0284 0E94 0000 		ldd r26,Y+4
+ 151:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	eeprom_read_block((void*)&RAM_var,(const void*)&ATmegaEEPROM_var,sizeof(PMDint32));
+ 974               	,Y+5
+ 975               		in r30,__SP_L__
+ 976 0288 C801      		in r31,__SP_H__
+ 977 028a 60E0      		std Z+3,r24
+ 978 028c 70E0      		std Z+4,r25
+ 979 028e 44E0      		std Z+5,r26
+ 980 0290 50E0      		std Z+6,r27
+ 981 0292 0E94 0000 		call printf
+ 152:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	printf("Comprobando, ATmegaEEPROM_var = %ld\n",RAM_var);
+ 982               	68,0,154,.LM73-.LFBB6
+ 983               	.LM73:
+ 984 0296 00D0      		std Y+2,__zero_reg__
+ 985 0298 00D0      		std Y+3,__zero_reg__
+ 986 029a 00D0      		std Y+4,__zero_reg__
+ 987 029c 80E0      		std Y+5,__zero_reg__
+ 989 02a0 ADB7      	.LM74:
+ 990 02a2 BEB7      		in r18,__SP_L__
+ 991 02a4 1296      		in r19,__SP_H__
+ 992 02a6 9C93      		subi r18,lo8(-(6))
+ 993 02a8 8E93      		sbci r19,hi8(-(6))
+ 994 02aa 1197      		in __tmp_reg__,__SREG__
+ 995 02ac 8A81      		cli
+ 996 02ae 9B81      		out __SP_H__,r19
+ 997 02b0 AC81      		out __SREG__,__tmp_reg__
+ 998 02b2 BD81      		out __SP_L__,r18
+ 999 02b4 EDB7      		movw r24,r16
+ 1000 02b6 FEB7      		ldi r22,lo8(ATmegaEEPROM_var)
+ 1001 02b8 8383      		ldi r23,hi8(ATmegaEEPROM_var)
+ 1002 02ba 9483      		ldi r20,lo8(4)
+ 1003 02bc A583      		ldi r21,hi8(4)
+ 1004 02be B683      		call __eewr_block_m1280
+ 153:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	//Reiniciando..
+ 154:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	RAM_var=0;
+ 1006               	)
+ 1007               		ldi r25,hi8(.LC3)
+ 1008 02c4 1A82      		call puts
+ 1010 02c8 1C82      	.LM76:
+ 1011 02ca 1D82      		rcall .
+ 155:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	eeprom_write_block((const void*)&RAM_var,(void*)&ATmegaEEPROM_var,sizeof(PMDint32));
+ 1012               	 .
+ 1013               		in r26,__SP_L__
+ 1014 02cc 2DB7      		in r27,__SP_H__
+ 1015 02ce 3EB7      		adiw r26,1+1
+ 1016 02d0 2A5F      		st X,r13
+ 1017 02d2 3F4F      		st -X,r12
+ 1018 02d4 0FB6      		sbiw r26,1
+ 1019 02d6 F894      		adiw r26,3+1
+ 1020 02d8 3EBF      		st X,r15
+ 1021 02da 0FBE      		st -X,r14
+ 1022 02dc 2DBF      		sbiw r26,3
+ 1023 02de C801      		call scanf
+ 1025 02e2 70E0      	.LM77:
+ 1026 02e4 44E0      		pop __tmp_reg__
+ 1027 02e6 50E0      		pop __tmp_reg__
+ 1028 02e8 0E94 0000 		pop __tmp_reg__
+ 156:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	printf("Resultado corecto Y/N\n");
+ 1029               		call Get_Num_Poses
+ 1030               		movw r16,r24
+ 1032 02ee 90E0      	.LM78:
+ 1033 02f0 0E94 0000 		movw r22,r16
+ 157:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	scanf("%s",&pause);
+ 1034               	r24
+ 1035               		sbrc r23,7
+ 1036 02f4 00D0      		com r24
+ 1037 02f6 00D0      		mov r25,r24
+ 1038 02f8 ADB7      		ldi r18,lo8(23)
+ 1039 02fa BEB7      		ldi r19,hi8(23)
+ 1040 02fc 1296      		ldi r20,hlo8(23)
+ 1041 02fe DC92      		ldi r21,hhi8(23)
+ 1042 0300 CE92      		call __mulsi3
+ 1043 0302 1197      		ldi r18,lo8(2)
+ 1044 0304 1496      		mov r12,r18
+ 1045 0306 FC92      		mov r13,__zero_reg__
+ 1046 0308 EE92      		mov r14,__zero_reg__
+ 1047 030a 1397      		mov r15,__zero_reg__
+ 1048 030c 0E94 0000 		add r12,r22
+ 158:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 
+ 159:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	//Prueba EEPROM Externa y Pose
+ 160:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	/*Obtengo las Poses de la eeprom, no se desea sobreescribir alguna poses existente*/
+ 161:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	Num_Poses=Get_Num_Poses();
+ 1049               	dc r14,r24
+ 1050               		adc r15,r25
+ 1052 0312 0F90      	.LM79:
+ 1053 0314 0F90      		subi r16,lo8(2849)
+ 1054 0316 0F90      		sbci r17,hi8(2849)
+ 1055 0318 0E94 0000 		brlt .L47
+ 162:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	addr=(int32)(Num_Poses)*sizeof(PoseRobot)+sizeof(int16); 
+ 1057               	movw r12,r22
+ 1058               		movw r14,r24
+ 1059 031e B801      		ldi r24,lo8(9)
+ 1060 0320 8827      		ldi r25,hi8(9)
+ 1061 0322 77FD      		ldi r26,hlo8(9)
+ 1062 0324 8095      		ldi r27,hhi8(9)
+ 1063 0326 982F      		add r12,r24
+ 1064 0328 27E1      		adc r13,r25
+ 1065 032a 30E0      		adc r14,r26
+ 1066 032c 40E0      		adc r15,r27
+ 1067 032e 50E0      	.L47:
+ 1069 0334 22E0      	.LM81:
+ 1070 0336 C22E      		rcall .
+ 1071 0338 D12C      		rcall .
+ 1072 033a E12C      		rcall .
+ 1073 033c F12C      		ldi r24,lo8(.LC9)
+ 1074 033e C60E      		ldi r25,hi8(.LC9)
+ 1075 0340 D71E      		in r26,__SP_L__
+ 1076 0342 E81E      		in r27,__SP_H__
+ 1077 0344 F91E      		adiw r26,1+1
+ 163:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	/*Pasar al Segundo Banco de Memoria */
+ 164:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	if(Num_Poses > (5696/2))
+ 1078               		sbiw r26,1
+ 1079               		in r30,__SP_L__
+ 1080 0346 0152      		in r31,__SP_H__
+ 1081 0348 1B40      		std Z+3,r12
+ 1082 034a 04F0      		std Z+4,r13
+ 165:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 		addr=addr+7;
+ 1083               	Z+5,r14
+ 1084               		std Z+6,r15
+ 1085 034c 6B01      		call printf
+ 1087 0350 89E0      	.LM82:
+ 1088 0352 90E0      		mov r11,r12
+ 1089 0354 A0E0      		mov r10,r13
+ 1090 0356 B0E0      		mov r9,r14
+ 1091 0358 C80E      		mov r8,r15
+ 1092 035a D91E      		movw r16,r28
+ 1093 035c EA1E      		subi r16,lo8(-(14))
+ 1094 035e FB1E      		sbci r17,hi8(-(14))
+ 1095               		in r18,__SP_L__
+ 166:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	
+ 167:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	printf("Prueba de EEPROM externa, Leyendo Pose en la direccion %ld...\n",addr);
+ 1096               	H__
+ 1097               		subi r18,lo8(-(6))
+ 1098 0360 00D0      		sbci r19,hi8(-(6))
+ 1099 0362 00D0      		in __tmp_reg__,__SREG__
+ 1100 0364 00D0      		cli
+ 1101 0366 80E0      		out __SP_H__,r19
+ 1102 0368 90E0      		out __SREG__,__tmp_reg__
+ 1103 036a ADB7      		out __SP_L__,r18
+ 1104 036c BEB7      		movw r22,r12
+ 1105 036e 1296      		movw r24,r14
+ 1106 0370 9C93      		ldi r20,lo8(23)
+ 1107 0372 8E93      		ldi r21,hi8(23)
+ 1108 0374 1197      		movw r18,r16
+ 1109 0376 EDB7      		call ee24xx_read_bytes
+ 1111 037a C382      	.LM83:
+ 1112 037c D482      		rcall .
+ 1113 037e E582      		rcall .
+ 1114 0380 F682      		ldi r24,lo8(.LC10)
+ 1115 0382 0E94 0000 		ldi r25,hi8(.LC10)
+ 168:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	rv=ee24xx_read_bytes(addr,sizeof(PoseRobot),(uint8*)&Pose_test);
+ 1116               	 r27,__SP_H__
+ 1117               		adiw r26,1+1
+ 1118 0386 BC2C      		st X,r25
+ 1119 0388 AD2C      		st -X,r24
+ 1120 038a 9E2C      		sbiw r26,1
+ 1121 038c 8F2C      		ldd r24,Y+14
+ 1122 038e 8E01      		ldd r25,Y+15
+ 1123 0390 025F      		adiw r26,3+1
+ 1124 0392 1F4F      		st X,r25
+ 1125 0394 2DB7      		st -X,r24
+ 1126 0396 3EB7      		sbiw r26,3
+ 1127 0398 2A5F      		call printf
+ 1129 039c 0FB6      	.LM84:
+ 1130 039e F894      		rcall .
+ 1131 03a0 3EBF      		ldi r24,lo8(.LC11)
+ 1132 03a2 0FBE      		ldi r25,hi8(.LC11)
+ 1133 03a4 2DBF      		in r30,__SP_L__
+ 1134 03a6 B601      		in r31,__SP_H__
+ 1135 03a8 C701      		std Z+2,r25
+ 1136 03aa 47E1      		std Z+1,r24
+ 1137 03ac 50E0      		ldd r24,Y+16
+ 1138 03ae 9801      		ldd r25,Y+17
+ 1139 03b0 0E94 0000 		ldd r26,Y+18
+ 169:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c ****     printf("Pose_test->Pos_num = %d   \n",Pose_test.id);	
+ 1140               	24
+ 1141               		std Z+4,r25
+ 1142 03b4 00D0      		std Z+5,r26
+ 1143 03b6 00D0      		std Z+6,r27
+ 1144 03b8 80E0      		call printf
+ 1146 03bc ADB7      	.LM85:
+ 1147 03be BEB7      		ldi r24,lo8(.LC12)
+ 1148 03c0 1296      		ldi r25,hi8(.LC12)
+ 1149 03c2 9C93      		in r26,__SP_L__
+ 1150 03c4 8E93      		in r27,__SP_H__
+ 1151 03c6 1197      		adiw r26,1+1
+ 1152 03c8 8E85      		st X,r25
+ 1153 03ca 9F85      		st -X,r24
+ 1154 03cc 1496      		sbiw r26,1
+ 1155 03ce 9C93      		ldd r24,Y+20
+ 1156 03d0 8E93      		ldd r25,Y+21
+ 1157 03d2 1397      		ldd r26,Y+22
+ 1158 03d4 0E94 0000 		ldd r27,Y+23
+ 170:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	printf("Pose_test->Pos_Waist = %ld  \n ",Pose_test.Pos_Waist);	
+ 1159               	n r31,__SP_H__
+ 1160               		std Z+3,r24
+ 1161 03d8 00D0      		std Z+4,r25
+ 1162 03da 80E0      		std Z+5,r26
+ 1163 03dc 90E0      		std Z+6,r27
+ 1164 03de EDB7      		call printf
+ 1166 03e2 9283      	.LM86:
+ 1167 03e4 8183      		ldi r24,lo8(.LC13)
+ 1168 03e6 8889      		ldi r25,hi8(.LC13)
+ 1169 03e8 9989      		in r26,__SP_L__
+ 1170 03ea AA89      		in r27,__SP_H__
+ 1171 03ec BB89      		adiw r26,1+1
+ 1172 03ee 8383      		st X,r25
+ 1173 03f0 9483      		st -X,r24
+ 1174 03f2 A583      		sbiw r26,1
+ 1175 03f4 B683      		ldd r24,Y+24
+ 1176 03f6 0E94 0000 		ldd r25,Y+25
+ 171:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	printf("Pose_test->Pos_Shoulder = %ld  \n ",Pose_test.Pos_Shoulder);	
+ 1177               	 r27,Y+27
+ 1178               		in r30,__SP_L__
+ 1179 03fa 80E0      		in r31,__SP_H__
+ 1180 03fc 90E0      		std Z+3,r24
+ 1181 03fe ADB7      		std Z+4,r25
+ 1182 0400 BEB7      		std Z+5,r26
+ 1183 0402 1296      		std Z+6,r27
+ 1184 0404 9C93      		call printf
+ 1186 0408 1197      	.LM87:
+ 1187 040a 8C89      		ldi r24,lo8(.LC14)
+ 1188 040c 9D89      		ldi r25,hi8(.LC14)
+ 1189 040e AE89      		in r26,__SP_L__
+ 1190 0410 BF89      		in r27,__SP_H__
+ 1191 0412 EDB7      		adiw r26,1+1
+ 1192 0414 FEB7      		st X,r25
+ 1193 0416 8383      		st -X,r24
+ 1194 0418 9483      		sbiw r26,1
+ 1195 041a A583      		ldd r24,Y+28
+ 1196 041c B683      		ldd r25,Y+29
+ 1197 041e 0E94 0000 		ldd r26,Y+30
+ 172:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	printf("Pose_test->Pos_Elbow = %ld  \n ",Pose_test.Pos_Elbow);	
+ 1198               	,__SP_L__
+ 1199               		in r31,__SP_H__
+ 1200 0422 80E0      		std Z+3,r24
+ 1201 0424 90E0      		std Z+4,r25
+ 1202 0426 ADB7      		std Z+5,r26
+ 1203 0428 BEB7      		std Z+6,r27
+ 1204 042a 1296      		call printf
+ 1206 042e 8E93      	.LM88:
+ 1207 0430 1197      		ldi r24,lo8(.LC15)
+ 1208 0432 888D      		ldi r25,hi8(.LC15)
+ 1209 0434 998D      		in r26,__SP_L__
+ 1210 0436 AA8D      		in r27,__SP_H__
+ 1211 0438 BB8D      		adiw r26,1+1
+ 1212 043a EDB7      		st X,r25
+ 1213 043c FEB7      		st -X,r24
+ 1214 043e 8383      		sbiw r26,1
+ 1215 0440 9483      		ldd r24,Y+32
+ 1216 0442 A583      		ldd r25,Y+33
+ 1217 0444 B683      		ldd r26,Y+34
+ 1218 0446 0E94 0000 		ldd r27,Y+35
+ 173:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	printf("Pose_test->Pos_Pitch = %ld  \n ",Pose_test.Pos_Pitch);	
+ 1219               	r31,__SP_H__
+ 1220               		std Z+3,r24
+ 1221 044a 80E0      		std Z+4,r25
+ 1222 044c 90E0      		std Z+5,r26
+ 1223 044e ADB7      		std Z+6,r27
+ 1224 0450 BEB7      		call printf
+ 1226 0454 9C93      	.LM89:
+ 1227 0456 8E93      		in r18,__SP_L__
+ 1228 0458 1197      		in r19,__SP_H__
+ 1229 045a 8C8D      		subi r18,lo8(-(6))
+ 1230 045c 9D8D      		sbci r19,hi8(-(6))
+ 1231 045e AE8D      		in __tmp_reg__,__SREG__
+ 1232 0460 BF8D      		cli
+ 1233 0462 EDB7      		out __SP_H__,r19
+ 1234 0464 FEB7      		out __SREG__,__tmp_reg__
+ 1235 0466 8383      		out __SP_L__,r18
+ 1236 0468 9483      		ldi r24,lo8(.LC16)
+ 1237 046a A583      		ldi r25,hi8(.LC16)
+ 1238 046c B683      		call puts
+ 174:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	printf("Pose_test->Pos_Roll= %ld  \n ",Pose_test.Pos_Roll);	
+ 1240               	LC17)
+ 1241               		ldi r25,hi8(.LC17)
+ 1242 0472 80E0      		call puts
+ 1244 0476 ADB7      	.LM91:
+ 1245 0478 BEB7      		rcall .
+ 1246 047a 1296      		ldi r24,lo8(.LC18)
+ 1247 047c 9C93      		ldi r25,hi8(.LC18)
+ 1248 047e 8E93      		in r26,__SP_L__
+ 1249 0480 1197      		in r27,__SP_H__
+ 1250 0482 88A1      		adiw r26,1+1
+ 1251 0484 99A1      		st X,r25
+ 1252 0486 AAA1      		st -X,r24
+ 1253 0488 BBA1      		sbiw r26,1
+ 1254 048a EDB7      		call printf
+ 1256 048e 8383      	.LM92:
+ 1257 0490 9483      		ldi r24,lo8(.LC19)
+ 1258 0492 A583      		ldi r25,hi8(.LC19)
+ 1259 0494 B683      		in r30,__SP_L__
+ 1260 0496 0E94 0000 		in r31,__SP_H__
+ 175:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	
+ 176:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	printf("Actualizando Pose_test a \n");
+ 1261               	,r24
+ 1262               		call printf
+ 1264 049c 3EB7      	.LM93:
+ 1265 049e 2A5F      		ldi r24,lo8(.LC20)
+ 1266 04a0 3F4F      		ldi r25,hi8(.LC20)
+ 1267 04a2 0FB6      		in r26,__SP_L__
+ 1268 04a4 F894      		in r27,__SP_H__
+ 1269 04a6 3EBF      		adiw r26,1+1
+ 1270 04a8 0FBE      		st X,r25
+ 1271 04aa 2DBF      		st -X,r24
+ 1272 04ac 80E0      		sbiw r26,1
+ 1273 04ae 90E0      		call printf
+ 177:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	printf("Pose_test->Pos_num = 3   \n");	
+ 1275               	4,lo8(.LC21)
+ 1276               		ldi r25,hi8(.LC21)
+ 1277 04b4 80E0      		in r30,__SP_L__
+ 1278 04b6 90E0      		in r31,__SP_H__
+ 1279 04b8 0E94 0000 		std Z+2,r25
+ 178:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	printf("Pose_test->Pos_Waist = 5670 \n ");	
+ 1280               	Z+1,r24
+ 1281               		call printf
+ 1283 04be 80E0      	.LM95:
+ 1284 04c0 90E0      		ldi r24,lo8(.LC22)
+ 1285 04c2 ADB7      		ldi r25,hi8(.LC22)
+ 1286 04c4 BEB7      		in r26,__SP_L__
+ 1287 04c6 1296      		in r27,__SP_H__
+ 1288 04c8 9C93      		adiw r26,1+1
+ 1289 04ca 8E93      		st X,r25
+ 1290 04cc 1197      		st -X,r24
+ 1291 04ce 0E94 0000 		sbiw r26,1
+ 179:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	printf("Pose_test->Pos_Shoulder = 6000 \n ");	
+ 1292               	
+ 1294 04d2 80E0      	.LM96:
+ 1295 04d4 90E0      		ldi r24,lo8(3)
+ 1296 04d6 EDB7      		ldi r25,hi8(3)
+ 1297 04d8 FEB7      		std Y+15,r25
+ 1298 04da 9283      		std Y+14,r24
+ 1300 04de 0E94 0000 	.LM97:
+ 180:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	printf("Pose_test->Pos_Elbow = 2400 \n ");	
+ 1301               	,lo8(5670)
+ 1302               		ldi r25,hi8(5670)
+ 1303 04e2 80E0      		ldi r26,hlo8(5670)
+ 1304 04e4 90E0      		ldi r27,hhi8(5670)
+ 1305 04e6 ADB7      		std Y+16,r24
+ 1306 04e8 BEB7      		std Y+17,r25
+ 1307 04ea 1296      		std Y+18,r26
+ 1308 04ec 9C93      		std Y+19,r27
+ 1310 04f0 1197      	.LM98:
+ 1311 04f2 0E94 0000 		ldi r24,lo8(6000)
+ 181:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	printf("Pose_test->Pos_Pitch = 1000 \n ");	
+ 1312               	8(6000)
+ 1313               		ldi r26,hlo8(6000)
+ 1314 04f6 80E0      		ldi r27,hhi8(6000)
+ 1315 04f8 90E0      		std Y+20,r24
+ 1316 04fa EDB7      		std Y+21,r25
+ 1317 04fc FEB7      		std Y+22,r26
+ 1318 04fe 9283      		std Y+23,r27
+ 1320 0502 0E94 0000 	.LM99:
+ 182:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	printf("Pose_test->Pos_Roll= 10 \n ");	
+ 1321               	lo8(2400)
+ 1322               		ldi r25,hi8(2400)
+ 1323 0506 80E0      		ldi r26,hlo8(2400)
+ 1324 0508 90E0      		ldi r27,hhi8(2400)
+ 1325 050a ADB7      		std Y+24,r24
+ 1326 050c BEB7      		std Y+25,r25
+ 1327 050e 1296      		std Y+26,r26
+ 1328 0510 9C93      		std Y+27,r27
+ 1330 0514 1197      	.LM100:
+ 1331 0516 0E94 0000 		ldi r24,lo8(1000)
+ 183:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	Pose_test.id= 3;	
+ 1332               	8(1000)
+ 1333               		ldi r26,hlo8(1000)
+ 1334 051a 83E0      		ldi r27,hhi8(1000)
+ 1335 051c 90E0      		std Y+28,r24
+ 1336 051e 9F87      		std Y+29,r25
+ 1337 0520 8E87      		std Y+30,r26
+ 184:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	Pose_test.Pos_Waist=5670;	
+ 1338               	+31,r27
+ 1340 0522 86E2      	.LM101:
+ 1341 0524 96E1      		ldi r24,lo8(10)
+ 1342 0526 A0E0      		ldi r25,hi8(10)
+ 1343 0528 B0E0      		ldi r26,hlo8(10)
+ 1344 052a 888B      		ldi r27,hhi8(10)
+ 1345 052c 998B      		std Y+32,r24
+ 1346 052e AA8B      		std Y+33,r25
+ 1347 0530 BB8B      		std Y+34,r26
+ 185:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	Pose_test.Pos_Shoulder=6000;	
+ 1348               	r27
+ 1350 0532 80E7      	.LM102:
+ 1351 0534 97E1      		pop __tmp_reg__
+ 1352 0536 A0E0      		pop __tmp_reg__
+ 1353 0538 B0E0      		movw r22,r12
+ 1354 053a 8C8B      		movw r24,r14
+ 1355 053c 9D8B      		ldi r20,lo8(23)
+ 1356 053e AE8B      		ldi r21,hi8(23)
+ 1357 0540 BF8B      		movw r18,r16
+ 186:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	Pose_test.Pos_Elbow=2400;	
+ 1358               	xx_write_bytes
+ 1359               		movw r18,r24
+ 1361 0544 99E0      	.LM103:
+ 1362 0546 A0E0      		sbiw r24,0
+ 1363 0548 B0E0      		breq .L48
+ 1365 054c 998F      	.LM104:
+ 1366 054e AA8F      		rcall .
+ 1367 0550 BB8F      		rcall .
+ 187:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	Pose_test.Pos_Pitch=1000;	
+ 1368               	o8(.LC23)
+ 1369               		ldi r25,hi8(.LC23)
+ 1370 0552 88EE      		in r30,__SP_L__
+ 1371 0554 93E0      		in r31,__SP_H__
+ 1372 0556 A0E0      		std Z+2,r25
+ 1373 0558 B0E0      		std Z+1,r24
+ 1374 055a 8C8F      		std Z+4,r19
+ 1375 055c 9D8F      		std Z+3,r18
+ 1376 055e AE8F      		call printf
+ 1377 0560 BF8F      		pop __tmp_reg__
+ 188:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	Pose_test.Pos_Roll=10;
+ 1378               	_reg__
+ 1379               		pop __tmp_reg__
+ 1380 0562 8AE0      		pop __tmp_reg__
+ 1381 0564 90E0      	.L48:
+ 1383 0568 B0E0      	.LM105:
+ 1384 056a 88A3      		ldi r24,lo8(.LC24)
+ 1385 056c 99A3      		ldi r25,hi8(.LC24)
+ 1386 056e AAA3      		call puts
+ 189:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	/* grabando pose*/
+ 190:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	rv=ee24xx_write_bytes(addr,sizeof(PoseRobot),(uint8 *)&Pose_test);			
+ 1388               	call .
+ 1389               		rcall .
+ 1390 0572 0F90      		ldi r24,lo8(.LC10)
+ 1391 0574 0F90      		ldi r25,hi8(.LC10)
+ 1392 0576 B601      		in r26,__SP_L__
+ 1393 0578 C701      		in r27,__SP_H__
+ 1394 057a 47E1      		adiw r26,1+1
+ 1395 057c 50E0      		st X,r25
+ 1396 057e 9801      		st -X,r24
+ 1397 0580 0E94 0000 		sbiw r26,1
+ 1398 0584 9C01      		ldd r24,Y+14
+ 191:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	if(rv)
+ 1399               	15
+ 1400               		adiw r26,3+1
+ 1401 0586 0097      		st X,r25
+ 1402 0588 01F0      		st -X,r24
+ 192:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	{
+ 193:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 		printf("Numero de datos grabados corectamente al grabar Num_Poses => %d\n",rv);
+ 1403               	w r26,3
+ 1404               		call printf
+ 1406 058c 00D0      	.LM107:
+ 1407 058e 80E0      		rcall .
+ 1408 0590 90E0      		ldi r24,lo8(.LC11)
+ 1409 0592 EDB7      		ldi r25,hi8(.LC11)
+ 1410 0594 FEB7      		in r30,__SP_L__
+ 1411 0596 9283      		in r31,__SP_H__
+ 1412 0598 8183      		std Z+2,r25
+ 1413 059a 3483      		std Z+1,r24
+ 1414 059c 2383      		ldd r24,Y+16
+ 1415 059e 0E94 0000 		ldd r25,Y+17
+ 1416 05a2 0F90      		ldd r26,Y+18
+ 1417 05a4 0F90      		ldd r27,Y+19
+ 1418 05a6 0F90      		std Z+3,r24
+ 1419 05a8 0F90      		std Z+4,r25
+ 1420               		std Z+5,r26
+ 194:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 		
+ 195:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	}		
+ 196:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	printf("Comprobando, Pose_test...\n");
+ 1421               	 printf
+ 1423 05aa 80E0      	.LM108:
+ 1424 05ac 90E0      		ldi r24,lo8(.LC12)
+ 1425 05ae 0E94 0000 		ldi r25,hi8(.LC12)
+ 197:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	printf("Pose_test->Pos_num = %d   \n",Pose_test.id);	
+ 1426               	26,__SP_L__
+ 1427               		in r27,__SP_H__
+ 1428 05b2 00D0      		adiw r26,1+1
+ 1429 05b4 00D0      		st X,r25
+ 1430 05b6 80E0      		st -X,r24
+ 1431 05b8 90E0      		sbiw r26,1
+ 1432 05ba ADB7      		ldd r24,Y+20
+ 1433 05bc BEB7      		ldd r25,Y+21
+ 1434 05be 1296      		ldd r26,Y+22
+ 1435 05c0 9C93      		ldd r27,Y+23
+ 1436 05c2 8E93      		in r30,__SP_L__
+ 1437 05c4 1197      		in r31,__SP_H__
+ 1438 05c6 8E85      		std Z+3,r24
+ 1439 05c8 9F85      		std Z+4,r25
+ 1440 05ca 1496      		std Z+5,r26
+ 1441 05cc 9C93      		std Z+6,r27
+ 1442 05ce 8E93      		call printf
+ 1444 05d2 0E94 0000 	.LM109:
+ 198:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	printf("Pose_test->Pos_Waist = %ld  \n ",Pose_test.Pos_Waist);	
+ 1445               	
+ 1446               		ldi r25,hi8(.LC13)
+ 1447 05d6 00D0      		in r26,__SP_L__
+ 1448 05d8 80E0      		in r27,__SP_H__
+ 1449 05da 90E0      		adiw r26,1+1
+ 1450 05dc EDB7      		st X,r25
+ 1451 05de FEB7      		st -X,r24
+ 1452 05e0 9283      		sbiw r26,1
+ 1453 05e2 8183      		ldd r24,Y+24
+ 1454 05e4 8889      		ldd r25,Y+25
+ 1455 05e6 9989      		ldd r26,Y+26
+ 1456 05e8 AA89      		ldd r27,Y+27
+ 1457 05ea BB89      		in r30,__SP_L__
+ 1458 05ec 8383      		in r31,__SP_H__
+ 1459 05ee 9483      		std Z+3,r24
+ 1460 05f0 A583      		std Z+4,r25
+ 1461 05f2 B683      		std Z+5,r26
+ 1462 05f4 0E94 0000 		std Z+6,r27
+ 199:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	printf("Pose_test->Pos_Shoulder = %ld  \n ",Pose_test.Pos_Shoulder);	
+ 1463               	abn	68,0,201,.LM110-.LFBB6
+ 1464               	.LM110:
+ 1465 05f8 80E0      		ldi r24,lo8(.LC14)
+ 1466 05fa 90E0      		ldi r25,hi8(.LC14)
+ 1467 05fc ADB7      		in r26,__SP_L__
+ 1468 05fe BEB7      		in r27,__SP_H__
+ 1469 0600 1296      		adiw r26,1+1
+ 1470 0602 9C93      		st X,r25
+ 1471 0604 8E93      		st -X,r24
+ 1472 0606 1197      		sbiw r26,1
+ 1473 0608 8C89      		ldd r24,Y+28
+ 1474 060a 9D89      		ldd r25,Y+29
+ 1475 060c AE89      		ldd r26,Y+30
+ 1476 060e BF89      		ldd r27,Y+31
+ 1477 0610 EDB7      		in r30,__SP_L__
+ 1478 0612 FEB7      		in r31,__SP_H__
+ 1479 0614 8383      		std Z+3,r24
+ 1480 0616 9483      		std Z+4,r25
+ 1481 0618 A583      		std Z+5,r26
+ 1482 061a B683      		std Z+6,r27
+ 1483 061c 0E94 0000 		call printf
+ 200:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	printf("Pose_test->Pos_Elbow = %ld  \n ",Pose_test.Pos_Elbow);	
+ 1484               	11-.LFBB6
+ 1485               	.LM111:
+ 1486 0620 80E0      		ldi r24,lo8(.LC15)
+ 1487 0622 90E0      		ldi r25,hi8(.LC15)
+ 1488 0624 ADB7      		in r26,__SP_L__
+ 1489 0626 BEB7      		in r27,__SP_H__
+ 1490 0628 1296      		adiw r26,1+1
+ 1491 062a 9C93      		st X,r25
+ 1492 062c 8E93      		st -X,r24
+ 1493 062e 1197      		sbiw r26,1
+ 1494 0630 888D      		ldd r24,Y+32
+ 1495 0632 998D      		ldd r25,Y+33
+ 1496 0634 AA8D      		ldd r26,Y+34
+ 1497 0636 BB8D      		ldd r27,Y+35
+ 1498 0638 EDB7      		in r30,__SP_L__
+ 1499 063a FEB7      		in r31,__SP_H__
+ 1500 063c 8383      		std Z+3,r24
+ 1501 063e 9483      		std Z+4,r25
+ 1502 0640 A583      		std Z+5,r26
+ 1503 0642 B683      		std Z+6,r27
+ 1504 0644 0E94 0000 		call printf
+ 201:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	printf("Pose_test->Pos_Pitch = %ld  \n ",Pose_test.Pos_Pitch);	
+ 1505               	12-.LFBB6
+ 1506               	.LM112:
+ 1507 0648 80E0      		std Y+15,__zero_reg__
+ 1508 064a 90E0      		std Y+14,__zero_reg__
+ 1510 064e BEB7      	.LM113:
+ 1511 0650 1296      		std Y+16,__zero_reg__
+ 1512 0652 9C93      		std Y+17,__zero_reg__
+ 1513 0654 8E93      		std Y+18,__zero_reg__
+ 1514 0656 1197      		std Y+19,__zero_reg__
+ 1516 065a 9D8D      	.LM114:
+ 1517 065c AE8D      		std Y+20,__zero_reg__
+ 1518 065e BF8D      		std Y+21,__zero_reg__
+ 1519 0660 EDB7      		std Y+22,__zero_reg__
+ 1520 0662 FEB7      		std Y+23,__zero_reg__
+ 1522 0666 9483      	.LM115:
+ 1523 0668 A583      		std Y+24,__zero_reg__
+ 1524 066a B683      		std Y+25,__zero_reg__
+ 1525 066c 0E94 0000 		std Y+26,__zero_reg__
+ 202:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	printf("Pose_test->Pos_Roll= %ld  \n ",Pose_test.Pos_Roll);	
+ 1526               	_
+ 1528 0670 80E0      	.LM116:
+ 1529 0672 90E0      		std Y+28,__zero_reg__
+ 1530 0674 ADB7      		std Y+29,__zero_reg__
+ 1531 0676 BEB7      		std Y+30,__zero_reg__
+ 1532 0678 1296      		std Y+31,__zero_reg__
+ 1534 067c 8E93      	.LM117:
+ 1535 067e 1197      		std Y+32,__zero_reg__
+ 1536 0680 88A1      		std Y+33,__zero_reg__
+ 1537 0682 99A1      		std Y+34,__zero_reg__
+ 1538 0684 AAA1      		std Y+35,__zero_reg__
+ 1540 0688 EDB7      	.LM118:
+ 1541 068a FEB7      		in r18,__SP_L__
+ 1542 068c 8383      		in r19,__SP_H__
+ 1543 068e 9483      		subi r18,lo8(-(6))
+ 1544 0690 A583      		sbci r19,hi8(-(6))
+ 1545 0692 B683      		in __tmp_reg__,__SREG__
+ 1546 0694 0E94 0000 		cli
+ 203:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	//Reiniciando
+ 204:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	Pose_test.id= 0;	
+ 1547               	t __SREG__,__tmp_reg__
+ 1548               		out __SP_L__,r18
+ 1549 0698 1F86      		mov r22,r11
+ 1550 069a 1E86      		mov r23,r10
+ 205:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	Pose_test.Pos_Waist=0;	
+ 1551               	_
+ 1553 069c 188A      	.LM118:
+ 1554 069e 198A      		in r18,__SP_L__
+ 1555 06a0 1A8A      		in r19,__SP_H__
+ 1556 06a2 1B8A      		subi r18,lo8(-(6))
+ 206:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	Pose_test.Pos_Shoulder=0;	
+ 1557               	r19,hi8(-(6))
+ 1558               		in __tmp_reg__,__SREG__
+ 1559 06a4 1C8A      		cli
+ 1560 06a6 1D8A      		out __SP_H__,r19
+ 1561 06a8 1E8A      		out __SREG__,__tmp_reg__
+ 1562 06aa 1F8A      		out __SP_L__,r18
+ 207:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	Pose_test.Pos_Elbow=0;	
+ 1563               	22,r11
+ 1564               		mov r23,r10
+ 1565 06ac 188E      		mov r24,r9
+ 1566 06ae 198E      		mov r25,r8
+ 1567 06b0 1A8E      		ldi r20,lo8(23)
+ 1568 06b2 1B8E      		ldi r21,hi8(23)
+ 208:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	Pose_test.Pos_Pitch=0;	
+ 1569               	r19,__SP_H__
+ 1570               		subi r18,lo8(-(6))
+ 1571 06b4 1C8E      		sbci r19,hi8(-(6))
+ 1572 06b6 1D8E      		in __tmp_reg__,__SREG__
+ 1573 06b8 1E8E      		cli
+ 1574 06ba 1F8E      		out __SP_H__,r19
+ 209:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	Pose_test.Pos_Roll=0;
+ 1575               	_SREG__,__tmp_reg__
+ 1576               		out __SP_L__,r18
+ 1577 06bc 18A2      		mov r22,r11
+ 1578 06be 19A2      		mov r23,r10
+ 1579 06c0 1AA2      		mov r24,r9
+ 1580 06c2 1BA2      		mov r25,r8
+ 210:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	/* grabando pose*/
+ 211:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	rv=ee24xx_write_bytes(addr,sizeof(PoseRobot),(uint8 *)&Pose_test);	
+ 1581               	.LFBB6
+ 1582               	.LM118:
+ 1583 06c4 2DB7      		in r18,__SP_L__
+ 1584 06c6 3EB7      		in r19,__SP_H__
+ 1585 06c8 2A5F      		subi r18,lo8(-(6))
+ 1586 06ca 3F4F      		sbci r19,hi8(-(6))
+ 1587 06cc 0FB6      		in __tmp_reg__,__SREG__
+ 1588 06ce F894      		cli
+ 1589 06d0 3EBF      		out __SP_H__,r19
+ 1590 06d2 0FBE      		out __SREG__,__tmp_reg__
+ 1591 06d4 2DBF      		out __SP_L__,r18
+ 1592 06d6 6B2D      		mov r22,r11
+ 1593 06d8 7A2D      		mov r23,r10
+ 1594 06da 892D      		mov r24,r9
+ 1595 06dc 982D      		mov r25,r8
+ 1596 06de 47E1      		ldi r20,lo8(23)
+ 1597 06e0 50E0      		ldi r21,hi8(23)
+ 1598 06e2 9801      		movw r18,r16
+ 1599 06e4 0E94 0000 		call ee24xx_write_bytes
+ 212:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	printf("Resultado corecto Y/N\n");
+ 1600               	M119-.LFBB6
+ 1601               	.LM119:
+ 1602 06e8 80E0      		ldi r24,lo8(.LC3)
+ 1603 06ea 90E0      		ldi r25,hi8(.LC3)
+ 1604 06ec 0E94 0000 		call puts
+ 213:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	scanf("%s",&pause);
+ 1605               	SP_L__,r18
+ 1606               		mov r22,r11
+ 1607 06f0 00D0      		mov r23,r10
+ 1608 06f2 00D0      		mov r24,r9
+ 1609 06f4 80E0      		mov r25,r8
+ 1610 06f6 90E0      		ldi r20,lo8(23)
+ 1611 06f8 ADB7      		ldi r21,hi8(23)
+ 1612 06fa BEB7      		movw r18,r16
+ 1613 06fc 1296      		call ee24xx_write_bytes
+ 1615 0700 8E93      	.LM119:
+ 1616 0702 1197      		ldi r24,lo8(.LC3)
+ 1617 0704 CE01      		ldi r25,hi8(.LC3)
+ 1618 0706 0196      		call puts
+ 1620 070a 9C93      	.LM120:
+ 1621 070c 8E93      		rcall .
+ 1622 070e 1397      		rcall .
+ 1623 0710 0E94 0000 		ldi r24,lo8(.LC4)
+ 214:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 
+ 215:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	//Prueba RTC
+ 216:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	printf("Prueba RTC...\n");
+ 1624               	i r21,hi8(23)
+ 1625               		movw r18,r16
+ 1626 0714 0F90      		call ee24xx_write_bytes
+ 1628 0718 0F90      	.LM119:
+ 1629 071a 0F90      		ldi r24,lo8(.LC3)
+ 1630 071c 80E0      		ldi r25,hi8(.LC3)
+ 1631 071e 90E0      		call puts
+ 217:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	Read_Fecha(&Test_Fecha);
+ 1633               	,r10
+ 1634               		mov r24,r9
+ 1635 0724 CE01      		mov r25,r8
+ 1636 0726 0696      		ldi r20,lo8(23)
+ 1637 0728 0E94 0000 		ldi r21,hi8(23)
+ 218:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	printf("Fecha = Hoy es el dia %s %x de %s de 200%x. \n",Dayname(Test_Fecha.dw),Test_Fecha.dt,Month
+ 1638               	r19,__SP_H__
+ 1639               		subi r18,lo8(-(6))
+ 1640 072c 8C85      		sbci r19,hi8(-(6))
+ 1641 072e 0E94 0000 		in __tmp_reg__,__SREG__
+ 1642 0732 8C01      		cli
+ 1643 0734 F984      		out __SP_H__,r19
+ 1644 0736 8A85      		out __SREG__,__tmp_reg__
+ 1645 0738 0E94 0000 		out __SP_L__,r18
+ 1646 073c EDB7      		mov r22,r11
+ 1647 073e FEB7      		mov r23,r10
+ 1648 0740 3A97      		mov r24,r9
+ 1649 0742 0FB6      		mov r25,r8
+ 1650 0744 F894      		ldi r20,lo8(23)
+ 1651 0746 FEBF      		ldi r21,hi8(23)
+ 1652 0748 0FBE      		movw r18,r16
+ 1653 074a EDBF      		call ee24xx_write_bytes
+ 1655 074e 20E0      	.LM119:
+ 1656 0750 30E0      		ldi r24,lo8(.LC3)
+ 1657 0752 ADB7      		ldi r25,hi8(.LC3)
+ 1658 0754 BEB7      		call puts
+ 1660 0758 3C93      	.LM120:
+ 1661 075a 2E93      		rcall .
+ 1662 075c 1197      		rcall .
+ 1663 075e 1383      		ldi r24,lo8(.LC4)
+ 1664 0760 0283      		ldi r25,hi8(.LC4)
+ 1665 0762 F482      		in r26,__SP_L__
+ 1666 0764 1582      		in r27,__SP_H__
+ 1667 0766 9783      		adiw r26,1+1
+ 1668 0768 8683      		st X,r25
+ 1669 076a 8B85      		st -X,r24
+ 1670 076c 8087      		sbiw r26,1
+ 1671 076e 1186      		movw r24,r28
+ 1672 0770 0E94 0000 		adiw r24,1
+ 219:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	if((Test_Fecha.hr & 0x20) != 0)			
+ 1673               		sbiw r26,3
+ 1674               		call scanf
+ 1676 0776 90E0      	.LM121:
+ 1677 0778 EDB7      		pop __tmp_reg__
+ 1678 077a FEB7      		pop __tmp_reg__
+ 1679 077c 3A96      		pop __tmp_reg__
+ 1680 077e 0FB6      		pop __tmp_reg__
+ 1681 0780 F894      		ldi r24,lo8(.LC25)
+ 1682 0782 FEBF      		ldi r25,hi8(.LC25)
+ 1683 0784 0FBE      		call puts
+ 1685 0788 9C01      	.LM122:
+ 1686 078a 2F71      		movw r24,r28
+ 1687 078c 3070      		adiw r24,6
+ 1688 078e 85FF      		call Read_Fecha
+ 220:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 		printf("Son las %x:%x:%x PM \n",(Test_Fecha.hr & 0x1F),Test_Fecha.mn,Test_Fecha.sc);
+ 1690               	_reg__
+ 1691               		pop __tmp_reg__
+ 1692 0792 8DB7      		ldi r24,lo8(.LC25)
+ 1693 0794 9EB7      		ldi r25,hi8(.LC25)
+ 1694 0796 0897      		call puts
+ 1696 079a F894      	.LM122:
+ 1697 079c 9EBF      		movw r24,r28
+ 1698 079e 0FBE      		adiw r24,6
+ 1699 07a0 8DBF      		call Read_Fecha
+ 1701 07a4 FEB7      	.LM123:
+ 1702 07a6 3196      		ldd r24,Y+12
+ 1703 07a8 80E0      		call Dayname
+ 1704 07aa 90E0      		movw r16,r24
+ 1705 07ac 00C0      		ldd r15,Y+9
+ 1706               		ldd r24,Y+10
+ 221:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	else 
+ 222:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 		printf("Son las %x:%x:%x AM \n",(Test_Fecha.hr & 0x1F),Test_Fecha.mn,Test_Fecha.sc);
+ 1707               	68,0,217,.LM122-.LFBB6
+ 1708               	.LM122:
+ 1709 07ae 8DB7      		movw r24,r28
+ 1710 07b0 9EB7      		adiw r24,6
+ 1711 07b2 0897      		call Read_Fecha
+ 1713 07b6 F894      	.LM123:
+ 1714 07b8 9EBF      		ldd r24,Y+12
+ 1715 07ba 0FBE      		call Dayname
+ 1716 07bc 8DBF      		movw r16,r24
+ 1717 07be EDB7      		ldd r15,Y+9
+ 1718 07c0 FEB7      		ldd r24,Y+10
+ 1719 07c2 3196      		call Monthname
+ 1720 07c4 80E0      		in r30,__SP_L__
+ 1721 07c6 90E0      		in r31,__SP_H__
+ 1722               		sbiw r30,10
+ 1723 07c8 ADB7      		in __tmp_reg__,__SREG__
+ 1724 07ca BEB7      		cli
+ 1725 07cc 1296      		out __SP_H__,r31
+ 1726 07ce 9C93      		out __SREG__,__tmp_reg__
+ 1727 07d0 8E93      		out __SP_L__,r30
+ 1728 07d2 1197      		adiw r30,1
+ 1729 07d4 3383      		ldi r18,lo8(.LC26)
+ 1730 07d6 2283      		ldi r19,hi8(.LC26)
+ 1731 07d8 8F81      		in r26,__SP_L__
+ 1732 07da 8483      		in r27,__SP_H__
+ 1733 07dc 1582      		adiw r26,1+1
+ 1734 07de 8E81      		st X,r19
+ 1735 07e0 8683      		st -X,r18
+ 1736 07e2 1782      		sbiw r26,1
+ 1737 07e4 0E94 0000 		std Z+3,r17
+ 1738 07e8 EDB7      		std Z+2,r16
+ 1739 07ea FEB7      		std Z+4,r15
+ 1740 07ec 3896      		std Z+5,__zero_reg__
+ 1741 07ee 0FB6      		std Z+7,r25
+ 1742 07f0 F894      		std Z+6,r24
+ 1743 07f2 FEBF      		ldd r24,Y+11
+ 1744 07f4 0FBE      		std Z+8,r24
+ 1745 07f6 EDBF      		std Z+9,__zero_reg__
+ 223:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	printf("Resultado corecto Y/N\n");
+ 1746               	-X,r18
+ 1747               		sbiw r26,1
+ 1748 07f8 80E0      		std Z+3,r17
+ 1749 07fa 90E0      		std Z+2,r16
+ 1750 07fc 0E94 0000 		std Z+4,r15
+ 224:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 	scanf("%s",&pause);
+ 1751               	
+ 1752               		ldi r18,lo8(.LC26)
+ 1753 0800 00D0      		ldi r19,hi8(.LC26)
+ 1754 0802 00D0      		in r26,__SP_L__
+ 1755 0804 80E0      		in r27,__SP_H__
+ 1756 0806 90E0      		adiw r26,1+1
+ 1757 0808 ADB7      		st X,r19
+ 1758 080a BEB7      		st -X,r18
+ 1759 080c 1296      		sbiw r26,1
+ 1760 080e 9C93      		std Z+3,r17
+ 1761 0810 8E93      		std Z+2,r16
+ 1762 0812 1197      		std Z+4,r15
+ 1763 0814 CE01      		std Z+5,__zero_reg__
+ 1764 0816 0196      		std Z+7,r25
+ 1765 0818 1496      		std Z+6,r24
+ 1766 081a 9C93      		ldd r24,Y+11
+ 1767 081c 8E93      		std Z+8,r24
+ 1768 081e 1397      		std Z+9,__zero_reg__
+ 1769 0820 0E94 0000 		call printf
+ 1771 0826 0F90      	.LM124:
+ 1772 0828 0F90      		ldd r24,Y+8
+ 1773 082a 0F90      		ldi r25,lo8(0)
+ 1774               		in r30,__SP_L__
+ 225:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 
+ 226:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 
+ 227:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 
+ 228:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 
+ 229:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** 
+ 230:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/debug.c **** }
+ 1775               	4
+ 1776               		ldd r24,Y+11
+ 1777 082c A496      		std Z+8,r24
+ 1778 082e 0FB6      		std Z+9,__zero_reg__
+ 1779 0830 F894      		call printf
+ 1781 0834 0FBE      	.LM124:
+ 1782 0836 CDBF      		ldd r24,Y+8
+ 1783 0838 CF91      		ldi r25,lo8(0)
+ 1784 083a DF91      		in r30,__SP_L__
+ 1785 083c 1F91      		in r31,__SP_H__
+ 1786 083e 0F91      		adiw r30,10
+ 1787 0840 FF90      		in __tmp_reg__,__SREG__
+ 1788 0842 EF90      		cli
+ 1789 0844 DF90      		out __SP_H__,r31
+ 1790 0846 CF90      		out __SREG__,__tmp_reg__
+ 1791 0848 BF90      		out __SP_L__,r30
+ 1792 084a AF90      		movw r18,r24
+ 1793 084c 9F90      		andi r18,lo8(31)
+ 1794 084e 8F90      		andi r19,hi8(31)
+ 1795 0850 0895      		sbrs r24,5
+ 1796               		rjmp .L49
+ 1798               	.LM125:
+ 1799               		in r24,__SP_L__
+ 1800               		in r25,__SP_H__
+ 1801               		sbiw r24,8
+ 1802               		in __tmp_reg__,__SREG__
+ 1803               		cli
+ 1804               		out __SP_H__,r25
+ 1805               		out __SREG__,__tmp_reg__
+ 1806               		out __SP_L__,r24
+ 1807               		in r30,__SP_L__
+ 1808               		in r31,__SP_H__
+ 1809               		adiw r30,1
+ 1810               		ldi r24,lo8(.LC27)
+ 1811               		ldi r25,hi8(.LC27)
+ 1812               		rjmp .L55
+ 1813               	.L49:
+ 1815               	.LM126:
+ 1816               		in r24,__SP_L__
+ 1817               		in r25,__SP_H__
+ 1818               		sbiw r24,8
+ 1819               		in __tmp_reg__,__SREG__
+ 1820               		cli
+ 1821 0000 0000 0000 		out __SP_H__,r25
+ 1822               		out __SREG__,__tmp_reg__
+ 1823               		out __SP_L__,r24
+ 1824               		in r30,__SP_L__
+ 1825               		in r31,__SP_H__
+ 1826               		adiw r30,1
+DEFINED SYMBOLS
+                            *ABS*:00000000 debug.c
+C:\DOCUME~1\David\LOCALS~1\Temp/ccqYUHnH.s:2      *ABS*:0000003f __SREG__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccqYUHnH.s:3      *ABS*:0000003e __SP_H__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccqYUHnH.s:4      *ABS*:0000003d __SP_L__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccqYUHnH.s:5      *ABS*:00000034 __CCP__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccqYUHnH.s:6      *ABS*:00000000 __tmp_reg__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccqYUHnH.s:7      *ABS*:00000001 __zero_reg__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccqYUHnH.s:234    .text:00000000 delay_1s
+C:\DOCUME~1\David\LOCALS~1\Temp/ccqYUHnH.s:285    .text:00000014 buzzer
+C:\DOCUME~1\David\LOCALS~1\Temp/ccqYUHnH.s:383    .text:0000003e buzzer_ms
+C:\DOCUME~1\David\LOCALS~1\Temp/ccqYUHnH.s:541    .text:000000e0 Led_on
+C:\DOCUME~1\David\LOCALS~1\Temp/ccqYUHnH.s:592    .text:00000104 Led_off
+C:\DOCUME~1\David\LOCALS~1\Temp/ccqYUHnH.s:702    .text:0000012a Test_perifericos
+C:\DOCUME~1\David\LOCALS~1\Temp/ccqYUHnH.s:1820   .eeprom:00000000 ATmegaEEPROM_var
+
+UNDEFINED SYMBOLS
+__floatunsisf
+__mulsf3
+__ltsf2
+__gtsf2
+__fixunssfsi
+puts
+__iob
+fputs
+scanf
+__eerd_block_m1280
+printf
+__eewr_block_m1280
+Get_Num_Poses
+__mulsi3
+ee24xx_read_bytes
+ee24xx_write_bytes
+Read_Fecha
+Dayname
+Monthname
+__do_copy_data

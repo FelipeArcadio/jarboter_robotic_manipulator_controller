@@ -1,0 +1,4314 @@
+   1               		.file	"messages.c"
+   2               	__SREG__ = 0x3f
+   3               	__SP_H__ = 0x3e
+   4               	__SP_L__ = 0x3d
+   5               	__CCP__  = 0x34
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   9               		.text
+  10               	.Ltext0:
+ 214               		.data
+ 215               	.LC0:
+ 216 0000 486F 6D62 		.string	"Hombro"
+ 216      726F 00
+ 217               	.LC1:
+ 218 0007 4369 6E74 		.string	"Cintura"
+ 218      7572 6100 
+ 219               	.LC2:
+ 220 000f 436F 646F 		.string	"Codo"
+ 220      00
+ 221               	.LC3:
+ 222 0014 5069 7463 		.string	"Pitch"
+ 222      6800 
+ 223               	.LC4:
+ 224 001a 526F 6C6C 		.string	"Roll"
+ 224      00
+ 225               	.LC5:
+ 226 001f 6175 7831 		.string	"aux1"
+ 226      00
+ 227               	.LC6:
+ 228 0024 6175 7832 		.string	"aux2"
+ 228      00
+ 229               	.LC7:
+ 230 0029 6175 7833 		.string	"aux3"
+ 230      00
+ 231               	.LC8:
+ 232 002e 6175 7834 		.string	"aux4"
+ 232      00
+ 233               	.LC9:
+ 234 0033 6175 7835 		.string	"aux5"
+ 234      00
+ 235               	.LC10:
+ 236 0038 6175 7836 		.string	"aux6"
+ 236      00
+ 237               	.LC11:
+ 238 003d 6175 7837 		.string	"aux7"
+ 238      00
+ 239               	.LC12:
+ 240 0042 696E 7661 		.string	"invalid axis"
+ 240      6C69 6420 
+ 240      6178 6973 
+ 240      00
+ 241               		.text
+ 244               	.global	AxisName
+ 246               	AxisName:
+   1:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** #include "messages.h"
+   2:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** #include "types.h"
+   3:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 
+   4:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** #if !defined _WIN32
+   5:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** #include <avr/io.h>
+   6:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** #endif
+   7:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 
+   8:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 
+   9:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** /*****************************************************************************************/
+  10:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** uint8 * AxisName(tAxis Axis)
+  11:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** {
+ 247               	BB1:
+ 248               	/* prologue: function */
+ 249               	/* frame size = 0 */
+ 251               	.LM1:
+  12:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 
+  13:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c ****    switch(Axis) 
+ 252               	r24,5
+ 253               		cpc r25,__zero_reg__
+ 254 0000 8530      		breq .L8
+ 255 0002 9105      		cpi r24,6
+ 256 0004 01F0      		cpc r25,__zero_reg__
+ 257 0006 8630      		brge .L15
+ 258 0008 9105      		cpi r24,2
+ 259 000a 04F4      		cpc r25,__zero_reg__
+ 260 000c 8230      		breq .L5
+ 261 000e 9105      		cpi r24,3
+ 262 0010 01F0      		cpc r25,__zero_reg__
+ 263 0012 8330      		brge .L16
+ 264 0014 9105      		sbiw r24,0
+ 265 0016 04F4      		breq .L3
+ 266 0018 0097      		sbiw r24,1
+ 267 001a 01F0      		breq .+2
+ 268 001c 0197      		rjmp .L2
+ 269 001e 01F0      		rjmp .L20
+ 270 0020 00C0      	.L16:
+ 271 0022 00C0      		cpi r24,3
+ 272               		cpc r25,__zero_reg__
+ 273 0024 8330      		breq .L6
+ 274 0026 9105      		sbiw r24,4
+ 275 0028 01F0      		brne .L2
+ 276 002a 0497      		rjmp .L21
+ 277 002c 01F4      	.L15:
+ 278 002e 00C0      		cpi r24,8
+ 279               		cpc r25,__zero_reg__
+ 280 0030 8830      		breq .L11
+ 281 0032 9105      		cpi r24,9
+ 282 0034 01F0      		cpc r25,__zero_reg__
+ 283 0036 8930      		brge .L17
+ 284 0038 9105      		cpi r24,6
+ 285 003a 04F4      		cpc r25,__zero_reg__
+ 286 003c 8630      		breq .L9
+ 287 003e 9105      		sbiw r24,7
+ 288 0040 01F0      		brne .L2
+ 289 0042 0797      		rjmp .L22
+ 290 0044 01F4      	.L17:
+ 291 0046 00C0      		cpi r24,10
+ 292               		cpc r25,__zero_reg__
+ 293 0048 8A30      		breq .L13
+ 294 004a 9105      		cpi r24,10
+ 295 004c 01F0      		cpc r25,__zero_reg__
+ 296 004e 8A30      		brlt .L12
+ 297 0050 9105      		sbiw r24,11
+ 298 0052 04F0      		brne .L2
+ 299 0054 0B97      		rjmp .L23
+ 300 0056 01F4      	.L20:
+ 301 0058 00C0      		ldi r18,lo8(.LC0)
+ 302               		ldi r19,hi8(.LC0)
+ 303 005a 20E0      		rjmp .L18
+ 304 005c 30E0      	.L3:
+ 305 005e 00C0      		ldi r18,lo8(.LC1)
+ 306               		ldi r19,hi8(.LC1)
+ 307 0060 20E0      		rjmp .L18
+ 308 0062 30E0      	.L5:
+ 309 0064 00C0      		ldi r18,lo8(.LC2)
+ 310               		ldi r19,hi8(.LC2)
+ 311 0066 20E0      		rjmp .L18
+ 312 0068 30E0      	.L6:
+ 314               	.LM2:
+  14:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c ****   {
+  15:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c ****     case (AxisWaist) 					: return (uint8*)"Cintura"; break;
+  16:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c ****     case (AxisShoulder) 				: return (uint8*)"Hombro"; break;
+  17:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c ****     case (AxisElbow) 					: return (uint8*)"Codo"; break;
+ 315               	68,0,18,.LM3-.LFBB1
+ 316               	.LM3:
+ 317 006c 20E0      		ldi r18,lo8(.LC4)
+ 318 006e 30E0      		ldi r19,hi8(.LC4)
+ 319 0070 00C0      		rjmp .L18
+ 320               	.L8:
+  18:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c ****     case (AxisPitch) 					: return (uint8*)"Pitch"; break;
+ 321               	n	68,0,19,.LM4-.LFBB1
+ 322               	.LM4:
+ 323 0072 20E0      		ldi r18,lo8(.LC5)
+ 324 0074 30E0      		ldi r19,hi8(.LC5)
+ 325 0076 00C0      		rjmp .L18
+ 326               	.L9:
+  19:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c ****     case (AxisRoll) 					: return (uint8*)"Roll"; break;
+ 327               	n	68,0,20,.LM5-.LFBB1
+ 328               	.LM5:
+ 329 0078 20E0      		ldi r18,lo8(.LC6)
+ 330 007a 30E0      		ldi r19,hi8(.LC6)
+ 331 007c 00C0      		rjmp .L18
+ 332               	.L22:
+  20:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c ****     case (AxisAux1) 					: return (uint8*)"aux1"; break;
+ 333               	n	68,0,21,.LM6-.LFBB1
+ 334               	.LM6:
+ 335 007e 20E0      		ldi r18,lo8(.LC7)
+ 336 0080 30E0      		ldi r19,hi8(.LC7)
+ 337 0082 00C0      		rjmp .L18
+ 338               	.L11:
+  21:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c ****     case (AxisAux2) 					: return (uint8*)"aux2"; break;
+ 339               	n	68,0,22,.LM7-.LFBB1
+ 340               	.LM7:
+ 341 0084 20E0      		ldi r18,lo8(.LC8)
+ 342 0086 30E0      		ldi r19,hi8(.LC8)
+ 343 0088 00C0      		rjmp .L18
+ 344               	.L12:
+  22:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c ****     case (AxisAux3) 					: return (uint8*)"aux3"; break;
+ 345               	n	68,0,23,.LM8-.LFBB1
+ 346               	.LM8:
+ 347 008a 20E0      		ldi r18,lo8(.LC9)
+ 348 008c 30E0      		ldi r19,hi8(.LC9)
+ 349 008e 00C0      		rjmp .L18
+ 350               	.L13:
+  23:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c ****     case (AxisAux4) 					: return (uint8*)"aux4"; break;
+ 351               	n	68,0,24,.LM9-.LFBB1
+ 352               	.LM9:
+ 353 0090 20E0      		ldi r18,lo8(.LC10)
+ 354 0092 30E0      		ldi r19,hi8(.LC10)
+ 355 0094 00C0      		rjmp .L18
+ 356               	.L23:
+  24:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (AxisAux5) 					: return (uint8*)"aux5"; break;
+ 357               	n	68,0,25,.LM10-.LFBB1
+ 358               	.LM10:
+ 359 0096 20E0      		ldi r18,lo8(.LC11)
+ 360 0098 30E0      		ldi r19,hi8(.LC11)
+ 361 009a 00C0      		rjmp .L18
+ 362               	.L2:
+  25:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c ****     case (AxisAux6) 					: return (uint8*)"aux6"; break;
+ 363               	n	68,0,26,.LM11-.LFBB1
+ 364               	.LM11:
+ 365 009c 20E0      		ldi r18,lo8(.LC12)
+ 366 009e 30E0      		ldi r19,hi8(.LC12)
+ 367 00a0 00C0      	.L18:
+  26:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c ****     case (AxisAux7) 					: return (uint8*)"aux7"; break;    
+ 369               	
+ 370               		movw r24,r18
+ 371 00a2 20E0      	/* epilogue start */
+ 372 00a4 30E0      		ret
+  27:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c ****     
+  28:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	default 							: return (uint8*)"invalid axis";
+  29:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c ****   }
+  30:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** } // AxisName
+ 374               	ope1:
+ 375               		.data
+ 376 00a6 C901      	.LC13:
+ 377               		.string	"Posicion Comandada"
+ 378 00a8 0895      	.LC14:
+ 379               		.string	"Error de Posici\363n"
+ 380               	.LC15:
+ 381               		.string	"Velocidad Comandada"
+ 382               	.LC16:
+ 383 004f 506F 7369 		.string	"Acceleracion Comandada"
+ 383      6369 6F6E 
+ 383      2043 6F6D 
+ 383      616E 6461 
+ 383      6461 00
+ 384               	.LC17:
+ 385 0062 4572 726F 		.string	"Posicion Censada"
+ 385      7220 6465 
+ 385      2050 6F73 
+ 385      6963 69F3 
+ 385      6E00 
+ 386               	.LC18:
+ 387 0074 5665 6C6F 		.string	"Velocidad Censada"
+ 387      6369 6461 
+ 387      6420 436F 
+ 387      6D61 6E64 
+ 387      6164 6100 
+ 388               	.LC19:
+ 389 0088 4163 6365 		.string	"Registro MotorCommand"
+ 389      6C65 7261 
+ 389      6369 6F6E 
+ 389      2043 6F6D 
+ 389      616E 6461 
+ 390               	.LC20:
+ 391 009f 506F 7369 		.string	"Tiempo de Muestreo"
+ 391      6369 6F6E 
+ 391      2043 656E 
+ 391      7361 6461 
+ 391      00
+ 392               	.LC21:
+ 393 00b0 5665 6C6F 		.string	"Registro de Captura"
+ 393      6369 6461 
+ 393      6420 4365 
+ 393      6E73 6164 
+ 393      6100 
+ 394               	.LC22:
+ 395 00c2 5265 6769 		.string	"Registro ActivityStatus"
+ 395      7374 726F 
+ 395      204D 6F74 
+ 395      6F72 436F 
+ 395      6D6D 616E 
+ 396               	.LC23:
+ 397 00d8 5469 656D 		.string	"Registro SignalStatus"
+ 397      706F 2064 
+ 397      6520 4D75 
+ 397      6573 7472 
+ 397      656F 00
+ 398               	.LC24:
+ 399 00eb 5265 6769 		.string	"Registro EventStatus"
+ 399      7374 726F 
+ 399      2064 6520 
+ 399      4361 7074 
+ 399      7572 6100 
+ 400               	.LC25:
+ 401 00ff 5265 6769 		.string	"invalid Var"
+ 401      7374 726F 
+ 401      2041 6374 
+ 401      6976 6974 
+ 401      7953 7461 
+ 402               		.text
+ 405 012d 5265 6769 	.global	TraceName
+ 405      7374 726F 
+ 405      2045 7665 
+ 405      6E74 5374 
+ 405      6174 7573 
+ 407 0142 696E 7661 	TraceName:
+ 407      6C69 6420 
+ 407      5661 7200 
+ 409               	.LM13:
+ 410               	.LFBB2:
+ 411               	/* prologue: function */
+ 412               	/* frame size = 0 */
+  31:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 
+  32:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** /*****************************************************************************************/
+  33:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** uint8 * TraceName(PMDTraceVariable Trace)
+  34:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** {
+ 414               	24,lo8(7)
+ 415               		brsh .L38
+ 416               		cpi r24,lo8(3)
+ 417               		breq .L28
+ 418               		cpi r24,lo8(4)
+  35:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 
+  36:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	switch(Trace) 
+ 419               	 .L39
+ 420               		cpi r24,lo8(1)
+ 421 00aa 8630      		breq .L26
+ 422 00ac 01F0      		cpi r24,lo8(2)
+ 423 00ae 8730      		brne .L25
+ 424 00b0 00F4      		rjmp .L43
+ 425 00b2 8330      	.L39:
+ 426 00b4 01F0      		cpi r24,lo8(4)
+ 427 00b6 8430      		breq .L29
+ 428 00b8 00F4      		cpi r24,lo8(5)
+ 429 00ba 8130      		brne .L25
+ 430 00bc 01F0      		rjmp .L44
+ 431 00be 8230      	.L38:
+ 432 00c0 01F4      		cpi r24,lo8(9)
+ 433 00c2 00C0      		breq .L34
+ 434               		cpi r24,lo8(10)
+ 435 00c4 8430      		brsh .L40
+ 436 00c6 01F0      		cpi r24,lo8(7)
+ 437 00c8 8530      		breq .L32
+ 438 00ca 01F4      		cpi r24,lo8(8)
+ 439 00cc 00C0      		brne .L25
+ 440               		rjmp .L45
+ 441 00ce 8930      	.L40:
+ 442 00d0 01F0      		cpi r24,lo8(13)
+ 443 00d2 8A30      		breq .L36
+ 444 00d4 00F4      		cpi r24,lo8(14)
+ 445 00d6 8730      		breq .L37
+ 446 00d8 01F0      		cpi r24,lo8(12)
+ 447 00da 8830      		brne .L25
+ 448 00dc 01F4      		rjmp .L46
+ 449 00de 00C0      	.L43:
+ 450               		ldi r18,lo8(.LC13)
+ 451 00e0 8D30      		ldi r19,hi8(.LC13)
+ 452 00e2 01F0      		rjmp .L41
+ 453 00e4 8E30      	.L26:
+ 454 00e6 01F0      		ldi r18,lo8(.LC14)
+ 455 00e8 8C30      		ldi r19,hi8(.LC14)
+ 456 00ea 01F4      		rjmp .L41
+ 457 00ec 00C0      	.L28:
+ 458               		ldi r18,lo8(.LC15)
+ 459 00ee 20E0      		ldi r19,hi8(.LC15)
+ 460 00f0 30E0      		rjmp .L41
+ 461 00f2 00C0      	.L29:
+ 463 00f4 20E0      	.LM15:
+ 464 00f6 30E0      		ldi r18,lo8(.LC16)
+ 465 00f8 00C0      		ldi r19,hi8(.LC16)
+ 466               		rjmp .L41
+ 467 00fa 20E0      	.L44:
+ 469 00fe 00C0      	.LM16:
+ 470               		ldi r18,lo8(.LC17)
+  37:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	{
+  38:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c ****     case (PMDTracePositionError) 			: return (uint8*)"Error de Posición"; break;
+  39:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c ****     case (PMDTraceCommandedPosition) 		: return (uint8*)"Posicion Comandada"; break;
+  40:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c ****     case (PMDTraceCommandedVelocity) 		: return (uint8*)"Velocidad Comandada"; break;
+ 471               	,.LM17-.LFBB2
+ 472               	.LM17:
+ 473 0100 20E0      		ldi r18,lo8(.LC18)
+ 474 0102 30E0      		ldi r19,hi8(.LC18)
+ 475 0104 00C0      		rjmp .L41
+ 476               	.L32:
+  41:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c ****     case (PMDTraceCommandedAcceleration) 	: return (uint8*)"Acceleracion Comandada"; break;
+ 477               	n	68,0,43,.LM18-.LFBB2
+ 478               	.LM18:
+ 479 0106 20E0      		ldi r18,lo8(.LC19)
+ 480 0108 30E0      		ldi r19,hi8(.LC19)
+ 481 010a 00C0      		rjmp .L41
+ 482               	.L45:
+  42:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c ****     case (PMDTraceActualPosition) 			: return (uint8*)"Posicion Censada"; break;
+ 483               	n	68,0,44,.LM19-.LFBB2
+ 484               	.LM19:
+ 485 010c 20E0      		ldi r18,lo8(.LC20)
+ 486 010e 30E0      		ldi r19,hi8(.LC20)
+ 487 0110 00C0      		rjmp .L41
+ 488               	.L34:
+  43:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c ****     case (PMDTraceActualVelocity) 			: return (uint8*)"Velocidad Censada"; break;
+ 489               	n	68,0,45,.LM20-.LFBB2
+ 490               	.LM20:
+ 491 0112 20E0      		ldi r18,lo8(.LC21)
+ 492 0114 30E0      		ldi r19,hi8(.LC21)
+ 493 0116 00C0      		rjmp .L41
+ 494               	.L36:
+  44:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c ****     case (PMDTraceCurrentMotorCommand) 		: return (uint8*)"Registro MotorCommand"; break;
+ 495               	n	68,0,46,.LM21-.LFBB2
+ 496               	.LM21:
+ 497 0118 20E0      		ldi r18,lo8(.LC22)
+ 498 011a 30E0      		ldi r19,hi8(.LC22)
+ 499 011c 00C0      		rjmp .L41
+ 500               	.L37:
+  45:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c ****     case (PMDTraceTime) 					: return (uint8*)"Tiempo de Muestreo"; break;
+ 501               	n	68,0,47,.LM22-.LFBB2
+ 502               	.LM22:
+ 503 011e 20E0      		ldi r18,lo8(.LC23)
+ 504 0120 30E0      		ldi r19,hi8(.LC23)
+ 505 0122 00C0      		rjmp .L41
+ 506               	.L46:
+  46:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDTraceCaptureValue) 			: return (uint8*)"Registro de Captura"; break;
+ 507               	n	68,0,48,.LM23-.LFBB2
+ 508               	.LM23:
+ 509 0124 20E0      		ldi r18,lo8(.LC24)
+ 510 0126 30E0      		ldi r19,hi8(.LC24)
+ 511 0128 00C0      		rjmp .L41
+ 512               	.L25:
+  47:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c ****     case (PMDTraceActivityStatus) 			: return (uint8*)"Registro ActivityStatus"; break;
+ 513               	n	68,0,49,.LM24-.LFBB2
+ 514               	.LM24:
+ 515 012a 20E0      		ldi r18,lo8(.LC25)
+ 516 012c 30E0      		ldi r19,hi8(.LC25)
+ 517 012e 00C0      	.L41:
+  48:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c ****     case (PMDTraceSignalStatus) 			: return (uint8*)"Registro SignalStatus"; break;
+ 519               	
+ 520               		movw r24,r18
+ 521 0130 20E0      	/* epilogue start */
+ 522 0132 30E0      		ret
+ 524               	.Lscope2:
+  49:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDTraceEventStatus) 				: return (uint8*)"Registro EventStatus"; break;
+ 525               	a
+ 526               	.LC26:
+ 527 0136 20E0      		.string	"Grados/s"
+ 528 0138 30E0      	.LC27:
+ 529               		.string	"Grados"
+  50:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c ****     default 								: return (uint8*)"invalid Var";
+  51:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c ****   }
+  52:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** } // AxisName
+ 530               	:
+ 531               		.string	"Grados/s^2"
+ 532 013a C901      	.LC29:
+ 533               		.string	"ms"
+ 534 013c 0895      	.LC30:
+ 535               		.string	"HEX"
+ 536               	.LC31:
+ 537               		.string	"invalid"
+ 538               		.text
+ 541 0157 4772 6164 	.global	Tracetype
+ 541      6F73 00
+ 543 015e 4772 6164 	Tracetype:
+ 543      6F73 2F73 
+ 543      5E32 00
+ 545 0169 6D73 00   	.LM26:
+ 546               	.LFBB3:
+ 547 016c 4845 5800 	/* prologue: function */
+ 548               	/* frame size = 0 */
+ 550               	.LM27:
+ 551               		cpi r24,lo8(6)
+ 552               		breq .L50
+ 553               		cpi r24,lo8(7)
+ 554               		brsh .L54
+ 555               		cpi r24,lo8(3)
+  53:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 
+  54:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** /*****************************************************************************************/
+  55:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** uint8 * Tracetype(PMDTraceVariable Trace)
+  56:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** {
+ 556               	
+ 557               		brsh .L55
+ 558               		cpi r24,lo8(1)
+ 559               		brlo .L48
+ 560               		rjmp .L49
+  57:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	switch(Trace) 
+ 561               	:
+ 562               		cpi r24,lo8(4)
+ 563 013e 8630      		breq .L51
+ 564 0140 01F0      		cpi r24,lo8(5)
+ 565 0142 8730      		brne .L48
+ 566 0144 00F4      		rjmp .L49
+ 567 0146 8330      	.L54:
+ 568 0148 01F0      		cpi r24,lo8(9)
+ 569 014a 8430      		breq .L52
+ 570 014c 00F4      		cpi r24,lo8(10)
+ 571 014e 8130      		brsh .L56
+ 572 0150 00F0      		cpi r24,lo8(7)
+ 573 0152 00C0      		breq .L52
+ 574               		cpi r24,lo8(8)
+ 575 0154 8430      		brne .L48
+ 576 0156 01F0      		rjmp .L59
+ 577 0158 8530      	.L56:
+ 578 015a 01F4      		subi r24,lo8(-(-12))
+ 579 015c 00C0      		cpi r24,lo8(3)
+ 580               		brsh .L48
+ 581 015e 8930      		rjmp .L52
+ 582 0160 01F0      	.L50:
+ 583 0162 8A30      		ldi r18,lo8(.LC26)
+ 584 0164 00F4      		ldi r19,hi8(.LC26)
+ 585 0166 8730      		rjmp .L57
+ 586 0168 01F0      	.L49:
+ 587 016a 8830      		ldi r18,lo8(.LC27)
+ 588 016c 01F4      		ldi r19,hi8(.LC27)
+ 589 016e 00C0      		rjmp .L57
+ 590               	.L51:
+ 591 0170 8C50      		ldi r18,lo8(.LC28)
+ 592 0172 8330      		ldi r19,hi8(.LC28)
+ 593 0174 00F4      		rjmp .L57
+ 594 0176 00C0      	.L59:
+ 596 0178 20E0      	.LM28:
+ 597 017a 30E0      		ldi r18,lo8(.LC29)
+ 598 017c 00C0      		ldi r19,hi8(.LC29)
+ 599               		rjmp .L57
+ 600 017e 20E0      	.L52:
+ 602 0182 00C0      	.LM29:
+ 603               		ldi r18,lo8(.LC30)
+ 604 0184 20E0      		ldi r19,hi8(.LC30)
+ 605 0186 30E0      		rjmp .L57
+ 606 0188 00C0      	.L48:
+  58:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	{
+  59:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 
+  60:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 		case (PMDTracePositionError): 		
+  61:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 		case (PMDTraceCommandedPosition): 	
+  62:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 		case (PMDTraceActualPosition) 			: return (uint8*)"Grados"; break;
+  63:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 		case (PMDTraceCommandedVelocity): 
+  64:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 		case (PMDTraceActualVelocity) 			: return (uint8*)"Grados/s"; break;
+  65:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 		case (PMDTraceCommandedAcceleration) 	: return (uint8*)"Grados/s^2"; break;
+ 608               	.L57:
+ 610 018a 20E0      	.LM31:
+ 611 018c 30E0      		movw r24,r18
+ 612 018e 00C0      	/* epilogue start */
+ 613               		ret
+  66:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 		case (PMDTraceTime) 					: return (uint8*)"ms"; break;
+ 614               		Tracetype, .-Tracetype
+ 615               	.Lscope3:
+ 616 0190 20E0      		.data
+ 617 0192 30E0      	.LC32:
+ 618 0194 00C0      		.string	"go home cmd"
+ 619               	.LC33:
+  67:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 		case (PMDTraceCaptureValue): 			
+  68:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 		case (PMDTraceCurrentMotorCommand): 		
+  69:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 		case (PMDTraceEventStatus): 				
+  70:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 		case (PMDTraceActivityStatus): 			
+  71:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 		case (PMDTraceSignalStatus) 			: return (uint8*)"HEX"; break;
+ 620               	ng	"no command"
+ 621               	.LC34:
+ 622 0196 20E0      		.string	"get axis settings"
+ 623 0198 30E0      	.LC35:
+ 624               		.string	"open gripper cmd"
+  72:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 		default 								: return (uint8*)"invalid";
+  73:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	}
+  74:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c ****   }
+ 625               	:
+ 626               		.string	"close gripper cmd"
+ 627 019a C901      	.LC37:
+ 628               		.string	"Set Pose EEPROM cmd"
+ 629 019c 0895      	.LC38:
+ 630               		.string	"Reset Pose EEPROM cmd"
+ 631               	.LC39:
+ 632               		.string	"Get Pose EEPROM cmd"
+ 633               	.LC40:
+ 634 0178 676F 2068 		.string	"Get Pose Actual cmd"
+ 634      6F6D 6520 
+ 634      636D 6400 
+ 635               	.LC41:
+ 636 0184 6E6F 2063 		.string	"Erase EEPROM cmd"
+ 636      6F6D 6D61 
+ 636      6E64 00
+ 637               	.LC42:
+ 638 018f 6765 7420 		.string	"Get Poses ID cmd"
+ 638      6178 6973 
+ 638      2073 6574 
+ 638      7469 6E67 
+ 638      7300 
+ 639               	.LC43:
+ 640 01a1 6F70 656E 		.string	"Set PMD trace"
+ 640      2067 7269 
+ 640      7070 6572 
+ 640      2063 6D64 
+ 640      00
+ 641               	.LC44:
+ 642 01b2 636C 6F73 		.string	"Get PMD Trace"
+ 642      6520 6772 
+ 642      6970 7065 
+ 642      7220 636D 
+ 642      6400 
+ 643               	.LC45:
+ 644 01c4 5365 7420 		.string	"Get Fecha"
+ 644      506F 7365 
+ 644      2045 4550 
+ 644      524F 4D20 
+ 644      636D 6400 
+ 645               	.LC46:
+ 646 01d8 5265 7365 		.string	"Get Memory"
+ 646      7420 506F 
+ 646      7365 2045 
+ 646      4550 524F 
+ 646      4D20 636D 
+ 647               	.LC47:
+ 648 01ee 4765 7420 		.string	"Get PMD Sensor"
+ 648      506F 7365 
+ 648      2045 4550 
+ 648      524F 4D20 
+ 648      636D 6400 
+ 649               	.LC48:
+ 650 0202 4765 7420 		.string	"Get PMD EventStatus"
+ 650      506F 7365 
+ 650      2041 6374 
+ 650      7561 6C20 
+ 650      636D 6400 
+ 651               	.LC49:
+ 652 0216 4572 6173 		.string	"Get PMD AvtivityStatus"
+ 652      6520 4545 
+ 652      5052 4F4D 
+ 652      2063 6D64 
+ 652      00
+ 653               	.LC50:
+ 654 0227 4765 7420 		.string	"Get PMD infomov"
+ 654      506F 7365 
+ 654      7320 4944 
+ 654      2063 6D64 
+ 654      00
+ 655               	.LC51:
+ 656 0238 5365 7420 		.string	"unknown cmd"
+ 656      504D 4420 
+ 656      7472 6163 
+ 656      6500 
+ 657               		.text
+ 660 0254 4765 7420 	.global	CommandMsg
+ 660      4665 6368 
+ 660      6100 
+ 662 025e 4765 7420 	CommandMsg:
+ 662      4D65 6D6F 
+ 662      7279 00
+ 664 0269 4765 7420 	.LM32:
+ 664      504D 4420 
+ 664      5365 6E73 
+ 664      6F72 00
+ 665               	.LFBB4:
+ 666 0278 4765 7420 		push r29
+ 666      504D 4420 
+ 666      4576 656E 
+ 666      7453 7461 
+ 666      7475 7300 
+ 667               		push r28
+ 668 028c 4765 7420 		in r28,__SP_L__
+ 668      504D 4420 
+ 668      4176 7469 
+ 668      7669 7479 
+ 668      5374 6174 
+ 669               		in r29,__SP_H__
+ 670 02a3 4765 7420 	/* prologue: function */
+ 670      504D 4420 
+ 670      696E 666F 
+ 670      6D6F 7600 
+ 671               	/* frame size = 0 */
+ 673               	.LM33:
+ 674               		ldd r30,Y+5
+ 675               		ldd r31,Y+6
+ 676               		cpi r30,19
+ 677               		cpc r31,__zero_reg__
+ 678               		brlo .+2
+  75:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 
+  76:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** /*****************************************************************************************/
+  77:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** uint8 *CommandMsg(tCommand command)
+  78:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c ****  {
+ 679               	gs(.L81)))
+ 680               		lsl r30
+ 681               		rol r31
+ 682 019e DF93      		lpm __tmp_reg__,Z+
+ 683 01a0 CF93      		lpm r31,Z
+ 684 01a2 CDB7      		mov r30,__tmp_reg__
+ 685 01a4 DEB7      		ijmp
+ 686               		.data
+ 687               		.section .progmem.gcc_sw_table, "a", @progbits
+  79:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c ****   switch(command.CommandOP)
+ 688               	 1
+ 689               	.L81:
+ 690 01a6 ED81      		.data
+ 691 01a8 FE81      		.section .progmem.gcc_sw_table, "a", @progbits
+ 692 01aa E331      		.p2align 1
+ 693 01ac F105      		.word gs(.L62)
+ 694 01ae 00F0      		.word gs(.L63)
+ 695 01b0 00C0      		.word gs(.L64)
+ 696 01b2 E050      		.word gs(.L65)
+ 697 01b4 F040      		.word gs(.L66)
+ 698 01b6 EE0F      		.word gs(.L67)
+ 699 01b8 FF1F      		.word gs(.L68)
+ 700 01ba 0590      		.word gs(.L69)
+ 701 01bc F491      		.word gs(.L70)
+ 702 01be E02D      		.word gs(.L71)
+ 703 01c0 0994      		.word gs(.L72)
+ 704               		.word gs(.L73)
+ 705               		.word gs(.L74)
+ 706               		.word gs(.L75)
+ 707               		.word gs(.L76)
+ 708               		.word gs(.L77)
+ 709               		.word gs(.L78)
+ 710               		.word gs(.L79)
+ 711 0000 0000      		.word gs(.L80)
+ 712 0002 0000      		.text
+ 713 0004 0000      	.L63:
+ 714 0006 0000      		ldi r18,lo8(.LC32)
+ 715 0008 0000      		ldi r19,hi8(.LC32)
+ 716 000a 0000      		rjmp .L82
+ 717 000c 0000      	.L62:
+ 718 000e 0000      		ldi r18,lo8(.LC33)
+ 719 0010 0000      		ldi r19,hi8(.LC33)
+ 720 0012 0000      		rjmp .L82
+ 721 0014 0000      	.L64:
+ 722 0016 0000      		ldi r18,lo8(.LC34)
+ 723 0018 0000      		ldi r19,hi8(.LC34)
+ 724 001a 0000      		rjmp .L82
+ 725 001c 0000      	.L65:
+ 727 0020 0000      	.LM34:
+ 728 0022 0000      		ldi r18,lo8(.LC35)
+ 729 0024 0000      		ldi r19,hi8(.LC35)
+ 730               		rjmp .L82
+ 731               	.L66:
+ 733 01c4 30E0      	.LM35:
+ 734 01c6 00C0      		ldi r18,lo8(.LC36)
+ 735               		ldi r19,hi8(.LC36)
+ 736 01c8 20E0      		rjmp .L82
+ 737 01ca 30E0      	.L67:
+ 739               	.LM36:
+ 740 01ce 20E0      		ldi r18,lo8(.LC37)
+ 741 01d0 30E0      		ldi r19,hi8(.LC37)
+ 742 01d2 00C0      		rjmp .L82
+ 743               	.L68:
+  80:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c ****  {
+  81:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c ****  
+  82:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c ****     case (CommandNOP) 					: return (uint8*)"no command"; break;
+  83:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (CommandGoHome)			 	: return (uint8*)"go home cmd"; break;
+  84:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (CommandGetAxisSettings) 		: return (uint8*)"get axis settings"; break;
+ 744               		ldi r19,hi8(.LC38)
+ 745               		rjmp .L82
+ 746 01d4 20E0      	.L69:
+ 748 01d8 00C0      	.LM38:
+ 749               		ldi r18,lo8(.LC39)
+  85:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c ****     case (CommandOpenGripper) 			: return (uint8*)"open gripper cmd"; break;
+ 750               	19,hi8(.LC39)
+ 751               		rjmp .L82
+ 752 01da 20E0      	.L70:
+ 754 01de 00C0      	.LM39:
+ 755               		ldi r18,lo8(.LC40)
+  86:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c ****     case (CommandCloseGripper) 			: return (uint8*)"close gripper cmd"; break;
+ 756               	19,hi8(.LC40)
+ 757               		rjmp .L82
+ 758 01e0 20E0      	.L71:
+ 760 01e4 00C0      	.LM40:
+ 761               		ldi r18,lo8(.LC41)
+  87:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (CommandSetPoseEEPROM)			: return (uint8*)"Set Pose EEPROM cmd"; break;
+ 762               	19,hi8(.LC41)
+ 763               		rjmp .L82
+ 764 01e6 20E0      	.L72:
+ 766 01ea 00C0      	.LM41:
+ 767               		ldi r18,lo8(.LC42)
+  88:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (CommandReSetPoseEEPROM)		: return (uint8*)"Reset Pose EEPROM cmd"; break;
+ 768               	19,hi8(.LC42)
+ 769               		rjmp .L82
+ 770 01ec 20E0      	.L73:
+ 772 01f0 00C0      	.LM42:
+ 773               		ldi r18,lo8(.LC43)
+  89:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (CommandGetPoseEEPROM)			: return (uint8*)"Get Pose EEPROM cmd"; break;
+ 774               	19,hi8(.LC43)
+ 775               		rjmp .L82
+ 776 01f2 20E0      	.L74:
+ 778 01f6 00C0      	.LM43:
+ 779               		ldi r18,lo8(.LC44)
+  90:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (CommandGetPoseActual)			: return (uint8*)"Get Pose Actual cmd"; break;
+ 780               	19,hi8(.LC44)
+ 781               		rjmp .L82
+ 782 01f8 20E0      	.L75:
+ 784 01fc 00C0      	.LM44:
+ 785               		ldi r18,lo8(.LC45)
+  91:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (CommandEraseEEPROM)			: return (uint8*)"Erase EEPROM cmd"; break;
+ 786               	19,hi8(.LC45)
+ 787               		rjmp .L82
+ 788 01fe 20E0      	.L76:
+ 790 0202 00C0      	.LM45:
+ 791               		ldi r18,lo8(.LC46)
+  92:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (CommandGetPosesID)			: return (uint8*)"Get Poses ID cmd"; break;
+ 792               	19,hi8(.LC46)
+ 793               		rjmp .L82
+ 794 0204 20E0      	.L77:
+ 796 0208 00C0      	.LM46:
+ 797               		ldi r18,lo8(.LC47)
+  93:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (CommandSetPMDTrace)			: return (uint8*)"Set PMD trace"; break;
+ 798               	19,hi8(.LC47)
+ 799               		rjmp .L82
+ 800 020a 20E0      	.L78:
+ 802 020e 00C0      	.LM47:
+ 803               		ldi r18,lo8(.LC48)
+  94:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (CommandGetPMDTrace)			: return (uint8*)"Get PMD Trace"; break;
+ 804               	19,hi8(.LC48)
+ 805               		rjmp .L82
+ 806 0210 20E0      	.L79:
+ 808 0214 00C0      	.LM48:
+ 809               		ldi r18,lo8(.LC49)
+  95:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (CommandGetFecha)				: return (uint8*)"Get Fecha"; break;
+ 810               	19,hi8(.LC49)
+ 811               		rjmp .L82
+ 812 0216 20E0      	.L80:
+ 814 021a 00C0      	.LM49:
+ 815               		ldi r18,lo8(.LC50)
+  96:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (CommandGetMemory)				: return (uint8*)"Get Memory"; break;
+ 816               	19,hi8(.LC50)
+ 817               		rjmp .L82
+ 818 021c 20E0      	.L61:
+ 820 0220 00C0      	.LM50:
+ 821               		ldi r18,lo8(.LC51)
+  97:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (CommandGetSensor)				: return (uint8*)"Get PMD Sensor"; break;
+ 822               	19,hi8(.LC51)
+ 823               	.L82:
+ 825 0224 30E0      	.LM51:
+ 826 0226 00C0      		movw r24,r18
+ 827               	/* epilogue start */
+  98:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (CommandGetEventStatus)		: return (uint8*)"Get PMD EventStatus"; break;
+ 828               	28
+ 829               		pop r29
+ 830 0228 20E0      		ret
+ 832 022c 00C0      	.Lscope4:
+ 833               		.data
+  99:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (CommandGetAvtivityStatus)		: return (uint8*)"Get PMD AvtivityStatus"; break;
+ 834               	
+ 835               		.string	"cmd packet"
+ 836 022e 20E0      	.LC53:
+ 837 0230 30E0      		.string	"no packet"
+ 838 0232 00C0      	.LC54:
+ 839               		.string	"vector packet"
+ 100:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (CommandGetinfomov)			: return (uint8*)"Get PMD infomov"; break;
+ 840               	:
+ 841               		.string	"trajectory packet"
+ 842 0234 20E0      	.LC56:
+ 843 0236 30E0      		.string	"TeachPendant packet"
+ 844               	.LC57:
+ 101:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	default 							: return (uint8*)"unknown cmd";
+ 102:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c ****   }
+ 103:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 
+ 104:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** //  return (uint8*)"CommandMsg";   // avoid compiler warning
+ 105:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** } // CommandMsg
+ 845               	ing	"string packet"
+ 846               	.LC58:
+ 847 0238 C901      		.string	"axis settings packet"
+ 848               	.LC59:
+ 849 023a CF91      		.string	"axis limits packet"
+ 850 023c DF91      	.LC60:
+ 851 023e 0895      		.string	"packet Header"
+ 852               	.LC61:
+ 853               		.string	"unknown packet"
+ 854               		.text
+ 857               	.global	PacketMsg
+ 859               	PacketMsg:
+ 861               	.LM52:
+ 862 02e2 7472 616A 	.LFBB5:
+ 862      6563 746F 
+ 862      7279 2070 
+ 862      6163 6B65 
+ 862      7400 
+ 863               	/* prologue: function */
+ 864 02f4 5465 6163 	/* frame size = 0 */
+ 864      6850 656E 
+ 864      6461 6E74 
+ 864      2070 6163 
+ 864      6B65 7400 
+ 866 0308 7374 7269 	.LM53:
+ 866      6E67 2070 
+ 866      6163 6B65 
+ 866      7400 
+ 867               		cpi r24,4
+ 868 0316 6178 6973 		cpc r25,__zero_reg__
+ 868      2073 6574 
+ 868      7469 6E67 
+ 868      7320 7061 
+ 868      636B 6574 
+ 869               		breq .L90
+ 870 032b 6178 6973 		cpi r24,5
+ 870      206C 696D 
+ 870      6974 7320 
+ 870      7061 636B 
+ 870      6574 00
+ 871               		cpc r25,__zero_reg__
+ 872 033e 7061 636B 		brge .L95
+ 872      6574 2048 
+ 872      6561 6465 
+ 872      7200 
+ 873               		cpi r24,1
+ 874 034c 756E 6B6E 		cpc r25,__zero_reg__
+ 874      6F77 6E20 
+ 874      7061 636B 
+ 874      6574 00
+ 875               		breq .L87
+ 876               		cpi r24,2
+ 877               		cpc r25,__zero_reg__
+ 878               		brge .L96
+ 879               		or r24,r25
+ 880               		breq .L86
+ 106:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 
+ 107:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** /*****************************************************************************************/
+ 108:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** uint8 *PacketMsg(tPacket packet) 
+ 109:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** {
+ 881               	,__zero_reg__
+ 882               		breq .L88
+ 883               		sbiw r24,3
+ 884               		brne .L85
+ 885               		rjmp .L99
+ 110:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 
+ 111:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c ****   switch(packet) {
+ 886               	
+ 887               		cpi r24,6
+ 888 0240 8430      		cpc r25,__zero_reg__
+ 889 0242 9105      		breq .L92
+ 890 0244 01F0      		cpi r24,6
+ 891 0246 8530      		cpc r25,__zero_reg__
+ 892 0248 9105      		brlt .L91
+ 893 024a 04F4      		cpi r24,7
+ 894 024c 8130      		cpc r25,__zero_reg__
+ 895 024e 9105      		breq .L93
+ 896 0250 01F0      		sbiw r24,8
+ 897 0252 8230      		brne .L85
+ 898 0254 9105      		rjmp .L100
+ 899 0256 04F4      	.L87:
+ 900 0258 892B      		ldi r18,lo8(.LC52)
+ 901 025a 01F0      		ldi r19,hi8(.LC52)
+ 902 025c 00C0      		rjmp .L97
+ 903               	.L86:
+ 904 025e 8230      		ldi r18,lo8(.LC53)
+ 905 0260 9105      		ldi r19,hi8(.LC53)
+ 906 0262 01F0      		rjmp .L97
+ 907 0264 0397      	.L88:
+ 908 0266 01F4      		ldi r18,lo8(.LC54)
+ 909 0268 00C0      		ldi r19,hi8(.LC54)
+ 910               		rjmp .L97
+ 911 026a 8630      	.L99:
+ 913 026e 01F0      	.LM54:
+ 914 0270 8630      		ldi r18,lo8(.LC55)
+ 915 0272 9105      		ldi r19,hi8(.LC55)
+ 916 0274 04F0      		rjmp .L97
+ 917 0276 8730      	.L90:
+ 919 027a 01F0      	.LM55:
+ 920 027c 0897      		ldi r18,lo8(.LC56)
+ 921 027e 01F4      		ldi r19,hi8(.LC56)
+ 922 0280 00C0      		rjmp .L97
+ 923               	.L91:
+ 925 0284 30E0      	.LM56:
+ 926 0286 00C0      		ldi r18,lo8(.LC57)
+ 927               		ldi r19,hi8(.LC57)
+ 928 0288 20E0      		rjmp .L97
+ 929 028a 30E0      	.L92:
+ 931               	.LM57:
+ 932 028e 20E0      		ldi r18,lo8(.LC58)
+ 933 0290 30E0      		ldi r19,hi8(.LC58)
+ 934 0292 00C0      		rjmp .L97
+ 935               	.L93:
+ 112:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c ****     case (PacketNOP) 					:  return (uint8*)"no packet"; break;
+ 113:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c ****     case (PacketCommand)				:  return (uint8*)"cmd packet"; break;
+ 114:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c ****     case (PacketVector) 				:  return (uint8*)"vector packet"; break;
+ 936               	(.LC59)
+ 937               		ldi r19,hi8(.LC59)
+ 938 0294 20E0      		rjmp .L97
+ 939 0296 30E0      	.L100:
+ 941               	.LM59:
+ 115:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c ****     case (PacketTrajectory) 			:  return (uint8*)"trajectory packet"; break;
+ 942               	18,lo8(.LC60)
+ 943               		ldi r19,hi8(.LC60)
+ 944 029a 20E0      		rjmp .L97
+ 945 029c 30E0      	.L85:
+ 947               	.LM60:
+ 116:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PacketTeachPendant) 			:  return (uint8*)"TeachPendant packet"; break;
+ 948               	18,lo8(.LC61)
+ 949               		ldi r19,hi8(.LC61)
+ 950 02a0 20E0      	.L97:
+ 952 02a4 00C0      	.LM61:
+ 953               		movw r24,r18
+ 117:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c ****     case (PacketString) 				:  return (uint8*)"string packet"; break;
+ 954               	logue start */
+ 955               		ret
+ 957 02a8 30E0      	.Lscope5:
+ 958 02aa 00C0      		.data
+ 959               	.LC62:
+ 118:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c ****     case (PacketAxisSettings) 			: return (uint8*)"axis settings packet"; break;
+ 960               	ng	"invalid Header"
+ 961               	.LC63:
+ 962 02ac 20E0      		.string	"all ok"
+ 963 02ae 30E0      	.LC64:
+ 964 02b0 00C0      		.string	"invalid data"
+ 965               	.LC65:
+ 119:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c ****     case (PacketAxisLimits) 			: return (uint8*)"axis limits packet"; break;
+ 966               	ng	"invalid Packet"
+ 967               	.LC66:
+ 968 02b2 20E0      		.string	"invalid Command"
+ 969 02b4 30E0      	.LC67:
+ 970 02b6 00C0      		.string	"invalidChecksum"
+ 971               	.LC68:
+ 120:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PacketHeader) 				: return (uint8*)"packet Header"; break;
+ 972               	ng	"invalidHeaderChecksum"
+ 973               	.LC69:
+ 974 02b8 20E0      		.string	"too few data"
+ 975 02ba 30E0      	.LC70:
+ 976               		.string	"no memory"
+ 121:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c ****     
+ 122:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	default : return (uint8*)"unknown packet"; break;
+ 123:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c ****   }
+ 124:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 
+ 125:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** //  return (uint8*)"PacketMsg";    // avoid compiler warning
+ 126:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** } // PacketMsg
+ 977               	:
+ 978               		.string	"timeout sending data"
+ 979 02bc C901      	.LC72:
+ 980               		.string	"timeout reading data"
+ 981 02be 0895      	.LC73:
+ 982               		.string	"communication error"
+ 983               	.LC74:
+ 984               		.string	"unexpected ISA interface state"
+ 985               	.LC75:
+ 986 035b 696E 7661 		.string	"hardware failure"
+ 986      6C69 6420 
+ 986      4865 6164 
+ 986      6572 00
+ 987               	.LC76:
+ 988 036a 616C 6C20 		.string	"PMD chipset reset error"
+ 988      6F6B 00
+ 989               	.LC77:
+ 990 0371 696E 7661 		.string	"PMD checksum wrong"
+ 990      6C69 6420 
+ 990      6461 7461 
+ 990      00
+ 991               	.LC78:
+ 992 037e 696E 7661 		.string	"Open File Error"
+ 992      6C69 6420 
+ 992      5061 636B 
+ 992      6574 00
+ 993               	.LC79:
+ 994 038d 696E 7661 		.string	"Open File OK"
+ 994      6C69 6420 
+ 994      436F 6D6D 
+ 994      616E 6400 
+ 995               	.LC80:
+ 996 039d 696E 7661 		.string	"Read File OK"
+ 996      6C69 6443 
+ 996      6865 636B 
+ 996      7375 6D00 
+ 997               	.LC81:
+ 998 03ad 696E 7661 		.string	"Read File Error"
+ 998      6C69 6448 
+ 998      6561 6465 
+ 998      7243 6865 
+ 998      636B 7375 
+ 999               	.LC82:
+ 1000 03c3 746F 6F20 		.string	"unknown rc code"
+ 1000      6665 7720 
+ 1000      6461 7461 
+ 1000      00
+ 1001               		.text
+ 1004 03da 7469 6D65 	.global	rcMsg
+ 1004      6F75 7420 
+ 1004      7365 6E64 
+ 1004      696E 6720 
+ 1004      6461 7461 
+ 1006 03ef 7469 6D65 	rcMsg:
+ 1006      6F75 7420 
+ 1006      7265 6164 
+ 1006      696E 6720 
+ 1006      6461 7461 
+ 1008 0404 636F 6D6D 	.LM62:
+ 1008      756E 6963 
+ 1008      6174 696F 
+ 1008      6E20 6572 
+ 1008      726F 7200 
+ 1009               	.LFBB6:
+ 1010 0418 756E 6578 	/* prologue: function */
+ 1010      7065 6374 
+ 1010      6564 2049 
+ 1010      5341 2069 
+ 1010      6E74 6572 
+ 1011               	/* frame size = 0 */
+ 1013               	.LM63:
+ 1014 0448 504D 4420 		movw r30,r24
+ 1014      6368 6970 
+ 1014      7365 7420 
+ 1014      7265 7365 
+ 1014      7420 6572 
+ 1015               		cpi r24,23
+ 1016 0460 504D 4420 		cpc r25,__zero_reg__
+ 1016      6368 6563 
+ 1016      6B73 756D 
+ 1016      2077 726F 
+ 1016      6E67 00
+ 1017               		brlo .+2
+ 1018 0473 4F70 656E 		rjmp .L102
+ 1018      2046 696C 
+ 1018      6520 4572 
+ 1018      726F 7200 
+ 1019               		subi r30,lo8(-(gs(.L123)))
+ 1020 0483 4F70 656E 		sbci r31,hi8(-(gs(.L123)))
+ 1020      2046 696C 
+ 1020      6520 4F4B 
+ 1020      00
+ 1021               		lsl r30
+ 1022 0490 5265 6164 		rol r31
+ 1022      2046 696C 
+ 1022      6520 4F4B 
+ 1022      00
+ 1023               		lpm __tmp_reg__,Z+
+ 1024 049d 5265 6164 		lpm r31,Z
+ 1024      2046 696C 
+ 1024      6520 4572 
+ 1024      726F 7200 
+ 1025               		mov r30,__tmp_reg__
+ 1026 04ad 756E 6B6E 		ijmp
+ 1026      6F77 6E20 
+ 1026      7263 2063 
+ 1026      6F64 6500 
+ 1027               		.data
+ 1028               		.section .progmem.gcc_sw_table, "a", @progbits
+ 1029               		.p2align 1
+ 1030               	.L123:
+ 1031               		.data
+ 1032               		.section .progmem.gcc_sw_table, "a", @progbits
+ 127:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 
+ 128:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** /*****************************************************************************************/
+ 129:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** uint8 *rcMsg(tReturnCode rc) 
+ 130:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** {
+ 1033               	.L105)
+ 1034               		.word gs(.L106)
+ 1035               		.word gs(.L107)
+ 1036               		.word gs(.L108)
+ 1037               		.word gs(.L109)
+ 131:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 
+ 132:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c ****   switch(rc) {
+ 1038               	d gs(.L110)
+ 1039               		.word gs(.L111)
+ 1040 02c0 FC01      		.word gs(.L112)
+ 1041 02c2 8731      		.word gs(.L113)
+ 1042 02c4 9105      		.word gs(.L114)
+ 1043 02c6 00F0      		.word gs(.L115)
+ 1044 02c8 00C0      		.word gs(.L116)
+ 1045 02ca E050      		.word gs(.L117)
+ 1046 02cc F040      		.word gs(.L118)
+ 1047 02ce EE0F      		.word gs(.L102)
+ 1048 02d0 FF1F      		.word gs(.L102)
+ 1049 02d2 0590      		.word gs(.L102)
+ 1050 02d4 F491      		.word gs(.L119)
+ 1051 02d6 E02D      		.word gs(.L120)
+ 1052 02d8 0994      		.word gs(.L121)
+ 1053               		.word gs(.L122)
+ 1054               		.text
+ 1055               	.L104:
+ 1056               		ldi r18,lo8(.LC62)
+ 1057               		ldi r19,hi8(.LC62)
+ 1058               		rjmp .L124
+ 1059               	.L103:
+ 1060 0026 0000      		ldi r18,lo8(.LC63)
+ 1061 0028 0000      		ldi r19,hi8(.LC63)
+ 1062 002a 0000      		rjmp .L124
+ 1063 002c 0000      	.L105:
+ 1064 002e 0000      		ldi r18,lo8(.LC64)
+ 1065 0030 0000      		ldi r19,hi8(.LC64)
+ 1066 0032 0000      		rjmp .L124
+ 1067 0034 0000      	.L106:
+ 1069 0038 0000      	.LM64:
+ 1070 003a 0000      		ldi r18,lo8(.LC65)
+ 1071 003c 0000      		ldi r19,hi8(.LC65)
+ 1072 003e 0000      		rjmp .L124
+ 1073 0040 0000      	.L107:
+ 1075 0044 0000      	.LM65:
+ 1076 0046 0000      		ldi r18,lo8(.LC66)
+ 1077 0048 0000      		ldi r19,hi8(.LC66)
+ 1078 004a 0000      		rjmp .L124
+ 1079 004c 0000      	.L108:
+ 1081 0050 0000      	.LM66:
+ 1082 0052 0000      		ldi r18,lo8(.LC67)
+ 1083               		ldi r19,hi8(.LC67)
+ 1084               		rjmp .L124
+ 1085 02da 20E0      	.L109:
+ 1087 02de 00C0      	.LM67:
+ 1088               		ldi r18,lo8(.LC68)
+ 1089 02e0 20E0      		ldi r19,hi8(.LC68)
+ 1090 02e2 30E0      		rjmp .L124
+ 1091 02e4 00C0      	.L110:
+ 1093 02e6 20E0      	.LM68:
+ 1094 02e8 30E0      		ldi r18,lo8(.LC69)
+ 1095 02ea 00C0      		ldi r19,hi8(.LC69)
+ 1096               		rjmp .L124
+ 133:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c ****     case (rcOK) 						: return (uint8*)"all ok"; break;
+ 134:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 
+ 135:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** // packet related:
+ 136:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c ****     case (rcInvalidHeader) 				: return (uint8*)"invalid Header"; break;
+ 137:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c ****     case (rcInvalidData) 				: return (uint8*)"invalid data"; break;
+ 1097               	C70)
+ 1098               		ldi r19,hi8(.LC70)
+ 1099 02ec 20E0      		rjmp .L124
+ 1100 02ee 30E0      	.L112:
+ 1102               	.LM70:
+ 138:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c ****     case (rcInvalidPacket) 				: return (uint8*)"invalid Packet"; break;
+ 1103               	18,lo8(.LC71)
+ 1104               		ldi r19,hi8(.LC71)
+ 1105 02f2 20E0      		rjmp .L124
+ 1106 02f4 30E0      	.L113:
+ 1108               	.LM71:
+ 139:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c ****     case (rcInvalidCommand) 			: return (uint8*)"invalid Command"; break;
+ 1109               	18,lo8(.LC72)
+ 1110               		ldi r19,hi8(.LC72)
+ 1111 02f8 20E0      		rjmp .L124
+ 1112 02fa 30E0      	.L114:
+ 1114               	.LM72:
+ 140:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c ****  //   case (rcInvalidError) 				: return (uint8*)"invalid Error"; break;
+ 141:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c ****     case (rcInvalidChecksum) 			: return (uint8*)"invalidChecksum"; break;
+ 1115               	18,lo8(.LC73)
+ 1116               		ldi r19,hi8(.LC73)
+ 1117 02fe 20E0      		rjmp .L124
+ 1118 0300 30E0      	.L115:
+ 1120               	.LM73:
+ 142:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c ****     case (rcInvalidHeaderChecksum) 		: return (uint8*)"invalidHeaderChecksum"; break;
+ 1121               	18,lo8(.LC74)
+ 1122               		ldi r19,hi8(.LC74)
+ 1123 0304 20E0      		rjmp .L124
+ 1124 0306 30E0      	.L116:
+ 1126               	.LM74:
+ 143:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c ****     case (rcTooFewData) 				: return (uint8*)"too few data"; break;
+ 1127               	18,lo8(.LC75)
+ 1128               		ldi r19,hi8(.LC75)
+ 1129 030a 20E0      		rjmp .L124
+ 1130 030c 30E0      	.L117:
+ 1132               	.LM75:
+ 144:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** //    case (rcTooMuchData) 				: return (uint8*)"too much data"; break;
+ 145:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c ****     case (rcNoMemory) 					: return (uint8*)"no memory"; break;
+ 1133               	18,lo8(.LC76)
+ 1134               		ldi r19,hi8(.LC76)
+ 1135 0310 20E0      		rjmp .L124
+ 1136 0312 30E0      	.L118:
+ 1138               	.LM76:
+ 146:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 
+ 147:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** // USB communication related:   
+ 148:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c ****     case (rcTimeoutSendingData) 		: return (uint8*)"timeout sending data"; break;
+ 1139               	18,lo8(.LC77)
+ 1140               		ldi r19,hi8(.LC77)
+ 1141 0316 20E0      		rjmp .L124
+ 1142 0318 30E0      	.L119:
+ 1144               	.LM77:
+ 149:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c ****     case (rcTimeoutReadingData) 		: return (uint8*)"timeout reading data"; break;
+ 1145               	18,lo8(.LC78)
+ 1146               		ldi r19,hi8(.LC78)
+ 1147 031c 20E0      		rjmp .L124
+ 1148 031e 30E0      	.L120:
+ 1150               	.LM78:
+ 150:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c ****     case (rcCommunicationError) 		: return (uint8*)"communication error"; break;
+ 1151               	18,lo8(.LC79)
+ 1152               		ldi r19,hi8(.LC79)
+ 1153 0322 20E0      		rjmp .L124
+ 1154 0324 30E0      	.L121:
+ 1156               	.LM79:
+ 151:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** //    case (rcUnexpectedResponse) 		: return (uint8*)"unexpected response"; break;
+ 152:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c ****     case (rcUnexpectedState) 			: return (uint8*)"unexpected ISA interface state"; break;
+ 1157               	18,lo8(.LC80)
+ 1158               		ldi r19,hi8(.LC80)
+ 1159 0328 20E0      		rjmp .L124
+ 1160 032a 30E0      	.L122:
+ 1162               	.LM80:
+ 153:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** //    case (rcSendInterrupted) 			: return (uint8*)"incoming data while sending"; break;
+ 154:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	
+ 155:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** // microcontroller system related:
+ 156:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** //    case (rcUCisBusy) 					: return (uint8*)"uC is busy"; break;
+ 157:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** //    case (rcUCNeedsReset) 				: return (uint8*)"uC needs reset"; break;
+ 158:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** //    case (rcUCNeedsInitialization) 		: return (uint8*)"uC needs initialisation"; break;
+ 159:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 
+ 160:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** // robot related:
+ 161:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c ****     case (rcHardwareFailure) 			: return (uint8*)"hardware failure"; break;
+ 1163               	18,lo8(.LC81)
+ 1164               		ldi r19,hi8(.LC81)
+ 1165 032e 20E0      		rjmp .L124
+ 1166 0330 30E0      	.L102:
+ 1168               	.LM81:
+ 162:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** //    case (rcVelocityLimitExceeded) 		: return (uint8*)"velocity too high"; break;
+ 163:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c ****  //   case (rcAccelerationLimitExceeded) 	: return (uint8*)"acceleration too high"; break;
+ 164:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	
+ 165:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** // for the PMD reset:
+ 166:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c ****     case (rcPMDChipsetResetError) 		: return (uint8*)"PMD chipset reset error"; break;
+ 1169               	18,lo8(.LC82)
+ 1170               		ldi r19,hi8(.LC82)
+ 1171 0334 20E0      	.L124:
+ 1173 0338 00C0      	.LM82:
+ 1174               		movw r24,r18
+ 167:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** //    case (rcPMDCommandError) 			: return (uint8*)"PMD cmd error"; break;
+ 168:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c ****     case (rcPMDchecksumError) 			: return (uint8*)"PMD checksum wrong"; break;
+ 1175               	logue start */
+ 1176               		ret
+ 1178 033c 30E0      	.Lscope6:
+ 1179 033e 00C0      		.data
+ 1180               	.LC83:
+ 169:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** //    case (rcPMDstuckBit0) 				: return (uint8*)"PMD data line stuck at 0"; break;
+ 170:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** //    case (rcPMDstuckBit1) 				: return (uint8*)"PMD data line stuck at 1"; break;
+ 171:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c ****  //   case (rcPMDtimeout) 				: return (uint8*)"PMD communication timeout"; break;
+ 172:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** //    case (rcOtherError) 				: return (uint8*)"unspecified rc code"; break;
+ 173:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	
+ 174:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** // file procecing related	
+ 175:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (rcFileOpenError) 				: return (uint8*)"Open File Error"; break;
+ 1181               	ng	"SetMotorLimit"
+ 1182               	.LC84:
+ 1183 0340 20E0      		.string	"Nop"
+ 1184 0342 30E0      	.LC85:
+ 1185 0344 00C0      		.string	"GetMotorLimit"
+ 1186               	.LC86:
+ 176:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (rcFileOpenOK) 				: return (uint8*)"Open File OK"; break;
+ 1187               	ng	"SetMotorBias"
+ 1188               	.LC87:
+ 1189 0346 20E0      		.string	"SetPosition"
+ 1190 0348 30E0      	.LC88:
+ 1191 034a 00C0      		.string	"SetVelocity"
+ 1192               	.LC89:
+ 177:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (rcFileReadOK) 				: return (uint8*)"Read File OK"; break;
+ 1193               	ng	"SetJerk"
+ 1194               	.LC90:
+ 1195 034c 20E0      		.string	"SetGearRatio"
+ 1196 034e 30E0      	.LC91:
+ 1197 0350 00C0      		.string	"Update"
+ 1198               	.LC92:
+ 178:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (rcFileReadError) 				: return (uint8*)"Read File Error"; break;
+ 1199               	ng	"GetCommandedPosition"
+ 1200               	.LC93:
+ 1201 0352 20E0      		.string	"GetCommandedVelocity"
+ 1202 0354 30E0      	.LC94:
+ 1203               		.string	"SetKp"
+ 179:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c ****     
+ 180:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	default : return (uint8*)"unknown rc code"; break;
+ 181:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c ****   }
+ 182:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 
+ 183:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c ****  // return (uint8*)"rcMsg";    // avoid compiler warning
+ 184:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** } // rcMsg
+ 1204               	:
+ 1205               		.string	"SetKi"
+ 1206 0356 C901      	.LC96:
+ 1207               		.string	"SetKd"
+ 1208 0358 0895      	.LC97:
+ 1209               		.string	"SetKvff"
+ 1210               	.LC98:
+ 1211               		.string	"GetPhaseAngle"
+ 1212               	.LC99:
+ 1213 04bd 5365 744D 		.string	"GetMotorBias"
+ 1213      6F74 6F72 
+ 1213      4C69 6D69 
+ 1213      7400 
+ 1214               	.LC100:
+ 1215 04cb 4E6F 7000 		.string	"SetInterruptMask"
+ 1216               	.LC101:
+ 1217 04cf 4765 744D 		.string	"GetEventStatus"
+ 1217      6F74 6F72 
+ 1217      4C69 6D69 
+ 1217      7400 
+ 1218               	.LC102:
+ 1219 04dd 5365 744D 		.string	"ResetEventStatus"
+ 1219      6F74 6F72 
+ 1219      4269 6173 
+ 1219      00
+ 1220               	.LC103:
+ 1221 04ea 5365 7450 		.string	"GetCaptureValue"
+ 1221      6F73 6974 
+ 1221      696F 6E00 
+ 1222               	.LC104:
+ 1223 04f6 5365 7456 		.string	"GetActualPosition"
+ 1223      656C 6F63 
+ 1223      6974 7900 
+ 1224               	.LC105:
+ 1225 0502 5365 744A 		.string	"SetSampleTime"
+ 1225      6572 6B00 
+ 1226               	.LC106:
+ 1227 050a 5365 7447 		.string	"Reset"
+ 1227      6561 7252 
+ 1227      6174 696F 
+ 1227      00
+ 1228               	.LC107:
+ 1229 0517 5570 6461 		.string	"GetCurrentMotorCommand"
+ 1229      7465 00
+ 1230               	.LC108:
+ 1231 051e 4765 7443 		.string	"GetTime"
+ 1231      6F6D 6D61 
+ 1231      6E64 6564 
+ 1231      506F 7369 
+ 1231      7469 6F6E 
+ 1232               	.LC109:
+ 1233 0533 4765 7443 		.string	"ClearPositionError"
+ 1233      6F6D 6D61 
+ 1233      6E64 6564 
+ 1233      5665 6C6F 
+ 1233      6369 7479 
+ 1234               	.LC110:
+ 1235 0548 5365 744B 		.string	"GetPosition"
+ 1235      7000 
+ 1236               	.LC111:
+ 1237 054e 5365 744B 		.string	"GetVelocity"
+ 1237      6900 
+ 1238               	.LC112:
+ 1239 0554 5365 744B 		.string	"GetAcceleration"
+ 1239      6400 
+ 1240               	.LC113:
+ 1241 055a 5365 744B 		.string	"SetActualPosition"
+ 1241      7666 6600 
+ 1242               	.LC114:
+ 1243 0562 4765 7450 		.string	"GetKp"
+ 1243      6861 7365 
+ 1243      416E 676C 
+ 1243      6500 
+ 1244               	.LC115:
+ 1245 0570 4765 744D 		.string	"GetKi"
+ 1245      6F74 6F72 
+ 1245      4269 6173 
+ 1245      00
+ 1246               	.LC116:
+ 1247 057d 5365 7449 		.string	"GetKd"
+ 1247      6E74 6572 
+ 1247      7275 7074 
+ 1247      4D61 736B 
+ 1247      00
+ 1248               	.LC117:
+ 1249 058e 4765 7445 		.string	"GetKvff"
+ 1249      7665 6E74 
+ 1249      5374 6174 
+ 1249      7573 00
+ 1250               	.LC118:
+ 1251 059d 5265 7365 		.string	"GetInterruptMask"
+ 1251      7445 7665 
+ 1251      6E74 5374 
+ 1251      6174 7573 
+ 1251      00
+ 1252               	.LC119:
+ 1253 05ae 4765 7443 		.string	"GetJerk"
+ 1253      6170 7475 
+ 1253      7265 5661 
+ 1253      6C75 6500 
+ 1254               	.LC120:
+ 1255 05be 4765 7441 		.string	"GetGearRatio"
+ 1255      6374 7561 
+ 1255      6C50 6F73 
+ 1255      6974 696F 
+ 1255      6E00 
+ 1256               	.LC121:
+ 1257 05d0 5365 7453 		.string	"MultiUpdate"
+ 1257      616D 706C 
+ 1257      6554 696D 
+ 1257      6500 
+ 1258               	.LC122:
+ 1259 05de 5265 7365 		.string	"GetSampleTime"
+ 1259      7400 
+ 1260               	.LC123:
+ 1261 05e4 4765 7443 		.string	"GetMotorCommand"
+ 1261      7572 7265 
+ 1261      6E74 4D6F 
+ 1261      746F 7243 
+ 1261      6F6D 6D61 
+ 1262               	.LC124:
+ 1263 05fb 4765 7454 		.string	"SetStartVelocity"
+ 1263      696D 6500 
+ 1264               	.LC125:
+ 1265 0603 436C 6561 		.string	"GetStartVelocity"
+ 1265      7250 6F73 
+ 1265      6974 696F 
+ 1265      6E45 7272 
+ 1265      6F72 00
+ 1266               	.LC126:
+ 1267 0616 4765 7450 		.string	"GetOutputMode"
+ 1267      6F73 6974 
+ 1267      696F 6E00 
+ 1268               	.LC127:
+ 1269 0622 4765 7456 		.string	"SetPhaseInitializeTime"
+ 1269      656C 6F63 
+ 1269      6974 7900 
+ 1270               	.LC128:
+ 1271 062e 4765 7441 		.string	"SetPhaseCounts"
+ 1271      6363 656C 
+ 1271      6572 6174 
+ 1271      696F 6E00 
+ 1272               	.LC129:
+ 1273 063e 5365 7441 		.string	"SetPhaseOffset"
+ 1273      6374 7561 
+ 1273      6C50 6F73 
+ 1273      6974 696F 
+ 1273      6E00 
+ 1274               	.LC130:
+ 1275 0650 4765 744B 		.string	"SetMotorCommand"
+ 1275      7000 
+ 1276               	.LC131:
+ 1277 0656 4765 744B 		.string	"InitializePhase"
+ 1277      6900 
+ 1278               	.LC132:
+ 1279 065c 4765 744B 		.string	"GetPhaseOffset"
+ 1279      6400 
+ 1280               	.LC133:
+ 1281 0662 4765 744B 		.string	"GetPhaseInitializeTime"
+ 1281      7666 6600 
+ 1282               	.LC134:
+ 1283 066a 4765 7449 		.string	"GetPhaseCounts"
+ 1283      6E74 6572 
+ 1283      7275 7074 
+ 1283      4D61 736B 
+ 1283      00
+ 1284               	.LC135:
+ 1285 067b 4765 744A 		.string	"SetLimitSwitchMode"
+ 1285      6572 6B00 
+ 1286               	.LC136:
+ 1287 0683 4765 7447 		.string	"GetLimitSwitchMode"
+ 1287      6561 7252 
+ 1287      6174 696F 
+ 1287      00
+ 1288               	.LC137:
+ 1289 0690 4D75 6C74 		.string	"WriteIO"
+ 1289      6955 7064 
+ 1289      6174 6500 
+ 1290               	.LC138:
+ 1291 069c 4765 7453 		.string	"ReadIO"
+ 1291      616D 706C 
+ 1291      6554 696D 
+ 1291      6500 
+ 1292               	.LC139:
+ 1293 06aa 4765 744D 		.string	"SetPhaseAngle"
+ 1293      6F74 6F72 
+ 1293      436F 6D6D 
+ 1293      616E 6400 
+ 1294               	.LC140:
+ 1295 06ba 5365 7453 		.string	"SetNumberPhases"
+ 1295      7461 7274 
+ 1295      5665 6C6F 
+ 1295      6369 7479 
+ 1295      00
+ 1296               	.LC141:
+ 1297 06cb 4765 7453 		.string	"GetNumberPhases"
+ 1297      7461 7274 
+ 1297      5665 6C6F 
+ 1297      6369 7479 
+ 1297      00
+ 1298               	.LC142:
+ 1299 06dc 4765 744F 		.string	"SetAxisMode"
+ 1299      7574 7075 
+ 1299      744D 6F64 
+ 1299      6500 
+ 1300               	.LC143:
+ 1301 06ea 5365 7450 		.string	"GetAxisMode"
+ 1301      6861 7365 
+ 1301      496E 6974 
+ 1301      6961 6C69 
+ 1301      7A65 5469 
+ 1302               	.LC144:
+ 1303 0701 5365 7450 		.string	"SetDiagnosticPortMode"
+ 1303      6861 7365 
+ 1303      436F 756E 
+ 1303      7473 00
+ 1304               	.LC145:
+ 1305 0710 5365 7450 		.string	"GetDiagnosticPortMode"
+ 1305      6861 7365 
+ 1305      4F66 6673 
+ 1305      6574 00
+ 1306               	.LC146:
+ 1307 071f 5365 744D 		.string	"SetSerialPortMode"
+ 1307      6F74 6F72 
+ 1307      436F 6D6D 
+ 1307      616E 6400 
+ 1308               	.LC147:
+ 1309 072f 496E 6974 		.string	"GetSerialPortMode"
+ 1309      6961 6C69 
+ 1309      7A65 5068 
+ 1309      6173 6500 
+ 1310               	.LC148:
+ 1311 073f 4765 7450 		.string	"SetEncoderModulus"
+ 1311      6861 7365 
+ 1311      4F66 6673 
+ 1311      6574 00
+ 1312               	.LC149:
+ 1313 074e 4765 7450 		.string	"GetEncoderModulus"
+ 1313      6861 7365 
+ 1313      496E 6974 
+ 1313      6961 6C69 
+ 1313      7A65 5469 
+ 1314               	.LC150:
+ 1315 0765 4765 7450 		.string	"GetVersion"
+ 1315      6861 7365 
+ 1315      436F 756E 
+ 1315      7473 00
+ 1316               	.LC151:
+ 1317 0774 5365 744C 		.string	"SetAcceleration"
+ 1317      696D 6974 
+ 1317      5377 6974 
+ 1317      6368 4D6F 
+ 1317      6465 00
+ 1318               	.LC152:
+ 1319 0787 4765 744C 		.string	"SetDeceleration"
+ 1319      696D 6974 
+ 1319      5377 6974 
+ 1319      6368 4D6F 
+ 1319      6465 00
+ 1320               	.LC153:
+ 1321 079a 5772 6974 		.string	"GetDeceleration"
+ 1321      6549 4F00 
+ 1322               	.LC154:
+ 1323 07a2 5265 6164 		.string	"SetKaff"
+ 1323      494F 00
+ 1324               	.LC155:
+ 1325 07a9 5365 7450 		.string	"GetKaff"
+ 1325      6861 7365 
+ 1325      416E 676C 
+ 1325      6500 
+ 1326               	.LC156:
+ 1327 07b7 5365 744E 		.string	"SetIntegrationLimit"
+ 1327      756D 6265 
+ 1327      7250 6861 
+ 1327      7365 7300 
+ 1328               	.LC157:
+ 1329 07c7 4765 744E 		.string	"GetIntegrationLimit"
+ 1329      756D 6265 
+ 1329      7250 6861 
+ 1329      7365 7300 
+ 1330               	.LC158:
+ 1331 07d7 5365 7441 		.string	"SetPositionErrorLimit"
+ 1331      7869 734D 
+ 1331      6F64 6500 
+ 1332               	.LC159:
+ 1333 07e3 4765 7441 		.string	"GetPositionErrorLimit"
+ 1333      7869 734D 
+ 1333      6F64 6500 
+ 1334               	.LC160:
+ 1335 07ef 5365 7444 		.string	"GetPositionError"
+ 1335      6961 676E 
+ 1335      6F73 7469 
+ 1335      6350 6F72 
+ 1335      744D 6F64 
+ 1336               	.LC161:
+ 1337 0805 4765 7444 		.string	"GetIntegral"
+ 1337      6961 676E 
+ 1337      6F73 7469 
+ 1337      6350 6F72 
+ 1337      744D 6F64 
+ 1338               	.LC162:
+ 1339 081b 5365 7453 		.string	"GetDerivative"
+ 1339      6572 6961 
+ 1339      6C50 6F72 
+ 1339      744D 6F64 
+ 1339      6500 
+ 1340               	.LC163:
+ 1341 082d 4765 7453 		.string	"SetDerivativeTime"
+ 1341      6572 6961 
+ 1341      6C50 6F72 
+ 1341      744D 6F64 
+ 1341      6500 
+ 1342               	.LC164:
+ 1343 083f 5365 7445 		.string	"GetDerivativeTime"
+ 1343      6E63 6F64 
+ 1343      6572 4D6F 
+ 1343      6475 6C75 
+ 1343      7300 
+ 1344               	.LC165:
+ 1345 0851 4765 7445 		.string	"SetKout"
+ 1345      6E63 6F64 
+ 1345      6572 4D6F 
+ 1345      6475 6C75 
+ 1345      7300 
+ 1346               	.LC166:
+ 1347 0863 4765 7456 		.string	"GetKout"
+ 1347      6572 7369 
+ 1347      6F6E 00
+ 1348               	.LC167:
+ 1349 086e 5365 7441 		.string	"SetProfileMode"
+ 1349      6363 656C 
+ 1349      6572 6174 
+ 1349      696F 6E00 
+ 1350               	.LC168:
+ 1351 087e 5365 7444 		.string	"GetProfileMode"
+ 1351      6563 656C 
+ 1351      6572 6174 
+ 1351      696F 6E00 
+ 1352               	.LC169:
+ 1353 088e 4765 7444 		.string	"SetSignalSense"
+ 1353      6563 656C 
+ 1353      6572 6174 
+ 1353      696F 6E00 
+ 1354               	.LC170:
+ 1355 089e 5365 744B 		.string	"GetSignalSense"
+ 1355      6166 6600 
+ 1356               	.LC171:
+ 1357 08a6 4765 744B 		.string	"GetSignalStatus"
+ 1357      6166 6600 
+ 1358               	.LC172:
+ 1359 08ae 5365 7449 		.string	"GetHostIOError"
+ 1359      6E74 6567 
+ 1359      7261 7469 
+ 1359      6F6E 4C69 
+ 1359      6D69 7400 
+ 1360               	.LC173:
+ 1361 08c2 4765 7449 		.string	"GetActivityStatus"
+ 1361      6E74 6567 
+ 1361      7261 7469 
+ 1361      6F6E 4C69 
+ 1361      6D69 7400 
+ 1362               	.LC174:
+ 1363 08d6 5365 7450 		.string	"GetCommandedAcceleration"
+ 1363      6F73 6974 
+ 1363      696F 6E45 
+ 1363      7272 6F72 
+ 1363      4C69 6D69 
+ 1364               	.LC175:
+ 1365 08ec 4765 7450 		.string	"SetTrackingWindow"
+ 1365      6F73 6974 
+ 1365      696F 6E45 
+ 1365      7272 6F72 
+ 1365      4C69 6D69 
+ 1366               	.LC176:
+ 1367 0902 4765 7450 		.string	"GetTrackingWindow"
+ 1367      6F73 6974 
+ 1367      696F 6E45 
+ 1367      7272 6F72 
+ 1367      00
+ 1368               	.LC177:
+ 1369 0913 4765 7449 		.string	"SetSettleTime"
+ 1369      6E74 6567 
+ 1369      7261 6C00 
+ 1370               	.LC178:
+ 1371 091f 4765 7444 		.string	"GetSettleTime"
+ 1371      6572 6976 
+ 1371      6174 6976 
+ 1371      6500 
+ 1372               	.LC179:
+ 1373 092d 5365 7444 		.string	"ClearInterrupt"
+ 1373      6572 6976 
+ 1373      6174 6976 
+ 1373      6554 696D 
+ 1373      6500 
+ 1374               	.LC180:
+ 1375 093f 4765 7444 		.string	"GetActualVelocity"
+ 1375      6572 6976 
+ 1375      6174 6976 
+ 1375      6554 696D 
+ 1375      6500 
+ 1376               	.LC181:
+ 1377 0951 5365 744B 		.string	"SetGearMaster"
+ 1377      6F75 7400 
+ 1378               	.LC182:
+ 1379 0959 4765 744B 		.string	"GetGearMaster"
+ 1379      6F75 7400 
+ 1380               	.LC183:
+ 1381 0961 5365 7450 		.string	"SetTraceMode"
+ 1381      726F 6669 
+ 1381      6C65 4D6F 
+ 1381      6465 00
+ 1382               	.LC184:
+ 1383 0970 4765 7450 		.string	"GetTraceMode"
+ 1383      726F 6669 
+ 1383      6C65 4D6F 
+ 1383      6465 00
+ 1384               	.LC185:
+ 1385 097f 5365 7453 		.string	"SetTraceStart"
+ 1385      6967 6E61 
+ 1385      6C53 656E 
+ 1385      7365 00
+ 1386               	.LC186:
+ 1387 098e 4765 7453 		.string	"GetTraceStart"
+ 1387      6967 6E61 
+ 1387      6C53 656E 
+ 1387      7365 00
+ 1388               	.LC187:
+ 1389 099d 4765 7453 		.string	"SetTraceStop"
+ 1389      6967 6E61 
+ 1389      6C53 7461 
+ 1389      7475 7300 
+ 1390               	.LC188:
+ 1391 09ad 4765 7448 		.string	"GetTraceStop"
+ 1391      6F73 7449 
+ 1391      4F45 7272 
+ 1391      6F72 00
+ 1392               	.LC189:
+ 1393 09bc 4765 7441 		.string	"SetTraceVariable"
+ 1393      6374 6976 
+ 1393      6974 7953 
+ 1393      7461 7475 
+ 1393      7300 
+ 1394               	.LC190:
+ 1395 09ce 4765 7443 		.string	"GetTraceVariable"
+ 1395      6F6D 6D61 
+ 1395      6E64 6564 
+ 1395      4163 6365 
+ 1395      6C65 7261 
+ 1396               	.LC191:
+ 1397 09e7 5365 7454 		.string	"SetTracePeriod"
+ 1397      7261 636B 
+ 1397      696E 6757 
+ 1397      696E 646F 
+ 1397      7700 
+ 1398               	.LC192:
+ 1399 09f9 4765 7454 		.string	"GetTracePeriod"
+ 1399      7261 636B 
+ 1399      696E 6757 
+ 1399      696E 646F 
+ 1399      7700 
+ 1400               	.LC193:
+ 1401 0a0b 5365 7453 		.string	"GetTraceStatus"
+ 1401      6574 746C 
+ 1401      6554 696D 
+ 1401      6500 
+ 1402               	.LC194:
+ 1403 0a19 4765 7453 		.string	"GetTraceCount"
+ 1403      6574 746C 
+ 1403      6554 696D 
+ 1403      6500 
+ 1404               	.LC195:
+ 1405 0a27 436C 6561 		.string	"SetSettleWindow"
+ 1405      7249 6E74 
+ 1405      6572 7275 
+ 1405      7074 00
+ 1406               	.LC196:
+ 1407 0a36 4765 7441 		.string	"GetSettleWindow"
+ 1407      6374 7561 
+ 1407      6C56 656C 
+ 1407      6F63 6974 
+ 1407      7900 
+ 1408               	.LC197:
+ 1409 0a48 5365 7447 		.string	"SetActualPositionUnits"
+ 1409      6561 724D 
+ 1409      6173 7465 
+ 1409      7200 
+ 1410               	.LC198:
+ 1411 0a56 4765 7447 		.string	"GetActualPositionUnits"
+ 1411      6561 724D 
+ 1411      6173 7465 
+ 1411      7200 
+ 1412               	.LC199:
+ 1413 0a64 5365 7454 		.string	"SetBufferStart"
+ 1413      7261 6365 
+ 1413      4D6F 6465 
+ 1413      00
+ 1414               	.LC200:
+ 1415 0a71 4765 7454 		.string	"GetBufferStart"
+ 1415      7261 6365 
+ 1415      4D6F 6465 
+ 1415      00
+ 1416               	.LC201:
+ 1417 0a7e 5365 7454 		.string	"SetBufferLength"
+ 1417      7261 6365 
+ 1417      5374 6172 
+ 1417      7400 
+ 1418               	.LC202:
+ 1419 0a8c 4765 7454 		.string	"GetBufferLength"
+ 1419      7261 6365 
+ 1419      5374 6172 
+ 1419      7400 
+ 1420               	.LC203:
+ 1421 0a9a 5365 7454 		.string	"SetBufferWriteIndex"
+ 1421      7261 6365 
+ 1421      5374 6F70 
+ 1421      00
+ 1422               	.LC204:
+ 1423 0aa7 4765 7454 		.string	"GetBufferWriteIndex"
+ 1423      7261 6365 
+ 1423      5374 6F70 
+ 1423      00
+ 1424               	.LC205:
+ 1425 0ab4 5365 7454 		.string	"SetBufferReadIndex"
+ 1425      7261 6365 
+ 1425      5661 7269 
+ 1425      6162 6C65 
+ 1425      00
+ 1426               	.LC206:
+ 1427 0ac5 4765 7454 		.string	"GetBufferReadIndex"
+ 1427      7261 6365 
+ 1427      5661 7269 
+ 1427      6162 6C65 
+ 1427      00
+ 1428               	.LC207:
+ 1429 0ad6 5365 7454 		.string	"WriteBuffer"
+ 1429      7261 6365 
+ 1429      5065 7269 
+ 1429      6F64 00
+ 1430               	.LC208:
+ 1431 0ae5 4765 7454 		.string	"ReadBuffer"
+ 1431      7261 6365 
+ 1431      5065 7269 
+ 1431      6F64 00
+ 1432               	.LC209:
+ 1433 0af4 4765 7454 		.string	"SetBufferFunction"
+ 1433      7261 6365 
+ 1433      5374 6174 
+ 1433      7573 00
+ 1434               	.LC210:
+ 1435 0b03 4765 7454 		.string	"GetBufferFunction"
+ 1435      7261 6365 
+ 1435      436F 756E 
+ 1435      7400 
+ 1436               	.LC211:
+ 1437 0b11 5365 7453 		.string	"GetStepRange"
+ 1437      6574 746C 
+ 1437      6557 696E 
+ 1437      646F 7700 
+ 1438               	.LC212:
+ 1439 0b21 4765 7453 		.string	"SetStepRange"
+ 1439      6574 746C 
+ 1439      6557 696E 
+ 1439      646F 7700 
+ 1440               	.LC213:
+ 1441 0b31 5365 7441 		.string	"SetStopMode"
+ 1441      6374 7561 
+ 1441      6C50 6F73 
+ 1441      6974 696F 
+ 1441      6E55 6E69 
+ 1442               	.LC214:
+ 1443 0b48 4765 7441 		.string	"GetStopMode"
+ 1443      6374 7561 
+ 1443      6C50 6F73 
+ 1443      6974 696F 
+ 1443      6E55 6E69 
+ 1444               	.LC215:
+ 1445 0b5f 5365 7442 		.string	"SetAutoStopMode"
+ 1445      7566 6665 
+ 1445      7253 7461 
+ 1445      7274 00
+ 1446               	.LC216:
+ 1447 0b6e 4765 7442 		.string	"GetAutoStopMode"
+ 1447      7566 6665 
+ 1447      7253 7461 
+ 1447      7274 00
+ 1448               	.LC217:
+ 1449 0b7d 5365 7442 		.string	"SetBreakpoint"
+ 1449      7566 6665 
+ 1449      724C 656E 
+ 1449      6774 6800 
+ 1450               	.LC218:
+ 1451 0b8d 4765 7442 		.string	"GetBreakpoint"
+ 1451      7566 6665 
+ 1451      724C 656E 
+ 1451      6774 6800 
+ 1452               	.LC219:
+ 1453 0b9d 5365 7442 		.string	"SetBreakpointValue"
+ 1453      7566 6665 
+ 1453      7257 7269 
+ 1453      7465 496E 
+ 1453      6465 7800 
+ 1454               	.LC220:
+ 1455 0bb1 4765 7442 		.string	"GetBreakpointValue"
+ 1455      7566 6665 
+ 1455      7257 7269 
+ 1455      7465 496E 
+ 1455      6465 7800 
+ 1456               	.LC221:
+ 1457 0bc5 5365 7442 		.string	"SetCaptureSource"
+ 1457      7566 6665 
+ 1457      7252 6561 
+ 1457      6449 6E64 
+ 1457      6578 00
+ 1458               	.LC222:
+ 1459 0bd8 4765 7442 		.string	"GetCaptureSource"
+ 1459      7566 6665 
+ 1459      7252 6561 
+ 1459      6449 6E64 
+ 1459      6578 00
+ 1460               	.LC223:
+ 1461 0beb 5772 6974 		.string	"SetEncoderSource"
+ 1461      6542 7566 
+ 1461      6665 7200 
+ 1462               	.LC224:
+ 1463 0bf7 5265 6164 		.string	"GetEncoderSource"
+ 1463      4275 6666 
+ 1463      6572 00
+ 1464               	.LC225:
+ 1465 0c02 5365 7442 		.string	"SetMotorMode"
+ 1465      7566 6665 
+ 1465      7246 756E 
+ 1465      6374 696F 
+ 1465      6E00 
+ 1466               	.LC226:
+ 1467 0c14 4765 7442 		.string	"GetMotorMode"
+ 1467      7566 6665 
+ 1467      7246 756E 
+ 1467      6374 696F 
+ 1467      6E00 
+ 1468               	.LC227:
+ 1469 0c26 4765 7453 		.string	"SetEncoderToStepRatio"
+ 1469      7465 7052 
+ 1469      616E 6765 
+ 1469      00
+ 1470               	.LC228:
+ 1471 0c33 5365 7453 		.string	"GetEncoderToStepRatio"
+ 1471      7465 7052 
+ 1471      616E 6765 
+ 1471      00
+ 1472               	.LC229:
+ 1473 0c40 5365 7453 		.string	"SetOutputMode"
+ 1473      746F 704D 
+ 1473      6F64 6500 
+ 1474               	.LC230:
+ 1475 0c4c 4765 7453 		.string	"GetInterruptAxis"
+ 1475      746F 704D 
+ 1475      6F64 6500 
+ 1476               	.LC231:
+ 1477 0c58 5365 7441 		.string	"SetCommutationMode"
+ 1477      7574 6F53 
+ 1477      746F 704D 
+ 1477      6F64 6500 
+ 1478               	.LC232:
+ 1479 0c68 4765 7441 		.string	"GetCommutationMode"
+ 1479      7574 6F53 
+ 1479      746F 704D 
+ 1479      6F64 6500 
+ 1480               	.LC233:
+ 1481 0c78 5365 7442 		.string	"SetPhaseInitializeMode"
+ 1481      7265 616B 
+ 1481      706F 696E 
+ 1481      7400 
+ 1482               	.LC234:
+ 1483 0c86 4765 7442 		.string	"GetPhaseInitializeMode"
+ 1483      7265 616B 
+ 1483      706F 696E 
+ 1483      7400 
+ 1484               	.LC235:
+ 1485 0c94 5365 7442 		.string	"SetPhasePrescale"
+ 1485      7265 616B 
+ 1485      706F 696E 
+ 1485      7456 616C 
+ 1485      7565 00
+ 1486               	.LC236:
+ 1487 0ca7 4765 7442 		.string	"GetPhasePrescale"
+ 1487      7265 616B 
+ 1487      706F 696E 
+ 1487      7456 616C 
+ 1487      7565 00
+ 1488               	.LC237:
+ 1489 0cba 5365 7443 		.string	"SetPhaseCorrectionMode"
+ 1489      6170 7475 
+ 1489      7265 536F 
+ 1489      7572 6365 
+ 1489      00
+ 1490               	.LC238:
+ 1491 0ccb 4765 7443 		.string	"GetPhaseCorrectionMode"
+ 1491      6170 7475 
+ 1491      7265 536F 
+ 1491      7572 6365 
+ 1491      00
+ 1492               	.LC239:
+ 1493 0cdc 5365 7445 		.string	"GetPhaseCommand"
+ 1493      6E63 6F64 
+ 1493      6572 536F 
+ 1493      7572 6365 
+ 1493      00
+ 1494               	.LC240:
+ 1495 0ced 4765 7445 		.string	"SetMotionCompleteMode"
+ 1495      6E63 6F64 
+ 1495      6572 536F 
+ 1495      7572 6365 
+ 1495      00
+ 1496               	.LC241:
+ 1497 0cfe 5365 744D 		.string	"GetMotionCompleteMode"
+ 1497      6F74 6F72 
+ 1497      4D6F 6465 
+ 1497      00
+ 1498               	.LC242:
+ 1499 0d0b 4765 744D 		.string	"SetAxisOutSource"
+ 1499      6F74 6F72 
+ 1499      4D6F 6465 
+ 1499      00
+ 1500               	.LC243:
+ 1501 0d18 5365 7445 		.string	"GetAxisOutSource"
+ 1501      6E63 6F64 
+ 1501      6572 546F 
+ 1501      5374 6570 
+ 1501      5261 7469 
+ 1502               	.LC244:
+ 1503 0d2e 4765 7445 		.string	"ReadAnalog"
+ 1503      6E63 6F64 
+ 1503      6572 546F 
+ 1503      5374 6570 
+ 1503      5261 7469 
+ 1504               	.LC245:
+ 1505 0d44 5365 744F 		.string	"AdjustActualPosition"
+ 1505      7574 7075 
+ 1505      744D 6F64 
+ 1505      6500 
+ 1506               	.LC246:
+ 1507 0d52 4765 7449 		.string	"GetChecksum"
+ 1507      6E74 6572 
+ 1507      7275 7074 
+ 1507      4178 6973 
+ 1507      00
+ 1508               	.LC247:
+ 1509 0d63 5365 7443 		.string	"Invalid opcode!"
+ 1509      6F6D 6D75 
+ 1509      7461 7469 
+ 1509      6F6E 4D6F 
+ 1509      6465 00
+ 1510               		.text
+ 1513 0d89 5365 7450 	.global	PMDGetOpcodeText
+ 1513      6861 7365 
+ 1513      496E 6974 
+ 1513      6961 6C69 
+ 1513      7A65 4D6F 
+ 1515 0da0 4765 7450 	PMDGetOpcodeText:
+ 1515      6861 7365 
+ 1515      496E 6974 
+ 1515      6961 6C69 
+ 1515      7A65 4D6F 
+ 1517 0db7 5365 7450 	.LM83:
+ 1517      6861 7365 
+ 1517      5072 6573 
+ 1517      6361 6C65 
+ 1517      00
+ 1518               	.LFBB7:
+ 1519 0dc8 4765 7450 	/* prologue: function */
+ 1519      6861 7365 
+ 1519      5072 6573 
+ 1519      6361 6C65 
+ 1519      00
+ 1520               	/* frame size = 0 */
+ 1522               	.LM84:
+ 1523 0df0 4765 7450 		ldi r26,lo8(0)
+ 1523      6861 7365 
+ 1523      436F 7272 
+ 1523      6563 7469 
+ 1523      6F6E 4D6F 
+ 1524               		ldi r27,hi8(0)
+ 1525 0e07 4765 7450 		andi r25,hi8(255)
+ 1525      6861 7365 
+ 1525      436F 6D6D 
+ 1525      616E 6400 
+ 1526               		andi r26,hlo8(255)
+ 1527 0e17 5365 744D 		andi r27,hhi8(255)
+ 1527      6F74 696F 
+ 1527      6E43 6F6D 
+ 1527      706C 6574 
+ 1527      654D 6F64 
+ 1528               		movw r30,r24
+ 1529 0e2d 4765 744D 		cpi r24,249
+ 1529      6F74 696F 
+ 1529      6E43 6F6D 
+ 1529      706C 6574 
+ 1529      654D 6F64 
+ 1530               		cpc r25,__zero_reg__
+ 1531 0e43 5365 7441 		brlo .+2
+ 1531      7869 734F 
+ 1531      7574 536F 
+ 1531      7572 6365 
+ 1531      00
+ 1532               		rjmp .L127
+ 1533 0e54 4765 7441 		subi r30,lo8(-(gs(.L292)))
+ 1533      7869 734F 
+ 1533      7574 536F 
+ 1533      7572 6365 
+ 1533      00
+ 1534               		sbci r31,hi8(-(gs(.L292)))
+ 1535 0e65 5265 6164 		lsl r30
+ 1535      416E 616C 
+ 1535      6F67 00
+ 1536               		rol r31
+ 1537 0e70 4164 6A75 		lpm __tmp_reg__,Z+
+ 1537      7374 4163 
+ 1537      7475 616C 
+ 1537      506F 7369 
+ 1537      7469 6F6E 
+ 1538               		lpm r31,Z
+ 1539 0e85 4765 7443 		mov r30,__tmp_reg__
+ 1539      6865 636B 
+ 1539      7375 6D00 
+ 1540               		ijmp
+ 1541 0e91 496E 7661 		.data
+ 1541      6C69 6420 
+ 1541      6F70 636F 
+ 1541      6465 2100 
+ 1542               		.section .progmem.gcc_sw_table, "a", @progbits
+ 1543               		.p2align 1
+ 1544               	.L292:
+ 1545               		.data
+ 1546               		.section .progmem.gcc_sw_table, "a", @progbits
+ 1547               		.p2align 1
+ 185:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 
+ 186:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 
+ 187:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 
+ 188:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** // PMD specific messages
+ 189:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 
+ 190:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 
+ 191:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 
+ 192:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** #ifdef _AVR_IO_H_
+ 193:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** //*****************************************************************************
+ 194:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** uint8 *PMDGetOpcodeText(PMDuint16 opCode)
+ 195:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** {
+ 1548               	.word gs(.L129)
+ 1549               		.word gs(.L130)
+ 1550               		.word gs(.L127)
+ 1551               		.word gs(.L127)
+ 1552               		.word gs(.L127)
+ 196:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	opCode=opCode & 0xff;
+ 197:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 
+ 198:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	switch(opCode) {
+ 1553               	d gs(.L127)
+ 1554               		.word gs(.L127)
+ 1555 035a A0E0      		.word gs(.L127)
+ 1556 035c B0E0      		.word gs(.L127)
+ 1557 035e 9070      		.word gs(.L131)
+ 1558 0360 A070      		.word gs(.L132)
+ 1559 0362 B070      		.word gs(.L133)
+ 1560 0364 FC01      		.word gs(.L127)
+ 1561 0366 893F      		.word gs(.L134)
+ 1562 0368 9105      		.word gs(.L135)
+ 1563 036a 00F0      		.word gs(.L127)
+ 1564 036c 00C0      		.word gs(.L127)
+ 1565 036e E050      		.word gs(.L127)
+ 1566 0370 F040      		.word gs(.L127)
+ 1567 0372 EE0F      		.word gs(.L127)
+ 1568 0374 FF1F      		.word gs(.L136)
+ 1569 0376 0590      		.word gs(.L127)
+ 1570 0378 F491      		.word gs(.L127)
+ 1571 037a E02D      		.word gs(.L137)
+ 1572 037c 0994      		.word gs(.L138)
+ 1573               		.word gs(.L127)
+ 1574               		.word gs(.L127)
+ 1575               		.word gs(.L127)
+ 1576               		.word gs(.L127)
+ 1577               		.word gs(.L127)
+ 1578               		.word gs(.L127)
+ 1579               		.word gs(.L139)
+ 1580 0054 0000      		.word gs(.L140)
+ 1581 0056 0000      		.word gs(.L141)
+ 1582 0058 0000      		.word gs(.L127)
+ 1583 005a 0000      		.word gs(.L127)
+ 1584 005c 0000      		.word gs(.L127)
+ 1585 005e 0000      		.word gs(.L142)
+ 1586 0060 0000      		.word gs(.L143)
+ 1587 0062 0000      		.word gs(.L144)
+ 1588 0064 0000      		.word gs(.L127)
+ 1589 0066 0000      		.word gs(.L145)
+ 1590 0068 0000      		.word gs(.L127)
+ 1591 006a 0000      		.word gs(.L146)
+ 1592 006c 0000      		.word gs(.L127)
+ 1593 006e 0000      		.word gs(.L127)
+ 1594 0070 0000      		.word gs(.L147)
+ 1595 0072 0000      		.word gs(.L127)
+ 1596 0074 0000      		.word gs(.L148)
+ 1597 0076 0000      		.word gs(.L149)
+ 1598 0078 0000      		.word gs(.L150)
+ 1599 007a 0000      		.word gs(.L151)
+ 1600 007c 0000      		.word gs(.L152)
+ 1601 007e 0000      		.word gs(.L127)
+ 1602 0080 0000      		.word gs(.L127)
+ 1603 0082 0000      		.word gs(.L127)
+ 1604 0084 0000      		.word gs(.L153)
+ 1605 0086 0000      		.word gs(.L127)
+ 1606 0088 0000      		.word gs(.L127)
+ 1607 008a 0000      		.word gs(.L127)
+ 1608 008c 0000      		.word gs(.L127)
+ 1609 008e 0000      		.word gs(.L127)
+ 1610 0090 0000      		.word gs(.L127)
+ 1611 0092 0000      		.word gs(.L127)
+ 1612 0094 0000      		.word gs(.L127)
+ 1613 0096 0000      		.word gs(.L154)
+ 1614 0098 0000      		.word gs(.L127)
+ 1615 009a 0000      		.word gs(.L127)
+ 1616 009c 0000      		.word gs(.L155)
+ 1617 009e 0000      		.word gs(.L156)
+ 1618 00a0 0000      		.word gs(.L157)
+ 1619 00a2 0000      		.word gs(.L158)
+ 1620 00a4 0000      		.word gs(.L127)
+ 1621 00a6 0000      		.word gs(.L127)
+ 1622 00a8 0000      		.word gs(.L159)
+ 1623 00aa 0000      		.word gs(.L160)
+ 1624 00ac 0000      		.word gs(.L161)
+ 1625 00ae 0000      		.word gs(.L127)
+ 1626 00b0 0000      		.word gs(.L162)
+ 1627 00b2 0000      		.word gs(.L127)
+ 1628 00b4 0000      		.word gs(.L163)
+ 1629 00b6 0000      		.word gs(.L127)
+ 1630 00b8 0000      		.word gs(.L164)
+ 1631 00ba 0000      		.word gs(.L165)
+ 1632 00bc 0000      		.word gs(.L127)
+ 1633 00be 0000      		.word gs(.L166)
+ 1634 00c0 0000      		.word gs(.L127)
+ 1635 00c2 0000      		.word gs(.L127)
+ 1636 00c4 0000      		.word gs(.L127)
+ 1637 00c6 0000      		.word gs(.L127)
+ 1638 00c8 0000      		.word gs(.L127)
+ 1639 00ca 0000      		.word gs(.L167)
+ 1640 00cc 0000      		.word gs(.L127)
+ 1641 00ce 0000      		.word gs(.L127)
+ 1642 00d0 0000      		.word gs(.L127)
+ 1643 00d2 0000      		.word gs(.L127)
+ 1644 00d4 0000      		.word gs(.L127)
+ 1645 00d6 0000      		.word gs(.L127)
+ 1646 00d8 0000      		.word gs(.L127)
+ 1647 00da 0000      		.word gs(.L168)
+ 1648 00dc 0000      		.word gs(.L169)
+ 1649 00de 0000      		.word gs(.L170)
+ 1650 00e0 0000      		.word gs(.L127)
+ 1651 00e2 0000      		.word gs(.L127)
+ 1652 00e4 0000      		.word gs(.L171)
+ 1653 00e6 0000      		.word gs(.L127)
+ 1654 00e8 0000      		.word gs(.L127)
+ 1655 00ea 0000      		.word gs(.L127)
+ 1656 00ec 0000      		.word gs(.L172)
+ 1657 00ee 0000      		.word gs(.L127)
+ 1658 00f0 0000      		.word gs(.L127)
+ 1659 00f2 0000      		.word gs(.L173)
+ 1660 00f4 0000      		.word gs(.L174)
+ 1661 00f6 0000      		.word gs(.L175)
+ 1662 00f8 0000      		.word gs(.L127)
+ 1663 00fa 0000      		.word gs(.L127)
+ 1664 00fc 0000      		.word gs(.L176)
+ 1665 00fe 0000      		.word gs(.L177)
+ 1666 0100 0000      		.word gs(.L178)
+ 1667 0102 0000      		.word gs(.L179)
+ 1668 0104 0000      		.word gs(.L127)
+ 1669 0106 0000      		.word gs(.L127)
+ 1670 0108 0000      		.word gs(.L180)
+ 1671 010a 0000      		.word gs(.L181)
+ 1672 010c 0000      		.word gs(.L182)
+ 1673 010e 0000      		.word gs(.L183)
+ 1674 0110 0000      		.word gs(.L184)
+ 1675 0112 0000      		.word gs(.L185)
+ 1676 0114 0000      		.word gs(.L186)
+ 1677 0116 0000      		.word gs(.L187)
+ 1678 0118 0000      		.word gs(.L188)
+ 1679 011a 0000      		.word gs(.L189)
+ 1680 011c 0000      		.word gs(.L190)
+ 1681 011e 0000      		.word gs(.L191)
+ 1682 0120 0000      		.word gs(.L192)
+ 1683 0122 0000      		.word gs(.L193)
+ 1684 0124 0000      		.word gs(.L194)
+ 1685 0126 0000      		.word gs(.L195)
+ 1686 0128 0000      		.word gs(.L196)
+ 1687 012a 0000      		.word gs(.L197)
+ 1688 012c 0000      		.word gs(.L198)
+ 1689 012e 0000      		.word gs(.L199)
+ 1690 0130 0000      		.word gs(.L200)
+ 1691 0132 0000      		.word gs(.L201)
+ 1692 0134 0000      		.word gs(.L202)
+ 1693 0136 0000      		.word gs(.L203)
+ 1694 0138 0000      		.word gs(.L204)
+ 1695 013a 0000      		.word gs(.L205)
+ 1696 013c 0000      		.word gs(.L206)
+ 1697 013e 0000      		.word gs(.L207)
+ 1698 0140 0000      		.word gs(.L208)
+ 1699 0142 0000      		.word gs(.L209)
+ 1700 0144 0000      		.word gs(.L210)
+ 1701 0146 0000      		.word gs(.L211)
+ 1702 0148 0000      		.word gs(.L212)
+ 1703 014a 0000      		.word gs(.L213)
+ 1704 014c 0000      		.word gs(.L214)
+ 1705 014e 0000      		.word gs(.L215)
+ 1706 0150 0000      		.word gs(.L216)
+ 1707 0152 0000      		.word gs(.L217)
+ 1708 0154 0000      		.word gs(.L218)
+ 1709 0156 0000      		.word gs(.L219)
+ 1710 0158 0000      		.word gs(.L220)
+ 1711 015a 0000      		.word gs(.L221)
+ 1712 015c 0000      		.word gs(.L222)
+ 1713 015e 0000      		.word gs(.L223)
+ 1714 0160 0000      		.word gs(.L224)
+ 1715 0162 0000      		.word gs(.L225)
+ 1716 0164 0000      		.word gs(.L226)
+ 1717 0166 0000      		.word gs(.L227)
+ 1718 0168 0000      		.word gs(.L228)
+ 1719 016a 0000      		.word gs(.L229)
+ 1720 016c 0000      		.word gs(.L230)
+ 1721 016e 0000      		.word gs(.L231)
+ 1722 0170 0000      		.word gs(.L232)
+ 1723 0172 0000      		.word gs(.L233)
+ 1724 0174 0000      		.word gs(.L234)
+ 1725 0176 0000      		.word gs(.L235)
+ 1726 0178 0000      		.word gs(.L236)
+ 1727 017a 0000      		.word gs(.L237)
+ 1728 017c 0000      		.word gs(.L238)
+ 1729 017e 0000      		.word gs(.L239)
+ 1730 0180 0000      		.word gs(.L240)
+ 1731 0182 0000      		.word gs(.L241)
+ 1732 0184 0000      		.word gs(.L242)
+ 1733 0186 0000      		.word gs(.L243)
+ 1734 0188 0000      		.word gs(.L244)
+ 1735 018a 0000      		.word gs(.L245)
+ 1736 018c 0000      		.word gs(.L246)
+ 1737 018e 0000      		.word gs(.L247)
+ 1738 0190 0000      		.word gs(.L248)
+ 1739 0192 0000      		.word gs(.L249)
+ 1740 0194 0000      		.word gs(.L250)
+ 1741 0196 0000      		.word gs(.L251)
+ 1742 0198 0000      		.word gs(.L252)
+ 1743 019a 0000      		.word gs(.L253)
+ 1744 019c 0000      		.word gs(.L254)
+ 1745 019e 0000      		.word gs(.L255)
+ 1746 01a0 0000      		.word gs(.L127)
+ 1747 01a2 0000      		.word gs(.L127)
+ 1748 01a4 0000      		.word gs(.L256)
+ 1749 01a6 0000      		.word gs(.L257)
+ 1750 01a8 0000      		.word gs(.L258)
+ 1751 01aa 0000      		.word gs(.L259)
+ 1752 01ac 0000      		.word gs(.L260)
+ 1753 01ae 0000      		.word gs(.L261)
+ 1754 01b0 0000      		.word gs(.L262)
+ 1755 01b2 0000      		.word gs(.L263)
+ 1756 01b4 0000      		.word gs(.L264)
+ 1757 01b6 0000      		.word gs(.L265)
+ 1758 01b8 0000      		.word gs(.L266)
+ 1759 01ba 0000      		.word gs(.L267)
+ 1760 01bc 0000      		.word gs(.L268)
+ 1761 01be 0000      		.word gs(.L269)
+ 1762 01c0 0000      		.word gs(.L270)
+ 1763 01c2 0000      		.word gs(.L271)
+ 1764 01c4 0000      		.word gs(.L272)
+ 1765 01c6 0000      		.word gs(.L273)
+ 1766 01c8 0000      		.word gs(.L274)
+ 1767 01ca 0000      		.word gs(.L275)
+ 1768 01cc 0000      		.word gs(.L276)
+ 1769 01ce 0000      		.word gs(.L277)
+ 1770 01d0 0000      		.word gs(.L278)
+ 1771 01d2 0000      		.word gs(.L279)
+ 1772 01d4 0000      		.word gs(.L280)
+ 1773 01d6 0000      		.word gs(.L281)
+ 1774 01d8 0000      		.word gs(.L282)
+ 1775 01da 0000      		.word gs(.L283)
+ 1776 01dc 0000      		.word gs(.L284)
+ 1777 01de 0000      		.word gs(.L285)
+ 1778 01e0 0000      		.word gs(.L286)
+ 1779 01e2 0000      		.word gs(.L287)
+ 1780 01e4 0000      		.word gs(.L288)
+ 1781 01e6 0000      		.word gs(.L289)
+ 1782 01e8 0000      		.word gs(.L127)
+ 1783 01ea 0000      		.word gs(.L127)
+ 1784 01ec 0000      		.word gs(.L127)
+ 1785 01ee 0000      		.word gs(.L127)
+ 1786 01f0 0000      		.word gs(.L127)
+ 1787 01f2 0000      		.word gs(.L290)
+ 1788 01f4 0000      		.word gs(.L127)
+ 1789 01f6 0000      		.word gs(.L127)
+ 1790 01f8 0000      		.word gs(.L291)
+ 1791 01fa 0000      		.text
+ 1792 01fc 0000      	.L129:
+ 1793 01fe 0000      		ldi r18,lo8(.LC83)
+ 1794 0200 0000      		ldi r19,hi8(.LC83)
+ 1795 0202 0000      		rjmp .L293
+ 1796 0204 0000      	.L128:
+ 1797 0206 0000      		ldi r18,lo8(.LC84)
+ 1798 0208 0000      		ldi r19,hi8(.LC84)
+ 1799 020a 0000      		rjmp .L293
+ 1800 020c 0000      	.L130:
+ 1801 020e 0000      		ldi r18,lo8(.LC85)
+ 1802 0210 0000      		ldi r19,hi8(.LC85)
+ 1803 0212 0000      		rjmp .L293
+ 1804 0214 0000      	.L131:
+ 1806 0218 0000      	.LM85:
+ 1807 021a 0000      		ldi r18,lo8(.LC86)
+ 1808 021c 0000      		ldi r19,hi8(.LC86)
+ 1809 021e 0000      		rjmp .L293
+ 1810 0220 0000      	.L132:
+ 1812 0224 0000      	.LM86:
+ 1813 0226 0000      		ldi r18,lo8(.LC87)
+ 1814 0228 0000      		ldi r19,hi8(.LC87)
+ 1815 022a 0000      		rjmp .L293
+ 1816 022c 0000      	.L133:
+ 1818 0230 0000      	.LM87:
+ 1819 0232 0000      		ldi r18,lo8(.LC88)
+ 1820 0234 0000      		ldi r19,hi8(.LC88)
+ 1821 0236 0000      		rjmp .L293
+ 1822 0238 0000      	.L134:
+ 1824 023c 0000      	.LM88:
+ 1825 023e 0000      		ldi r18,lo8(.LC89)
+ 1826 0240 0000      		ldi r19,hi8(.LC89)
+ 1827 0242 0000      		rjmp .L293
+ 1828 0244 0000      	.L135:
+ 1830               	.LM89:
+ 1831 037e 20E0      		ldi r18,lo8(.LC90)
+ 1832 0380 30E0      		ldi r19,hi8(.LC90)
+ 1833 0382 00C0      		rjmp .L293
+ 1834               	.L136:
+ 1836 0386 30E0      	.LM90:
+ 1837 0388 00C0      		ldi r18,lo8(.LC91)
+ 1838               		ldi r19,hi8(.LC91)
+ 1839 038a 20E0      		rjmp .L293
+ 1840 038c 30E0      	.L137:
+ 1842               	.LM91:
+ 199:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	
+ 200:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPNoOperation)				: return (uint8*)"Nop"; break;
+ 201:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPSetMotorLimit) 			: return (uint8*)"SetMotorLimit"; break;
+ 202:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetMotorLimit) 			: return (uint8*)"GetMotorLimit"; break;
+ 1843               	293
+ 1844               	.L138:
+ 1846 0392 30E0      	.LM92:
+ 1847 0394 00C0      		ldi r18,lo8(.LC93)
+ 1848               		ldi r19,hi8(.LC93)
+ 203:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPSetMotorBias) 			: return (uint8*)"SetMotorBias"	; break;
+ 1849               	.L293
+ 1850               	.L139:
+ 1852 0398 30E0      	.LM93:
+ 1853 039a 00C0      		ldi r18,lo8(.LC94)
+ 1854               		ldi r19,hi8(.LC94)
+ 204:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPSetPosition) 			: return (uint8*)"SetPosition"	; break;
+ 1855               	.L293
+ 1856               	.L140:
+ 1858 039e 30E0      	.LM94:
+ 1859 03a0 00C0      		ldi r18,lo8(.LC95)
+ 1860               		ldi r19,hi8(.LC95)
+ 205:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPSetVelocity) 			: return (uint8*)"SetVelocity"; break;
+ 1861               	.L293
+ 1862               	.L141:
+ 1864 03a4 30E0      	.LM95:
+ 1865 03a6 00C0      		ldi r18,lo8(.LC96)
+ 1866               		ldi r19,hi8(.LC96)
+ 206:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPSetJerk) 				: return (uint8*)"SetJerk"	; break;
+ 1867               	.L293
+ 1868               	.L142:
+ 1870 03aa 30E0      	.LM96:
+ 1871 03ac 00C0      		ldi r18,lo8(.LC97)
+ 1872               		ldi r19,hi8(.LC97)
+ 207:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPSetGearRatio) 			: return (uint8*)"SetGearRatio"	; break;
+ 1873               	.L293
+ 1874               	.L143:
+ 1876 03b0 30E0      	.LM97:
+ 1877 03b2 00C0      		ldi r18,lo8(.LC98)
+ 1878               		ldi r19,hi8(.LC98)
+ 208:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPUpdate) 					: return (uint8*)"Update"; break;
+ 1879               	.L293
+ 1880               	.L144:
+ 1882 03b6 30E0      	.LM98:
+ 1883 03b8 00C0      		ldi r18,lo8(.LC99)
+ 1884               		ldi r19,hi8(.LC99)
+ 209:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetCommandedPosition)	: return (uint8*)"GetCommandedPosition"	; break;
+ 1885               	.L293
+ 1886               	.L145:
+ 1888 03bc 30E0      	.LM99:
+ 1889 03be 00C0      		ldi r18,lo8(.LC100)
+ 1890               		ldi r19,hi8(.LC100)
+ 210:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetCommandedVelocity) 	: return (uint8*)"GetCommandedVelocity"	; break;
+ 1891               	.L293
+ 1892               	.L146:
+ 1894 03c2 30E0      	.LM100:
+ 1895 03c4 00C0      		ldi r18,lo8(.LC101)
+ 1896               		ldi r19,hi8(.LC101)
+ 211:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPSetKp) 					: return (uint8*)"SetKp"; break;
+ 1897               	.L293
+ 1898               	.L147:
+ 1900 03c8 30E0      	.LM101:
+ 1901 03ca 00C0      		ldi r18,lo8(.LC102)
+ 1902               		ldi r19,hi8(.LC102)
+ 212:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPSetKi) 					: return (uint8*)"SetKi"; break;
+ 1903               	.L293
+ 1904               	.L148:
+ 1906 03ce 30E0      	.LM102:
+ 1907 03d0 00C0      		ldi r18,lo8(.LC103)
+ 1908               		ldi r19,hi8(.LC103)
+ 213:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPSetKd) 					: return (uint8*)"SetKd"; break;
+ 1909               	.L293
+ 1910               	.L149:
+ 1912 03d4 30E0      	.LM103:
+ 1913 03d6 00C0      		ldi r18,lo8(.LC104)
+ 1914               		ldi r19,hi8(.LC104)
+ 214:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPSetKvff) 				: return (uint8*)"SetKvff"; break;
+ 1915               	.L293
+ 1916               	.L150:
+ 1918 03da 30E0      	.LM104:
+ 1919 03dc 00C0      		ldi r18,lo8(.LC105)
+ 1920               		ldi r19,hi8(.LC105)
+ 215:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetPhaseAngle) 			: return (uint8*)"GetPhaseAngle"; break;
+ 1921               	.L293
+ 1922               	.L151:
+ 1924 03e0 30E0      	.LM105:
+ 1925 03e2 00C0      		ldi r18,lo8(.LC106)
+ 1926               		ldi r19,hi8(.LC106)
+ 216:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetMotorBias) 			: return (uint8*)"GetMotorBias"	; break;
+ 1927               	.L293
+ 1928               	.L152:
+ 1930 03e6 30E0      	.LM106:
+ 1931 03e8 00C0      		ldi r18,lo8(.LC107)
+ 1932               		ldi r19,hi8(.LC107)
+ 217:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPSetInterruptMask) 		: return (uint8*)"SetInterruptMask"	; break;
+ 1933               	.L293
+ 1934               	.L153:
+ 1936 03ec 30E0      	.LM107:
+ 1937 03ee 00C0      		ldi r18,lo8(.LC108)
+ 1938               		ldi r19,hi8(.LC108)
+ 218:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetEventStatus) 			: return (uint8*)"GetEventStatus"; break;
+ 1939               	.L293
+ 1940               	.L154:
+ 1942 03f2 30E0      	.LM108:
+ 1943 03f4 00C0      		ldi r18,lo8(.LC109)
+ 1944               		ldi r19,hi8(.LC109)
+ 219:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPResetEventStatus) 		: return (uint8*)"ResetEventStatus"	; break;
+ 1945               	.L293
+ 1946               	.L155:
+ 1948 03f8 30E0      	.LM109:
+ 1949 03fa 00C0      		ldi r18,lo8(.LC110)
+ 1950               		ldi r19,hi8(.LC110)
+ 220:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetCaptureValue) 		: return (uint8*)"GetCaptureValue"; break;
+ 1951               	.L293
+ 1952               	.L156:
+ 1954 03fe 30E0      	.LM110:
+ 1955 0400 00C0      		ldi r18,lo8(.LC111)
+ 1956               		ldi r19,hi8(.LC111)
+ 221:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetActualPosition) 		: return (uint8*)"GetActualPosition"; break;
+ 1957               	.L293
+ 1958               	.L157:
+ 1960 0404 30E0      	.LM111:
+ 1961 0406 00C0      		ldi r18,lo8(.LC112)
+ 1962               		ldi r19,hi8(.LC112)
+ 222:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPSetSampleTime) 			: return (uint8*)"SetSampleTime"; break;
+ 1963               	.L293
+ 1964               	.L158:
+ 1966 040a 30E0      	.LM112:
+ 1967 040c 00C0      		ldi r18,lo8(.LC113)
+ 1968               		ldi r19,hi8(.LC113)
+ 223:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPReset) 					: return (uint8*)"Reset"; break;
+ 1969               	.L293
+ 1970               	.L159:
+ 1972 0410 30E0      	.LM113:
+ 1973 0412 00C0      		ldi r18,lo8(.LC114)
+ 1974               		ldi r19,hi8(.LC114)
+ 224:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetCurrentMotorCommand)	: return (uint8*)"GetCurrentMotorCommand"; break;
+ 1975               	.L293
+ 1976               	.L160:
+ 1978 0416 30E0      	.LM114:
+ 1979 0418 00C0      		ldi r18,lo8(.LC115)
+ 1980               		ldi r19,hi8(.LC115)
+ 225:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetTime) 				: return (uint8*)"GetTime"; break;
+ 1981               	.L293
+ 1982               	.L161:
+ 1984 041c 30E0      	.LM115:
+ 1985 041e 00C0      		ldi r18,lo8(.LC116)
+ 1986               		ldi r19,hi8(.LC116)
+ 226:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPClearPositionError) 		: return (uint8*)"ClearPositionError"; break;
+ 1987               	.L293
+ 1988               	.L162:
+ 1990 0422 30E0      	.LM116:
+ 1991 0424 00C0      		ldi r18,lo8(.LC117)
+ 1992               		ldi r19,hi8(.LC117)
+ 227:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetPosition) 			: return (uint8*)"GetPosition"; break;
+ 1993               	.L293
+ 1994               	.L163:
+ 1996 0428 30E0      	.LM117:
+ 1997 042a 00C0      		ldi r18,lo8(.LC118)
+ 1998               		ldi r19,hi8(.LC118)
+ 228:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetVelocity) 			: return (uint8*)"GetVelocity"; break;
+ 1999               	.L293
+ 2000               	.L164:
+ 2002 042e 30E0      	.LM118:
+ 2003 0430 00C0      		ldi r18,lo8(.LC119)
+ 2004               		ldi r19,hi8(.LC119)
+ 229:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetAcceleration) 		: return (uint8*)"GetAcceleration"; break;
+ 2005               	.L293
+ 2006               	.L165:
+ 2008 0434 30E0      	.LM119:
+ 2009 0436 00C0      		ldi r18,lo8(.LC120)
+ 2010               		ldi r19,hi8(.LC120)
+ 230:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPSetActualPosition) 		: return (uint8*)"SetActualPosition"; break;
+ 2011               	.L293
+ 2012               	.L166:
+ 2014 043a 30E0      	.LM120:
+ 2015 043c 00C0      		ldi r18,lo8(.LC121)
+ 2016               		ldi r19,hi8(.LC121)
+ 231:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetKp) 					: return (uint8*)"GetKp"; break;
+ 2017               	.L293
+ 2018               	.L167:
+ 2020 0440 30E0      	.LM121:
+ 2021 0442 00C0      		ldi r18,lo8(.LC122)
+ 2022               		ldi r19,hi8(.LC122)
+ 232:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetKi) 					: return (uint8*)"GetKi"; break;
+ 2023               	.L293
+ 2024               	.L168:
+ 2026 0446 30E0      	.LM122:
+ 2027 0448 00C0      		ldi r18,lo8(.LC123)
+ 2028               		ldi r19,hi8(.LC123)
+ 233:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetKd) 					: return (uint8*)"GetKd"; break;
+ 2029               	.L293
+ 2030               	.L169:
+ 2032 044c 30E0      	.LM123:
+ 2033 044e 00C0      		ldi r18,lo8(.LC124)
+ 2034               		ldi r19,hi8(.LC124)
+ 234:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetKvff) 				: return (uint8*)"GetKvff"; break;
+ 2035               	.L293
+ 2036               	.L170:
+ 2038 0452 30E0      	.LM124:
+ 2039 0454 00C0      		ldi r18,lo8(.LC125)
+ 2040               		ldi r19,hi8(.LC125)
+ 235:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetInterruptMask)		: return (uint8*)"GetInterruptMask"	; break;
+ 2041               	.L293
+ 2042               	.L171:
+ 2044 0458 30E0      	.LM125:
+ 2045 045a 00C0      		ldi r18,lo8(.LC126)
+ 2046               		ldi r19,hi8(.LC126)
+ 236:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetJerk) 				: return (uint8*)"GetJerk"; break;
+ 2047               	.L293
+ 2048               	.L172:
+ 2050 045e 30E0      	.LM126:
+ 2051 0460 00C0      		ldi r18,lo8(.LC127)
+ 2052               		ldi r19,hi8(.LC127)
+ 237:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetGearRatio)			: return (uint8*)"GetGearRatio"	; break;
+ 2053               	.L293
+ 2054               	.L173:
+ 2056 0464 30E0      	.LM127:
+ 2057 0466 00C0      		ldi r18,lo8(.LC128)
+ 2058               		ldi r19,hi8(.LC128)
+ 238:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPMultiUpdate) 			: return (uint8*)"MultiUpdate"; break;
+ 2059               	.L293
+ 2060               	.L174:
+ 2062 046a 30E0      	.LM128:
+ 2063 046c 00C0      		ldi r18,lo8(.LC129)
+ 2064               		ldi r19,hi8(.LC129)
+ 239:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetSampleTime) 			: return (uint8*)"GetSampleTime"; break;
+ 2065               	.L293
+ 2066               	.L175:
+ 2068 0470 30E0      	.LM129:
+ 2069 0472 00C0      		ldi r18,lo8(.LC130)
+ 2070               		ldi r19,hi8(.LC130)
+ 240:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetMotorCommand) 		: return (uint8*)"GetMotorCommand"; break;
+ 2071               	.L293
+ 2072               	.L176:
+ 2074 0476 30E0      	.LM130:
+ 2075 0478 00C0      		ldi r18,lo8(.LC131)
+ 2076               		ldi r19,hi8(.LC131)
+ 241:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPSetStartVelocity) 		: return (uint8*)"SetStartVelocity"; break;
+ 2077               	.L293
+ 2078               	.L177:
+ 2080 047c 30E0      	.LM131:
+ 2081 047e 00C0      		ldi r18,lo8(.LC132)
+ 2082               		ldi r19,hi8(.LC132)
+ 242:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetStartVelocity) 		: return (uint8*)"GetStartVelocity"; break;
+ 2083               	.L293
+ 2084               	.L178:
+ 2086 0482 30E0      	.LM132:
+ 2087 0484 00C0      		ldi r18,lo8(.LC133)
+ 2088               		ldi r19,hi8(.LC133)
+ 243:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetOutputMode) 			: return (uint8*)"GetOutputMode"; break;
+ 2089               	.L293
+ 2090               	.L179:
+ 2092 0488 30E0      	.LM133:
+ 2093 048a 00C0      		ldi r18,lo8(.LC134)
+ 2094               		ldi r19,hi8(.LC134)
+ 244:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPSetPhaseInitializeTime)	: return (uint8*)"SetPhaseInitializeTime"; break;
+ 2095               	.L293
+ 2096               	.L180:
+ 2098 048e 30E0      	.LM134:
+ 2099 0490 00C0      		ldi r18,lo8(.LC135)
+ 2100               		ldi r19,hi8(.LC135)
+ 245:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPSetPhaseCounts) 			: return (uint8*)"SetPhaseCounts"; break;
+ 2101               	.L293
+ 2102               	.L181:
+ 2104 0494 30E0      	.LM135:
+ 2105 0496 00C0      		ldi r18,lo8(.LC136)
+ 2106               		ldi r19,hi8(.LC136)
+ 246:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPSetPhaseOffset) 			: return (uint8*)"SetPhaseOffset"; break;
+ 2107               	.L293
+ 2108               	.L182:
+ 2110 049a 30E0      	.LM136:
+ 2111 049c 00C0      		ldi r18,lo8(.LC137)
+ 2112               		ldi r19,hi8(.LC137)
+ 247:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPSetMotorCommand) 		: return (uint8*)"SetMotorCommand"; break;
+ 2113               	.L293
+ 2114               	.L183:
+ 2116 04a0 30E0      	.LM137:
+ 2117 04a2 00C0      		ldi r18,lo8(.LC138)
+ 2118               		ldi r19,hi8(.LC138)
+ 248:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPInitializePhase) 		: return (uint8*)"InitializePhase"; break;
+ 2119               	.L293
+ 2120               	.L184:
+ 2122 04a6 30E0      	.LM138:
+ 2123 04a8 00C0      		ldi r18,lo8(.LC139)
+ 2124               		ldi r19,hi8(.LC139)
+ 249:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetPhaseOffset) 			: return (uint8*)"GetPhaseOffset"; break;
+ 2125               	.L293
+ 2126               	.L185:
+ 2128 04ac 30E0      	.LM139:
+ 2129 04ae 00C0      		ldi r18,lo8(.LC140)
+ 2130               		ldi r19,hi8(.LC140)
+ 250:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetPhaseInitializeTime)	: return (uint8*)"GetPhaseInitializeTime"; break;
+ 2131               	.L293
+ 2132               	.L186:
+ 2134 04b2 30E0      	.LM140:
+ 2135 04b4 00C0      		ldi r18,lo8(.LC141)
+ 2136               		ldi r19,hi8(.LC141)
+ 251:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetPhaseCounts) 			: return (uint8*)"GetPhaseCounts"; break;
+ 2137               	.L293
+ 2138               	.L187:
+ 2140 04b8 30E0      	.LM141:
+ 2141 04ba 00C0      		ldi r18,lo8(.LC142)
+ 2142               		ldi r19,hi8(.LC142)
+ 252:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPSetLimitSwitchMode) 		: return (uint8*)"SetLimitSwitchMode"; break;
+ 2143               	.L293
+ 2144               	.L188:
+ 2146 04be 30E0      	.LM142:
+ 2147 04c0 00C0      		ldi r18,lo8(.LC143)
+ 2148               		ldi r19,hi8(.LC143)
+ 253:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetLimitSwitchMode) 		: return (uint8*)"GetLimitSwitchMode"; break;
+ 2149               	.L293
+ 2150               	.L189:
+ 2152 04c4 30E0      	.LM143:
+ 2153 04c6 00C0      		ldi r18,lo8(.LC144)
+ 2154               		ldi r19,hi8(.LC144)
+ 254:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPWriteIO) 				: return (uint8*)"WriteIO"; break;
+ 2155               	.L293
+ 2156               	.L190:
+ 2158 04ca 30E0      	.LM144:
+ 2159 04cc 00C0      		ldi r18,lo8(.LC145)
+ 2160               		ldi r19,hi8(.LC145)
+ 255:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPReadIO) 					: return (uint8*)"ReadIO"; break;
+ 2161               	.L293
+ 2162               	.L191:
+ 2164 04d0 30E0      	.LM145:
+ 2165 04d2 00C0      		ldi r18,lo8(.LC146)
+ 2166               		ldi r19,hi8(.LC146)
+ 256:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPSetPhaseAngle) 			: return (uint8*)"SetPhaseAngle"; break;
+ 2167               	.L293
+ 2168               	.L192:
+ 2170 04d6 30E0      	.LM146:
+ 2171 04d8 00C0      		ldi r18,lo8(.LC147)
+ 2172               		ldi r19,hi8(.LC147)
+ 257:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPSetNumberPhases) 		: return (uint8*)"SetNumberPhases"; break;
+ 2173               	.L293
+ 2174               	.L193:
+ 2176 04dc 30E0      	.LM147:
+ 2177 04de 00C0      		ldi r18,lo8(.LC148)
+ 2178               		ldi r19,hi8(.LC148)
+ 258:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetNumberPhases) 		: return (uint8*)"GetNumberPhases"; break;
+ 2179               	.L293
+ 2180               	.L194:
+ 2182 04e2 30E0      	.LM148:
+ 2183 04e4 00C0      		ldi r18,lo8(.LC149)
+ 2184               		ldi r19,hi8(.LC149)
+ 259:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPSetAxisMode) 			: return (uint8*)"SetAxisMode"	; break;
+ 2185               	.L293
+ 2186               	.L195:
+ 2188 04e8 30E0      	.LM149:
+ 2189 04ea 00C0      		ldi r18,lo8(.LC150)
+ 2190               		ldi r19,hi8(.LC150)
+ 260:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetAxisMode) 			: return (uint8*)"GetAxisMode"; break;
+ 2191               	.L293
+ 2192               	.L196:
+ 2194 04ee 30E0      	.LM150:
+ 2195 04f0 00C0      		ldi r18,lo8(.LC151)
+ 2196               		ldi r19,hi8(.LC151)
+ 261:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPSetDiagnosticPortMode)	: return (uint8*)"SetDiagnosticPortMode"; break;
+ 2197               	.L293
+ 2198               	.L197:
+ 2200 04f4 30E0      	.LM151:
+ 2201 04f6 00C0      		ldi r18,lo8(.LC152)
+ 2202               		ldi r19,hi8(.LC152)
+ 262:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetDiagnosticPortMode)	: return (uint8*)"GetDiagnosticPortMode"; break;
+ 2203               	.L293
+ 2204               	.L198:
+ 2206 04fa 30E0      	.LM152:
+ 2207 04fc 00C0      		ldi r18,lo8(.LC153)
+ 2208               		ldi r19,hi8(.LC153)
+ 263:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPSetSerialPortMode) 		: return (uint8*)"SetSerialPortMode"; break;
+ 2209               	.L293
+ 2210               	.L199:
+ 2212 0500 30E0      	.LM153:
+ 2213 0502 00C0      		ldi r18,lo8(.LC154)
+ 2214               		ldi r19,hi8(.LC154)
+ 264:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetSerialPortMode)		: return (uint8*)"GetSerialPortMode"; break;
+ 2215               	.L293
+ 2216               	.L200:
+ 2218 0506 30E0      	.LM154:
+ 2219 0508 00C0      		ldi r18,lo8(.LC155)
+ 2220               		ldi r19,hi8(.LC155)
+ 265:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPSetEncoderModulus) 		: return (uint8*)"SetEncoderModulus"; break;
+ 2221               	.L293
+ 2222               	.L201:
+ 2224 050c 30E0      	.LM155:
+ 2225 050e 00C0      		ldi r18,lo8(.LC156)
+ 2226               		ldi r19,hi8(.LC156)
+ 266:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetEncoderModulus) 		: return (uint8*)"GetEncoderModulus"; break;
+ 2227               	.L293
+ 2228               	.L202:
+ 2230 0512 30E0      	.LM156:
+ 2231 0514 00C0      		ldi r18,lo8(.LC157)
+ 2232               		ldi r19,hi8(.LC157)
+ 267:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetVersion) 				: return (uint8*)"GetVersion"; break;
+ 2233               	.L293
+ 2234               	.L203:
+ 2236 0518 30E0      	.LM157:
+ 2237 051a 00C0      		ldi r18,lo8(.LC158)
+ 2238               		ldi r19,hi8(.LC158)
+ 268:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPSetAcceleration)			: return (uint8*)"SetAcceleration"; break;
+ 2239               	.L293
+ 2240               	.L204:
+ 2242 051e 30E0      	.LM158:
+ 2243 0520 00C0      		ldi r18,lo8(.LC159)
+ 2244               		ldi r19,hi8(.LC159)
+ 269:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPSetDeceleration) 		: return (uint8*)"SetDeceleration"; break;
+ 2245               	.L293
+ 2246               	.L205:
+ 2248 0524 30E0      	.LM159:
+ 2249 0526 00C0      		ldi r18,lo8(.LC160)
+ 2250               		ldi r19,hi8(.LC160)
+ 270:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetDeceleration) 		: return (uint8*)"GetDeceleration"; break;
+ 2251               	.L293
+ 2252               	.L206:
+ 2254 052a 30E0      	.LM160:
+ 2255 052c 00C0      		ldi r18,lo8(.LC161)
+ 2256               		ldi r19,hi8(.LC161)
+ 271:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPSetKaff) 				: return (uint8*)"SetKaff"; break;
+ 2257               	.L293
+ 2258               	.L207:
+ 2260 0530 30E0      	.LM161:
+ 2261 0532 00C0      		ldi r18,lo8(.LC162)
+ 2262               		ldi r19,hi8(.LC162)
+ 272:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetKaff) 				: return (uint8*)"GetKaff"; break;
+ 2263               	.L293
+ 2264               	.L208:
+ 2266 0536 30E0      	.LM162:
+ 2267 0538 00C0      		ldi r18,lo8(.LC163)
+ 2268               		ldi r19,hi8(.LC163)
+ 273:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPSetIntegrationLimit)		: return (uint8*)"SetIntegrationLimit"; break;
+ 2269               	.L293
+ 2270               	.L209:
+ 2272 053c 30E0      	.LM163:
+ 2273 053e 00C0      		ldi r18,lo8(.LC164)
+ 2274               		ldi r19,hi8(.LC164)
+ 274:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetIntegrationLimit) 	: return (uint8*)"GetIntegrationLimit"; break;
+ 2275               	.L293
+ 2276               	.L210:
+ 2278 0542 30E0      	.LM164:
+ 2279 0544 00C0      		ldi r18,lo8(.LC165)
+ 2280               		ldi r19,hi8(.LC165)
+ 275:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPSetPositionErrorLimit) 	: return (uint8*)"SetPositionErrorLimit"; break;
+ 2281               	.L293
+ 2282               	.L211:
+ 2284 0548 30E0      	.LM165:
+ 2285 054a 00C0      		ldi r18,lo8(.LC166)
+ 2286               		ldi r19,hi8(.LC166)
+ 276:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetPositionErrorLimit)	: return (uint8*)"GetPositionErrorLimit"; break;
+ 2287               	.L293
+ 2288               	.L212:
+ 2290 054e 30E0      	.LM166:
+ 2291 0550 00C0      		ldi r18,lo8(.LC167)
+ 2292               		ldi r19,hi8(.LC167)
+ 277:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetPositionError) 		: return (uint8*)"GetPositionError"	; break;
+ 2293               	.L293
+ 2294               	.L213:
+ 2296 0554 30E0      	.LM167:
+ 2297 0556 00C0      		ldi r18,lo8(.LC168)
+ 2298               		ldi r19,hi8(.LC168)
+ 278:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetIntegral) 			: return (uint8*)"GetIntegral"; break;
+ 2299               	.L293
+ 2300               	.L214:
+ 2302 055a 30E0      	.LM168:
+ 2303 055c 00C0      		ldi r18,lo8(.LC169)
+ 2304               		ldi r19,hi8(.LC169)
+ 279:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetDerivative) 			: return (uint8*)"GetDerivative"; break;
+ 2305               	.L293
+ 2306               	.L215:
+ 2308 0560 30E0      	.LM169:
+ 2309 0562 00C0      		ldi r18,lo8(.LC170)
+ 2310               		ldi r19,hi8(.LC170)
+ 280:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPSetDerivativeTime) 		: return (uint8*)"SetDerivativeTime"; break;
+ 2311               	.L293
+ 2312               	.L216:
+ 2314 0566 30E0      	.LM170:
+ 2315 0568 00C0      		ldi r18,lo8(.LC171)
+ 2316               		ldi r19,hi8(.LC171)
+ 281:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetDerivativeTime) 		: return (uint8*)"GetDerivativeTime"; break;
+ 2317               	.L293
+ 2318               	.L217:
+ 2320 056c 30E0      	.LM171:
+ 2321 056e 00C0      		ldi r18,lo8(.LC172)
+ 2322               		ldi r19,hi8(.LC172)
+ 282:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPSetKout) 				: return (uint8*)"SetKout"; break;
+ 2323               	.L293
+ 2324               	.L218:
+ 2326 0572 30E0      	.LM172:
+ 2327 0574 00C0      		ldi r18,lo8(.LC173)
+ 2328               		ldi r19,hi8(.LC173)
+ 283:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetKout) 				: return (uint8*)"GetKout"; break;
+ 2329               	.L293
+ 2330               	.L219:
+ 2332 0578 30E0      	.LM173:
+ 2333 057a 00C0      		ldi r18,lo8(.LC174)
+ 2334               		ldi r19,hi8(.LC174)
+ 284:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPSetProfileMode)			: return (uint8*)"SetProfileMode"; break;
+ 2335               	.L293
+ 2336               	.L220:
+ 2338 057e 30E0      	.LM174:
+ 2339 0580 00C0      		ldi r18,lo8(.LC175)
+ 2340               		ldi r19,hi8(.LC175)
+ 285:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetProfileMode) 			: return (uint8*)"GetProfileMode"; break;
+ 2341               	.L293
+ 2342               	.L221:
+ 2344 0584 30E0      	.LM175:
+ 2345 0586 00C0      		ldi r18,lo8(.LC176)
+ 2346               		ldi r19,hi8(.LC176)
+ 286:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPSetSignalSense) 			: return (uint8*)"SetSignalSense"; break;
+ 2347               	.L293
+ 2348               	.L222:
+ 2350 058a 30E0      	.LM176:
+ 2351 058c 00C0      		ldi r18,lo8(.LC177)
+ 2352               		ldi r19,hi8(.LC177)
+ 287:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetSignalSense) 			: return (uint8*)"GetSignalSense"; break;
+ 2353               	.L293
+ 2354               	.L223:
+ 2356 0590 30E0      	.LM177:
+ 2357 0592 00C0      		ldi r18,lo8(.LC178)
+ 2358               		ldi r19,hi8(.LC178)
+ 288:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetSignalStatus) 		: return (uint8*)"GetSignalStatus"; break;
+ 2359               	.L293
+ 2360               	.L224:
+ 2362 0596 30E0      	.LM178:
+ 2363 0598 00C0      		ldi r18,lo8(.LC179)
+ 2364               		ldi r19,hi8(.LC179)
+ 289:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetHostIOError) 			: return (uint8*)"GetHostIOError"; break;
+ 2365               	.L293
+ 2366               	.L225:
+ 2368 059c 30E0      	.LM179:
+ 2369 059e 00C0      		ldi r18,lo8(.LC180)
+ 2370               		ldi r19,hi8(.LC180)
+ 290:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetActivityStatus) 		: return (uint8*)"GetActivityStatus"; break;
+ 2371               	.L293
+ 2372               	.L226:
+ 2374 05a2 30E0      	.LM180:
+ 2375 05a4 00C0      		ldi r18,lo8(.LC181)
+ 2376               		ldi r19,hi8(.LC181)
+ 291:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetCommandedAcceleration): return (uint8*)"GetCommandedAcceleration"; break;
+ 2377               	.L293
+ 2378               	.L227:
+ 2380 05a8 30E0      	.LM181:
+ 2381 05aa 00C0      		ldi r18,lo8(.LC182)
+ 2382               		ldi r19,hi8(.LC182)
+ 292:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPSetTrackingWindow) 		: return (uint8*)"SetTrackingWindow"; break;
+ 2383               	.L293
+ 2384               	.L228:
+ 2386 05ae 30E0      	.LM182:
+ 2387 05b0 00C0      		ldi r18,lo8(.LC183)
+ 2388               		ldi r19,hi8(.LC183)
+ 293:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetTrackingWindow) 		: return (uint8*)"GetTrackingWindow"; break;
+ 2389               	.L293
+ 2390               	.L229:
+ 2392 05b4 30E0      	.LM183:
+ 2393 05b6 00C0      		ldi r18,lo8(.LC184)
+ 2394               		ldi r19,hi8(.LC184)
+ 294:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPSetSettleTime) 			: return (uint8*)"SetSettleTime"; break;
+ 2395               	.L293
+ 2396               	.L230:
+ 2398 05ba 30E0      	.LM184:
+ 2399 05bc 00C0      		ldi r18,lo8(.LC185)
+ 2400               		ldi r19,hi8(.LC185)
+ 295:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetSettleTime) 			: return (uint8*)"GetSettleTime"; break;
+ 2401               	.L293
+ 2402               	.L231:
+ 2404 05c0 30E0      	.LM185:
+ 2405 05c2 00C0      		ldi r18,lo8(.LC186)
+ 2406               		ldi r19,hi8(.LC186)
+ 296:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPClearInterrupt) 			: return (uint8*)"ClearInterrupt"; break;
+ 2407               	.L293
+ 2408               	.L232:
+ 2410 05c6 30E0      	.LM186:
+ 2411 05c8 00C0      		ldi r18,lo8(.LC187)
+ 2412               		ldi r19,hi8(.LC187)
+ 297:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetActualVelocity) 		: return (uint8*)"GetActualVelocity"; break;
+ 2413               	.L293
+ 2414               	.L233:
+ 2416 05cc 30E0      	.LM187:
+ 2417 05ce 00C0      		ldi r18,lo8(.LC188)
+ 2418               		ldi r19,hi8(.LC188)
+ 298:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPSetGearMaster) 			: return (uint8*)"SetGearMaster"; break;
+ 2419               	.L293
+ 2420               	.L234:
+ 2422 05d2 30E0      	.LM188:
+ 2423 05d4 00C0      		ldi r18,lo8(.LC189)
+ 2424               		ldi r19,hi8(.LC189)
+ 299:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetGearMaster) 			: return (uint8*)"GetGearMaster"; break;
+ 2425               	.L293
+ 2426               	.L235:
+ 2428 05d8 30E0      	.LM189:
+ 2429 05da 00C0      		ldi r18,lo8(.LC190)
+ 2430               		ldi r19,hi8(.LC190)
+ 300:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPSetTraceMode) 			: return (uint8*)"SetTraceMode"	; break;
+ 2431               	.L293
+ 2432               	.L236:
+ 2434 05de 30E0      	.LM190:
+ 2435 05e0 00C0      		ldi r18,lo8(.LC191)
+ 2436               		ldi r19,hi8(.LC191)
+ 301:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetTraceMode) 			: return (uint8*)"GetTraceMode"	; break;
+ 2437               	.L293
+ 2438               	.L237:
+ 2440 05e4 30E0      	.LM191:
+ 2441 05e6 00C0      		ldi r18,lo8(.LC192)
+ 2442               		ldi r19,hi8(.LC192)
+ 302:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPSetTraceStart) 			: return (uint8*)"SetTraceStart"; break;
+ 2443               	.L293
+ 2444               	.L238:
+ 2446 05ea 30E0      	.LM192:
+ 2447 05ec 00C0      		ldi r18,lo8(.LC193)
+ 2448               		ldi r19,hi8(.LC193)
+ 303:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetTraceStart) 			: return (uint8*)"GetTraceStart"; break;
+ 2449               	.L293
+ 2450               	.L239:
+ 2452 05f0 30E0      	.LM193:
+ 2453 05f2 00C0      		ldi r18,lo8(.LC194)
+ 2454               		ldi r19,hi8(.LC194)
+ 304:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPSetTraceStop) 			: return (uint8*)"SetTraceStop"	; break;
+ 2455               	.L293
+ 2456               	.L240:
+ 2458 05f6 30E0      	.LM194:
+ 2459 05f8 00C0      		ldi r18,lo8(.LC195)
+ 2460               		ldi r19,hi8(.LC195)
+ 305:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetTraceStop) 			: return (uint8*)"GetTraceStop"	; break;
+ 2461               	.L293
+ 2462               	.L241:
+ 2464 05fc 30E0      	.LM195:
+ 2465 05fe 00C0      		ldi r18,lo8(.LC196)
+ 2466               		ldi r19,hi8(.LC196)
+ 306:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPSetTraceVariable) 		: return (uint8*)"SetTraceVariable"; break;
+ 2467               	.L293
+ 2468               	.L242:
+ 2470 0602 30E0      	.LM196:
+ 2471 0604 00C0      		ldi r18,lo8(.LC197)
+ 2472               		ldi r19,hi8(.LC197)
+ 307:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetTraceVariable) 		: return (uint8*)"GetTraceVariable"; break;
+ 2473               	.L293
+ 2474               	.L243:
+ 2476 0608 30E0      	.LM197:
+ 2477 060a 00C0      		ldi r18,lo8(.LC198)
+ 2478               		ldi r19,hi8(.LC198)
+ 308:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPSetTracePeriod) 			: return (uint8*)"SetTracePeriod"; break;
+ 2479               	.L293
+ 2480               	.L244:
+ 2482 060e 30E0      	.LM198:
+ 2483 0610 00C0      		ldi r18,lo8(.LC199)
+ 2484               		ldi r19,hi8(.LC199)
+ 309:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetTracePeriod) 			: return (uint8*)"GetTracePeriod"; break;
+ 2485               	.L293
+ 2486               	.L245:
+ 2488 0614 30E0      	.LM199:
+ 2489 0616 00C0      		ldi r18,lo8(.LC200)
+ 2490               		ldi r19,hi8(.LC200)
+ 310:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetTraceStatus) 			: return (uint8*)"GetTraceStatus"; break;
+ 2491               	.L293
+ 2492               	.L246:
+ 2494 061a 30E0      	.LM200:
+ 2495 061c 00C0      		ldi r18,lo8(.LC201)
+ 2496               		ldi r19,hi8(.LC201)
+ 311:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetTraceCount) 			: return (uint8*)"GetTraceCount"; break;
+ 2497               	.L293
+ 2498               	.L247:
+ 2500 0620 30E0      	.LM201:
+ 2501 0622 00C0      		ldi r18,lo8(.LC202)
+ 2502               		ldi r19,hi8(.LC202)
+ 312:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPSetSettleWindow) 		: return (uint8*)"SetSettleWindow"; break;
+ 2503               	.L293
+ 2504               	.L248:
+ 2506 0626 30E0      	.LM202:
+ 2507 0628 00C0      		ldi r18,lo8(.LC203)
+ 2508               		ldi r19,hi8(.LC203)
+ 313:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetSettleWindow) 		: return (uint8*)"GetSettleWindow"; break;
+ 2509               	.L293
+ 2510               	.L249:
+ 2512 062c 30E0      	.LM203:
+ 2513 062e 00C0      		ldi r18,lo8(.LC204)
+ 2514               		ldi r19,hi8(.LC204)
+ 314:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPSetActualPositionUnits)	: return (uint8*)"SetActualPositionUnits"; break;
+ 2515               	.L293
+ 2516               	.L250:
+ 2518 0632 30E0      	.LM204:
+ 2519 0634 00C0      		ldi r18,lo8(.LC205)
+ 2520               		ldi r19,hi8(.LC205)
+ 315:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetActualPositionUnits)	: return (uint8*)"GetActualPositionUnits"; break;
+ 2521               	.L293
+ 2522               	.L251:
+ 2524 0638 30E0      	.LM205:
+ 2525 063a 00C0      		ldi r18,lo8(.LC206)
+ 2526               		ldi r19,hi8(.LC206)
+ 316:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPSetBufferStart) 			: return (uint8*)"SetBufferStart"; break;
+ 2527               	.L293
+ 2528               	.L252:
+ 2530 063e 30E0      	.LM206:
+ 2531 0640 00C0      		ldi r18,lo8(.LC207)
+ 2532               		ldi r19,hi8(.LC207)
+ 317:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetBufferStart) 			: return (uint8*)"GetBufferStart"; break;
+ 2533               	.L293
+ 2534               	.L253:
+ 2536 0644 30E0      	.LM207:
+ 2537 0646 00C0      		ldi r18,lo8(.LC208)
+ 2538               		ldi r19,hi8(.LC208)
+ 318:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPSetBufferLength) 		: return (uint8*)"SetBufferLength"; break;
+ 2539               	.L293
+ 2540               	.L254:
+ 2542 064a 30E0      	.LM208:
+ 2543 064c 00C0      		ldi r18,lo8(.LC209)
+ 2544               		ldi r19,hi8(.LC209)
+ 319:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetBufferLength) 		: return (uint8*)"GetBufferLength"; break;
+ 2545               	.L293
+ 2546               	.L255:
+ 2548 0650 30E0      	.LM209:
+ 2549 0652 00C0      		ldi r18,lo8(.LC210)
+ 2550               		ldi r19,hi8(.LC210)
+ 320:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPSetBufferWriteIndex) 	: return (uint8*)"SetBufferWriteIndex"; break;
+ 2551               	.L293
+ 2552               	.L256:
+ 2554 0656 30E0      	.LM210:
+ 2555 0658 00C0      		ldi r18,lo8(.LC211)
+ 2556               		ldi r19,hi8(.LC211)
+ 321:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetBufferWriteIndex) 	: return (uint8*)"GetBufferWriteIndex"; break;
+ 2557               	.L293
+ 2558               	.L257:
+ 2560 065c 30E0      	.LM211:
+ 2561 065e 00C0      		ldi r18,lo8(.LC212)
+ 2562               		ldi r19,hi8(.LC212)
+ 322:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPSetBufferReadIndex) 		: return (uint8*)"SetBufferReadIndex"; break;
+ 2563               	.L293
+ 2564               	.L258:
+ 2566 0662 30E0      	.LM212:
+ 2567 0664 00C0      		ldi r18,lo8(.LC213)
+ 2568               		ldi r19,hi8(.LC213)
+ 323:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetBufferReadIndex) 		: return (uint8*)"GetBufferReadIndex"; break;
+ 2569               	.L293
+ 2570               	.L259:
+ 2572 0668 30E0      	.LM213:
+ 2573 066a 00C0      		ldi r18,lo8(.LC214)
+ 2574               		ldi r19,hi8(.LC214)
+ 324:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPWriteBuffer) 			: return (uint8*)"WriteBuffer"; break;
+ 2575               	.L293
+ 2576               	.L260:
+ 2578 066e 30E0      	.LM214:
+ 2579 0670 00C0      		ldi r18,lo8(.LC215)
+ 2580               		ldi r19,hi8(.LC215)
+ 325:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPReadBuffer) 				: return (uint8*)"ReadBuffer"; break;
+ 2581               	.L293
+ 2582               	.L261:
+ 2584 0674 30E0      	.LM215:
+ 2585 0676 00C0      		ldi r18,lo8(.LC216)
+ 2586               		ldi r19,hi8(.LC216)
+ 326:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPSetBufferFunction) 		: return (uint8*)"SetBufferFunction"; break;
+ 2587               	.L293
+ 2588               	.L262:
+ 2590 067a 30E0      	.LM216:
+ 2591 067c 00C0      		ldi r18,lo8(.LC217)
+ 2592               		ldi r19,hi8(.LC217)
+ 327:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetBufferFunction) 		: return (uint8*)"GetBufferFunction"; break;
+ 2593               	.L293
+ 2594               	.L263:
+ 2596 0680 30E0      	.LM217:
+ 2597 0682 00C0      		ldi r18,lo8(.LC218)
+ 2598               		ldi r19,hi8(.LC218)
+ 328:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetStepRange) 			: return (uint8*)"GetStepRange"	; break;
+ 2599               	.L293
+ 2600               	.L264:
+ 2602 0686 30E0      	.LM218:
+ 2603 0688 00C0      		ldi r18,lo8(.LC219)
+ 2604               		ldi r19,hi8(.LC219)
+ 329:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPSetStepRange) 			: return (uint8*)"SetStepRange"; break;
+ 2605               	.L293
+ 2606               	.L265:
+ 2608 068c 30E0      	.LM219:
+ 2609 068e 00C0      		ldi r18,lo8(.LC220)
+ 2610               		ldi r19,hi8(.LC220)
+ 330:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPSetStopMode) 			: return (uint8*)"SetStopMode"; break;
+ 2611               	.L293
+ 2612               	.L266:
+ 2614 0692 30E0      	.LM220:
+ 2615 0694 00C0      		ldi r18,lo8(.LC221)
+ 2616               		ldi r19,hi8(.LC221)
+ 331:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetStopMode) 			: return (uint8*)"GetStopMode"; break;
+ 2617               	.L293
+ 2618               	.L267:
+ 2620 0698 30E0      	.LM221:
+ 2621 069a 00C0      		ldi r18,lo8(.LC222)
+ 2622               		ldi r19,hi8(.LC222)
+ 332:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPSetAutoStopMode) 		: return (uint8*)"SetAutoStopMode"; break;
+ 2623               	.L293
+ 2624               	.L268:
+ 2626 069e 30E0      	.LM222:
+ 2627 06a0 00C0      		ldi r18,lo8(.LC223)
+ 2628               		ldi r19,hi8(.LC223)
+ 333:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetAutoStopMode) 		: return (uint8*)"GetAutoStopMode"; break;
+ 2629               	.L293
+ 2630               	.L269:
+ 2632 06a4 30E0      	.LM223:
+ 2633 06a6 00C0      		ldi r18,lo8(.LC224)
+ 2634               		ldi r19,hi8(.LC224)
+ 334:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPSetBreakpoint) 			: return (uint8*)"SetBreakpoint"; break;
+ 2635               	.L293
+ 2636               	.L270:
+ 2638 06aa 30E0      	.LM224:
+ 2639 06ac 00C0      		ldi r18,lo8(.LC225)
+ 2640               		ldi r19,hi8(.LC225)
+ 335:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetBreakpoint) 			: return (uint8*)"GetBreakpoint"; break;
+ 2641               	.L293
+ 2642               	.L271:
+ 2644 06b0 30E0      	.LM225:
+ 2645 06b2 00C0      		ldi r18,lo8(.LC226)
+ 2646               		ldi r19,hi8(.LC226)
+ 336:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPSetBreakpointValue) 		: return (uint8*)"SetBreakpointValue"; break;
+ 2647               	.L293
+ 2648               	.L272:
+ 2650 06b6 30E0      	.LM226:
+ 2651 06b8 00C0      		ldi r18,lo8(.LC227)
+ 2652               		ldi r19,hi8(.LC227)
+ 337:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetBreakpointValue) 		: return (uint8*)"GetBreakpointValue"; break;
+ 2653               	.L293
+ 2654               	.L273:
+ 2656 06bc 30E0      	.LM227:
+ 2657 06be 00C0      		ldi r18,lo8(.LC228)
+ 2658               		ldi r19,hi8(.LC228)
+ 338:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPSetCaptureSource) 		: return (uint8*)"SetCaptureSource"	; break;
+ 2659               	.L293
+ 2660               	.L274:
+ 2662 06c2 30E0      	.LM228:
+ 2663 06c4 00C0      		ldi r18,lo8(.LC229)
+ 2664               		ldi r19,hi8(.LC229)
+ 339:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetCaptureSource) 		: return (uint8*)"GetCaptureSource"	; break;
+ 2665               	.L293
+ 2666               	.L275:
+ 2668 06c8 30E0      	.LM229:
+ 2669 06ca 00C0      		ldi r18,lo8(.LC230)
+ 2670               		ldi r19,hi8(.LC230)
+ 340:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPSetEncoderSource) 		: return (uint8*)"SetEncoderSource"	; break;
+ 2671               	.L293
+ 2672               	.L276:
+ 2674 06ce 30E0      	.LM230:
+ 2675 06d0 00C0      		ldi r18,lo8(.LC231)
+ 2676               		ldi r19,hi8(.LC231)
+ 341:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetEncoderSource) 		: return (uint8*)"GetEncoderSource"	; break;
+ 2677               	.L293
+ 2678               	.L277:
+ 2680 06d4 30E0      	.LM231:
+ 2681 06d6 00C0      		ldi r18,lo8(.LC232)
+ 2682               		ldi r19,hi8(.LC232)
+ 342:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPSetMotorMode) 			: return (uint8*)"SetMotorMode"	; break;
+ 2683               	.L293
+ 2684               	.L278:
+ 2686 06da 30E0      	.LM232:
+ 2687 06dc 00C0      		ldi r18,lo8(.LC233)
+ 2688               		ldi r19,hi8(.LC233)
+ 343:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetMotorMode) 			: return (uint8*)"GetMotorMode"	; break;
+ 2689               	.L293
+ 2690               	.L279:
+ 2692 06e0 30E0      	.LM233:
+ 2693 06e2 00C0      		ldi r18,lo8(.LC234)
+ 2694               		ldi r19,hi8(.LC234)
+ 344:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPSetEncoderToStepRatio) 	: return (uint8*)"SetEncoderToStepRatio"; break;
+ 2695               	.L293
+ 2696               	.L280:
+ 2698 06e6 30E0      	.LM234:
+ 2699 06e8 00C0      		ldi r18,lo8(.LC235)
+ 2700               		ldi r19,hi8(.LC235)
+ 345:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetEncoderToStepRatio) 	: return (uint8*)"GetEncoderToStepRatio"; break;
+ 2701               	.L293
+ 2702               	.L281:
+ 2704 06ec 30E0      	.LM235:
+ 2705 06ee 00C0      		ldi r18,lo8(.LC236)
+ 2706               		ldi r19,hi8(.LC236)
+ 346:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPSetOutputMode) 			: return (uint8*)"SetOutputMode"; break;
+ 2707               	.L293
+ 2708               	.L282:
+ 2710 06f2 30E0      	.LM236:
+ 2711 06f4 00C0      		ldi r18,lo8(.LC237)
+ 2712               		ldi r19,hi8(.LC237)
+ 347:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetInterruptAxis) 		: return (uint8*)"GetInterruptAxis"	; break;
+ 2713               	.L293
+ 2714               	.L283:
+ 2716 06f8 30E0      	.LM237:
+ 2717 06fa 00C0      		ldi r18,lo8(.LC238)
+ 2718               		ldi r19,hi8(.LC238)
+ 348:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPSetCommutationMode) 		: return (uint8*)"SetCommutationMode"; break;
+ 2719               	.L293
+ 2720               	.L284:
+ 2722 06fe 30E0      	.LM238:
+ 2723 0700 00C0      		ldi r18,lo8(.LC239)
+ 2724               		ldi r19,hi8(.LC239)
+ 349:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetCommutationMode) 		: return (uint8*)"GetCommutationMode"; break;
+ 2725               	.L293
+ 2726               	.L285:
+ 2728 0704 30E0      	.LM239:
+ 2729 0706 00C0      		ldi r18,lo8(.LC240)
+ 2730               		ldi r19,hi8(.LC240)
+ 350:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPSetPhaseInitializeMode) 	: return (uint8*)"SetPhaseInitializeMode"; break;
+ 2731               	.L293
+ 2732               	.L286:
+ 2734 070a 30E0      	.LM240:
+ 2735 070c 00C0      		ldi r18,lo8(.LC241)
+ 2736               		ldi r19,hi8(.LC241)
+ 351:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetPhaseInitializeMode) 	: return (uint8*)"GetPhaseInitializeMode"; break;
+ 2737               	.L293
+ 2738               	.L287:
+ 2740 0710 30E0      	.LM241:
+ 2741 0712 00C0      		ldi r18,lo8(.LC242)
+ 2742               		ldi r19,hi8(.LC242)
+ 352:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPSetPhasePrescale) 		: return (uint8*)"SetPhasePrescale"; break;
+ 2743               	.L293
+ 2744               	.L288:
+ 2746 0716 30E0      	.LM242:
+ 2747 0718 00C0      		ldi r18,lo8(.LC243)
+ 2748               		ldi r19,hi8(.LC243)
+ 353:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetPhasePrescale) 		: return (uint8*)"GetPhasePrescale"; break;
+ 2749               	.L293
+ 2750               	.L289:
+ 2752 071c 30E0      	.LM243:
+ 2753 071e 00C0      		ldi r18,lo8(.LC244)
+ 2754               		ldi r19,hi8(.LC244)
+ 354:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPSetPhaseCorrectionMode) 	: return (uint8*)"SetPhaseCorrectionMode"; break;
+ 2755               	.L293
+ 2756               	.L290:
+ 2758 0722 30E0      	.LM244:
+ 2759 0724 00C0      		ldi r18,lo8(.LC245)
+ 2760               		ldi r19,hi8(.LC245)
+ 355:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetPhaseCorrectionMode) 	: return (uint8*)"GetPhaseCorrectionMode"; break;
+ 2761               	.L293
+ 2762               	.L291:
+ 2764 0728 30E0      	.LM245:
+ 2765 072a 00C0      		ldi r18,lo8(.LC246)
+ 2766               		ldi r19,hi8(.LC246)
+ 356:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetPhaseCommand) 		: return (uint8*)"GetPhaseCommand"; break;
+ 2767               	.L293
+ 2768               	.L127:
+ 2770 072e 30E0      	.LM246:
+ 2771 0730 00C0      		ldi r18,lo8(.LC247)
+ 2772               		ldi r19,hi8(.LC247)
+ 357:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPSetMotionCompleteMode) 	: return (uint8*)"SetMotionCompleteMode"; break;
+ 2773               	
+ 2775 0732 20E0      	.LM247:
+ 2776 0734 30E0      		movw r24,r18
+ 2777 0736 00C0      	/* epilogue start */
+ 2778               		ret
+ 358:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetMotionCompleteMode) 	: return (uint8*)"GetMotionCompleteMode"; break;
+ 2779               	e	PMDGetOpcodeText, .-PMDGetOpcodeText
+ 2780               	.Lscope7:
+ 2781 0738 20E0      		.data
+ 2782 073a 30E0      	.LC248:
+ 2783 073c 00C0      		.string	"Chipset Reset "
+ 2784               	.LC249:
+ 359:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPSetAxisOutSource) 		: return (uint8*)"SetAxisOutSource"	; break;
+ 2785               	ng	"NO Error"
+ 2786               	.LC250:
+ 2787 073e 20E0      		.string	"Invalid Instruction"
+ 2788 0740 30E0      	.LC251:
+ 2789 0742 00C0      		.string	"Invalid Axis"
+ 2790               	.LC252:
+ 360:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetAxisOutSource) 		: return (uint8*)"GetAxisOutSource"	; break;
+ 2791               	ng	"Invalid Data Parameter"
+ 2792               	.LC253:
+ 2793 0744 20E0      		.string	"Trace Currently Running"
+ 2794 0746 30E0      	.LC254:
+ 2795 0748 00C0      		.string	"Flash Error"
+ 2796               	.LC255:
+ 361:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPReadAnalog) 				: return (uint8*)"ReadAnalog"; break;
+ 2797               	ng	"Block Out of Bounds"
+ 2798               	.LC256:
+ 2799 074a 20E0      		.string	"Zero Length Trace Buffer"
+ 2800 074c 30E0      	.LC257:
+ 2801 074e 00C0      		.string	"Invalid Checksum"
+ 2802               	.LC258:
+ 362:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPAdjustActualPosition)	: return (uint8*)"AdjustActualPosition"; break;
+ 2803               	ng	"Invalid Instruction For Diagnostic Port"
+ 2804               	.LC259:
+ 2805 0750 20E0      		.string	"Invalid Negative Value for Profile Mode"
+ 2806 0752 30E0      	.LC260:
+ 2807 0754 00C0      		.string	"Invalid Parameter Change for Profile Mode"
+ 2808               	.LC261:
+ 363:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case (PMDOPGetChecksum) 			: return (uint8*)"GetChecksum"; break;
+ 2809               	ng	"Invalid Move with Limit Event Pending"
+ 2810               	.LC262:
+ 2811 0756 20E0      		.string	"Invalid Move into Limit"
+ 2812 0758 30E0      	.LC263:
+ 2813               		.string	"Invalid Clear Interrupt"
+ 364:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	
+ 365:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	default 							: return (uint8*)"Invalid opcode!"; break;
+ 366:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	}
+ 367:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** }
+ 2814               	4:
+ 2815               		.string	"Invalid Operation"
+ 2816 075a C901      	.LC265:
+ 2817               		.string	"Not Connected"
+ 2818 075c 0895      	.LC266:
+ 2819               		.string	"Chipset Not Responding"
+ 2820               	.LC267:
+ 2821               		.string	"Comm Port Read"
+ 2822               	.LC268:
+ 2823 0ea1 4368 6970 		.string	"Comm Port Write"
+ 2823      7365 7420 
+ 2823      5265 7365 
+ 2823      7420 00
+ 2824               	.LC269:
+ 2825 0eb0 4E4F 2045 		.string	"Invalid Serial Port"
+ 2825      7272 6F72 
+ 2825      00
+ 2826               	.LC270:
+ 2827 0eb9 496E 7661 		.string	"Invalid DK2000 IO Base"
+ 2827      6C69 6420 
+ 2827      496E 7374 
+ 2827      7275 6374 
+ 2827      696F 6E00 
+ 2828               	.LC271:
+ 2829 0ecd 496E 7661 		.string	"Invalid DK2000 IRQ"
+ 2829      6C69 6420 
+ 2829      4178 6973 
+ 2829      00
+ 2830               	.LC272:
+ 2831 0eda 496E 7661 		.string	"Invalid DK2000 IO Mode"
+ 2831      6C69 6420 
+ 2831      4461 7461 
+ 2831      2050 6172 
+ 2831      616D 6574 
+ 2832               	.LC273:
+ 2833 0ef1 5472 6163 		.string	"PMD Not Initialized"
+ 2833      6520 4375 
+ 2833      7272 656E 
+ 2833      746C 7920 
+ 2833      5275 6E6E 
+ 2834               	.LC274:
+ 2835 0f09 466C 6173 		.string	"Cannot Open Windows Driver"
+ 2835      6820 4572 
+ 2835      726F 7200 
+ 2836               	.LC275:
+ 2837 0f15 426C 6F63 		.string	"Windows Driver Error"
+ 2837      6B20 4F75 
+ 2837      7420 6F66 
+ 2837      2042 6F75 
+ 2837      6E64 7300 
+ 2838               	.LC276:
+ 2839 0f29 5A65 726F 		.string	"Communication Error"
+ 2839      204C 656E 
+ 2839      6774 6820 
+ 2839      5472 6163 
+ 2839      6520 4275 
+ 2840               	.LC277:
+ 2841 0f42 496E 7661 		.string	"Communication Timeout Error"
+ 2841      6C69 6420 
+ 2841      4368 6563 
+ 2841      6B73 756D 
+ 2841      00
+ 2842               	.LC278:
+ 2843 0f53 496E 7661 		.string	"Checksum Error"
+ 2843      6C69 6420 
+ 2843      496E 7374 
+ 2843      7275 6374 
+ 2843      696F 6E20 
+ 2844               	.LC279:
+ 2845 0f7b 496E 7661 		.string	"Command Error"
+ 2845      6C69 6420 
+ 2845      4E65 6761 
+ 2845      7469 7665 
+ 2845      2056 616C 
+ 2846               	.LC280:
+ 2847 0fa3 496E 7661 		.string	"Undefined error occurred"
+ 2847      6C69 6420 
+ 2847      5061 7261 
+ 2847      6D65 7465 
+ 2847      7220 4368 
+ 2848               		.text
+ 2851 0ff3 496E 7661 	.global	PMDGetErrorMessage
+ 2851      6C69 6420 
+ 2851      4D6F 7665 
+ 2851      2069 6E74 
+ 2851      6F20 4C69 
+ 2853 100b 496E 7661 	PMDGetErrorMessage:
+ 2853      6C69 6420 
+ 2853      436C 6561 
+ 2853      7220 496E 
+ 2853      7465 7272 
+ 2855 1023 496E 7661 	.LM248:
+ 2855      6C69 6420 
+ 2855      4F70 6572 
+ 2855      6174 696F 
+ 2855      6E00 
+ 2856               	.LFBB8:
+ 2857 1035 4E6F 7420 	/* prologue: function */
+ 2857      436F 6E6E 
+ 2857      6563 7465 
+ 2857      6400 
+ 2858               	/* frame size = 0 */
+ 2860               	.LM249:
+ 2861 105a 436F 6D6D 		cpi r24,15
+ 2861      2050 6F72 
+ 2861      7420 5265 
+ 2861      6164 00
+ 2862               		cpc r25,__zero_reg__
+ 2863 1069 436F 6D6D 		brne .+2
+ 2863      2050 6F72 
+ 2863      7420 5772 
+ 2863      6974 6500 
+ 2864               		rjmp .L312
+ 2865 1079 496E 7661 		cpi r24,16
+ 2865      6C69 6420 
+ 2865      5365 7269 
+ 2865      616C 2050 
+ 2865      6F72 7400 
+ 2866               		cpc r25,__zero_reg__
+ 2867 108d 496E 7661 		brsh .L329
+ 2867      6C69 6420 
+ 2867      444B 3230 
+ 2867      3030 2049 
+ 2867      4F20 4261 
+ 2868               		cpi r24,7
+ 2869 10a4 496E 7661 		cpc r25,__zero_reg__
+ 2869      6C69 6420 
+ 2869      444B 3230 
+ 2869      3030 2049 
+ 2869      5251 00
+ 2870               		brne .+2
+ 2871 10b7 496E 7661 		rjmp .L304
+ 2871      6C69 6420 
+ 2871      444B 3230 
+ 2871      3030 2049 
+ 2871      4F20 4D6F 
+ 2872               		cpi r24,8
+ 2873 10ce 504D 4420 		cpc r25,__zero_reg__
+ 2873      4E6F 7420 
+ 2873      496E 6974 
+ 2873      6961 6C69 
+ 2873      7A65 6400 
+ 2874               		brsh .L330
+ 2875 10e2 4361 6E6E 		cpi r24,3
+ 2875      6F74 204F 
+ 2875      7065 6E20 
+ 2875      5769 6E64 
+ 2875      6F77 7320 
+ 2876               		cpc r25,__zero_reg__
+ 2877 10fd 5769 6E64 		brne .+2
+ 2877      6F77 7320 
+ 2877      4472 6976 
+ 2877      6572 2045 
+ 2877      7272 6F72 
+ 2878               		rjmp .L300
+ 2879 1112 436F 6D6D 		cpi r24,4
+ 2879      756E 6963 
+ 2879      6174 696F 
+ 2879      6E20 4572 
+ 2879      726F 7200 
+ 2880               		cpc r25,__zero_reg__
+ 2881 1126 436F 6D6D 		brsh .L331
+ 2881      756E 6963 
+ 2881      6174 696F 
+ 2881      6E20 5469 
+ 2881      6D65 6F75 
+ 2882               		cpi r24,1
+ 2883 1142 4368 6563 		cpc r25,__zero_reg__
+ 2883      6B73 756D 
+ 2883      2045 7272 
+ 2883      6F72 00
+ 2884               		brne .+2
+ 2885 1151 436F 6D6D 		rjmp .L298
+ 2885      616E 6420 
+ 2885      4572 726F 
+ 2885      7200 
+ 2886               		sbiw r24,2
+ 2887 115f 556E 6465 		brlo .+2
+ 2887      6669 6E65 
+ 2887      6420 6572 
+ 2887      726F 7220 
+ 2887      6F63 6375 
+ 2888               		rjmp .L299
+ 2889               		rjmp .L344
+ 2890               	.L331:
+ 2891               		cpi r24,5
+ 2892               		cpc r25,__zero_reg__
+ 2893               		brne .+2
+ 368:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 
+ 369:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** /*****************************************************************************************/
+ 370:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** uint8 *PMDGetErrorMessage(PMDuint16 errorCode) 
+ 371:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** {
+ 2894               	c r25,__zero_reg__
+ 2895               		brne .+2
+ 2896               		rjmp .L308
+ 2897               		cpi r24,12
+ 2898               		cpc r25,__zero_reg__
+ 372:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 
+ 373:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c ****   switch(errorCode) {
+ 2899               	 .L332
+ 2900               		cpi r24,9
+ 2901 075e 8F30      		cpc r25,__zero_reg__
+ 2902 0760 9105      		brne .+2
+ 2903 0762 01F4      		rjmp .L306
+ 2904 0764 00C0      		sbiw r24,10
+ 2905 0766 8031      		brlo .+2
+ 2906 0768 9105      		rjmp .L307
+ 2907 076a 00F4      		rjmp .L346
+ 2908 076c 8730      	.L332:
+ 2909 076e 9105      		cpi r24,13
+ 2910 0770 01F4      		cpc r25,__zero_reg__
+ 2911 0772 00C0      		brne .+2
+ 2912 0774 8830      		rjmp .L310
+ 2913 0776 9105      		sbiw r24,14
+ 2914 0778 00F4      		brlo .+2
+ 2915 077a 8330      		rjmp .L311
+ 2916 077c 9105      		rjmp .L347
+ 2917 077e 01F4      	.L329:
+ 2918 0780 00C0      		ldi r18,hi8(32733)
+ 2919 0782 8430      		cpi r24,lo8(32733)
+ 2920 0784 9105      		cpc r25,r18
+ 2921 0786 00F4      		brne .+2
+ 2922 0788 8130      		rjmp .L320
+ 2923 078a 9105      		ldi r18,hi8(32734)
+ 2924 078c 01F4      		cpi r24,lo8(32734)
+ 2925 078e 00C0      		cpc r25,r18
+ 2926 0790 0297      		brsh .L333
+ 2927 0792 00F0      		ldi r18,hi8(32723)
+ 2928 0794 00C0      		cpi r24,lo8(32723)
+ 2929 0796 00C0      		cpc r25,r18
+ 2930               		brne .+2
+ 2931 0798 8530      		rjmp .L316
+ 2932 079a 9105      		ldi r18,hi8(32724)
+ 2933 079c 01F4      		cpi r24,lo8(32724)
+ 2934 079e 00C0      		cpc r25,r18
+ 2935 07a0 0697      		brsh .L334
+ 2936 07a2 00F0      		ldi r18,hi8(32721)
+ 2937 07a4 00C0      		cpi r24,lo8(32721)
+ 2938 07a6 00C0      		cpc r25,r18
+ 2939               		brne .+2
+ 2940 07a8 8B30      		rjmp .L314
+ 2941 07aa 9105      		ldi r18,hi8(32722)
+ 2942 07ac 01F4      		cpi r24,lo8(32722)
+ 2943 07ae 00C0      		cpc r25,r18
+ 2944 07b0 8C30      		brlo .+2
+ 2945 07b2 9105      		rjmp .L315
+ 2946 07b4 00F4      		subi r24,lo8(32720)
+ 2947 07b6 8930      		sbci r25,hi8(32720)
+ 2948 07b8 9105      		breq .+2
+ 2949 07ba 01F4      		rjmp .L296
+ 2950 07bc 00C0      		rjmp .L348
+ 2951 07be 0A97      	.L334:
+ 2952 07c0 00F0      		ldi r18,hi8(32731)
+ 2953 07c2 00C0      		cpi r24,lo8(32731)
+ 2954 07c4 00C0      		cpc r25,r18
+ 2955               		brne .+2
+ 2956 07c6 8D30      		rjmp .L318
+ 2957 07c8 9105      		ldi r18,hi8(32732)
+ 2958 07ca 01F4      		cpi r24,lo8(32732)
+ 2959 07cc 00C0      		cpc r25,r18
+ 2960 07ce 0E97      		brlo .+2
+ 2961 07d0 00F0      		rjmp .L319
+ 2962 07d2 00C0      		subi r24,lo8(32724)
+ 2963 07d4 00C0      		sbci r25,hi8(32724)
+ 2964               		breq .+2
+ 2965 07d6 2FE7      		rjmp .L296
+ 2966 07d8 8D3D      		rjmp .L349
+ 2967 07da 9207      	.L333:
+ 2968 07dc 01F4      		ldi r18,hi8(32737)
+ 2969 07de 00C0      		cpi r24,lo8(32737)
+ 2970 07e0 2FE7      		cpc r25,r18
+ 2971 07e2 8E3D      		brne .+2
+ 2972 07e4 9207      		rjmp .L324
+ 2973 07e6 00F4      		ldi r18,hi8(32738)
+ 2974 07e8 2FE7      		cpi r24,lo8(32738)
+ 2975 07ea 833D      		cpc r25,r18
+ 2976 07ec 9207      		brsh .L335
+ 2977 07ee 01F4      		ldi r18,hi8(32735)
+ 2978 07f0 00C0      		cpi r24,lo8(32735)
+ 2979 07f2 2FE7      		cpc r25,r18
+ 2980 07f4 843D      		brne .+2
+ 2981 07f6 9207      		rjmp .L322
+ 2982 07f8 00F4      		subi r24,lo8(32736)
+ 2983 07fa 2FE7      		sbci r25,hi8(32736)
+ 2984 07fc 813D      		brlo .+2
+ 2985 07fe 9207      		rjmp .L323
+ 2986 0800 01F4      		rjmp .L350
+ 2987 0802 00C0      	.L335:
+ 2988 0804 2FE7      		ldi r18,hi8(32765)
+ 2989 0806 823D      		cpi r24,lo8(32765)
+ 2990 0808 9207      		cpc r25,r18
+ 2991 080a 00F0      		brne .+2
+ 2992 080c 00C0      		rjmp .L326
+ 2993 080e 805D      		ldi r18,hi8(32766)
+ 2994 0810 9F47      		cpi r24,lo8(32766)
+ 2995 0812 01F0      		cpc r25,r18
+ 2996 0814 00C0      		brsh .L336
+ 2997 0816 00C0      		subi r24,lo8(32764)
+ 2998               		sbci r25,hi8(32764)
+ 2999 0818 2FE7      		breq .+2
+ 3000 081a 8B3D      		rjmp .L296
+ 3001 081c 9207      		rjmp .L351
+ 3002 081e 01F4      	.L336:
+ 3003 0820 00C0      		ldi r18,hi8(32766)
+ 3004 0822 2FE7      		cpi r24,lo8(32766)
+ 3005 0824 8C3D      		cpc r25,r18
+ 3006 0826 9207      		brne .+2
+ 3007 0828 00F0      		rjmp .L327
+ 3008 082a 00C0      		subi r24,lo8(32767)
+ 3009 082c 845D      		sbci r25,hi8(32767)
+ 3010 082e 9F47      		breq .+2
+ 3011 0830 01F0      		rjmp .L296
+ 3012 0832 00C0      		rjmp .L352
+ 3013 0834 00C0      	.L298:
+ 3014               		ldi r18,lo8(.LC248)
+ 3015 0836 2FE7      		ldi r19,hi8(.LC248)
+ 3016 0838 813E      		rjmp .L337
+ 3017 083a 9207      	.L344:
+ 3018 083c 01F4      		ldi r18,lo8(.LC249)
+ 3019 083e 00C0      		ldi r19,hi8(.LC249)
+ 3020 0840 2FE7      		rjmp .L337
+ 3021 0842 823E      	.L299:
+ 3022 0844 9207      		ldi r18,lo8(.LC250)
+ 3023 0846 00F4      		ldi r19,hi8(.LC250)
+ 3024 0848 2FE7      		rjmp .L337
+ 3025 084a 8F3D      	.L300:
+ 3027 084e 01F4      	.LM250:
+ 3028 0850 00C0      		ldi r18,lo8(.LC251)
+ 3029 0852 805E      		ldi r19,hi8(.LC251)
+ 3030 0854 9F47      		rjmp .L337
+ 3031 0856 00F0      	.L345:
+ 3033 085a 00C0      	.LM251:
+ 3034               		ldi r18,lo8(.LC252)
+ 3035 085c 2FE7      		ldi r19,hi8(.LC252)
+ 3036 085e 8D3F      		rjmp .L337
+ 3037 0860 9207      	.L302:
+ 3039 0864 00C0      	.LM252:
+ 3040 0866 2FE7      		ldi r18,lo8(.LC253)
+ 3041 0868 8E3F      		ldi r19,hi8(.LC253)
+ 3042 086a 9207      		rjmp .L337
+ 3043 086c 00F4      	.L303:
+ 3045 0870 9F47      	.LM253:
+ 3046 0872 01F0      		ldi r18,lo8(.LC254)
+ 3047 0874 00C0      		ldi r19,hi8(.LC254)
+ 3048 0876 00C0      		rjmp .L337
+ 3049               	.L304:
+ 3051 087a 8E3F      	.LM254:
+ 3052 087c 9207      		ldi r18,lo8(.LC255)
+ 3053 087e 01F4      		ldi r19,hi8(.LC255)
+ 3054 0880 00C0      		rjmp .L337
+ 3055 0882 8F5F      	.L346:
+ 3057 0886 01F0      	.LM255:
+ 3058 0888 00C0      		ldi r18,lo8(.LC256)
+ 3059 088a 00C0      		ldi r19,hi8(.LC256)
+ 3060               		rjmp .L337
+ 3061 088c 20E0      	.L306:
+ 3063 0890 00C0      	.LM256:
+ 3064               		ldi r18,lo8(.LC257)
+ 3065 0892 20E0      		ldi r19,hi8(.LC257)
+ 3066 0894 30E0      		rjmp .L337
+ 3067 0896 00C0      	.L307:
+ 3069 0898 20E0      	.LM257:
+ 3070 089a 30E0      		ldi r18,lo8(.LC258)
+ 3071 089c 00C0      		ldi r19,hi8(.LC258)
+ 3072               		rjmp .L337
+ 374:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c ****     
+ 375:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	// MC2400 Chipset error codes
+ 376:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	
+ 377:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case ( PMD_ERR_OK) 						: return (uint8*)  "NO Error"; break;
+ 378:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case ( PMD_ERR_ChipsetReset)  			: return (uint8*)  "Chipset Reset "; break;
+ 379:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c ****     case ( PMD_ERR_InvalidInstruction)  	: return (uint8*)  "Invalid Instruction"; break;
+ 3073               	9,hi8(.LC260)
+ 3074               		rjmp .L337
+ 3075 089e 20E0      	.L310:
+ 3077 08a2 00C0      	.LM260:
+ 3078               		ldi r18,lo8(.LC261)
+ 380:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c ****     case ( PMD_ERR_InvalidAxis)  			: return (uint8*)  "Invalid Axis"; break;
+ 3079               	19,hi8(.LC261)
+ 3080               		rjmp .L337
+ 3081 08a4 20E0      	.L311:
+ 3083 08a8 00C0      	.LM261:
+ 3084               		ldi r18,lo8(.LC262)
+ 381:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c ****     case ( PMD_ERR_InvalidParameter)  		: return (uint8*)  "Invalid Data Parameter"; break;
+ 3085               	19,hi8(.LC262)
+ 3086               		rjmp .L337
+ 3087 08aa 20E0      	.L312:
+ 3089 08ae 00C0      	.LM262:
+ 3090               		ldi r18,lo8(.LC263)
+ 382:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case ( PMD_ERR_TraceRunning)			: return (uint8*)  "Trace Currently Running" ;break;
+ 3091               	19,hi8(.LC263)
+ 3092               		rjmp .L337
+ 3093 08b0 20E0      	.L348:
+ 3095 08b4 00C0      	.LM263:
+ 3096               		ldi r18,lo8(.LC264)
+ 383:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case ( PMD_ERR_Flash)					: return (uint8*)  "Flash Error" ;break;
+ 3097               	19,hi8(.LC264)
+ 3098               		rjmp .L337
+ 3099 08b6 20E0      	.L314:
+ 3101 08ba 00C0      	.LM264:
+ 3102               		ldi r18,lo8(.LC265)
+ 384:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case ( PMD_ERR_BlockOutOfBounds)		: return (uint8*)  "Block Out of Bounds" ;break;
+ 3103               	19,hi8(.LC265)
+ 3104               		rjmp .L337
+ 3105 08bc 20E0      	.L315:
+ 3107 08c0 00C0      	.LM265:
+ 3108               		ldi r18,lo8(.LC266)
+ 385:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case ( PMD_ERR_TraceBufferZero)			: return (uint8*)  "Zero Length Trace Buffer" ;break;
+ 3109               	19,hi8(.LC266)
+ 3110               		rjmp .L337
+ 3111 08c2 20E0      	.L316:
+ 3113 08c6 00C0      	.LM266:
+ 3114               		ldi r18,lo8(.LC267)
+ 386:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case ( PMD_ERR_BadSerialChecksum)		: return (uint8*)  "Invalid Checksum" ;break;
+ 3115               	19,hi8(.LC267)
+ 3116               		rjmp .L337
+ 3117 08c8 20E0      	.L349:
+ 3119 08cc 00C0      	.LM267:
+ 3120               		ldi r18,lo8(.LC268)
+ 387:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case ( PMD_ERR_NotPrimaryPort)			: return (uint8*)  "Invalid Instruction For Diagnostic Port" ;bre
+ 3121               	19,hi8(.LC268)
+ 3122               		rjmp .L337
+ 3123 08ce 20E0      	.L318:
+ 3125 08d2 00C0      	.LM268:
+ 3126               		ldi r18,lo8(.LC269)
+ 388:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case ( PMD_ERR_InvalidNegativeValue)	: return (uint8*)  "Invalid Negative Value for Profile Mode" 
+ 3127               	19,hi8(.LC269)
+ 3128               		rjmp .L337
+ 3129 08d4 20E0      	.L319:
+ 3131 08d8 00C0      	.LM269:
+ 3132               		ldi r18,lo8(.LC270)
+ 389:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case ( PMD_ERR_InvalidParameterChange) 	: return (uint8*)  "Invalid Parameter Change for Profile M
+ 3133               	19,hi8(.LC270)
+ 3134               		rjmp .L337
+ 3135 08da 20E0      	.L320:
+ 3137 08de 00C0      	.LM270:
+ 3138               		ldi r18,lo8(.LC271)
+ 390:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case ( PMD_ERR_LimitEventPending)		: return (uint8*)  "Invalid Move with Limit Event Pending" ;bre
+ 3139               	19,hi8(.LC271)
+ 3140               		rjmp .L337
+ 3141 08e0 20E0      	.L350:
+ 3143 08e4 00C0      	.LM271:
+ 3144               		ldi r18,lo8(.LC272)
+ 391:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case ( PMD_ERR_InvalidMoveIntoLimit)	: return (uint8*)  "Invalid Move into Limit" ;break;
+ 3145               	19,hi8(.LC272)
+ 3146               		rjmp .L337
+ 3147 08e6 20E0      	.L322:
+ 3149 08ea 00C0      	.LM272:
+ 3150               		ldi r18,lo8(.LC273)
+ 392:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c ****     case ( PMD_ERR_InvalidClearInterrupt)	: return (uint8*)  "Invalid Clear Interrupt" ;break;
+ 3151               	19,hi8(.LC273)
+ 3152               		rjmp .L337
+ 3153 08ec 20E0      	.L323:
+ 3155 08f0 00C0      	.LM273:
+ 3156               		ldi r18,lo8(.LC274)
+ 393:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	
+ 394:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	// DK2000 initialization errors
+ 395:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case ( PMD_ERR_InvalidOperation)		: return (uint8*)  "Invalid Operation" ;break;
+ 3157               	19,hi8(.LC274)
+ 3158               		rjmp .L337
+ 3159 08f2 20E0      	.L324:
+ 3161 08f6 00C0      	.LM274:
+ 3162               		ldi r18,lo8(.LC275)
+ 396:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case ( PMD_ERR_NotConnected)			: return (uint8*)  "Not Connected" ;break;
+ 3163               	19,hi8(.LC275)
+ 3164               		rjmp .L337
+ 3165 08f8 20E0      	.L351:
+ 3167 08fc 00C0      	.LM275:
+ 3168               		ldi r18,lo8(.LC276)
+ 397:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case ( PMD_ERR_ChipsetNotResponding)	: return (uint8*)  "Chipset Not Responding" ;break;
+ 3169               	19,hi8(.LC276)
+ 3170               		rjmp .L337
+ 3171 08fe 20E0      	.L326:
+ 3173 0902 00C0      	.LM276:
+ 3174               		ldi r18,lo8(.LC277)
+ 398:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case ( PMD_ERR_CommPortRead)			: return (uint8*)  "Comm Port Read" ;break;
+ 3175               	19,hi8(.LC277)
+ 3176               		rjmp .L337
+ 3177 0904 20E0      	.L327:
+ 3179 0908 00C0      	.LM277:
+ 3180               		ldi r18,lo8(.LC278)
+ 399:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case ( PMD_ERR_CommPortWrite)			: return (uint8*)  "Comm Port Write" ;break;
+ 3181               	19,hi8(.LC278)
+ 3182               		rjmp .L337
+ 3183 090a 20E0      	.L352:
+ 3185 090e 00C0      	.LM278:
+ 3186               		ldi r18,lo8(.LC279)
+ 400:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case ( PMD_ERR_InvalidSerialPort)		: return (uint8*)  "Invalid Serial Port" ;break;
+ 3187               	19,hi8(.LC279)
+ 3188               		rjmp .L337
+ 3189 0910 20E0      	.L296:
+ 3191 0914 00C0      	.LM279:
+ 3192               		ldi r18,lo8(.LC280)
+ 401:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case ( PMD_ERR_InvalidDK2000IOBase)		: return (uint8*)  "Invalid DK2000 IO Base" ;break;
+ 3193               	19,hi8(.LC280)
+ 3194               	.L337:
+ 3196 0918 30E0      	.LM280:
+ 3197 091a 00C0      		movw r24,r18
+ 3198               	/* epilogue start */
+ 402:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case ( PMD_ERR_InvalidDK2000IRQ)		: return (uint8*)  "Invalid DK2000 IRQ" ;break;
+ 3200               	.Lscope8:
+ 3201 091c 20E0      		.data
+ 3202 091e 30E0      	.LC281:
+ 3203 0920 00C0      		.string	"Lunes"
+ 3204               	.LC282:
+ 403:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case ( PMD_ERR_InvalidDK2000IOMode)		: return (uint8*)  "Invalid DK2000 IO Mode" ;break;
+ 3205               	12,.LM279-.LFBB8
+ 3206               	.LM279:
+ 3207 0922 20E0      		ldi r18,lo8(.LC280)
+ 3208 0924 30E0      		ldi r19,hi8(.LC280)
+ 3209 0926 00C0      	.L337:
+ 404:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case ( PMD_ERR_PMDNotInitialized)		: return (uint8*)  "PMD Not Initialized" ;break;
+ 3211               	:
+ 3212               		movw r24,r18
+ 3213 0928 20E0      	/* epilogue start */
+ 3214 092a 30E0      		ret
+ 3216               	.Lscope8:
+ 405:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case ( PMD_ERR_OpeningWindowsDriver)	: return (uint8*)  "Cannot Open Windows Driver" ;break;
+ 3217               	
+ 3218               	.LC281:
+ 3219 092e 20E0      		.string	"Lunes"
+ 3220 0930 30E0      	.LC282:
+ 3221 0932 00C0      		.string	"Domingo"
+ 3222               	.LC283:
+ 406:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	
+ 407:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	// run-time errors
+ 408:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case ( PMD_ERR_Driver)					: return (uint8*)  "Windows Driver Error" ;break;
+ 3223               	 r18,lo8(.LC280)
+ 3224               		ldi r19,hi8(.LC280)
+ 3225 0934 20E0      	.L337:
+ 3227 0938 00C0      	.LM280:
+ 3228               		movw r24,r18
+ 409:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case ( PMD_ERR_CommunicationsError)		: return (uint8*)  "Communication Error" ;break;
+ 3229               	logue start */
+ 3230               		ret
+ 3232 093c 30E0      	.Lscope8:
+ 3233 093e 00C0      		.data
+ 3234               	.LC281:
+ 410:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case ( PMD_ERR_CommTimeoutError)		: return (uint8*)  "Communication Timeout Error" ;break;
+ 3235               	.L337
+ 3236               	.L296:
+ 3238 0942 30E0      	.LM279:
+ 3239 0944 00C0      		ldi r18,lo8(.LC280)
+ 3240               		ldi r19,hi8(.LC280)
+ 411:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case ( PMD_ERR_ChecksumError)			: return (uint8*)  "Checksum Error" ;break;
+ 3241               	
+ 3243 0946 20E0      	.LM280:
+ 3244 0948 30E0      		movw r24,r18
+ 3245 094a 00C0      	/* epilogue start */
+ 3246               		ret
+ 412:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	case ( PMD_ERR_CommandError)			: return (uint8*)  "Command Error" ;break;
+ 3247               	e	PMDGetErrorMessage, .-PMDGetErrorMessage
+ 3248               	.Lscope8:
+ 3249 094c 20E0      		.data
+ 3250 094e 30E0      	.LC281:
+ 3251               		.string	"Lunes"
+ 413:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	
+ 414:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	
+ 415:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	
+ 416:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c ****     
+ 417:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	default: return (uint8*)"Undefined error occurred";
+ 418:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c ****   }
+ 419:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 
+ 420:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c ****  // return (uint8*)"Undefined error occurred";    // avoid compiler warning
+ 421:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** } // PMDGetErrorMessage
+ 3252               	bn	68,0,412,.LM279-.LFBB8
+ 3253               	.LM279:
+ 3254 0950 C901      		ldi r18,lo8(.LC280)
+ 3255               		ldi r19,hi8(.LC280)
+ 3256 0952 0895      	.L337:
+ 3258               	.LM280:
+ 3259               		movw r24,r18
+ 3260               	/* epilogue start */
+ 3261 1178 4C75 6E65 		ret
+ 3261      7300 
+ 3263 117e 446F 6D69 	.Lscope8:
+ 3263      6E67 6F00 
+ 3264               		.data
+ 3265 1186 4D61 7274 	.LC281:
+ 3265      6573 00
+ 3266               		.string	"Lunes"
+ 3267 118d 4D69 6572 	.LC282:
+ 3267      636F 6C65 
+ 3267      7300 
+ 3268               		.string	"Domingo"
+ 3269 1197 4A75 6576 	.LC283:
+ 3269      6573 00
+ 3270               		.string	"Martes"
+ 3271 119e 5669 6572 	.LC284:
+ 3271      6E65 7300 
+ 3272               		.string	"Miercoles"
+ 3273 11a6 5361 6261 	.LC285:
+ 3273      646F 00
+ 3274               		.string	"Jueves"
+ 3275 11ad 696E 7661 	.LC286:
+ 3275      6C69 6420 
+ 3275      6461 7900 
+ 3276               		.string	"Viernes"
+ 3277               	.LC287:
+ 3278               		.string	"Sabado"
+ 3279               	.LC288:
+ 3280               		.string	"invalid day"
+ 3281               		.text
+ 422:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** #endif
+ 423:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 
+ 424:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** /*****************************************************************************************/
+ 425:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** uint8 *Dayname(tdia dia)
+ 426:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** {
+ 3282               	,0,Dayname
+ 3284               	.global	Dayname
+ 3286               	Dayname:
+ 427:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 
+ 428:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	switch(dia) 
+ 3287               	.string	"Jueves"
+ 3288               	.LC286:
+ 3289 0954 8330      		.string	"Viernes"
+ 3290 0956 01F0      	.LC287:
+ 3291 0958 8430      		.string	"Sabado"
+ 3292 095a 00F4      	.LC288:
+ 3293 095c 8130      		.string	"invalid day"
+ 3294 095e 01F0      		.text
+ 3297 0964 00C0      	.global	Dayname
+ 3299 0966 8530      	Dayname:
+ 3301 096a 8530      	.LM281:
+ 3302 096c 00F0      	.LFBB9:
+ 3303 096e 8630      	/* prologue: function */
+ 3304 0970 01F4      	/* frame size = 0 */
+ 3306               	.LM282:
+ 3307 0974 20E0      		cpi r24,lo8(3)
+ 3308 0976 30E0      		breq .L358
+ 3309 0978 00C0      		cpi r24,lo8(4)
+ 3310               		brsh .L362
+ 3311 097a 20E0      		cpi r24,lo8(1)
+ 3312 097c 30E0      		breq .L356
+ 3313 097e 00C0      		cpi r24,lo8(2)
+ 3314               		brsh .L357
+ 3315 0980 20E0      		rjmp .L367
+ 3316 0982 30E0      	.L362:
+ 3317 0984 00C0      		cpi r24,lo8(5)
+ 3318               		breq .L360
+ 429:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	{
+ 430:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 		case (Domingo) 					: return (uint8*)"Domingo"; break;
+ 431:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 		case (Lunes) 					: return (uint8*)"Lunes"; break;
+ 432:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 		case (Martes) 					: return (uint8*)"Martes"; break;
+ 3319               	me size = 0 */
+ 3321 0986 20E0      	.LM282:
+ 3322 0988 30E0      		cpi r24,lo8(3)
+ 3323 098a 00C0      		breq .L358
+ 3324               		cpi r24,lo8(4)
+ 433:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 		case (Miercoles) 				: return (uint8*)"Miercoles"; break;
+ 3325               	al	Dayname
+ 3327 098c 20E0      	Dayname:
+ 3329 0990 00C0      	.LM281:
+ 3330               	.LFBB9:
+ 434:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 		case (Jueves) 					: return (uint8*)"Jueves"; break;
+ 3331               	:
+ 3332               		.string	"Sabado"
+ 3333 0992 20E0      	.LC288:
+ 3334 0994 30E0      		.string	"invalid day"
+ 3335 0996 00C0      		.text
+ 435:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 		case (Viernes) 					: return (uint8*)"Viernes"; break;
+ 3337               	82:
+ 3338               		.string	"Domingo"
+ 3339 0998 20E0      	.LC283:
+ 3340 099a 30E0      		.string	"Martes"
+ 3341 099c 00C0      	.LC284:
+ 3342               		.string	"Miercoles"
+ 436:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 		case (Sabado) 					: return (uint8*)"Sabado"; break;
+ 3343               	bn	68,0,421,.LM280-.LFBB8
+ 3344               	.LM280:
+ 3345 099e 20E0      		movw r24,r18
+ 3346 09a0 30E0      	/* epilogue start */
+ 3347               		ret
+ 437:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 		   
+ 438:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 		default 						: return (uint8*)"invalid day";
+ 439:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	}
+ 440:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 
+ 441:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** } // Dayname
+ 3348               	e	PMDGetErrorMessage, .-PMDGetErrorMessage
+ 3349               	.Lscope8:
+ 3350 09a2 C901      		.data
+ 3351               	.LC281:
+ 3352 09a4 0895      		.string	"Lunes"
+ 3353               	.LC282:
+ 3354               		.string	"Domingo"
+ 3355               	.LC283:
+ 3356               		.string	"Martes"
+ 3357 11b9 4665 6272 	.LC284:
+ 3357      6572 6F00 
+ 3358               		.string	"Miercoles"
+ 3359 11c1 456E 6572 	.LC285:
+ 3359      6F00 
+ 3360               		.string	"Jueves"
+ 3361 11c7 4D61 727A 	.LC286:
+ 3361      6F00 
+ 3362               		.string	"Viernes"
+ 3363 11cd 4162 7269 	.LC287:
+ 3363      6C00 
+ 3364               		.string	"Sabado"
+ 3365 11d3 4D61 796F 	.LC288:
+ 3365      00
+ 3366               		.string	"invalid day"
+ 3367 11d8 4A75 6E69 		.text
+ 3367      6F00 
+ 3370               	.global	Dayname
+ 3372               	Dayname:
+ 3374               	.LM281:
+ 3375 11f6 4F63 7475 	.LFBB9:
+ 3375      6272 6500 
+ 3376               	/* prologue: function */
+ 3377 11fe 4E6F 7669 	/* frame size = 0 */
+ 3377      656D 6272 
+ 3377      6500 
+ 3379 1208 4469 6369 	.LM282:
+ 3379      656D 6272 
+ 3379      6500 
+ 3380               		cpi r24,lo8(3)
+ 3381 1212 696E 7661 		breq .L358
+ 3381      6C69 6420 
+ 3381      6D6F 6E74 
+ 3381      6800 
+ 3382               		cpi r24,lo8(4)
+ 3383               		brsh .L362
+ 3384               		cpi r24,lo8(1)
+ 3385               		breq .L356
+ 3386               		cpi r24,lo8(2)
+ 3387               		brsh .L357
+ 442:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 
+ 443:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 
+ 444:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** /*****************************************************************************************/
+ 445:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** uint8 *Monthname(tmes mes)
+ 446:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** {
+ 3388               	BB9
+ 3389               	.LM281:
+ 3390               	.LFBB9:
+ 3391               	/* prologue: function */
+ 3392               	/* frame size = 0 */
+ 447:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 
+ 448:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	switch(mes) 
+ 3393               	y"
+ 3394               		.text
+ 3397 09aa 8730      	.global	Dayname
+ 3399 09ae 8330      	Dayname:
+ 3401 09b2 8430      	.LM281:
+ 3402 09b4 00F4      	.LFBB9:
+ 3403 09b6 8130      	/* prologue: function */
+ 3404 09b8 01F0      	/* frame size = 0 */
+ 3406 09bc 01F4      	.LM282:
+ 3407 09be 00C0      		cpi r24,lo8(3)
+ 3408               		breq .L358
+ 3409 09c0 8430      		cpi r24,lo8(4)
+ 3410 09c2 01F0      		brsh .L362
+ 3411 09c4 8530      		cpi r24,lo8(1)
+ 3412 09c6 01F4      		breq .L356
+ 3413 09c8 00C0      		cpi r24,lo8(2)
+ 3414               		brsh .L357
+ 3415 09ca 8930      		rjmp .L367
+ 3416 09cc 01F0      	.L362:
+ 3417 09ce 8A30      		cpi r24,lo8(5)
+ 3418 09d0 00F4      		breq .L360
+ 3419 09d2 8730      		cpi r24,lo8(5)
+ 3420 09d4 01F0      		brlo .L359
+ 3421 09d6 8830      		cpi r24,lo8(6)
+ 3422 09d8 01F4      		brne .L366
+ 3423 09da 00C0      		rjmp .L368
+ 3424               	.L356:
+ 3425 09dc 8131      		ldi r18,lo8(.LC281)
+ 3426 09de 01F0      		ldi r19,hi8(.LC281)
+ 3427 09e0 8231      		rjmp .L363
+ 3428 09e2 01F0      	.L367:
+ 3429 09e4 8031      		ldi r18,lo8(.LC282)
+ 3430 09e6 01F4      		ldi r19,hi8(.LC282)
+ 3431 09e8 00C0      		rjmp .L363
+ 3432               	.L357:
+ 3433 09ea 20E0      		ldi r18,lo8(.LC283)
+ 3434 09ec 30E0      		ldi r19,hi8(.LC283)
+ 3435 09ee 00C0      		rjmp .L363
+ 3436               	.L358:
+ 3438 09f2 30E0      	.LM283:
+ 3439 09f4 00C0      		ldi r18,lo8(.LC284)
+ 3440               		ldi r19,hi8(.LC284)
+ 3441 09f6 20E0      		rjmp .L363
+ 3442 09f8 30E0      	.L359:
+ 3444               	.LM284:
+ 449:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	{
+ 450:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 		case (Enero) 					: return (uint8*)"Enero"; break;
+ 451:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 		case (Febrero) 					: return (uint8*)"Febrero"; break;
+ 452:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 		case (Marzo) 					: return (uint8*)"Marzo"; break;
+ 3445               	.LC283)
+ 3446               		ldi r19,hi8(.LC283)
+ 3447 09fc 20E0      		rjmp .L363
+ 3448 09fe 30E0      	.L358:
+ 3450               	.LM283:
+ 453:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 		case (Abril) 					: return (uint8*)"Abril"; break;
+ 3451               	,hi8(.LC281)
+ 3452               		rjmp .L363
+ 3453 0a02 20E0      	.L367:
+ 3454 0a04 30E0      		ldi r18,lo8(.LC282)
+ 3455 0a06 00C0      		ldi r19,hi8(.LC282)
+ 3456               		rjmp .L363
+ 454:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 		case (Mayo) 					: return (uint8*)"Mayo"; break;
+ 3457               	req .L360
+ 3458               		cpi r24,lo8(5)
+ 3459 0a08 20E0      		brlo .L359
+ 3460 0a0a 30E0      		cpi r24,lo8(6)
+ 3461 0a0c 00C0      		brne .L366
+ 3462               		rjmp .L368
+ 455:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 		case (Junio) 					: return (uint8*)"Junio"; break;
+ 3463               	eq .L358
+ 3464               		cpi r24,lo8(4)
+ 3465 0a0e 20E0      		brsh .L362
+ 3466 0a10 30E0      		cpi r24,lo8(1)
+ 3467 0a12 00C0      		breq .L356
+ 3468               		cpi r24,lo8(2)
+ 456:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 		case (Julio) 					: return (uint8*)"Julio"; break;
+ 3469               	26,.LM281-.LFBB9
+ 3470               	.LM281:
+ 3471 0a14 20E0      	.LFBB9:
+ 3472 0a16 30E0      	/* prologue: function */
+ 3473 0a18 00C0      	/* frame size = 0 */
+ 457:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 		case (Agosto) 					: return (uint8*)"Agosto"; break;
+ 3475               	6)",36,0,0,Dayname
+ 3477 0a1a 20E0      	.global	Dayname
+ 3479 0a1e 00C0      	Dayname:
+ 458:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 		case (Septiembre) 				: return (uint8*)"Septiembre"; break;
+ 3481               	g	"Viernes"
+ 3482               	.LC287:
+ 3483 0a20 20E0      		.string	"Sabado"
+ 3484 0a22 30E0      	.LC288:
+ 3485 0a24 00C0      		.string	"invalid day"
+ 3486               		.text
+ 459:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 		case (Octubre) 					: return (uint8*)"Octubre"; break;
+ 3487               	ope8:
+ 3488               		.data
+ 3489 0a26 20E0      	.LC281:
+ 3490 0a28 30E0      		.string	"Lunes"
+ 3491 0a2a 00C0      	.LC282:
+ 3492               		.string	"Domingo"
+ 460:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 		case (Noviembre) 				: return (uint8*)"Noviembre"; break;
+ 3493               	279:
+ 3494               		ldi r18,lo8(.LC280)
+ 3495 0a2c 20E0      		ldi r19,hi8(.LC280)
+ 3496 0a2e 30E0      	.L337:
+ 3498               	.LM280:
+ 461:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 		case (Diciembre) 				: return (uint8*)"Diciembre"; break;
+ 3499               	r24,r18
+ 3500               	/* epilogue start */
+ 3501 0a32 20E0      		ret
+ 3503               	.Lscope8:
+ 462:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 		
+ 463:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 		default 						: return (uint8*)"invalid month";
+ 464:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 	}
+ 465:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** 
+ 466:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c ****   //return (uint8*)"Monthname";  // avoid compiler warning
+ 467:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/messages.c **** } //Monthname...
+ 3504               	i8(.LC279)
+ 3505               		rjmp .L337
+ 3506 0a36 C901      	.L296:
+ 3508 0a38 0895      	.LM279:
+ 3509               		ldi r18,lo8(.LC280)
+ 3510               		ldi r19,hi8(.LC280)
+ 3511               	.L337:
+ 3513               	.LM280:
+DEFINED SYMBOLS
+                            *ABS*:00000000 messages.c
+C:\DOCUME~1\David\LOCALS~1\Temp/ccuZtdPO.s:2      *ABS*:0000003f __SREG__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccuZtdPO.s:3      *ABS*:0000003e __SP_H__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccuZtdPO.s:4      *ABS*:0000003d __SP_L__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccuZtdPO.s:5      *ABS*:00000034 __CCP__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccuZtdPO.s:6      *ABS*:00000000 __tmp_reg__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccuZtdPO.s:7      *ABS*:00000001 __zero_reg__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccuZtdPO.s:246    .text:00000000 AxisName
+C:\DOCUME~1\David\LOCALS~1\Temp/ccuZtdPO.s:413    .text:000000aa TraceName
+C:\DOCUME~1\David\LOCALS~1\Temp/ccuZtdPO.s:555    .text:0000013e Tracetype
+C:\DOCUME~1\David\LOCALS~1\Temp/ccuZtdPO.s:678    .text:0000019e CommandMsg
+C:\DOCUME~1\David\LOCALS~1\Temp/ccuZtdPO.s:880    .text:00000240 PacketMsg
+C:\DOCUME~1\David\LOCALS~1\Temp/ccuZtdPO.s:1032   .text:000002c0 rcMsg
+C:\DOCUME~1\David\LOCALS~1\Temp/ccuZtdPO.s:1547   .text:0000035a PMDGetOpcodeText
+C:\DOCUME~1\David\LOCALS~1\Temp/ccuZtdPO.s:2893   .text:0000075e PMDGetErrorMessage
+C:\DOCUME~1\David\LOCALS~1\Temp/ccuZtdPO.s:3281   .text:00000954 Dayname
+C:\DOCUME~1\David\LOCALS~1\Temp/ccuZtdPO.s:3387   .text:000009a6 Monthname
+
+UNDEFINED SYMBOLS
+__do_copy_data

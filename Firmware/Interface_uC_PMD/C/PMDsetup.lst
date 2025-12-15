@@ -1,0 +1,3263 @@
+   1               		.file	"PMDsetup.c"
+   2               	__SREG__ = 0x3f
+   3               	__SP_H__ = 0x3e
+   4               	__SP_L__ = 0x3d
+   5               	__CCP__  = 0x34
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   9               		.text
+  10               	.Ltext0:
+ 255               	.global	GetAxissetting
+ 257               	GetAxissetting:
+   1:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** #include <avr/io.h>
+   2:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** #include <util/delay.h>
+   3:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** #include <stdio.h>
+   4:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** #include <string.h>
+   5:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** #include <stdlib.h>
+   6:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** #include <avr/pgmspace.h>
+   7:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** #include <avr/eeprom.h>
+   8:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 
+   9:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** #include "c-motion.h"
+  10:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** #include "PMDsetup.h"
+  11:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** #include "PMDrobotics.h"
+  12:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** #include "PMDinterrupt.h"
+  13:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** #include "robotData.h"
+  14:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** #include "debug.h"
+  15:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** #include "messages.h"
+  16:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** #include "mem.h"
+  17:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** #include "packetIO.h"
+  18:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** #include "tw_teach_pendant.h"
+  19:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** #include "PMDtrace.h"
+  20:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 
+  21:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** //#define DEBUGSETUP
+  22:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 
+  23:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 
+  24:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** extern PMDAxisHandle hAxis[DOF]; 
+  25:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** /*Variable que almacenara la reconfiguracion por parte del usuario*/
+  26:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** extern tAxisSettings EEMEM EEprom_axisSettings[DOF];
+  27:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** /*Bandera que indica reconfiguracion por parte del Usuario*/
+  28:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** extern int16 EEMEM EEprom_Reconf_Indicator;
+  29:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 
+  30:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 
+  31:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** /******************************DEFINICION DE LAS FUNCIONES***********************************/
+  32:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 
+  33:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** PMDresult initAxisHandles(void) 
+  34:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** {
+  35:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	int16 Axis,rc;
+  36:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	int16 Reconf_Enable;
+  37:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 
+  38:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	for(Axis=0; Axis<DOF; Axis++) 
+  39:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	{  
+  40:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		if(hAxis[Axis].transport_data == NULL) //Si no ha sido definida
+  41:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		{		
+  42:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			rc = PMDSetupAxisInterface_Parallel(&hAxis[Axis], Axis2PMDAxis(Axis), Axis2PMDChipset(Axis));
+  43:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			if(rc != rcOK) 
+  44:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 				return rc; //no memory / rc ok
+  45:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		}
+  46:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	}	
+  47:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c ****    
+  48:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	
+  49:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	/* Leer el indicado de reconfiguracion*/
+  50:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	eeprom_read_block((void*)&Reconf_Enable,(const void*)&EEprom_Reconf_Indicator,sizeof(int16));
+  51:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	
+  52:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c ****      
+  53:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	for(Axis=0; Axis<DOF; Axis++)
+  54:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	{
+  55:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		//Configura la structura tAxisSettings
+  56:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		//limites de velocidad entre ostras cosas definidas en robotdata.c 
+  57:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		/*Si no he reconfigurado utilizsr por defecto*/
+  58:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c ****                 if(!Reconf_Enable)
+  59:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			defaultAxisSettings(Axis,&hAxis[Axis].axisSettings); 		
+  60:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		else
+  61:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		{
+  62:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			printf("initAxisHandles=> Configurando usando la eeprom\n");
+  63:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			//Configuro Usando la eeprom
+  64:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			//Actualizo rxAxissetting a la estructura PMDAxisHandle hAxis	
+  65:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			eeprom_read_block((void*)&hAxis[Axis].axisSettings,(const void*)&EEprom_axisSettings[Axis],sizeo
+  66:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		}
+  67:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	}
+  68:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 
+  69:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	
+  70:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	return rcOK;
+  71:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** } 
+  72:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 
+  73:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** /*********************************************************************************************/
+  74:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** PMDresult PMDChipsetReset(PMDAxisHandle* handle)  //Queda igual
+  75:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** {
+  76:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	PMDuint16 result;
+  77:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	PMDuint16 status;
+  78:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	 
+  79:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c ****    // reset the PMD chip set that this axis resides on
+  80:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	// if more than one chip set is present, all of them should be reset here
+  81:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	result = PMDReset(handle);
+  82:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	// with the parallel interface the result code will always be
+  83:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	// PMD_ERR_CommandError since that bit is set whenever a reset
+  84:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	// occurs.  If it ISN'T set then there is some other error
+  85:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	if ( result == PMD_ERR_CommandError)
+  86:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	{
+  87:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		result = PMDGetHostIOError(handle, &status);
+  88:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	   if ((result == PMD_ERR_OK) && (status == PMD_ERR_ChipsetReset))			 
+  89:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		{
+  90:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			printf("PMDChipsetReset => PMDreset ejecutado correctamente\n\n");
+  91:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			return rcOK;
+  92:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		}
+  93:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	}		 
+  94:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	printf("PMDChipsetReset => PMDreset ejecutado INCORECTAMENTE!\n\n");
+  95:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c ****   	return rcPMDChipsetResetError; //al main principal USAMOS rc........
+  96:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** } // PMDChipsetReset	
+  97:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 
+  98:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** /*********************************************************************************************/
+  99:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** PMDresult PMDchipsetOK(PMDuint16 PMDChipSet) // Le quite el parametro PMDAxisHandle* hAxis
+ 100:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** {
+ 101:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c ****    PMDuint32 checksum=0;
+ 102:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c ****    PMDresult result;
+ 103:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c ****    int16 axis,axistemp=0;  
+ 104:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c ****   
+ 105:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	// before reading from the PMD, we must reset the chipsets  
+ 106:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c ****   
+ 107:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	for(axis=0; axis < DOF; axis++) 
+ 108:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	{
+ 109:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 
+ 110:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c ****       if(hAxis[axis].chipset == PMDChipSet) //Buscamos un AxisHandle para ese chipset
+ 111:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	   {  
+ 112:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			result = PMDChipsetReset(&hAxis[axis]);
+ 113:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	      if(result != rcOK)
+ 114:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			{
+ 115:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 				printf("PMDchipsetOK => No se pudo resetear el chipset %i con Axis %d\n",PMDChipSet,axis);
+ 116:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 				return result;
+ 117:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			}
+ 118:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		  else
+ 119:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		   { 
+ 120:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 				axistemp=axis;			 
+ 121:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 				printf("PMDchipsetOK => Se ha reseteado el chipset %i con Axis %d\n",PMDChipSet,axis);	 
+ 122:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 				axis=DOF; //Nos salimos del for
+ 123:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		   }
+ 124:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c ****       }
+ 125:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	}
+ 126:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c ****   
+ 127:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	// Leer el checksum del Chipset y comparar con 0x12345678
+ 128:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	printf("PMDchipsetOK =>Comprobando Checksum...\n");	
+ 129:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	result=PMDGetChecksum(&hAxis[axistemp],&checksum); 
+ 130:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	if(checksum != 0x12345678) //Esto esta definido en el manual de programacion .
+ 131:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	{
+ 132:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		printf("PMDchipsetOK =>PMD %i PMDchipset checksum test error: 0x12345678=>%lx\n",PMDChipSet+1,che
+ 133:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		return rcPMDchecksumError;  // we got a wrong answer
+ 134:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	}
+ 135:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	printf("PMDchipsetOK =>PMD %i test succeeded %lx \n",PMDChipSet+1,checksum);
+ 136:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	return rcOK;
+ 137:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** } 
+ 138:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 
+ 139:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** /*********************************************************************************************/
+ 140:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** PMDresult selftestPMD(void)  //Le quite el parametro PMDAxisHandle* hAxis
+ 141:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** {
+ 142:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	int16 rc1= rcOK;                // return code
+ 143:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	int16 rc2 = rcOK; 
+ 144:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	int16 rc;
+ 145:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c ****    
+ 146:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c ****    rc1 = initAxisHandles();        //inicializamos todos los ejes hAxis
+ 147:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c ****    if(rc1!=rcOK)
+ 148:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c ****    { //Enviar Codigo de ERRoR por Led´s , por Buzzer y Por Display.
+ 149:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		buzzer(2);
+ 150:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		delay_1s();
+ 151:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		buzzer(1); 
+ 152:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		
+ 153:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	}    
+ 154:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	
+ 155:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	else
+ 156:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	{
+ 157:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		
+ 158:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		printf("selftestPMD => Hard reset\n");	
+ 159:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		PMDHardReset(&hAxis[0]); 			//hacemos reset por hardware a PMD1 y PMD2
+ 160:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		rc1 = PMDchipsetOK(PMDChipSet1); 	//COmprobamos el Checksum después de reset
+ 161:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		if(rc1 != rcOK)						// Error de Checksum para Chipset 1
+ 162:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		{
+ 163:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			Led_on(Amarillo);    
+ 164:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			buzzer(1);
+ 165:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			fprintf_P(stderr,PSTR("Error en Controlador 1 \n"));
+ 166:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			fprintf_P(stdout,PSTR("Error en el Controlador de motores No. 1 \n"));			
+ 167:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		}
+ 168:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		// Chipset1 OK
+ 169:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		
+ 170:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		rc2 = PMDchipsetOK(PMDChipSet2);//COmprobamos el Checksum despues de reset
+ 171:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		if(rc2 != rcOK)					 // Error de Checksum para Chipset 2
+ 172:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		{ //Enviar Codigo de ERRoR por Led´s , por Buzzer y por Display.y salir del programa
+ 173:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		  
+ 174:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			Led_on(Rojo);    //
+ 175:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			buzzer(1);
+ 176:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			fprintf_P(stderr,PSTR("Error en Controlador 2 \n"));
+ 177:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			fprintf_P(stdout,PSTR("Error en el Controlador de motores No. 2 \n"));			
+ 178:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		}
+ 179:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		
+ 180:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		if((rc1 == rcOK) && (rc2 == rcOK))		//  Exito en ambos Checksum
+ 181:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		{
+ 182:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			
+ 183:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			Led_on(Verde);							
+ 184:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		} 		
+ 185:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	}
+ 186:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 
+ 187:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	rc= rc1 || rc2;
+ 188:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	
+ 189:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	return rc;
+ 190:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 
+ 191:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** }
+ 192:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** /*********************************************************************************************/
+ 193:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** PMDresult PMDsetupChipSets(PMDProfileMode Profile) 
+ 194:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** {
+ 195:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	uint8_t axis;
+ 196:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	PMDuint16 PMDrc,EncodertoStepRatio;
+ 197:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 
+ 198:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c ****   // look for a handle of every chipset to reset it...look for axis=1
+ 199:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c ****   for(axis=0; axis < DOF; axis++)
+ 200:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	{
+ 201:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		if(hAxis[axis].axis == 0)  
+ 202:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		{
+ 203:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			PMDChipsetReset(&hAxis[axis]);	
+ 204:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			/* "calibrate" the velocity and acceleration settings: adjust the sampling time (cycle time)
+ 205:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			minimum 4axis*154us/axis, max. value 65536us */
+ 206:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			PMDSetSampleTime(&hAxis[axis],4*150);			
+ 207:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			#ifdef DEBUGSETUP
+ 208:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			printf("PMDsetupChipsets_dummy=> Run Reset, Sampletime para eje %d\n",axis);
+ 209:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			#endif
+ 210:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		}
+ 211:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		
+ 212:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	}	
+ 213:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	
+ 214:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	for(axis=0; axis < DOF; axis++)
+ 215:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	{
+ 216:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		
+ 217:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		//FIja la unidad del registo Actual position a uPasos
+ 218:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		PMDrc = PMDSetActualPositionUnits(&hAxis[axis],PMDSteps);     
+ 219:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		if(PMDrc != PMD_ERR_OK) 
+ 220:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		{
+ 221:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			return rcHardwareFailure;  // PMD didn't answer... comment 
+ 222:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 										// out if UC should continue!		
+ 223:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		}		
+ 224:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		
+ 225:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		switch (axis)
+ 226:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		{
+ 227:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			case (AxisWaist):
+ 228:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 				 PMDSetSignalSense(&hAxis[axis],
+ 229:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 						PMDSignalPositiveLimitMask |PMDSignalNegativeLimitMask | PMDSignalMotorOutputInvertMask);
+ 230:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			break;
+ 231:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			
+ 232:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			case (AxisShoulder):
+ 233:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 				PMDSetSignalSense(&hAxis[axis],
+ 234:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 						PMDSignalEncoderHomeMask | PMDSignalPositiveLimitMask |
+ 235:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 						PMDSignalNegativeLimitMask | PMDSignalMotorOutputInvertMask);
+ 236:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			break;
+ 237:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			
+ 238:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			case (AxisElbow):
+ 239:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 				 PMDSetSignalSense(&hAxis[axis],
+ 240:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 						PMDSignalEncoderHomeMask |PMDSignalPositiveLimitMask |
+ 241:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 						PMDSignalNegativeLimitMask | PMDSignalMotorOutputInvertMask);
+ 242:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			break;
+ 243:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			
+ 244:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			case (AxisPitch):
+ 245:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 				 PMDSetSignalSense(&hAxis[axis],
+ 246:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 						PMDSignalEncoderHomeMask |PMDSignalPositiveLimitMask |
+ 247:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 						PMDSignalNegativeLimitMask);
+ 248:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			break;
+ 249:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			
+ 250:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			case (AxisRoll):
+ 251:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 				 PMDSetSignalSense(&hAxis[axis],
+ 252:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 						PMDSignalPositiveLimitMask |PMDSignalNegativeLimitMask);
+ 253:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			break;
+ 254:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			
+ 255:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			default:
+ 256:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 				 PMDSetSignalSense(&hAxis[axis],
+ 257:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 						PMDSignalPositiveLimitMask |PMDSignalNegativeLimitMask | PMDSignalMotorOutputInvertMask);
+ 258:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			break;
+ 259:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			
+ 260:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		}	
+ 261:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		
+ 262:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		
+ 263:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		
+ 264:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		if((hAxis[axis].axisSettings.switchEnable == TRUE) && 
+ 265:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		(hAxis[axis].axisSettings.axisEnabled==TRUE))
+ 266:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		{
+ 267:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			//Se Habilitan los Switches de Fin de Carrera
+ 268:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			PMDSetLimitSwitchMode(&hAxis[axis],PMDLimitEnabled);
+ 269:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		}
+ 270:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		else
+ 271:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		{
+ 272:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			////Se deshabilitan los Switches de Fin de Carrera
+ 273:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			PMDSetLimitSwitchMode(&hAxis[axis],PMDLimitDisabled);
+ 274:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		}
+ 275:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		#ifdef DEBUGSETUP
+ 276:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		printf("PMDsetupChipsets_dummy=> config switch %d\n",axis);
+ 277:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		#endif
+ 278:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 
+ 279:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		// Tipo de salida PWM 50/50
+ 280:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		PMDSetOutputMode(&hAxis[axis],PMDMotorOutputPWM5050Magnitude);  
+ 281:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		//numero de fasese del motor 3
+ 282:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		PMDSetNumberPhases(&hAxis[axis],hAxis[axis].axisSettings.numberPhases);
+ 283:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		//numero de pasos por upaso, esta funcion esta en Counts. 1 Counts = 4 uPasos
+ 284:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		PMDSetPhaseCounts(&hAxis[axis],(4*hAxis[axis].axisSettings.ustepsPerStep)); 
+ 285:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		//configuracion de Encoder
+ 286:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		#ifdef DEBUGSETUP
+ 287:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		printf("PMDsetupChipsets_dummy=> uPasos = %d \n",hAxis[axis].axisSettings.ustepsPerStep);
+ 288:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		#endif
+ 289:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		
+ 290:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		PMDSetEncoderSource(&hAxis[axis],PMDEncoderSourceIncremental);  // incremental quadrature encoder
+ 291:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			//(pulses per round), (microsteps per step)*(steps per round)
+ 292:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		
+ 293:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		EncodertoStepRatio=hAxis[axis].axisSettings.ustepsPerStep*
+ 294:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 										hAxis[axis].axisSettings.motorStepsPerRevolution;
+ 295:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		
+ 296:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			PMDSetEncoderToStepRatio(&hAxis[axis],hAxis[axis].axisSettings.encoderStepsPerRevolution
+ 297:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 									,EncodertoStepRatio);
+ 298:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	 	
+ 299:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		PMDSetTrackingWindow(&hAxis[axis], hAxis[axis].axisSettings.TrackingWindow);
+ 300:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 
+ 301:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		#ifdef DEBUGSETUP
+ 302:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		printf("PMDsetupChipsets_dummy=> config Outputmode, #Phases, PhaseCounts,Encoder Source, EncoderR
+ 303:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		#endif
+ 304:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 
+ 305:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		
+ 306:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		//se habilitan las funciones de encoder
+ 307:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		if((hAxis[axis].axisSettings.encoderEnable == TRUE) && 
+ 308:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			(hAxis[axis].axisSettings.axisEnabled==TRUE))
+ 309:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		{
+ 310:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			PMDSetSettleWindow(&hAxis[axis], hAxis[axis].axisSettings.SettleWindow);
+ 311:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			PMDSetSettleTime(&hAxis[axis], hAxis[axis].axisSettings.SettleTime);
+ 312:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		    PMDSetMotionCompleteMode(&hAxis[axis],PMDMotionCompleteActualPosition); //  automatic correct
+ 313:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			//PMDSetPositionErrorLimit(&hAxis[axis],(30*hAxis[axis].axisSettings.ustepsPerStep
+ 314:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			//					 *hAxis[axis].axisSettings.motorStepsPerRevolution)/
+ 315:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			//					 hAxis[axis].axisSettings.encoderStepsPerRevolution);
+ 316:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			PMDSetPositionErrorLimit(&hAxis[axis],hAxis[axis].axisSettings.ErrorLimit);
+ 317:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			
+ 318:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			PMDClearPositionError(&hAxis[axis]);
+ 319:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		}	
+ 320:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		else
+ 321:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		{
+ 322:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			PMDSetMotionCompleteMode(&hAxis[axis],PMDMotionCompleteCommandedPosition); // no automatic corre
+ 323:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			
+ 324:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		}
+ 325:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		#ifdef DEBUGSETUP
+ 326:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		printf("PMDsetupChipsets_dummy=> config SetSeetWindows,Settle time, Motion Complete,Pos. Error li
+ 327:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		#endif
+ 328:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		if(hAxis[axis].axisSettings.axisEnabled==TRUE) 
+ 329:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		{
+ 330:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			PMDSetAxisMode(&hAxis[axis],PMDAxisOn);              // enable Axis
+ 331:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			PMDSetMotorMode(&hAxis[axis],PMDMotorOn);            // enable trajectory generator
+ 332:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		} 
+ 333:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		else 
+ 334:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		{
+ 335:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			PMDSetAxisMode(&hAxis[axis],PMDAxisOff);             // disable Axis
+ 336:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			PMDSetMotorMode(&hAxis[axis],PMDMotorOff);           // disable trajectory generator
+ 337:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		}
+ 338:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		//Fija la potencia del motor o torque
+ 339:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		PMDSetMotorCommand(&hAxis[axis],(hAxis[axis].axisSettings.motorPower*32768)/100);
+ 340:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		//Se selecciona un tipo de perfil
+ 341:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		PMDSetProfileMode(&hAxis[axis],Profile);   // data interpretation mode
+ 342:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		//Detiene el motor cuando se produce un error en el movimiento (Motion Error).
+ 343:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		PMDSetAutoStopMode(&hAxis[axis],PMDAutoStopDisabled); 		
+ 344:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		
+ 345:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		PMDResetEventStatus(&hAxis[axis],~PMDEventStatusMask);
+ 346:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		PMDClearInterrupt(&hAxis[axis]);
+ 347:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		PMDUpdate(&hAxis[axis]);
+ 348:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		#ifdef DEBUGSETUP
+ 349:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		printf("PMDsetupChipsets_dummy=> config AxisMode,Motor Mode, Motor power,Auto Stop, Reset Event, 
+ 350:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		#endif		
+ 351:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	}	
+ 352:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	return rcOK;
+ 353:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** }
+ 354:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 
+ 355:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** /*********************************************************************************************/
+ 356:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** //En PMDsetupChipsets_USB no se ejecutan los siguientes Comandos:
+ 357:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** //-PMDChipsetReset
+ 358:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** //-PMDSetSampleTime
+ 359:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** //-PMDSetOutputMode
+ 360:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** //-PMDSetNumberPhases
+ 361:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** //-PMDSetEncoderSource
+ 362:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** //-PMDSetEncoderToStepRatio
+ 363:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** //-PMDSetAxisMode
+ 364:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** //-PMDSetMotorMode
+ 365:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** PMDresult PMDsetupChipsets_USB(PMDProfileMode Profile) 
+ 366:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** {
+ 367:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	uint8_t axis;
+ 368:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	PMDuint16 PMDrc;
+ 369:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 
+ 370:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c ****   // look for a handle of every chipset to reset it...look for axis=1
+ 371:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	
+ 372:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	for(axis=0; axis < DOF; axis++)
+ 373:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	{
+ 374:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		//FIja la unidad del registo Actual position a uPasos
+ 375:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		PMDrc = PMDSetActualPositionUnits(&hAxis[axis],PMDSteps);     
+ 376:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		if(PMDrc != PMD_ERR_OK) 
+ 377:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		{
+ 378:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			return rcHardwareFailure;  // PMD didn't answer... comment 
+ 379:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 										// out if UC should continue!		
+ 380:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		}		
+ 381:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		
+ 382:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		switch (axis)
+ 383:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		{
+ 384:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			case (AxisWaist):
+ 385:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 				 PMDSetSignalSense(&hAxis[axis],
+ 386:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 						PMDSignalPositiveLimitMask |PMDSignalNegativeLimitMask | PMDSignalMotorOutputInvertMask);
+ 387:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			break;
+ 388:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			
+ 389:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			case (AxisShoulder):
+ 390:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 				PMDSetSignalSense(&hAxis[axis],
+ 391:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 						PMDSignalEncoderHomeMask | PMDSignalPositiveLimitMask |
+ 392:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 						PMDSignalNegativeLimitMask | PMDSignalMotorOutputInvertMask);
+ 393:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			break;
+ 394:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			
+ 395:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			case (AxisElbow):
+ 396:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 				 PMDSetSignalSense(&hAxis[axis],
+ 397:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 						PMDSignalEncoderHomeMask |PMDSignalPositiveLimitMask |
+ 398:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 						PMDSignalNegativeLimitMask | PMDSignalMotorOutputInvertMask);
+ 399:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			break;
+ 400:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			
+ 401:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			case (AxisPitch):
+ 402:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 				 PMDSetSignalSense(&hAxis[axis],
+ 403:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 						PMDSignalEncoderHomeMask | PMDSignalPositiveLimitMask |
+ 404:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 						PMDSignalNegativeLimitMask |PMDSignalMotorOutputInvertMask);
+ 405:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			break;
+ 406:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			
+ 407:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			case (AxisRoll):
+ 408:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 				 PMDSetSignalSense(&hAxis[axis],
+ 409:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 						PMDSignalPositiveLimitMask |PMDSignalNegativeLimitMask | PMDSignalMotorOutputInvertMask);
+ 410:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			break;
+ 411:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			
+ 412:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			default:
+ 413:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 				 PMDSetSignalSense(&hAxis[axis],
+ 414:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 						PMDSignalPositiveLimitMask |PMDSignalNegativeLimitMask | PMDSignalMotorOutputInvertMask);
+ 415:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			break;
+ 416:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			
+ 417:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		}			
+ 418:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		if((hAxis[axis].axisSettings.switchEnable == TRUE) && 
+ 419:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		(hAxis[axis].axisSettings.axisEnabled==TRUE))
+ 420:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		{
+ 421:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			//Se Habilitan los Switches de Fin de Carrera
+ 422:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			PMDSetLimitSwitchMode(&hAxis[axis],PMDLimitEnabled);
+ 423:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		}
+ 424:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		else
+ 425:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		{
+ 426:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			////Se deshabilitan los Switches de Fin de Carrera
+ 427:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			PMDSetLimitSwitchMode(&hAxis[axis],PMDLimitDisabled);
+ 428:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		}
+ 429:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		#ifdef DEBUGSETUP
+ 430:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		printf("PMDsetupChipsets_dummy=> config switch %d\n",axis);
+ 431:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		#endif
+ 432:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		PMDSetPhaseCounts(&hAxis[axis],(4*hAxis[axis].axisSettings.ustepsPerStep)); 
+ 433:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		//configuracion de Encoder
+ 434:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		PMDSetTrackingWindow(&hAxis[axis], hAxis[axis].axisSettings.TrackingWindow);
+ 435:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 
+ 436:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		#ifdef DEBUGSETUP
+ 437:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		printf("PMDsetupChipsets_dummy=> config Outputmode, #Phases, PhaseCounts,Encoder Source, EncoderR
+ 438:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		printf("PMDsetupChipsets_dummy=> hAxis[%d].axisSettings.ustepsPerStep= %d\n",axis,hAxis[axis].axi
+ 439:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		#endif
+ 440:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 
+ 441:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		
+ 442:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		//se habilitan las funciones de encoder
+ 443:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		if((hAxis[axis].axisSettings.encoderEnable == TRUE) && 
+ 444:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c ****                    (hAxis[axis].axisSettings.axisEnabled==TRUE))
+ 445:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		{
+ 446:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			PMDSetSettleWindow(&hAxis[axis], hAxis[axis].axisSettings.SettleWindow);
+ 447:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			PMDSetSettleTime(&hAxis[axis], hAxis[axis].axisSettings.SettleTime);
+ 448:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		    PMDSetMotionCompleteMode(&hAxis[axis],PMDMotionCompleteActualPosition); //  automatic correct
+ 449:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			//PMDSetPositionErrorLimit(&hAxis[axis],(30*hAxis[axis].axisSettings.ustepsPerStep
+ 450:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			//					 *hAxis[axis].axisSettings.motorStepsPerRevolution)/
+ 451:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			//					 hAxis[axis].axisSettings.encoderStepsPerRevolution);
+ 452:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			PMDSetPositionErrorLimit(&hAxis[axis],hAxis[axis].axisSettings.ErrorLimit);
+ 453:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			
+ 454:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			PMDClearPositionError(&hAxis[axis]);
+ 455:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		}	
+ 456:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		else
+ 457:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		{
+ 458:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			PMDSetMotionCompleteMode(&hAxis[axis],PMDMotionCompleteCommandedPosition); // no automatic corre
+ 459:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			
+ 460:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		}
+ 461:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		#ifdef DEBUGSETUP
+ 462:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		printf("PMDsetupChipsets_dummy=> config SetSeetWindows,Settle time, Motion Complete,Pos. Error li
+ 463:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		#endif
+ 464:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		//Fija la potencia del motor o torque
+ 465:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		PMDSetMotorCommand(&hAxis[axis],(hAxis[axis].axisSettings.motorPower*32768)/100);
+ 466:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		//Se selecciona un tipo de perfil
+ 467:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		PMDSetProfileMode(&hAxis[axis],Profile);   // data interpretation mode
+ 468:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		//Detiene el motor cuando se produce un error en el movimiento (Motion Error).
+ 469:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		PMDSetAutoStopMode(&hAxis[axis],PMDAutoStopDisabled); 		
+ 470:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		
+ 471:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		PMDResetEventStatus(&hAxis[axis],~PMDEventStatusMask);
+ 472:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		PMDClearInterrupt(&hAxis[axis]);
+ 473:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		PMDUpdate(&hAxis[axis]);
+ 474:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		#ifdef DEBUGSETUP
+ 475:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		printf("PMDsetupChipsets_dummy=> config AxisMode,Motor Mode, Motor power,Auto Stop, Reset Event, 
+ 476:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		#endif		
+ 477:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	}	
+ 478:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	return rcOK;
+ 479:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** }
+ 480:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 
+ 481:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** /**************************************************************************************************
+ 482:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** void Reset_Even_Status_Register(void)
+ 483:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** {
+ 484:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	int16 axis;
+ 485:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	
+ 486:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	for(axis=0; axis < DOF; axis++) 
+ 487:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	{
+ 488:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		if((hAxis[axis].axisSettings.axisEnabled == TRUE))
+ 489:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			PMDResetEventStatus(&hAxis[axis],~PMDEventStatusMask); 
+ 490:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	}	
+ 491:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** }
+ 492:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 
+ 493:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** /**************************************************************************************************
+ 494:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** void Clear_Position_Error(void)
+ 495:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** {
+ 496:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	int16 axis;
+ 497:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	
+ 498:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	for(axis=0; axis < DOF; axis++) 
+ 499:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	{
+ 500:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		if((hAxis[axis].axisSettings.axisEnabled == TRUE))
+ 501:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			PMDClearPositionError(&hAxis[axis]);
+ 502:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	}
+ 503:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	
+ 504:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	for(axis=0; axis < DOF; axis++) 
+ 505:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	{ // for every chipset (all axis with axis number=1), call MultiUpdate once
+ 506:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		if(hAxis[axis].axis == 0) 
+ 507:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		{
+ 508:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			// Stop the robot (all axis in parallel)
+ 509:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			PMDMultiUpdate(&hAxis[axis],PMDAxis1Mask|PMDAxis2Mask|PMDAxis3Mask|PMDAxis4Mask);    
+ 510:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		} 
+ 511:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	}
+ 512:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 
+ 513:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	
+ 514:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** }
+ 515:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 
+ 516:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 
+ 517:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** /**************************************************************************************************
+ 518:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** void ajustar_posicion(int16 axis, PMDint32 posicion)
+ 519:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** {
+ 520:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 
+ 521:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 
+ 522:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	PMDAdjustActualPosition(&hAxis[axis],posicion);
+ 523:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 
+ 524:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** }
+ 525:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 
+ 526:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** /**************************************************************************************************
+ 527:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** void cargar_encoder(int16 axis, PMDint32 posicion)
+ 528:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** {
+ 529:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 
+ 530:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 
+ 531:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	PMDSetActualPosition(&hAxis[axis],posicion);
+ 532:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 
+ 533:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** }
+ 534:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 
+ 535:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 
+ 536:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** /**************************************************************************************************
+ 537:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** void  Config_BreakPoint(int16 Axis, int16 breakpointID,int16 breakAxis, int16 action, int16 trigger
+ 538:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** {
+ 539:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 
+ 540:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	PMDSetBreakpointValue(&hAxis[Axis], (PMDuint16)breakpointID, breakpointvalue);
+ 541:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	
+ 542:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	PMDSetBreakpoint(&hAxis[Axis],(PMDuint16)breakpointID,(PMDAxis)breakAxis,(PMDuint8)action,(PMDuint
+ 543:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 
+ 544:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** }
+ 545:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** /**************************************************************************************************
+ 546:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** int Axissetting2hAxisHandle(uint8* rxAxissetting)
+ 547:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** {
+ 548:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	int16 i,Buffersize,Axis,Diferentes,Ram_Reconf_Indicator;
+ 549:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	uint8* pdataEEprom;
+ 550:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	tAxisSettings Ram_axisSettings[DOF];
+ 551:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	tAxisSettings * prxAxissetting;
+ 552:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 
+ 553:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 
+ 554:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	Diferentes=0;
+ 555:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	
+ 556:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	#ifdef DEBUGSETUP
+ 557:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	printf("CopiartohAxissetting=> Iniciando la Comparacion\n");
+ 558:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	#endif	
+ 559:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	for(Axis=0;Axis<DOF;Axis++) 
+ 560:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	{
+ 561:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		/* Leer la configuracion anterior para no reconfigurar lo mismo*/
+ 562:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		//Destino, Fuente.
+ 563:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		eeprom_read_block((void*)&Ram_axisSettings[Axis],(const void*)&EEprom_axisSettings[Axis],sizeof(t
+ 564:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		pdataEEprom=(uint8*)&Ram_axisSettings[Axis];
+ 565:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		#ifdef DEBUGSETUP
+ 566:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		printf("CopiartohAxissetting=> Configuracion en EEprom del Eje %d\n",Axis);
+ 567:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		
+ 568:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		PrintAxissetting(Ram_axisSettings[Axis]);
+ 569:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		#endif
+ 570:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		
+ 571:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		//Comparo las configuraciones por eje
+ 572:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		for(i=0;i<sizeof(tAxisSettings);i++) 
+ 573:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		{
+ 574:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			//Utilizo el apuntador a bytes!
+ 575:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c ****                         /*(sizeof(tAxisSettings)*Axis) significa la posicion inicial de cada eje*/
+ 576:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			if(pdataEEprom[i]!=rxAxissetting[(sizeof(tAxisSettings)*Axis)+i])
+ 577:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			{
+ 578:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 				Diferentes=1;
+ 579:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 				#ifdef DEBUGSETUP
+ 580:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 				printf("CopiartohAxissetting=> Son diferentes\n");
+ 581:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 				#endif	
+ 582:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c ****                                 /*Para salirce de las dos instrucciones for */
+ 583:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 				Axis=DOF;
+ 584:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 				i=sizeof(tAxisSettings);
+ 585:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			}
+ 586:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		}
+ 587:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		
+ 588:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		
+ 589:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	}
+ 590:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	
+ 591:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	
+ 592:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	if(Diferentes==1)
+ 593:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	{
+ 594:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		//Activo el indicador de configuracion por EEprom pero primero leo el mismo
+ 595:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		//para ver si esta activado y no sobre escribirlo inecesariamente.
+ 596:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		eeprom_read_block((void*)&Ram_Reconf_Indicator,(const void*)&EEprom_Reconf_Indicator,sizeof(int16
+ 597:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		if(!Ram_Reconf_Indicator)
+ 598:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		{
+ 599:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			Ram_Reconf_Indicator=1;
+ 600:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			//Actualizo a el indicador
+ 601:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			//Fuente,Destino
+ 602:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			eeprom_write_block((const void*)&Ram_Reconf_Indicator,(void*)&EEprom_Reconf_Indicator,sizeof(int
+ 603:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		}
+ 604:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		
+ 605:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		//Reconfiguro  el apuntador rxAxissetting para poder trabajar como apuntador a tAxisSettings
+ 606:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		prxAxissetting=(tAxisSettings*)rxAxissetting;
+ 607:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		
+ 608:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		Buffersize=sizeof(tAxisSettings);
+ 609:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		#ifdef DEBUGSETUP
+ 610:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		printf("CopiartohAxissetting=> Buffersize= %d\n",Buffersize);
+ 611:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		#endif	
+ 612:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		/*Copio la nueva configuracion a al eeprom y actualizo la configuracion en hAxis[Axis]..axisSetti
+ 613:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		for(Axis=0;Axis<DOF;Axis++) 
+ 614:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		{
+ 615:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			
+ 616:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			#ifdef DEBUGSETUP
+ 617:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			printf("CopiartohAxissetting=> Copiando la informacion en eeprom\n");
+ 618:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			#endif	
+ 619:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			//Copio la configuracion de ejes a la eepron
+ 620:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			eeprom_write_block((const void*)&prxAxissetting[Axis],(void*)&EEprom_axisSettings[Axis],sizeof(t
+ 621:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			
+ 622:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			//Actualizo hAxis[Axis]..axisSettings a la estructura axisSettings en EEprom
+ 623:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			eeprom_read_block((void*)&hAxis[Axis].axisSettings,(const void*)&EEprom_axisSettings[Axis],sizeo
+ 624:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		}
+ 625:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		
+ 626:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		#ifdef DEBUGSETUP
+ 627:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		//Imprimo el resultado
+ 628:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		//PrinthAxis(hAxis);
+ 629:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		#endif		
+ 630:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		
+ 631:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	}
+ 632:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	
+ 633:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	return Diferentes;
+ 634:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** }
+ 635:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** /**************************************************************************************************
+ 636:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** void GetAxissetting(uint8* TXAxissetting)
+ 637:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** {
+ 258               	,.LM0-.LFBB1
+ 259               	.LM0:
+ 260               	.LFBB1:
+ 261               	/* prologue: function */
+ 262               	/* frame size = 0 */
+ 264               	.LM1:
+ 265 0000 AC01      		movw r20,r24
+ 266 0002 20E0      		ldi r18,lo8(0)
+ 267 0004 30E0      		ldi r19,hi8(0)
+ 268               	.L4:
+ 638:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	int i,Buffersize,Axis,fin;
+ 639:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	int offset=0;
+ 640:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	uint8* pdata;
+ 641:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 
+ 642:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	
+ 643:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	/*Obtengo el apuntador al primer dato, datos secuenciales, pero no son entre Axis*/
+ 644:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c ****     
+ 645:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	Buffersize=sizeof(tAxisSettings);
+ 646:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	
+ 647:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c ****     for(Axis=0;Axis<DOF;Axis++) 
+ 648:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	{
+ 649:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	    
+ 650:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		offset=Buffersize*Axis;
+ 651:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		#ifdef DEBUGSETUP
+ 652:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		printf("GethAxissetting=> Actualizando Axis %d con offset = %d\n",Axis,offset);
+ 653:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		#endif	
+ 654:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		pdata=(uint8*)&hAxis[Axis].axisSettings;
+ 269               	0,654,.LM2-.LFBB1
+ 270               	.LM2:
+ 271 0006 F901      		movw r30,r18
+ 272 0008 EE0F      		lsl r30
+ 273 000a FF1F      		rol r31
+ 274 000c E20F      		add r30,r18
+ 275 000e F31F      		adc r31,r19
+ 276 0010 85E0      		ldi r24,5
+ 277 0012 EE0F      	1:	lsl r30
+ 278 0014 FF1F      		rol r31
+ 279 0016 8A95      		dec r24
+ 280 0018 01F4      		brne 1b
+ 281 001a E050      		subi r30,lo8(-(hAxis+4))
+ 282 001c F040      		sbci r31,hi8(-(hAxis+4))
+ 283 001e DA01      		movw r26,r20
+ 655:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		fin=Buffersize+offset;
+ 656:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		for(i=offset;i<fin;i++) 
+ 284               	6,.LM3-.LFBB1
+ 285               	.LM3:
+ 286 0020 BF01      		movw r22,r30
+ 287 0022 6C5B      		subi r22,lo8(-(68))
+ 288 0024 7F4F      		sbci r23,hi8(-(68))
+ 289 0026 00C0      		rjmp .L2
+ 290               	.L3:
+ 657:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 			TXAxissetting[i]=pdata[i-offset];  //desde pdata[0] hasta pdata[buffersize]
+ 291               		68,0,657,.LM4-.LFBB1
+ 292               	.LM4:
+ 293 0028 8191      		ld r24,Z+
+ 294 002a 8D93      		st X+,r24
+ 295               	.L2:
+ 297               	.LM5:
+ 298 002c E617      		cp r30,r22
+ 299 002e F707      		cpc r31,r23
+ 300 0030 01F4      		brne .L3
+ 302               	.LM6:
+ 303 0032 2F5F      		subi r18,lo8(-(1))
+ 304 0034 3F4F      		sbci r19,hi8(-(1))
+ 305 0036 4C5B      		subi r20,lo8(-(68))
+ 306 0038 5F4F      		sbci r21,hi8(-(68))
+ 307 003a 2530      		cpi r18,5
+ 308 003c 3105      		cpc r19,__zero_reg__
+ 309 003e 01F4      		brne .L4
+ 310               	/* epilogue start */
+ 658:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	}
+ 659:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 
+ 660:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** }
+ 311               	7-.LFBB1
+ 312               	.LM7:
+ 313 0040 0895      		ret
+ 318               	.Lscope1:
+ 319               		.data
+ 320               	.LC0:
+ 321 0000 5072 696E 		.string	"PrintAxissetting=> En  axisSettings.maxAxisAngle= %d \n"
+ 321      7441 7869 
+ 321      7373 6574 
+ 321      7469 6E67 
+ 321      3D3E 2045 
+ 322               	.LC1:
+ 323 0037 5072 696E 		.string	"PrintAxissetting=> En  axisSettings.minAxisAngle= %d \n"
+ 323      7441 7869 
+ 323      7373 6574 
+ 323      7469 6E67 
+ 323      3D3E 2045 
+ 324               	.LC2:
+ 325 006e 5072 696E 		.string	"PrintAxissetting=> En  axisSettings.axisEnabled= %d \n"
+ 325      7441 7869 
+ 325      7373 6574 
+ 325      7469 6E67 
+ 325      3D3E 2045 
+ 326               	.LC3:
+ 327 00a4 5072 696E 		.string	"PrintAxissetting=> En  axisSettings.interruptEnable= %d \n"
+ 327      7441 7869 
+ 327      7373 6574 
+ 327      7469 6E67 
+ 327      3D3E 2045 
+ 328               	.LC4:
+ 329 00de 5072 696E 		.string	"PrintAxissetting=> En  axisSettings.switchEnable= %d \n"
+ 329      7441 7869 
+ 329      7373 6574 
+ 329      7469 6E67 
+ 329      3D3E 2045 
+ 330               	.LC5:
+ 331 0115 5072 696E 		.string	"PrintAxissetting=> En  axisSettings.encoderEnable= %d \n"
+ 331      7441 7869 
+ 331      7373 6574 
+ 331      7469 6E67 
+ 331      3D3E 2045 
+ 332               	.LC6:
+ 333 014d 5072 696E 		.string	"PrintAxissetting=> En  axisSettings.ustepsPerStep= %d \n"
+ 333      7441 7869 
+ 333      7373 6574 
+ 333      7469 6E67 
+ 333      3D3E 2045 
+ 334               	.LC7:
+ 335 0185 50        		.ascii	"P"
+ 336 0186 7269 6E74 		.string	"rintAxissetting=> En  axisSettings.motorStepsPerRevolution= %d \n"
+ 336      4178 6973 
+ 336      7365 7474 
+ 336      696E 673D 
+ 336      3E20 456E 
+ 337               	.LC8:
+ 338 01c7 5072 69   		.ascii	"Pri"
+ 339 01ca 6E74 4178 		.string	"ntAxissetting=> En  axisSettings.encoderStepsPerRevolution= %d \n"
+ 339      6973 7365 
+ 339      7474 696E 
+ 339      673D 3E20 
+ 339      456E 2020 
+ 340               	.LC9:
+ 341 020b 5072 696E 		.string	"PrintAxissetting=> En  axisSettings.TrackingWindow= %d \n"
+ 341      7441 7869 
+ 341      7373 6574 
+ 341      7469 6E67 
+ 341      3D3E 2045 
+ 342               	.LC10:
+ 343 0244 5072 696E 		.string	"PrintAxissetting=> En  axisSettings.SettleWindow= %d \n"
+ 343      7441 7869 
+ 343      7373 6574 
+ 343      7469 6E67 
+ 343      3D3E 2045 
+ 344               	.LC11:
+ 345 027b 5072 696E 		.string	"PrintAxissetting=> En  axisSettings.SettleTime= %d \n"
+ 345      7441 7869 
+ 345      7373 6574 
+ 345      7469 6E67 
+ 345      3D3E 2045 
+ 346               	.LC12:
+ 347 02b0 5072 696E 		.string	"PrintAxissetting=> En  axisSettings.motorPower= %d \n"
+ 347      7441 7869 
+ 347      7373 6574 
+ 347      7469 6E67 
+ 347      3D3E 2045 
+ 348               	.LC13:
+ 349 02e5 5072 696E 		.string	"PrintAxissetting=> En  axisSettings.numberPhases= %d \n"
+ 349      7441 7869 
+ 349      7373 6574 
+ 349      7469 6E67 
+ 349      3D3E 2045 
+ 350               	.LC14:
+ 351 031c 5072 696E 		.string	"PrintAxissetting=> En  axisSettings.homeSwitchHandling= %d \n"
+ 351      7441 7869 
+ 351      7373 6574 
+ 351      7469 6E67 
+ 351      3D3E 2045 
+ 352               	.LC15:
+ 353 0359 5072 696E 		.string	"PrintAxissetting=> En  axisSettings.gearNominator= %d \n"
+ 353      7441 7869 
+ 353      7373 6574 
+ 353      7469 6E67 
+ 353      3D3E 2045 
+ 354               	.LC16:
+ 355 0391 5072 696E 		.string	"PrintAxissetting=> En  axisSettings.gearDenominator= %d \n"
+ 355      7441 7869 
+ 355      7373 6574 
+ 355      7469 6E67 
+ 355      3D3E 2045 
+ 356               	.LC17:
+ 357 03cb 5072 696E 		.string	"PrintAxissetting=> En  axisSettings.ErrorLimit= %ld \n"
+ 357      7441 7869 
+ 357      7373 6574 
+ 357      7469 6E67 
+ 357      3D3E 2045 
+ 358               	.LC18:
+ 359 0401 5072 696E 		.string	"PrintAxissetting=> En  axisSettings.limitAcceleration= %ld \n"
+ 359      7441 7869 
+ 359      7373 6574 
+ 359      7469 6E67 
+ 359      3D3E 2045 
+ 360               	.LC19:
+ 361 043e 5072 696E 		.string	"PrintAxissetting=> En  axisSettings.limitVelocity= %ld \n"
+ 361      7441 7869 
+ 361      7373 6574 
+ 361      7469 6E67 
+ 361      3D3E 2045 
+ 362               	.LC20:
+ 363 0477 5072 696E 		.string	"PrintAxissetting=> En  axisSettings.limitJerk= %ld \n"
+ 363      7441 7869 
+ 363      7373 6574 
+ 363      7469 6E67 
+ 363      3D3E 2045 
+ 364               	.LC21:
+ 365 04ac 5072 696E 		.string	"PrintAxissetting=> En  axisSettings.maxAcceleration= %ld \n"
+ 365      7441 7869 
+ 365      7373 6574 
+ 365      7469 6E67 
+ 365      3D3E 2045 
+ 366               	.LC22:
+ 367 04e7 5072 696E 		.string	"PrintAxissetting=> En  axisSettings.maxVelocity= %ld \n"
+ 367      7441 7869 
+ 367      7373 6574 
+ 367      7469 6E67 
+ 367      3D3E 2045 
+ 368               	.LC23:
+ 369 051e 5072 696E 		.string	"PrintAxissetting=> En  axisSettings.minVelocity= %ld \n"
+ 369      7441 7869 
+ 369      7373 6574 
+ 369      7469 6E67 
+ 369      3D3E 2045 
+ 370               	.LC24:
+ 371 0555 2564 00   		.string	"%d"
+ 372               		.text
+ 375               	.global	PrintAxissetting
+ 377               	PrintAxissetting:
+ 661:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 
+ 662:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 
+ 663:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 
+ 664:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** void PrintAxissetting(tAxisSettings axisSettings)
+ 665:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** {
+ 378               	r4
+ 379               		push r5
+ 380               		push r6
+ 381 0042 2F92      		push r7
+ 382 0044 3F92      		push r8
+ 383 0046 4F92      		push r9
+ 384 0048 5F92      		push r10
+ 385 004a 6F92      		push r11
+ 386 004c 7F92      		push r12
+ 387 004e 8F92      		push r13
+ 388 0050 9F92      		push r14
+ 389 0052 AF92      		push r15
+ 390 0054 BF92      		push r16
+ 391 0056 CF92      		push r17
+ 392 0058 DF92      		push r29
+ 393 005a EF92      		push r28
+ 394 005c FF92      		in r28,__SP_L__
+ 395 005e 0F93      		in r29,__SP_H__
+ 396 0060 1F93      		sbiw r28,46
+ 397 0062 DF93      		in __tmp_reg__,__SREG__
+ 398 0064 CF93      		cli
+ 399 0066 CDB7      		out __SP_H__,r29
+ 400 0068 DEB7      		out __SREG__,__tmp_reg__
+ 401 006a AE97      		out __SP_L__,r28
+ 402 006c 0FB6      	/* prologue: function */
+ 403 006e F894      	/* frame size = 46 */
+ 405 0072 0FBE      	.LM9:
+ 406 0074 CDBF      		adiw r28,75-62
+ 407               		ldd r12,Y+62
+ 408               		ldd r13,Y+63
+ 409               		sbiw r28,75-62
+ 410               		adiw r28,67-63
+ 411 0076 2D96      		ldd r16,Y+63
+ 412 0078 CEAC      		sbiw r28,67-63
+ 413 007a DFAC      		adiw r28,68-63
+ 414 007c 2D97      		ldd r14,Y+63
+ 415 007e 2496      		sbiw r28,68-63
+ 416 0080 0FAD      		adiw r28,69-62
+ 417 0082 2497      		ldd r6,Y+62
+ 418 0084 2596      		ldd r7,Y+63
+ 419 0086 EFAC      		sbiw r28,69-62
+ 420 0088 2597      		adiw r28,71-62
+ 421 008a 2796      		ldd r24,Y+62
+ 422 008c 6EAC      		ldd r25,Y+63
+ 423 008e 7FAC      		sbiw r28,71-62
+ 424 0090 2797      		std Y+46,r25
+ 425 0092 2996      		std Y+45,r24
+ 426 0094 8EAD      		adiw r28,77-62
+ 427 0096 9FAD      		ldd r26,Y+62
+ 428 0098 2997      		ldd r27,Y+63
+ 429 009a 9EA7      		sbiw r28,77-62
+ 430 009c 8DA7      		std Y+44,r27
+ 431 009e 2F96      		std Y+43,r26
+ 432 00a0 AEAD      		adiw r28,79-62
+ 433 00a2 BFAD      		ldd r30,Y+62
+ 434 00a4 2F97      		ldd r31,Y+63
+ 435 00a6 BCA7      		sbiw r28,79-62
+ 436 00a8 ABA7      		std Y+42,r31
+ 437 00aa 6196      		std Y+41,r30
+ 438 00ac EEAD      		adiw r28,81-62
+ 439 00ae FFAD      		ldd r24,Y+62
+ 440 00b0 6197      		ldd r25,Y+63
+ 441 00b2 FAA7      		sbiw r28,81-62
+ 442 00b4 E9A7      		std Y+40,r25
+ 443 00b6 6396      		std Y+39,r24
+ 444 00b8 8EAD      		adiw r28,83-62
+ 445 00ba 9FAD      		ldd r26,Y+62
+ 446 00bc 6397      		ldd r27,Y+63
+ 447 00be 98A7      		sbiw r28,83-62
+ 448 00c0 8FA3      		std Y+38,r27
+ 449 00c2 6596      		std Y+37,r26
+ 450 00c4 AEAD      		adiw r28,85-62
+ 451 00c6 BFAD      		ldd r30,Y+62
+ 452 00c8 6597      		ldd r31,Y+63
+ 453 00ca BEA3      		sbiw r28,85-62
+ 454 00cc ADA3      		std Y+36,r31
+ 455 00ce 6796      		std Y+35,r30
+ 456 00d0 EEAD      		adiw r28,87-62
+ 457 00d2 FFAD      		ldd r24,Y+62
+ 458 00d4 6797      		ldd r25,Y+63
+ 459 00d6 FCA3      		sbiw r28,87-62
+ 460 00d8 EBA3      		std Y+34,r25
+ 461 00da 6996      		std Y+33,r24
+ 462 00dc 8EAD      		adiw r28,89-62
+ 463 00de 9FAD      		ldd r26,Y+62
+ 464 00e0 6997      		ldd r27,Y+63
+ 465 00e2 9AA3      		sbiw r28,89-62
+ 466 00e4 89A3      		std Y+32,r27
+ 467 00e6 6B96      		std Y+31,r26
+ 468 00e8 AEAD      		adiw r28,91-62
+ 469 00ea BFAD      		ldd r30,Y+62
+ 470 00ec 6B97      		ldd r31,Y+63
+ 471 00ee B8A3      		sbiw r28,91-62
+ 472 00f0 AF8F      		std Y+30,r31
+ 473 00f2 6D96      		std Y+29,r30
+ 474 00f4 EEAD      		adiw r28,93-62
+ 475 00f6 FFAD      		ldd r24,Y+62
+ 476 00f8 6D97      		ldd r25,Y+63
+ 477 00fa FE8F      		sbiw r28,93-62
+ 478 00fc ED8F      		std Y+28,r25
+ 479 00fe 6F96      		std Y+27,r24
+ 480 0100 8EAD      		adiw r28,95-62
+ 481 0102 9FAD      		ldd r26,Y+62
+ 482 0104 6F97      		ldd r27,Y+63
+ 483 0106 9C8F      		sbiw r28,95-62
+ 484 0108 8B8F      		std Y+26,r27
+ 485 010a A196      		std Y+25,r26
+ 486 010c AEAD      		adiw r28,97-62
+ 487 010e BFAD      		ldd r30,Y+62
+ 488 0110 A197      		ldd r31,Y+63
+ 489 0112 BA8F      		sbiw r28,97-62
+ 490 0114 A98F      		std Y+24,r31
+ 491 0116 A396      		std Y+23,r30
+ 492 0118 EEAD      		adiw r28,99-60
+ 493 011a FFAD      		ldd r8,Y+60
+ 494 011c A397      		ldd r9,Y+61
+ 495 011e F88F      		ldd r10,Y+62
+ 496 0120 EF8B      		ldd r11,Y+63
+ 497 0122 A796      		sbiw r28,99-60
+ 498 0124 8CAC      		adiw r28,103-60
+ 499 0126 9DAC      		ldd r2,Y+60
+ 500 0128 AEAC      		ldd r3,Y+61
+ 501 012a BFAC      		ldd r4,Y+62
+ 502 012c A797      		ldd r5,Y+63
+ 503 012e AB96      		sbiw r28,103-60
+ 504 0130 2CAC      		adiw r28,107-60
+ 505 0132 3DAC      		ldd r24,Y+60
+ 506 0134 4EAC      		ldd r25,Y+61
+ 507 0136 5FAC      		ldd r26,Y+62
+ 508 0138 AB97      		ldd r27,Y+63
+ 509 013a AF96      		sbiw r28,107-60
+ 510 013c 8CAD      		std Y+19,r24
+ 511 013e 9DAD      		std Y+20,r25
+ 512 0140 AEAD      		std Y+21,r26
+ 513 0142 BFAD      		std Y+22,r27
+ 514 0144 AF97      		adiw r28,111-60
+ 515 0146 8B8B      		ldd r24,Y+60
+ 516 0148 9C8B      		ldd r25,Y+61
+ 517 014a AD8B      		ldd r26,Y+62
+ 518 014c BE8B      		ldd r27,Y+63
+ 519 014e E396      		sbiw r28,111-60
+ 520 0150 8CAD      		std Y+15,r24
+ 521 0152 9DAD      		std Y+16,r25
+ 522 0154 AEAD      		std Y+17,r26
+ 523 0156 BFAD      		std Y+18,r27
+ 524 0158 E397      		adiw r28,115-60
+ 525 015a 8F87      		ldd r24,Y+60
+ 526 015c 988B      		ldd r25,Y+61
+ 527 015e A98B      		ldd r26,Y+62
+ 528 0160 BA8B      		ldd r27,Y+63
+ 529 0162 E796      		sbiw r28,115-60
+ 530 0164 8CAD      		std Y+11,r24
+ 531 0166 9DAD      		std Y+12,r25
+ 532 0168 AEAD      		std Y+13,r26
+ 533 016a BFAD      		std Y+14,r27
+ 534 016c E797      		adiw r28,119-60
+ 535 016e 8B87      		ldd r24,Y+60
+ 536 0170 9C87      		ldd r25,Y+61
+ 537 0172 AD87      		ldd r26,Y+62
+ 538 0174 BE87      		ldd r27,Y+63
+ 539 0176 EB96      		sbiw r28,119-60
+ 540 0178 8CAD      		std Y+7,r24
+ 541 017a 9DAD      		std Y+8,r25
+ 542 017c AEAD      		std Y+9,r26
+ 543 017e BFAD      		std Y+10,r27
+ 544 0180 EB97      		adiw r28,123-60
+ 545 0182 8F83      		ldd r24,Y+60
+ 546 0184 9887      		ldd r25,Y+61
+ 547 0186 A987      		ldd r26,Y+62
+ 548 0188 BA87      		ldd r27,Y+63
+ 549 018a EF96      		sbiw r28,123-60
+ 550 018c 8CAD      		std Y+3,r24
+ 551 018e 9DAD      		std Y+4,r25
+ 552 0190 AEAD      		std Y+5,r26
+ 553 0192 BFAD      		std Y+6,r27
+ 555 0196 8B83      	.LM10:
+ 556 0198 9C83      		rcall .
+ 557 019a AD83      		rcall .
+ 558 019c BE83      		ldi r24,lo8(.LC0)
+ 666:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	int test;
+ 667:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	
+ 668:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		printf("PrintAxissetting=> En  axisSettings.maxAxisAngle= %d \n",axisSettings.maxAxisAngle);
+ 559               	25
+ 560               		st -X,r24
+ 561 019e 00D0      		sbiw r26,3
+ 562 01a0 00D0      		call printf
+ 564 01a4 90E0      	.LM11:
+ 565 01a6 ADB7      		ldi r24,lo8(.LC1)
+ 566 01a8 BEB7      		ldi r25,hi8(.LC1)
+ 567 01aa 1296      		in r30,__SP_L__
+ 568 01ac 9C93      		in r31,__SP_H__
+ 569 01ae 8E93      		std Z+2,r25
+ 570 01b0 1197      		std Z+1,r24
+ 571 01b2 2B96      		std Z+4,r13
+ 572 01b4 8EAD      		std Z+3,r12
+ 573 01b6 9FAD      		call printf
+ 575 01ba 1496      	.LM12:
+ 576 01bc 9C93      		ldi r24,lo8(.LC2)
+ 577 01be 8E93      		ldi r25,hi8(.LC2)
+ 578 01c0 1397      		in r26,__SP_L__
+ 579 01c2 0E94 0000 		in r27,__SP_H__
+ 669:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		printf("PrintAxissetting=> En  axisSettings.minAxisAngle= %d \n",axisSettings.minAxisAngle);
+ 580               	25
+ 581               		st -X,r24
+ 582 01c6 80E0      		sbiw r26,1
+ 583 01c8 90E0      		clr r17
+ 584 01ca EDB7      		sbrc r16,7
+ 585 01cc FEB7      		com r17
+ 586 01ce 9283      		adiw r26,3+1
+ 587 01d0 8183      		st X,r17
+ 588 01d2 D482      		st -X,r16
+ 589 01d4 C382      		sbiw r26,3
+ 590 01d6 0E94 0000 		call printf
+ 670:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		printf("PrintAxissetting=> En  axisSettings.axisEnabled= %d \n",axisSettings.axisEnabled);
+ 591               	0,671,.LM13-.LFBB2
+ 592               	.LM13:
+ 593 01da 80E0      		ldi r24,lo8(.LC3)
+ 594 01dc 90E0      		ldi r25,hi8(.LC3)
+ 595 01de ADB7      		in r30,__SP_L__
+ 596 01e0 BEB7      		in r31,__SP_H__
+ 597 01e2 1296      		std Z+2,r25
+ 598 01e4 9C93      		std Z+1,r24
+ 599 01e6 8E93      		clr r15
+ 600 01e8 1197      		sbrc r14,7
+ 601 01ea 1127      		com r15
+ 602 01ec 07FD      		std Z+4,r15
+ 603 01ee 1095      		std Z+3,r14
+ 604 01f0 1496      		call printf
+ 606 01f4 0E93      	.LM14:
+ 607 01f6 1397      		ldi r24,lo8(.LC4)
+ 608 01f8 0E94 0000 		ldi r25,hi8(.LC4)
+ 671:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		printf("PrintAxissetting=> En  axisSettings.interruptEnable= %d \n",axisSettings.interruptEnable)
+ 609               	in r27,__SP_H__
+ 610               		adiw r26,1+1
+ 611 01fc 80E0      		st X,r25
+ 612 01fe 90E0      		st -X,r24
+ 613 0200 EDB7      		sbiw r26,1
+ 614 0202 FEB7      		adiw r26,3+1
+ 615 0204 9283      		st X,r7
+ 616 0206 8183      		st -X,r6
+ 617 0208 FF24      		sbiw r26,3
+ 618 020a E7FC      		call printf
+ 620 020e F482      	.LM15:
+ 621 0210 E382      		ldi r24,lo8(.LC5)
+ 622 0212 0E94 0000 		ldi r25,hi8(.LC5)
+ 672:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		printf("PrintAxissetting=> En  axisSettings.switchEnable= %d \n",axisSettings.switchEnable);
+ 623               	__
+ 624               		in r31,__SP_H__
+ 625 0216 80E0      		std Z+2,r25
+ 626 0218 90E0      		std Z+1,r24
+ 627 021a ADB7      		ldd r24,Y+45
+ 628 021c BEB7      		ldd r25,Y+46
+ 629 021e 1296      		std Z+4,r25
+ 630 0220 9C93      		std Z+3,r24
+ 631 0222 8E93      		call printf
+ 633 0226 1496      	.LM16:
+ 634 0228 7C92      		ldi r24,lo8(.LC6)
+ 635 022a 6E92      		ldi r25,hi8(.LC6)
+ 636 022c 1397      		in r26,__SP_L__
+ 637 022e 0E94 0000 		in r27,__SP_H__
+ 673:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		printf("PrintAxissetting=> En  axisSettings.encoderEnable= %d \n",axisSettings.encoderEnable);
+ 638               	st X,r25
+ 639               		st -X,r24
+ 640 0232 80E0      		sbiw r26,1
+ 641 0234 90E0      		ldd r30,Y+43
+ 642 0236 EDB7      		ldd r31,Y+44
+ 643 0238 FEB7      		adiw r26,3+1
+ 644 023a 9283      		st X,r31
+ 645 023c 8183      		st -X,r30
+ 646 023e 8DA5      		sbiw r26,3
+ 647 0240 9EA5      		call printf
+ 649 0244 8383      	.LM17:
+ 650 0246 0E94 0000 		ldi r24,lo8(.LC7)
+ 674:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		printf("PrintAxissetting=> En  axisSettings.ustepsPerStep= %d \n",axisSettings.ustepsPerStep);
+ 651               	.LC7)
+ 652               		in r26,__SP_L__
+ 653 024a 80E0      		in r27,__SP_H__
+ 654 024c 90E0      		adiw r26,1+1
+ 655 024e ADB7      		st X,r25
+ 656 0250 BEB7      		st -X,r24
+ 657 0252 1296      		sbiw r26,1
+ 658 0254 9C93      		ldd r30,Y+41
+ 659 0256 8E93      		ldd r31,Y+42
+ 660 0258 1197      		adiw r26,3+1
+ 661 025a EBA5      		st X,r31
+ 662 025c FCA5      		st -X,r30
+ 663 025e 1496      		sbiw r26,3
+ 664 0260 FC93      		call printf
+ 666 0264 1397      	.LM18:
+ 667 0266 0E94 0000 		ldi r24,lo8(.LC8)
+ 675:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		printf("PrintAxissetting=> En  axisSettings.motorStepsPerRevolution= %d \n",axisSettings.motorSte
+ 668               	)
+ 669               		in r26,__SP_L__
+ 670 026a 80E0      		in r27,__SP_H__
+ 671 026c 90E0      		adiw r26,1+1
+ 672 026e ADB7      		st X,r25
+ 673 0270 BEB7      		st -X,r24
+ 674 0272 1296      		sbiw r26,1
+ 675 0274 9C93      		ldd r30,Y+39
+ 676 0276 8E93      		ldd r31,Y+40
+ 677 0278 1197      		adiw r26,3+1
+ 678 027a E9A5      		st X,r31
+ 679 027c FAA5      		st -X,r30
+ 680 027e 1496      		sbiw r26,3
+ 681 0280 FC93      		call printf
+ 683 0284 1397      	.LM19:
+ 684 0286 0E94 0000 		ldi r24,lo8(.LC9)
+ 676:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		printf("PrintAxissetting=> En  axisSettings.encoderStepsPerRevolution= %d \n",axisSettings.encode
+ 685               	)
+ 686               		in r26,__SP_L__
+ 687 028a 80E0      		in r27,__SP_H__
+ 688 028c 90E0      		adiw r26,1+1
+ 689 028e ADB7      		st X,r25
+ 690 0290 BEB7      		st -X,r24
+ 691 0292 1296      		sbiw r26,1
+ 692 0294 9C93      		ldd r30,Y+37
+ 693 0296 8E93      		ldd r31,Y+38
+ 694 0298 1197      		adiw r26,3+1
+ 695 029a EFA1      		st X,r31
+ 696 029c F8A5      		st -X,r30
+ 697 029e 1496      		sbiw r26,3
+ 698 02a0 FC93      		call printf
+ 700 02a4 1397      	.LM20:
+ 701 02a6 0E94 0000 		ldi r24,lo8(.LC10)
+ 677:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		printf("PrintAxissetting=> En  axisSettings.TrackingWindow= %d \n",axisSettings.TrackingWindow);
+ 702               	0)
+ 703               		in r26,__SP_L__
+ 704 02aa 80E0      		in r27,__SP_H__
+ 705 02ac 90E0      		adiw r26,1+1
+ 706 02ae ADB7      		st X,r25
+ 707 02b0 BEB7      		st -X,r24
+ 708 02b2 1296      		sbiw r26,1
+ 709 02b4 9C93      		ldd r30,Y+35
+ 710 02b6 8E93      		ldd r31,Y+36
+ 711 02b8 1197      		adiw r26,3+1
+ 712 02ba EDA1      		st X,r31
+ 713 02bc FEA1      		st -X,r30
+ 714 02be 1496      		sbiw r26,3
+ 715 02c0 FC93      		call printf
+ 717 02c4 1397      	.LM21:
+ 718 02c6 0E94 0000 		ldi r24,lo8(.LC11)
+ 678:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		printf("PrintAxissetting=> En  axisSettings.SettleWindow= %d \n",axisSettings.SettleWindow);
+ 719               	1)
+ 720               		in r26,__SP_L__
+ 721 02ca 80E0      		in r27,__SP_H__
+ 722 02cc 90E0      		adiw r26,1+1
+ 723 02ce ADB7      		st X,r25
+ 724 02d0 BEB7      		st -X,r24
+ 725 02d2 1296      		sbiw r26,1
+ 726 02d4 9C93      		ldd r30,Y+33
+ 727 02d6 8E93      		ldd r31,Y+34
+ 728 02d8 1197      		adiw r26,3+1
+ 729 02da EBA1      		st X,r31
+ 730 02dc FCA1      		st -X,r30
+ 731 02de 1496      		sbiw r26,3
+ 732 02e0 FC93      		call printf
+ 734 02e4 1397      	.LM22:
+ 735 02e6 0E94 0000 		ldi r24,lo8(.LC12)
+ 679:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		printf("PrintAxissetting=> En  axisSettings.SettleTime= %d \n",axisSettings.SettleTime);
+ 736               	2)
+ 737               		in r26,__SP_L__
+ 738 02ea 80E0      		in r27,__SP_H__
+ 739 02ec 90E0      		adiw r26,1+1
+ 740 02ee ADB7      		st X,r25
+ 741 02f0 BEB7      		st -X,r24
+ 742 02f2 1296      		sbiw r26,1
+ 743 02f4 9C93      		ldd r30,Y+31
+ 744 02f6 8E93      		ldd r31,Y+32
+ 745 02f8 1197      		adiw r26,3+1
+ 746 02fa E9A1      		st X,r31
+ 747 02fc FAA1      		st -X,r30
+ 748 02fe 1496      		sbiw r26,3
+ 749 0300 FC93      		call printf
+ 751 0304 1397      	.LM23:
+ 752 0306 0E94 0000 		ldi r24,lo8(.LC13)
+ 680:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		printf("PrintAxissetting=> En  axisSettings.motorPower= %d \n",axisSettings.motorPower);
+ 753               	3)
+ 754               		in r26,__SP_L__
+ 755 030a 80E0      		in r27,__SP_H__
+ 756 030c 90E0      		adiw r26,1+1
+ 757 030e ADB7      		st X,r25
+ 758 0310 BEB7      		st -X,r24
+ 759 0312 1296      		sbiw r26,1
+ 760 0314 9C93      		ldd r30,Y+29
+ 761 0316 8E93      		ldd r31,Y+30
+ 762 0318 1197      		adiw r26,3+1
+ 763 031a EF8D      		st X,r31
+ 764 031c F8A1      		st -X,r30
+ 765 031e 1496      		sbiw r26,3
+ 766 0320 FC93      		call printf
+ 768 0324 1397      	.LM24:
+ 769 0326 0E94 0000 		ldi r24,lo8(.LC14)
+ 681:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		printf("PrintAxissetting=> En  axisSettings.numberPhases= %d \n",axisSettings.numberPhases);
+ 770               	4)
+ 771               		in r26,__SP_L__
+ 772 032a 80E0      		in r27,__SP_H__
+ 773 032c 90E0      		adiw r26,1+1
+ 774 032e ADB7      		st X,r25
+ 775 0330 BEB7      		st -X,r24
+ 776 0332 1296      		sbiw r26,1
+ 777 0334 9C93      		ldd r30,Y+27
+ 778 0336 8E93      		ldd r31,Y+28
+ 779 0338 1197      		adiw r26,3+1
+ 780 033a ED8D      		st X,r31
+ 781 033c FE8D      		st -X,r30
+ 782 033e 1496      		sbiw r26,3
+ 783 0340 FC93      		call printf
+ 785 0344 1397      	.LM25:
+ 786 0346 0E94 0000 		ldi r24,lo8(.LC15)
+ 682:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		printf("PrintAxissetting=> En  axisSettings.homeSwitchHandling= %d \n",axisSettings.homeSwitchHan
+ 787               	5)
+ 788               		in r26,__SP_L__
+ 789 034a 80E0      		in r27,__SP_H__
+ 790 034c 90E0      		adiw r26,1+1
+ 791 034e ADB7      		st X,r25
+ 792 0350 BEB7      		st -X,r24
+ 793 0352 1296      		sbiw r26,1
+ 794 0354 9C93      		ldd r30,Y+25
+ 795 0356 8E93      		ldd r31,Y+26
+ 796 0358 1197      		adiw r26,3+1
+ 797 035a EB8D      		st X,r31
+ 798 035c FC8D      		st -X,r30
+ 799 035e 1496      		sbiw r26,3
+ 800 0360 FC93      		call printf
+ 802 0364 1397      	.LM26:
+ 803 0366 0E94 0000 		ldi r24,lo8(.LC16)
+ 683:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		printf("PrintAxissetting=> En  axisSettings.gearNominator= %d \n",axisSettings.gearNominator);
+ 804               	6)
+ 805               		in r26,__SP_L__
+ 806 036a 80E0      		in r27,__SP_H__
+ 807 036c 90E0      		adiw r26,1+1
+ 808 036e ADB7      		st X,r25
+ 809 0370 BEB7      		st -X,r24
+ 810 0372 1296      		sbiw r26,1
+ 811 0374 9C93      		ldd r30,Y+23
+ 812 0376 8E93      		ldd r31,Y+24
+ 813 0378 1197      		adiw r26,3+1
+ 814 037a E98D      		st X,r31
+ 815 037c FA8D      		st -X,r30
+ 816 037e 1496      		sbiw r26,3
+ 817 0380 FC93      		call printf
+ 819 0384 1397      	.LM27:
+ 820 0386 0E94 0000 		rcall .
+ 684:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		printf("PrintAxissetting=> En  axisSettings.gearDenominator= %d \n",axisSettings.gearDenominator)
+ 821               	7)
+ 822               		ldi r25,hi8(.LC17)
+ 823 038a 80E0      		in r26,__SP_L__
+ 824 038c 90E0      		in r27,__SP_H__
+ 825 038e ADB7      		adiw r26,1+1
+ 826 0390 BEB7      		st X,r25
+ 827 0392 1296      		st -X,r24
+ 828 0394 9C93      		sbiw r26,1
+ 829 0396 8E93      		in r30,__SP_L__
+ 830 0398 1197      		in r31,__SP_H__
+ 831 039a EF89      		std Z+3,r8
+ 832 039c F88D      		std Z+4,r9
+ 833 039e 1496      		std Z+5,r10
+ 834 03a0 FC93      		std Z+6,r11
+ 835 03a2 EE93      		call printf
+ 837 03a6 0E94 0000 	.LM28:
+ 685:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		printf("PrintAxissetting=> En  axisSettings.ErrorLimit= %ld \n",axisSettings.ErrorLimit);
+ 838               	8)
+ 839               		ldi r25,hi8(.LC18)
+ 840 03aa 00D0      		in r26,__SP_L__
+ 841 03ac 80E0      		in r27,__SP_H__
+ 842 03ae 90E0      		adiw r26,1+1
+ 843 03b0 ADB7      		st X,r25
+ 844 03b2 BEB7      		st -X,r24
+ 845 03b4 1296      		sbiw r26,1
+ 846 03b6 9C93      		in r30,__SP_L__
+ 847 03b8 8E93      		in r31,__SP_H__
+ 848 03ba 1197      		std Z+3,r2
+ 849 03bc EDB7      		std Z+4,r3
+ 850 03be FEB7      		std Z+5,r4
+ 851 03c0 8382      		std Z+6,r5
+ 852 03c2 9482      		call printf
+ 854 03c6 B682      	.LM29:
+ 855 03c8 0E94 0000 		ldi r24,lo8(.LC19)
+ 686:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		printf("PrintAxissetting=> En  axisSettings.limitAcceleration= %ld \n",axisSettings.limitAccelera
+ 856               	)
+ 857               		in r26,__SP_L__
+ 858 03cc 80E0      		in r27,__SP_H__
+ 859 03ce 90E0      		adiw r26,1+1
+ 860 03d0 ADB7      		st X,r25
+ 861 03d2 BEB7      		st -X,r24
+ 862 03d4 1296      		sbiw r26,1
+ 863 03d6 9C93      		ldd r24,Y+19
+ 864 03d8 8E93      		ldd r25,Y+20
+ 865 03da 1197      		ldd r26,Y+21
+ 866 03dc EDB7      		ldd r27,Y+22
+ 867 03de FEB7      		in r30,__SP_L__
+ 868 03e0 2382      		in r31,__SP_H__
+ 869 03e2 3482      		std Z+3,r24
+ 870 03e4 4582      		std Z+4,r25
+ 871 03e6 5682      		std Z+5,r26
+ 872 03e8 0E94 0000 		std Z+6,r27
+ 687:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		printf("PrintAxissetting=> En  axisSettings.limitVelocity= %ld \n",axisSettings.limitVelocity);
+ 873               	abn	68,0,688,.LM30-.LFBB2
+ 874               	.LM30:
+ 875 03ec 80E0      		ldi r24,lo8(.LC20)
+ 876 03ee 90E0      		ldi r25,hi8(.LC20)
+ 877 03f0 ADB7      		in r26,__SP_L__
+ 878 03f2 BEB7      		in r27,__SP_H__
+ 879 03f4 1296      		adiw r26,1+1
+ 880 03f6 9C93      		st X,r25
+ 881 03f8 8E93      		st -X,r24
+ 882 03fa 1197      		sbiw r26,1
+ 883 03fc 8B89      		ldd r24,Y+15
+ 884 03fe 9C89      		ldd r25,Y+16
+ 885 0400 AD89      		ldd r26,Y+17
+ 886 0402 BE89      		ldd r27,Y+18
+ 887 0404 EDB7      		in r30,__SP_L__
+ 888 0406 FEB7      		in r31,__SP_H__
+ 889 0408 8383      		std Z+3,r24
+ 890 040a 9483      		std Z+4,r25
+ 891 040c A583      		std Z+5,r26
+ 892 040e B683      		std Z+6,r27
+ 893 0410 0E94 0000 		call printf
+ 688:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		printf("PrintAxissetting=> En  axisSettings.limitJerk= %ld \n",axisSettings.limitJerk);
+ 894               	1-.LFBB2
+ 895               	.LM31:
+ 896 0414 80E0      		ldi r24,lo8(.LC21)
+ 897 0416 90E0      		ldi r25,hi8(.LC21)
+ 898 0418 ADB7      		in r26,__SP_L__
+ 899 041a BEB7      		in r27,__SP_H__
+ 900 041c 1296      		adiw r26,1+1
+ 901 041e 9C93      		st X,r25
+ 902 0420 8E93      		st -X,r24
+ 903 0422 1197      		sbiw r26,1
+ 904 0424 8F85      		ldd r24,Y+11
+ 905 0426 9889      		ldd r25,Y+12
+ 906 0428 A989      		ldd r26,Y+13
+ 907 042a BA89      		ldd r27,Y+14
+ 908 042c EDB7      		in r30,__SP_L__
+ 909 042e FEB7      		in r31,__SP_H__
+ 910 0430 8383      		std Z+3,r24
+ 911 0432 9483      		std Z+4,r25
+ 912 0434 A583      		std Z+5,r26
+ 913 0436 B683      		std Z+6,r27
+ 914 0438 0E94 0000 		call printf
+ 689:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		printf("PrintAxissetting=> En  axisSettings.maxAcceleration= %ld \n",axisSettings.maxAcceleration
+ 915               	2-.LFBB2
+ 916               	.LM32:
+ 917 043c 80E0      		ldi r24,lo8(.LC22)
+ 918 043e 90E0      		ldi r25,hi8(.LC22)
+ 919 0440 ADB7      		in r26,__SP_L__
+ 920 0442 BEB7      		in r27,__SP_H__
+ 921 0444 1296      		adiw r26,1+1
+ 922 0446 9C93      		st X,r25
+ 923 0448 8E93      		st -X,r24
+ 924 044a 1197      		sbiw r26,1
+ 925 044c 8B85      		ldd r24,Y+7
+ 926 044e 9C85      		ldd r25,Y+8
+ 927 0450 AD85      		ldd r26,Y+9
+ 928 0452 BE85      		ldd r27,Y+10
+ 929 0454 EDB7      		in r30,__SP_L__
+ 930 0456 FEB7      		in r31,__SP_H__
+ 931 0458 8383      		std Z+3,r24
+ 932 045a 9483      		std Z+4,r25
+ 933 045c A583      		std Z+5,r26
+ 934 045e B683      		std Z+6,r27
+ 935 0460 0E94 0000 		call printf
+ 690:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		printf("PrintAxissetting=> En  axisSettings.maxVelocity= %ld \n",axisSettings.maxVelocity);
+ 936               	3-.LFBB2
+ 937               	.LM33:
+ 938 0464 80E0      		ldi r24,lo8(.LC23)
+ 939 0466 90E0      		ldi r25,hi8(.LC23)
+ 940 0468 ADB7      		in r26,__SP_L__
+ 941 046a BEB7      		in r27,__SP_H__
+ 942 046c 1296      		adiw r26,1+1
+ 943 046e 9C93      		st X,r25
+ 944 0470 8E93      		st -X,r24
+ 945 0472 1197      		sbiw r26,1
+ 946 0474 8F81      		ldd r24,Y+3
+ 947 0476 9885      		ldd r25,Y+4
+ 948 0478 A985      		ldd r26,Y+5
+ 949 047a BA85      		ldd r27,Y+6
+ 950 047c EDB7      		in r30,__SP_L__
+ 951 047e FEB7      		in r31,__SP_H__
+ 952 0480 8383      		std Z+3,r24
+ 953 0482 9483      		std Z+4,r25
+ 954 0484 A583      		std Z+5,r26
+ 955 0486 B683      		std Z+6,r27
+ 956 0488 0E94 0000 		call printf
+ 691:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		printf("PrintAxissetting=> En  axisSettings.minVelocity= %ld \n",axisSettings.minVelocity);	  
+ 957               	4-.LFBB2
+ 958               	.LM34:
+ 959 048c 80E0      		pop __tmp_reg__
+ 960 048e 90E0      		pop __tmp_reg__
+ 961 0490 ADB7      		ldi r24,lo8(.LC24)
+ 962 0492 BEB7      		ldi r25,hi8(.LC24)
+ 963 0494 1296      		in r26,__SP_L__
+ 964 0496 9C93      		in r27,__SP_H__
+ 965 0498 8E93      		adiw r26,1+1
+ 966 049a 1197      		st X,r25
+ 967 049c 8B81      		st -X,r24
+ 968 049e 9C81      		sbiw r26,1
+ 969 04a0 AD81      		movw r24,r28
+ 970 04a2 BE81      		adiw r24,1
+ 971 04a4 EDB7      		adiw r26,3+1
+ 972 04a6 FEB7      		st X,r25
+ 973 04a8 8383      		st -X,r24
+ 974 04aa 9483      		sbiw r26,3
+ 975 04ac A583      		call scanf
+ 976 04ae B683      		pop __tmp_reg__
+ 977 04b0 0E94 0000 		pop __tmp_reg__
+ 692:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 		scanf("%d",&test);
+ 978               	 __tmp_reg__
+ 979               	/* epilogue start */
+ 981 04b6 0F90      	.LM35:
+ 982 04b8 80E0      		adiw r28,46
+ 983 04ba 90E0      		in __tmp_reg__,__SREG__
+ 984 04bc ADB7      		cli
+ 985 04be BEB7      		out __SP_H__,r29
+ 986 04c0 1296      		out __SREG__,__tmp_reg__
+ 987 04c2 9C93      		out __SP_L__,r28
+ 988 04c4 8E93      		pop r28
+ 989 04c6 1197      		pop r29
+ 990 04c8 CE01      		pop r17
+ 991 04ca 0196      		pop r16
+ 992 04cc 1496      		pop r15
+ 993 04ce 9C93      		pop r14
+ 994 04d0 8E93      		pop r13
+ 995 04d2 1397      		pop r12
+ 996 04d4 0E94 0000 		pop r11
+ 997 04d8 0F90      		pop r10
+ 998 04da 0F90      		pop r9
+ 999 04dc 0F90      		pop r8
+ 1000 04de 0F90      		pop r7
+ 1001               		pop r6
+ 693:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** 	
+ 694:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDsetup.c **** }
+ 1002               		pop r2
+ 1003               		ret
+ 1008 04e8 0FBE      	.Lscope2:
+ 1011 04ee DF91      	.global	Axissetting2hAxisHandle
+ 1013 04f2 0F91      	Axissetting2hAxisHandle:
+ 1015 04f6 EF90      	.LM36:
+ 1016 04f8 DF90      	.LFBB3:
+ 1017 04fa CF90      		push r6
+ 1018 04fc BF90      		push r7
+ 1019 04fe AF90      		push r8
+ 1020 0500 9F90      		push r9
+ 1021 0502 8F90      		push r10
+ 1022 0504 7F90      		push r11
+ 1023 0506 6F90      		push r12
+ 1024 0508 5F90      		push r13
+ 1025 050a 4F90      		push r14
+ 1026 050c 3F90      		push r15
+ 1027 050e 2F90      		push r16
+ 1028 0510 0895      		push r17
+ 1029               		push r29
+ 1030               		push r28
+ 1031               		in r28,__SP_L__
+ 1032               		in r29,__SP_H__
+ 1033               		subi r28,lo8(-(-342))
+ 1034               		sbci r29,hi8(-(-342))
+ 1035               		in __tmp_reg__,__SREG__
+ 1036               		cli
+ 1037               		out __SP_H__,r29
+ 1038               		out __SREG__,__tmp_reg__
+ 1039               		out __SP_L__,r28
+ 1040               	/* prologue: function */
+ 1041               	/* frame size = 342 */
+ 1042 0512 6F92      		movw r8,r24
+ 1044 0516 8F92      	.LM37:
+ 1045 0518 9F92      		ldi r16,lo8(0)
+ 1046 051a AF92      		ldi r17,hi8(0)
+ 1047 051c BF92      		clr r10
+ 1048 051e CF92      		clr r11
+ 1050 0522 EF92      	.LM38:
+ 1051 0524 FF92      		ldi r22,lo8(68)
+ 1052 0526 0F93      		mov r12,r22
+ 1053 0528 1F93      		mov r13,__zero_reg__
+ 1054 052a DF93      		ldi r21,lo8(3)
+ 1055 052c CF93      		mov r6,r21
+ 1056 052e CDB7      		mov r7,__zero_reg__
+ 1057 0530 DEB7      		add r6,r28
+ 1058 0532 C655      		adc r7,r29
+ 1059 0534 D140      	.L13:
+ 1060 0536 0FB6      		mul r16,r12
+ 1061 0538 F894      		movw r22,r0
+ 1062 053a DEBF      		mul r16,r13
+ 1063 053c 0FBE      		add r23,r0
+ 1064 053e CDBF      		mul r17,r12
+ 1065               		add r23,r0
+ 1066               		clr r1
+ 1067 0540 4C01      		movw r14,r6
+ 1068               		add r14,r22
+ 1069               		adc r15,r23
+ 1070 0542 00E0      		subi r22,lo8(-(EEprom_axisSettings))
+ 1071 0544 10E0      		sbci r23,hi8(-(EEprom_axisSettings))
+ 1072 0546 AA24      		movw r24,r14
+ 1073 0548 BB24      		ldi r20,lo8(68)
+ 1074               		ldi r21,hi8(68)
+ 1075               		call __eerd_block_m1280
+ 1077 054c C62E      	.LM39:
+ 1078 054e D12C      		ldi r18,lo8(0)
+ 1079 0550 53E0      		ldi r19,hi8(0)
+ 1080 0552 652E      		rjmp .L10
+ 1081 0554 712C      	.L12:
+ 1083 0558 7D1E      	.LM40:
+ 1084               		movw r26,r14
+ 1085 055a 0C9D      		add r26,r18
+ 1086 055c B001      		adc r27,r19
+ 1087 055e 0D9D      		mul r16,r12
+ 1088 0560 700D      		movw r30,r0
+ 1089 0562 1C9D      		mul r16,r13
+ 1090 0564 700D      		add r31,r0
+ 1091 0566 1124      		mul r17,r12
+ 1092 0568 7301      		add r31,r0
+ 1093 056a E60E      		clr r1
+ 1094 056c F71E      		add r30,r18
+ 1095 056e 6050      		adc r31,r19
+ 1096 0570 7040      		add r30,r8
+ 1097 0572 C701      		adc r31,r9
+ 1098 0574 44E4      		ld r25,X
+ 1099 0576 50E0      		ld r24,Z
+ 1100 0578 0E94 0000 		cp r25,r24
+ 1101               		breq .L11
+ 1102               		ldi r18,lo8(68)
+ 1103 057c 20E0      		ldi r19,hi8(68)
+ 1104 057e 30E0      		ldi r16,lo8(5)
+ 1105 0580 00C0      		ldi r17,hi8(5)
+ 1106               		ldi r20,lo8(1)
+ 1107               		mov r10,r20
+ 1108               		mov r11,__zero_reg__
+ 1109 0582 D701      	.L11:
+ 1111 0586 B31F      	.LM41:
+ 1112 0588 0C9D      		subi r18,lo8(-(1))
+ 1113 058a F001      		sbci r19,hi8(-(1))
+ 1114 058c 0D9D      	.L10:
+ 1115 058e F00D      		cpi r18,68
+ 1116 0590 1C9D      		cpc r19,__zero_reg__
+ 1117 0592 F00D      		brlo .L12
+ 1119 0596 E20F      	.LM42:
+ 1120 0598 F31F      		subi r16,lo8(-(1))
+ 1121 059a E80D      		sbci r17,hi8(-(1))
+ 1122 059c F91D      		cpi r16,5
+ 1123 059e 9C91      		cpc r17,__zero_reg__
+ 1124 05a0 8081      		brlt .L13
+ 1126 05a4 01F0      	.LM43:
+ 1127 05a6 24E4      		ldi r24,lo8(1)
+ 1128 05a8 30E0      		cp r10,r24
+ 1129 05aa 05E0      		cpc r11,__zero_reg__
+ 1130 05ac 10E0      		breq .+2
+ 1131 05ae 41E0      		rjmp .L14
+ 1133 05b2 B12C      	.LM44:
+ 1134               		movw r16,r28
+ 1135               		subi r16,lo8(-(1))
+ 1136               		sbci r17,hi8(-(1))
+ 1137 05b4 2F5F      		movw r24,r16
+ 1138 05b6 3F4F      		ldi r22,lo8(EEprom_Reconf_Indicator)
+ 1139               		ldi r23,hi8(EEprom_Reconf_Indicator)
+ 1140 05b8 2434      		ldi r20,lo8(2)
+ 1141 05ba 3105      		ldi r21,hi8(2)
+ 1142 05bc 00F0      		call __eerd_block_m1280
+ 1144               	.LM45:
+ 1145 05be 0F5F      		ldd r24,Y+1
+ 1146 05c0 1F4F      		ldd r25,Y+2
+ 1147 05c2 0530      		or r24,r25
+ 1148 05c4 1105      		brne .L15
+ 1150               	.LM46:
+ 1151               		std Y+2,r11
+ 1152 05c8 81E0      		std Y+1,r10
+ 1154 05cc B104      	.LM47:
+ 1155 05ce 01F0      		movw r24,r16
+ 1156 05d0 00C0      		ldi r22,lo8(EEprom_Reconf_Indicator)
+ 1157               		ldi r23,hi8(EEprom_Reconf_Indicator)
+ 1158               		ldi r20,lo8(2)
+ 1159 05d2 8E01      		ldi r21,hi8(2)
+ 1160 05d4 0F5F      		call __eewr_block_m1280
+ 1161 05d6 1F4F      	.L15:
+ 1162 05d8 C801      		clr r14
+ 1163 05da 60E0      		clr r15
+ 1164 05dc 70E0      		clr r12
+ 1165 05de 42E0      		clr r13
+ 1166 05e0 50E0      	.L16:
+ 1167 05e2 0E94 0000 		movw r16,r12
+ 1168               		subi r16,lo8(-(EEprom_axisSettings))
+ 1169               		sbci r17,hi8(-(EEprom_axisSettings))
+ 1171 05e8 9A81      	.LM48:
+ 1172 05ea 892B      		movw r24,r8
+ 1173 05ec 01F4      		add r24,r12
+ 1174               		adc r25,r13
+ 1175               		movw r22,r16
+ 1176 05ee BA82      		ldi r20,lo8(68)
+ 1177 05f0 A982      		ldi r21,hi8(68)
+ 1178               		call __eewr_block_m1280
+ 1180 05f2 C801      	.LM49:
+ 1181 05f4 60E0      		movw r24,r14
+ 1182 05f6 70E0      		lsl r24
+ 1183 05f8 42E0      		rol r25
+ 1184 05fa 50E0      		add r24,r14
+ 1185 05fc 0E94 0000 		adc r25,r15
+ 1186               		ldi r18,5
+ 1187 0600 EE24      	1:	lsl r24
+ 1188 0602 FF24      		rol r25
+ 1189 0604 CC24      		dec r18
+ 1190 0606 DD24      		brne 1b
+ 1191               		subi r24,lo8(-(hAxis+4))
+ 1192 0608 8601      		sbci r25,hi8(-(hAxis+4))
+ 1193 060a 0050      		movw r22,r16
+ 1194 060c 1040      		ldi r20,lo8(68)
+ 1195               		ldi r21,hi8(68)
+ 1196               		call __eerd_block_m1280
+ 1198 0610 8C0D      	.LM50:
+ 1199 0612 9D1D      		sec
+ 1200 0614 B801      		adc r14,__zero_reg__
+ 1201 0616 44E4      		adc r15,__zero_reg__
+ 1202 0618 50E0      		ldi r24,lo8(68)
+ 1203 061a 0E94 0000 		ldi r25,hi8(68)
+ 1204               		add r12,r24
+ 1205               		adc r13,r25
+ 1206 061e C701      		ldi r25,lo8(5)
+ 1207 0620 880F      		cp r14,r25
+ 1208 0622 991F      		cpc r15,__zero_reg__
+ 1209 0624 8E0D      		brne .L16
+ 1210 0626 9F1D      	.L14:
+ 1212 062a 880F      	.LM51:
+ 1213 062c 991F      		movw r24,r10
+ 1214 062e 2A95      	/* epilogue start */
+ 1215 0630 01F4      		subi r28,lo8(-(342))
+ 1216 0632 8050      		sbci r29,hi8(-(342))
+ 1217 0634 9040      		in __tmp_reg__,__SREG__
+ 1218 0636 B801      		cli
+ 1219 0638 44E4      		out __SP_H__,r29
+ 1220 063a 50E0      		out __SREG__,__tmp_reg__
+ 1221 063c 0E94 0000 		out __SP_L__,r28
+ 1222               		pop r28
+ 1223               		pop r29
+ 1224 0640 0894      		pop r17
+ 1225 0642 E11C      		pop r16
+ 1226 0644 F11C      		pop r15
+ 1227 0646 84E4      		pop r14
+ 1228 0648 90E0      		pop r13
+ 1229 064a C80E      		pop r12
+ 1230 064c D91E      		pop r11
+ 1231 064e 95E0      		pop r10
+ 1232 0650 E916      		pop r9
+ 1233 0652 F104      		pop r8
+ 1234 0654 01F4      		pop r7
+ 1235               		pop r6
+ 1236               		ret
+ 1245 0662 0FBE      	.Lscope3:
+ 1250 066c 0F91      	.global	Config_BreakPoint
+ 1252 0670 EF90      	Config_BreakPoint:
+ 1254 0674 CF90      	.LM52:
+ 1255 0676 BF90      	.LFBB4:
+ 1256 0678 AF90      		push r8
+ 1257 067a 9F90      		push r9
+ 1258 067c 8F90      		push r10
+ 1259 067e 7F90      		push r11
+ 1260 0680 6F90      		push r12
+ 1261 0682 0895      		push r13
+ 1262               		push r14
+ 1263               		push r15
+ 1264               		push r16
+ 1265               		push r17
+ 1266               	/* prologue: function */
+ 1267               	/* frame size = 0 */
+ 1268               		mov r17,r22
+ 1269               		mov r9,r23
+ 1270               		movw r10,r20
+ 1271               		mov r8,r18
+ 1272               		movw r20,r14
+ 1273               		movw r18,r12
+ 1275               	.LM53:
+ 1276               		ldi r22,lo8(96)
+ 1277               		ldi r23,hi8(96)
+ 1278               		mul r24,r22
+ 1279               		movw r14,r0
+ 1280               		mul r24,r23
+ 1281 0684 8F92      		add r15,r0
+ 1282 0686 9F92      		mul r25,r22
+ 1283 0688 AF92      		add r15,r0
+ 1284 068a BF92      		clr r1
+ 1285 068c CF92      		ldi r24,lo8(hAxis)
+ 1286 068e DF92      		ldi r25,hi8(hAxis)
+ 1287 0690 EF92      		add r14,r24
+ 1288 0692 FF92      		adc r15,r25
+ 1289 0694 0F93      		movw r24,r14
+ 1290 0696 1F93      		mov r22,r17
+ 1291               		mov r23,r9
+ 1292               		call PMDSetBreakpointValue
+ 1294 069a 972E      	.LM54:
+ 1295 069c 5A01      		movw r24,r14
+ 1296 069e 822E      		mov r22,r17
+ 1297 06a0 A701      		mov r23,r9
+ 1298 06a2 9601      		movw r20,r10
+ 1299               		mov r18,r8
+ 1300               		call PMDSetBreakpoint
+ 1301 06a4 60E6      	/* epilogue start */
+ 1303 06a8 869F      	.LM55:
+ 1304 06aa 7001      		pop r17
+ 1305 06ac 879F      		pop r16
+ 1306 06ae F00C      		pop r15
+ 1307 06b0 969F      		pop r14
+ 1308 06b2 F00C      		pop r13
+ 1309 06b4 1124      		pop r12
+ 1310 06b6 80E0      		pop r11
+ 1311 06b8 90E0      		pop r10
+ 1312 06ba E80E      		pop r9
+ 1313 06bc F91E      		pop r8
+ 1314 06be C701      		ret
+ 1316 06c2 792D      	.Lscope4:
+ 1320 06c8 C701      	.global	cargar_encoder
+ 1322 06cc 792D      	cargar_encoder:
+ 1324 06d0 282D      	.LM56:
+ 1325 06d2 0E94 0000 	.LFBB5:
+ 1326               	/* prologue: function */
+ 1327               	/* frame size = 0 */
+ 1329 06d6 1F91      	.LM57:
+ 1330 06d8 0F91      		ldi r18,lo8(96)
+ 1331 06da FF90      		ldi r19,hi8(96)
+ 1332 06dc EF90      		movw r30,r24
+ 1333 06de DF90      		mul r30,r18
+ 1334 06e0 CF90      		movw r24,r0
+ 1335 06e2 BF90      		mul r30,r19
+ 1336 06e4 AF90      		add r25,r0
+ 1337 06e6 9F90      		mul r31,r18
+ 1338 06e8 8F90      		add r25,r0
+ 1339 06ea 0895      		clr r1
+ 1340               		subi r24,lo8(-(hAxis))
+ 1341               		sbci r25,hi8(-(hAxis))
+ 1342               		call PMDSetActualPosition
+ 1343               	/* epilogue start */
+ 1345               	.LM58:
+ 1346               		ret
+ 1348               	.Lscope5:
+ 1352               	.global	ajustar_posicion
+ 1354               	ajustar_posicion:
+ 1356 06ee 30E0      	.LM59:
+ 1357 06f0 FC01      	.LFBB6:
+ 1358 06f2 E29F      	/* prologue: function */
+ 1359 06f4 C001      	/* frame size = 0 */
+ 1361 06f8 900D      	.LM60:
+ 1362 06fa F29F      		ldi r18,lo8(96)
+ 1363 06fc 900D      		ldi r19,hi8(96)
+ 1364 06fe 1124      		movw r30,r24
+ 1365 0700 8050      		mul r30,r18
+ 1366 0702 9040      		movw r24,r0
+ 1367 0704 0E94 0000 		mul r30,r19
+ 1368               		add r25,r0
+ 1369               		mul r31,r18
+ 1370               		add r25,r0
+ 1371 0708 0895      		clr r1
+ 1372               		subi r24,lo8(-(hAxis))
+ 1373               		sbci r25,hi8(-(hAxis))
+ 1374               		call PMDAdjustActualPosition
+ 1375               	/* epilogue start */
+ 1377               	.LM61:
+ 1378               		ret
+ 1380               	.Lscope6:
+ 1382               	.global	Clear_Position_Error
+ 1384               	Clear_Position_Error:
+ 1386               	.LM62:
+ 1387 070a 20E6      	.LFBB7:
+ 1388 070c 30E0      		push r16
+ 1389 070e FC01      		push r17
+ 1390 0710 E29F      		push r28
+ 1391 0712 C001      		push r29
+ 1392 0714 E39F      	/* prologue: function */
+ 1393 0716 900D      	/* frame size = 0 */
+ 1395 071a 900D      	.LM63:
+ 1396 071c 1124      		ldi r16,lo8(hAxis)
+ 1397 071e 8050      		ldi r17,hi8(hAxis)
+ 1398 0720 9040      		movw r28,r16
+ 1399 0722 0E94 0000 	.L28:
+ 1401               	.LM64:
+ 1402               		ldd r24,Y+4
+ 1403 0726 0895      		cpi r24,lo8(1)
+ 1404               		brne .L27
+ 1406               	.LM65:
+ 1407               		movw r24,r28
+ 1408               		call PMDClearPositionError
+ 1409               	.L27:
+ 1410               		subi r28,lo8(-(96))
+ 1411               		sbci r29,hi8(-(96))
+ 1413 0728 0F93      	.LM66:
+ 1414 072a 1F93      		ldi r24,hi8(hAxis+480)
+ 1415 072c CF93      		cpi r28,lo8(hAxis+480)
+ 1416 072e DF93      		cpc r29,r24
+ 1417               		brne .L28
+ 1418               	.L32:
+ 1420               	.LM67:
+ 1421 0730 00E0      		movw r30,r16
+ 1422 0732 10E0      		ldd r24,Z+2
+ 1423 0734 E801      		ldd r25,Z+3
+ 1424               		or r24,r25
+ 1425               		brne .L29
+ 1427 0736 8C81      	.LM68:
+ 1428 0738 8130      		movw r24,r16
+ 1429 073a 01F4      		ldi r22,lo8(15)
+ 1430               		ldi r23,hi8(15)
+ 1431               		call PMDMultiUpdate
+ 1432 073c CE01      	.L29:
+ 1433 073e 0E94 0000 		subi r16,lo8(-(96))
+ 1434               		sbci r17,hi8(-(96))
+ 1436 0744 DF4F      	.LM69:
+ 1437               		cp r16,r28
+ 1438               		cpc r17,r29
+ 1439 0746 80E0      		brne .L32
+ 1440 0748 C030      	/* epilogue start */
+ 1442 074c 01F4      	.LM70:
+ 1443               		pop r29
+ 1444               		pop r28
+ 1445               		pop r17
+ 1446 074e F801      		pop r16
+ 1447 0750 8281      		ret
+ 1449 0754 892B      	.Lscope7:
+ 1451               	.global	Reset_Even_Status_Register
+ 1453 0758 C801      	Reset_Even_Status_Register:
+ 1455 075c 70E0      	.LM71:
+ 1456 075e 0E94 0000 	.LFBB8:
+ 1457               		push r28
+ 1458 0762 005A      		push r29
+ 1459 0764 1F4F      	/* prologue: function */
+ 1460               	/* frame size = 0 */
+ 1462 0766 0C17      	.LM72:
+ 1463 0768 1D07      		ldi r28,lo8(hAxis)
+ 1464 076a 01F4      		ldi r29,hi8(hAxis)
+ 1465               	.L37:
+ 1467               	.LM73:
+ 1468 076c DF91      		ldd r24,Y+4
+ 1469 076e CF91      		cpi r24,lo8(1)
+ 1470 0770 1F91      		brne .L36
+ 1472 0774 0895      	.LM74:
+ 1473               		movw r24,r28
+ 1474               		ldi r22,lo8(-18688)
+ 1475               		ldi r23,hi8(-18688)
+ 1476               		call PMDResetEventStatus
+ 1477               	.L36:
+ 1478               		subi r28,lo8(-(96))
+ 1479               		sbci r29,hi8(-(96))
+ 1481               	.LM75:
+ 1482 0776 CF93      		ldi r24,hi8(hAxis+480)
+ 1483 0778 DF93      		cpi r28,lo8(hAxis+480)
+ 1484               		cpc r29,r24
+ 1485               		brne .L37
+ 1486               	/* epilogue start */
+ 1488 077a C0E0      	.LM76:
+ 1489 077c D0E0      		pop r29
+ 1490               		pop r28
+ 1491               		ret
+ 1493 077e 8C81      	.Lscope8:
+ 1496               	.global	PMDsetupChipsets_USB
+ 1498 0784 CE01      	PMDsetupChipsets_USB:
+ 1500 0788 77EB      	.LM77:
+ 1501 078a 0E94 0000 	.LFBB9:
+ 1502               		push r14
+ 1503 078e C05A      		push r15
+ 1504 0790 DF4F      		push r16
+ 1505               		push r17
+ 1506               		push r28
+ 1507 0792 80E0      		push r29
+ 1508 0794 C030      	/* prologue: function */
+ 1509 0796 D807      	/* frame size = 0 */
+ 1510 0798 01F4      		mov r14,r24
+ 1512               	.LM78:
+ 1513               		ldi r28,lo8(hAxis)
+ 1514 079a DF91      		ldi r29,hi8(hAxis)
+ 1515 079c CF91      		clr r15
+ 1516 079e 0895      	.L55:
+ 1517               		mov r17,r28
+ 1518               		mov r16,r29
+ 1520               	.LM79:
+ 1521               		movw r24,r28
+ 1522               		ldi r22,lo8(1)
+ 1523               		ldi r23,hi8(1)
+ 1524               		call PMDSetActualPositionUnits
+ 1526               	.LM80:
+ 1527 07a0 EF92      		or r24,r25
+ 1528 07a2 FF92      		breq .L41
+ 1529 07a4 0F93      		ldi r18,lo8(13)
+ 1530 07a6 1F93      		ldi r19,hi8(13)
+ 1531 07a8 CF93      		rjmp .L42
+ 1532 07aa DF93      	.L41:
+ 1534               	.LM81:
+ 1535 07ac E82E      		ldi r24,lo8(2)
+ 1536               		cp r15,r24
+ 1537               		breq .L47
+ 1538 07ae C0E0      		cp r24,r15
+ 1539 07b0 D0E0      		brlo .L49
+ 1540 07b2 FF24      		tst r15
+ 1541               		breq .L48
+ 1542 07b4 1C2F      		ldi r24,lo8(1)
+ 1543 07b6 0D2F      		cp r15,r24
+ 1544               		brne .L43
+ 1545               		rjmp .L47
+ 1546 07b8 CE01      	.L49:
+ 1547 07ba 61E0      		ldi r24,lo8(3)
+ 1548 07bc 70E0      		cp r15,r24
+ 1549 07be 0E94 0000 		breq .L47
+ 1550               		ldi r24,lo8(4)
+ 1551               		cp r15,r24
+ 1552 07c2 892B      		brne .L43
+ 1553 07c4 01F0      		rjmp .L48
+ 1554 07c6 2DE0      	.L47:
+ 1556 07ca 00C0      	.LM82:
+ 1557               		movw r24,r28
+ 1558               		ldi r22,lo8(4152)
+ 1559               		ldi r23,hi8(4152)
+ 1560 07cc 82E0      		rjmp .L59
+ 1561 07ce F816      	.L48:
+ 1563 07d2 8F15      	.LM83:
+ 1564 07d4 00F0      		movw r24,r28
+ 1565 07d6 FF20      		rjmp .L58
+ 1566 07d8 01F0      	.L43:
+ 1568 07dc F816      	.LM84:
+ 1569 07de 01F4      		mov r24,r17
+ 1570 07e0 00C0      		mov r25,r16
+ 1571               	.L58:
+ 1572 07e2 83E0      		ldi r22,lo8(4144)
+ 1573 07e4 F816      		ldi r23,hi8(4144)
+ 1574 07e6 01F0      	.L59:
+ 1575 07e8 84E0      		call PMDSetSignalSense
+ 1577 07ec 01F4      	.LM85:
+ 1578 07ee 00C0      		ldd r24,Y+6
+ 1579               		ldd r25,Y+7
+ 1580               		sbiw r24,1
+ 1581               		brne .L51
+ 1582 07f0 CE01      		ldd r24,Y+4
+ 1583 07f2 68E3      		cpi r24,lo8(1)
+ 1584 07f4 70E1      		brne .L51
+ 1586               	.LM86:
+ 1587               		mov r24,r17
+ 1588               		mov r25,r16
+ 1589 07f8 CE01      		ldi r22,lo8(1)
+ 1590 07fa 00C0      		ldi r23,hi8(1)
+ 1591               		rjmp .L60
+ 1592               	.L51:
+ 1594 07fc 812F      	.LM87:
+ 1595 07fe 902F      		mov r24,r17
+ 1596               		mov r25,r16
+ 1597 0800 60E3      		ldi r22,lo8(0)
+ 1598 0802 70E1      		ldi r23,hi8(0)
+ 1599               	.L60:
+ 1600 0804 0E94 0000 		call PMDSetLimitSwitchMode
+ 1602               	.LM88:
+ 1603 0808 8E81      		ldd r22,Y+14
+ 1604 080a 9F81      		ldd r23,Y+15
+ 1605 080c 0197      		lsl r22
+ 1606 080e 01F4      		rol r23
+ 1607 0810 8C81      		lsl r22
+ 1608 0812 8130      		rol r23
+ 1609 0814 01F4      		mov r24,r17
+ 1610               		mov r25,r16
+ 1611               		call PMDSetPhaseCounts
+ 1613 0818 902F      	.LM89:
+ 1614 081a 61E0      		ldd r22,Y+20
+ 1615 081c 70E0      		ldd r23,Y+21
+ 1616 081e 00C0      		mov r24,r17
+ 1617               		mov r25,r16
+ 1618               		call PMDSetTrackingWindow
+ 1620 0820 812F      	.LM90:
+ 1621 0822 902F      		ldd r24,Y+8
+ 1622 0824 60E0      		ldd r25,Y+9
+ 1623 0826 70E0      		sbiw r24,1
+ 1624               		brne .L53
+ 1625 0828 0E94 0000 		ldd r24,Y+4
+ 1626               		cpi r24,lo8(1)
+ 1627               		brne .L53
+ 1629 082e 7F85      	.LM91:
+ 1630 0830 660F      		ldd r22,Y+22
+ 1631 0832 771F      		ldd r23,Y+23
+ 1632 0834 660F      		mov r24,r17
+ 1633 0836 771F      		mov r25,r16
+ 1634 0838 812F      		call PMDSetSettleWindow
+ 1636 083c 0E94 0000 	.LM92:
+ 1637               		ldd r22,Y+24
+ 1638               		ldd r23,Y+25
+ 1639 0840 6C89      		mov r24,r17
+ 1640 0842 7D89      		mov r25,r16
+ 1641 0844 812F      		call PMDSetSettleTime
+ 1643 0848 0E94 0000 	.LM93:
+ 1644               		mov r24,r17
+ 1645               		mov r25,r16
+ 1646 084c 8885      		ldi r22,lo8(1)
+ 1647 084e 9985      		ldi r23,hi8(1)
+ 1648 0850 0197      		call PMDSetMotionCompleteMode
+ 1650 0854 8C81      	.LM94:
+ 1651 0856 8130      		ldd r20,Y+36
+ 1652 0858 01F4      		ldd r21,Y+37
+ 1653               		ldd r22,Y+38
+ 1654               		ldd r23,Y+39
+ 1655 085a 6E89      		mov r24,r17
+ 1656 085c 7F89      		mov r25,r16
+ 1657 085e 812F      		call PMDSetPositionErrorLimit
+ 1659 0862 0E94 0000 	.LM95:
+ 1660               		mov r24,r17
+ 1661               		mov r25,r16
+ 1662 0866 688D      		call PMDClearPositionError
+ 1663 0868 798D      		rjmp .L54
+ 1664 086a 812F      	.L53:
+ 1666 086e 0E94 0000 	.LM96:
+ 1667               		mov r24,r17
+ 1668               		mov r25,r16
+ 1669 0872 812F      		ldi r22,lo8(0)
+ 1670 0874 902F      		ldi r23,hi8(0)
+ 1671 0876 61E0      		call PMDSetMotionCompleteMode
+ 1672 0878 70E0      	.L54:
+ 1674               	.LM97:
+ 1675               		ldd r22,Y+26
+ 1676 087e 4CA1      		ldd r23,Y+27
+ 1677 0880 5DA1      		clr r24
+ 1678 0882 6EA1      		sbrc r23,7
+ 1679 0884 7FA1      		com r24
+ 1680 0886 812F      		mov r25,r24
+ 1681 0888 902F      		ldi r30,15
+ 1682 088a 0E94 0000 	1:	lsl r22
+ 1683               		rol r23
+ 1684               		rol r24
+ 1685 088e 812F      		rol r25
+ 1686 0890 902F      		dec r30
+ 1687 0892 0E94 0000 		brne 1b
+ 1688 0896 00C0      		ldi r18,lo8(100)
+ 1689               		ldi r19,hi8(100)
+ 1690               		ldi r20,hlo8(100)
+ 1691               		ldi r21,hhi8(100)
+ 1692 0898 812F      		call __divmodsi4
+ 1693 089a 902F      		mov r24,r17
+ 1694 089c 60E0      		mov r25,r16
+ 1695 089e 70E0      		movw r22,r18
+ 1696 08a0 0E94 0000 		call PMDSetMotorCommand
+ 1698               	.LM98:
+ 1699               		mov r24,r17
+ 1700 08a4 6A8D      		mov r25,r16
+ 1701 08a6 7B8D      		mov r22,r14
+ 1702 08a8 8827      		ldi r23,lo8(0)
+ 1703 08aa 77FD      		call PMDSetProfileMode
+ 1705 08ae 982F      	.LM99:
+ 1706 08b0 EFE0      		mov r24,r17
+ 1707 08b2 660F      		mov r25,r16
+ 1708 08b4 771F      		ldi r22,lo8(0)
+ 1709 08b6 881F      		ldi r23,hi8(0)
+ 1710 08b8 991F      		call PMDSetAutoStopMode
+ 1712 08bc 01F4      	.LM100:
+ 1713 08be 24E6      		mov r24,r17
+ 1714 08c0 30E0      		mov r25,r16
+ 1715 08c2 40E0      		ldi r22,lo8(-18688)
+ 1716 08c4 50E0      		ldi r23,hi8(-18688)
+ 1717 08c6 0E94 0000 		call PMDResetEventStatus
+ 1719 08cc 902F      	.LM101:
+ 1720 08ce B901      		mov r24,r17
+ 1721 08d0 0E94 0000 		mov r25,r16
+ 1722               		call PMDClearInterrupt
+ 1724 08d4 812F      	.LM102:
+ 1725 08d6 902F      		mov r24,r17
+ 1726 08d8 6E2D      		mov r25,r16
+ 1727 08da 70E0      		call PMDUpdate
+ 1729               	.LM103:
+ 1730               		inc r15
+ 1731 08e0 812F      		subi r28,lo8(-(96))
+ 1732 08e2 902F      		sbci r29,hi8(-(96))
+ 1733 08e4 60E0      		ldi r24,lo8(5)
+ 1734 08e6 70E0      		cp r15,r24
+ 1735 08e8 0E94 0000 		breq .+2
+ 1736               		rjmp .L55
+ 1737               		ldi r18,lo8(0)
+ 1738 08ec 812F      		ldi r19,hi8(0)
+ 1739 08ee 902F      	.L42:
+ 1741 08f2 77EB      	.LM104:
+ 1742 08f4 0E94 0000 		movw r24,r18
+ 1743               	/* epilogue start */
+ 1744               		pop r29
+ 1745 08f8 812F      		pop r28
+ 1746 08fa 902F      		pop r17
+ 1747 08fc 0E94 0000 		pop r16
+ 1748               		pop r15
+ 1749               		pop r14
+ 1750 0900 812F      		ret
+ 1755 0908 F394      	.Lscope9:
+ 1756 090a C05A      		.data
+ 1757 090c DF4F      	.LC25:
+ 1758 090e 85E0      		.string	"PMDChipsetReset => PMDreset ejecutado correctamente\n"
+ 1759 0910 F816      	.LC26:
+ 1760 0912 01F0      		.string	"PMDChipsetReset => PMDreset ejecutado INCORECTAMENTE!\n"
+ 1761 0914 00C0      		.text
+ 1764               	.global	PMDChipsetReset
+ 1766               	PMDChipsetReset:
+ 1768               	.LM105:
+ 1769 091c DF91      	.LFBB10:
+ 1770 091e CF91      		push r16
+ 1771 0920 1F91      		push r17
+ 1772 0922 0F91      		push r29
+ 1773 0924 FF90      		push r28
+ 1774 0926 EF90      		rcall .
+ 1775 0928 0895      		in r28,__SP_L__
+ 1776               		in r29,__SP_H__
+ 1777               	/* prologue: function */
+ 1778               	/* frame size = 2 */
+ 1779               		movw r16,r24
+ 1781               	.LM106:
+ 1782               		call PMDReset
+ 1784               	.LM107:
+ 1785 058d 504D 4443 		subi r24,lo8(32767)
+ 1785      6869 7073 
+ 1785      6574 5265 
+ 1785      7365 7420 
+ 1785      3D3E 2050 
+ 1786               		sbci r25,hi8(32767)
+ 1787               		brne .L62
+ 1789               	.LM108:
+ 1790               		movw r24,r16
+ 1791               		movw r22,r28
+ 1792               		subi r22,lo8(-(1))
+ 1793               		sbci r23,hi8(-(1))
+ 1794               		call PMDGetHostIOError
+ 1796 092c 1F93      	.LM109:
+ 1797 092e DF93      		or r24,r25
+ 1798 0930 CF93      		brne .L62
+ 1799 0932 00D0      		ldd r24,Y+1
+ 1800 0934 CDB7      		ldd r25,Y+2
+ 1801 0936 DEB7      		sbiw r24,1
+ 1802               		brne .L62
+ 1804 0938 8C01      	.LM110:
+ 1805               		ldi r24,lo8(.LC25)
+ 1806               		ldi r25,hi8(.LC25)
+ 1807 093a 0E94 0000 		call puts
+ 1808               		ldi r18,lo8(0)
+ 1809               		ldi r19,hi8(0)
+ 1810 093e 8F5F      		rjmp .L63
+ 1811 0940 9F47      	.L62:
+ 1813               	.LM111:
+ 1814               		ldi r24,lo8(.LC26)
+ 1815 0944 C801      		ldi r25,hi8(.LC26)
+ 1816 0946 BE01      		call puts
+ 1817 0948 6F5F      		ldi r18,lo8(14)
+ 1818 094a 7F4F      		ldi r19,hi8(14)
+ 1819 094c 0E94 0000 	.L63:
+ 1821               	.LM112:
+ 1822 0950 892B      		movw r24,r18
+ 1823 0952 01F4      	/* epilogue start */
+ 1824 0954 8981      		pop __tmp_reg__
+ 1825 0956 9A81      		pop __tmp_reg__
+ 1826 0958 0197      		pop r28
+ 1827 095a 01F4      		pop r29
+ 1828               		pop r17
+ 1829               		pop r16
+ 1830 095c 80E0      		ret
+ 1835 0968 00C0      	.Lscope10:
+ 1838               	.global	PMDsetupChipSets
+ 1840 096c 90E0      	PMDsetupChipSets:
+ 1842 0972 2EE0      	.LM113:
+ 1843 0974 30E0      	.LFBB11:
+ 1844               		push r14
+ 1845               		push r15
+ 1846               		push r16
+ 1847 0976 C901      		push r17
+ 1848               		push r28
+ 1849 0978 0F90      		push r29
+ 1850 097a 0F90      	/* prologue: function */
+ 1851 097c CF91      	/* frame size = 0 */
+ 1852 097e DF91      		mov r14,r24
+ 1854 0982 0F91      	.LM114:
+ 1855 0984 0895      		ldi r28,lo8(hAxis)
+ 1856               		ldi r29,hi8(hAxis)
+ 1857               	.L67:
+ 1859               	.LM115:
+ 1860               		ldd r24,Y+2
+ 1861               		ldd r25,Y+3
+ 1862               		or r24,r25
+ 1863               		brne .L66
+ 1865               	.LM116:
+ 1866               		movw r24,r28
+ 1867               		call PMDChipsetReset
+ 1869 0986 EF92      	.LM117:
+ 1870 0988 FF92      		movw r24,r28
+ 1871 098a 0F93      		ldi r22,lo8(600)
+ 1872 098c 1F93      		ldi r23,hi8(600)
+ 1873 098e CF93      		call PMDSetSampleTime
+ 1874 0990 DF93      	.L66:
+ 1875               		subi r28,lo8(-(96))
+ 1876               		sbci r29,hi8(-(96))
+ 1878               	.LM118:
+ 1879               		ldi r24,hi8(hAxis+480)
+ 1880 0994 C0E0      		cpi r28,lo8(hAxis+480)
+ 1881 0996 D0E0      		cpc r29,r24
+ 1882               		brne .L67
+ 1883               		ldi r16,lo8(hAxis+4)
+ 1884               		ldi r17,hi8(hAxis+4)
+ 1885 0998 8A81      		clr r15
+ 1886 099a 9B81      	.L84:
+ 1887 099c 892B      		movw r28,r16
+ 1888 099e 01F4      		sbiw r28,4
+ 1890               	.LM119:
+ 1891 09a0 CE01      		movw r24,r28
+ 1892 09a2 0E94 0000 		ldi r22,lo8(1)
+ 1893               		ldi r23,hi8(1)
+ 1894               		call PMDSetActualPositionUnits
+ 1896 09a8 68E5      	.LM120:
+ 1897 09aa 72E0      		or r24,r25
+ 1898 09ac 0E94 0000 		breq .L68
+ 1899               		ldi r18,lo8(13)
+ 1900 09b0 C05A      		ldi r19,hi8(13)
+ 1901 09b2 DF4F      		rjmp .L69
+ 1902               	.L68:
+ 1904 09b4 80E0      	.LM121:
+ 1905 09b6 C030      		ldi r30,lo8(2)
+ 1906 09b8 D807      		cp r15,r30
+ 1907 09ba 01F4      		breq .L73
+ 1908 09bc 00E0      		cp r30,r15
+ 1909 09be 10E0      		brlo .L76
+ 1910 09c0 FF24      		tst r15
+ 1911               		breq .L70
+ 1912 09c2 E801      		ldi r31,lo8(1)
+ 1913 09c4 2497      		cp r15,r31
+ 1914               		brne .L70
+ 1915               		rjmp .L73
+ 1916 09c6 CE01      	.L76:
+ 1917 09c8 61E0      		ldi r24,lo8(3)
+ 1918 09ca 70E0      		cp r15,r24
+ 1919 09cc 0E94 0000 		breq .L74
+ 1920               		ldi r30,lo8(4)
+ 1921               		cp r15,r30
+ 1922 09d0 892B      		brne .L70
+ 1923 09d2 01F0      		rjmp .L91
+ 1924 09d4 2DE0      	.L73:
+ 1926 09d8 00C0      	.LM122:
+ 1927               		movw r24,r28
+ 1928               		ldi r22,lo8(4152)
+ 1929               		ldi r23,hi8(4152)
+ 1930 09da E2E0      		rjmp .L88
+ 1931 09dc FE16      	.L74:
+ 1933 09e0 EF15      	.LM123:
+ 1934 09e2 00F0      		movw r24,r28
+ 1935 09e4 FF20      		ldi r22,lo8(56)
+ 1936 09e6 01F0      		ldi r23,hi8(56)
+ 1937 09e8 F1E0      		rjmp .L88
+ 1938 09ea FF16      	.L91:
+ 1940 09ee 00C0      	.LM124:
+ 1941               		movw r24,r28
+ 1942 09f0 83E0      		ldi r22,lo8(48)
+ 1943 09f2 F816      		ldi r23,hi8(48)
+ 1944 09f4 01F0      		rjmp .L88
+ 1945 09f6 E4E0      	.L70:
+ 1947 09fa 01F4      	.LM125:
+ 1948 09fc 00C0      		movw r24,r28
+ 1949               		ldi r22,lo8(4144)
+ 1950               		ldi r23,hi8(4144)
+ 1951               	.L88:
+ 1952 09fe CE01      		call PMDSetSignalSense
+ 1954 0a02 70E1      	.LM126:
+ 1955 0a04 00C0      		movw r30,r16
+ 1956               		ldd r24,Z+2
+ 1957               		ldd r25,Z+3
+ 1958               		sbiw r24,1
+ 1959 0a06 CE01      		brne .L78
+ 1960 0a08 68E3      		ld r24,Z
+ 1961 0a0a 70E0      		cpi r24,lo8(1)
+ 1962 0a0c 00C0      		brne .L78
+ 1964               	.LM127:
+ 1965               		movw r24,r28
+ 1966 0a0e CE01      		ldi r22,lo8(1)
+ 1967 0a10 60E3      		ldi r23,hi8(1)
+ 1968 0a12 70E0      		rjmp .L89
+ 1969 0a14 00C0      	.L78:
+ 1971               	.LM128:
+ 1972               		movw r24,r28
+ 1973 0a16 CE01      		ldi r22,lo8(0)
+ 1974 0a18 60E3      		ldi r23,hi8(0)
+ 1975 0a1a 70E1      	.L89:
+ 1976               		call PMDSetLimitSwitchMode
+ 1978               	.LM129:
+ 1979               		movw r24,r28
+ 1980 0a20 F801      		ldi r22,lo8(2)
+ 1981 0a22 8281      		ldi r23,hi8(2)
+ 1982 0a24 9381      		call PMDSetOutputMode
+ 1984 0a28 01F4      	.LM130:
+ 1985 0a2a 8081      		movw r30,r16
+ 1986 0a2c 8130      		ldd r22,Z+24
+ 1987 0a2e 01F4      		ldd r23,Z+25
+ 1988               		movw r24,r28
+ 1989               		call PMDSetNumberPhases
+ 1991 0a32 61E0      	.LM131:
+ 1992 0a34 70E0      		movw r30,r16
+ 1993 0a36 00C0      		ldd r22,Z+10
+ 1994               		ldd r23,Z+11
+ 1995               		lsl r22
+ 1996               		rol r23
+ 1997 0a38 CE01      		lsl r22
+ 1998 0a3a 60E0      		rol r23
+ 1999 0a3c 70E0      		movw r24,r28
+ 2000               		call PMDSetPhaseCounts
+ 2002               	.LM132:
+ 2003               		movw r24,r28
+ 2004 0a42 CE01      		ldi r22,lo8(0)
+ 2005 0a44 62E0      		ldi r23,hi8(0)
+ 2006 0a46 70E0      		call PMDSetEncoderSource
+ 2008               	.LM133:
+ 2009               		movw r30,r16
+ 2010 0a4c F801      		ldd r22,Z+14
+ 2011 0a4e 608D      		ldd r23,Z+15
+ 2012 0a50 718D      		ldd r18,Z+12
+ 2013 0a52 CE01      		ldd r19,Z+13
+ 2014 0a54 0E94 0000 		ldd r24,Z+10
+ 2015               		ldd r25,Z+11
+ 2016               		mul r18,r24
+ 2017 0a58 F801      		movw r20,r0
+ 2018 0a5a 6285      		mul r18,r25
+ 2019 0a5c 7385      		add r21,r0
+ 2020 0a5e 660F      		mul r19,r24
+ 2021 0a60 771F      		add r21,r0
+ 2022 0a62 660F      		clr r1
+ 2023 0a64 771F      		movw r24,r28
+ 2024 0a66 CE01      		call PMDSetEncoderToStepRatio
+ 2026               	.LM134:
+ 2027               		movw r30,r16
+ 2028 0a6c CE01      		ldd r22,Z+16
+ 2029 0a6e 60E0      		ldd r23,Z+17
+ 2030 0a70 70E0      		movw r24,r28
+ 2031 0a72 0E94 0000 		call PMDSetTrackingWindow
+ 2033               	.LM135:
+ 2034 0a76 F801      		movw r30,r16
+ 2035 0a78 6685      		ldd r24,Z+4
+ 2036 0a7a 7785      		ldd r25,Z+5
+ 2037 0a7c 2485      		sbiw r24,1
+ 2038 0a7e 3585      		brne .L80
+ 2039 0a80 8285      		ld r24,Z
+ 2040 0a82 9385      		cpi r24,lo8(1)
+ 2041 0a84 289F      		brne .L80
+ 2043 0a88 299F      	.LM136:
+ 2044 0a8a 500D      		ldd r22,Z+18
+ 2045 0a8c 389F      		ldd r23,Z+19
+ 2046 0a8e 500D      		movw r24,r28
+ 2047 0a90 1124      		call PMDSetSettleWindow
+ 2049 0a94 0E94 0000 	.LM137:
+ 2050               		movw r30,r16
+ 2051               		ldd r22,Z+20
+ 2052 0a98 F801      		ldd r23,Z+21
+ 2053 0a9a 6089      		movw r24,r28
+ 2054 0a9c 7189      		call PMDSetSettleTime
+ 2056 0aa0 0E94 0000 	.LM138:
+ 2057               		movw r24,r28
+ 2058               		ldi r22,lo8(1)
+ 2059 0aa4 F801      		ldi r23,hi8(1)
+ 2060 0aa6 8481      		call PMDSetMotionCompleteMode
+ 2062 0aaa 0197      	.LM139:
+ 2063 0aac 01F4      		movw r30,r16
+ 2064 0aae 8081      		ldd r20,Z+32
+ 2065 0ab0 8130      		ldd r21,Z+33
+ 2066 0ab2 01F4      		ldd r22,Z+34
+ 2067               		ldd r23,Z+35
+ 2068               		movw r24,r28
+ 2069 0ab4 6289      		call PMDSetPositionErrorLimit
+ 2071 0ab8 CE01      	.LM140:
+ 2072 0aba 0E94 0000 		movw r24,r28
+ 2073               		call PMDClearPositionError
+ 2074               		rjmp .L81
+ 2075 0abe F801      	.L80:
+ 2077 0ac2 7589      	.LM141:
+ 2078 0ac4 CE01      		movw r24,r28
+ 2079 0ac6 0E94 0000 		ldi r22,lo8(0)
+ 2080               		ldi r23,hi8(0)
+ 2081               		call PMDSetMotionCompleteMode
+ 2082 0aca CE01      	.L81:
+ 2084 0ace 70E0      	.LM142:
+ 2085 0ad0 0E94 0000 		movw r30,r16
+ 2086               		ld r24,Z
+ 2087               		cpi r24,lo8(1)
+ 2088 0ad4 F801      		brne .L82
+ 2090 0ad8 51A1      	.LM143:
+ 2091 0ada 62A1      		movw r24,r28
+ 2092 0adc 73A1      		ldi r22,lo8(1)
+ 2093 0ade CE01      		ldi r23,hi8(1)
+ 2094 0ae0 0E94 0000 		call PMDSetAxisMode
+ 2096               	.LM144:
+ 2097 0ae4 CE01      		movw r24,r28
+ 2098 0ae6 0E94 0000 		ldi r22,lo8(1)
+ 2099 0aea 00C0      		ldi r23,hi8(1)
+ 2100               		rjmp .L90
+ 2101               	.L82:
+ 2103 0aec CE01      	.LM145:
+ 2104 0aee 60E0      		movw r24,r28
+ 2105 0af0 70E0      		ldi r22,lo8(0)
+ 2106 0af2 0E94 0000 		ldi r23,hi8(0)
+ 2107               		call PMDSetAxisMode
+ 2109               	.LM146:
+ 2110 0af6 F801      		movw r24,r28
+ 2111 0af8 8081      		ldi r22,lo8(0)
+ 2112 0afa 8130      		ldi r23,hi8(0)
+ 2113 0afc 01F4      	.L90:
+ 2114               		call PMDSetMotorMode
+ 2116 0afe CE01      	.LM147:
+ 2117 0b00 61E0      		movw r30,r16
+ 2118 0b02 70E0      		ldd r22,Z+22
+ 2119 0b04 0E94 0000 		ldd r23,Z+23
+ 2120               		clr r24
+ 2121               		sbrc r23,7
+ 2122 0b08 CE01      		com r24
+ 2123 0b0a 61E0      		mov r25,r24
+ 2124 0b0c 70E0      		ldi r26,15
+ 2125 0b0e 00C0      	1:	lsl r22
+ 2126               		rol r23
+ 2127               		rol r24
+ 2128               		rol r25
+ 2129 0b10 CE01      		dec r26
+ 2130 0b12 60E0      		brne 1b
+ 2131 0b14 70E0      		ldi r18,lo8(100)
+ 2132 0b16 0E94 0000 		ldi r19,hi8(100)
+ 2133               		ldi r20,hlo8(100)
+ 2134               		ldi r21,hhi8(100)
+ 2135 0b1a CE01      		call __divmodsi4
+ 2136 0b1c 60E0      		movw r24,r28
+ 2137 0b1e 70E0      		movw r22,r18
+ 2138               		call PMDSetMotorCommand
+ 2140               	.LM148:
+ 2141               		movw r24,r28
+ 2142 0b24 F801      		mov r22,r14
+ 2143 0b26 6689      		ldi r23,lo8(0)
+ 2144 0b28 7789      		call PMDSetProfileMode
+ 2146 0b2c 77FD      	.LM149:
+ 2147 0b2e 8095      		movw r24,r28
+ 2148 0b30 982F      		ldi r22,lo8(0)
+ 2149 0b32 AFE0      		ldi r23,hi8(0)
+ 2150 0b34 660F      		call PMDSetAutoStopMode
+ 2152 0b38 881F      	.LM150:
+ 2153 0b3a 991F      		movw r24,r28
+ 2154 0b3c AA95      		ldi r22,lo8(-18688)
+ 2155 0b3e 01F4      		ldi r23,hi8(-18688)
+ 2156 0b40 24E6      		call PMDResetEventStatus
+ 2158 0b44 40E0      	.LM151:
+ 2159 0b46 50E0      		movw r24,r28
+ 2160 0b48 0E94 0000 		call PMDClearInterrupt
+ 2162 0b4e B901      	.LM152:
+ 2163 0b50 0E94 0000 		movw r24,r28
+ 2164               		call PMDUpdate
+ 2166 0b54 CE01      	.LM153:
+ 2167 0b56 6E2D      		inc r15
+ 2168 0b58 70E0      		subi r16,lo8(-(96))
+ 2169 0b5a 0E94 0000 		sbci r17,hi8(-(96))
+ 2170               		ldi r31,lo8(5)
+ 2171               		cp r15,r31
+ 2172 0b5e CE01      		breq .+2
+ 2173 0b60 60E0      		rjmp .L84
+ 2174 0b62 70E0      		ldi r18,lo8(0)
+ 2175 0b64 0E94 0000 		ldi r19,hi8(0)
+ 2176               	.L69:
+ 2178 0b68 CE01      	.LM154:
+ 2179 0b6a 60E0      		movw r24,r18
+ 2180 0b6c 77EB      	/* epilogue start */
+ 2181 0b6e 0E94 0000 		pop r29
+ 2182               		pop r28
+ 2183               		pop r17
+ 2184 0b72 CE01      		pop r16
+ 2185 0b74 0E94 0000 		pop r15
+ 2186               		pop r14
+ 2187               		ret
+ 2192 0b7e F394      	.Lscope11:
+ 2193 0b80 005A      		.data
+ 2194 0b82 1F4F      	.LC27:
+ 2195 0b84 F5E0      		.string	"PMDchipsetOK => No se pudo resetear el chipset %i con Axis %d\n"
+ 2196 0b86 FF16      	.LC28:
+ 2197 0b88 01F0      		.string	"PMDchipsetOK => Se ha reseteado el chipset %i con Axis %d\n"
+ 2198 0b8a 00C0      	.LC29:
+ 2199 0b8c 20E0      		.string	"PMDchipsetOK =>Comprobando Checksum..."
+ 2200 0b8e 30E0      	.LC30:
+ 2201               		.ascii	"PMDchi"
+ 2202               		.string	"psetOK =>PMD %i PMDchipset checksum test error: 0x12345678=>%lx\n"
+ 2203               	.LC31:
+ 2204 0b90 C901      		.string	"PMDchipsetOK =>PMD %i test succeeded %lx \n"
+ 2205               		.text
+ 2208 0b96 1F91      	.global	PMDchipsetOK
+ 2210 0b9a FF90      	PMDchipsetOK:
+ 2212 0b9e 0895      	.LM155:
+ 2213               	.LFBB12:
+ 2214               		push r8
+ 2215               		push r9
+ 2216               		push r10
+ 2217               		push r11
+ 2218               		push r12
+ 2219               		push r13
+ 2220 05c4 504D 4463 		push r14
+ 2220      6869 7073 
+ 2220      6574 4F4B 
+ 2220      203D 3E20 
+ 2220      4E6F 2073 
+ 2221               		push r15
+ 2222 0603 504D 4463 		push r16
+ 2222      6869 7073 
+ 2222      6574 4F4B 
+ 2222      203D 3E20 
+ 2222      5365 2068 
+ 2223               		push r17
+ 2224 063e 504D 4463 		push r29
+ 2224      6869 7073 
+ 2224      6574 4F4B 
+ 2224      203D 3E43 
+ 2224      6F6D 7072 
+ 2225               		push r28
+ 2226 0665 504D 4463 		rcall .
+ 2226      6869 
+ 2227 066b 7073 6574 		rcall .
+ 2227      4F4B 203D 
+ 2227      3E50 4D44 
+ 2227      2025 6920 
+ 2227      504D 4463 
+ 2228               		in r28,__SP_L__
+ 2229 06ac 504D 4463 		in r29,__SP_H__
+ 2229      6869 7073 
+ 2229      6574 4F4B 
+ 2229      203D 3E50 
+ 2229      4D44 2025 
+ 2230               	/* prologue: function */
+ 2231               	/* frame size = 4 */
+ 2232               		movw r12,r24
+ 2234               	.LM156:
+ 2235               		std Y+1,__zero_reg__
+ 2236               		std Y+2,__zero_reg__
+ 2237               		std Y+3,__zero_reg__
+ 2238               		std Y+4,__zero_reg__
+ 2239 0ba0 8F92      		ldi r16,lo8(0)
+ 2240 0ba2 9F92      		ldi r17,hi8(0)
+ 2241 0ba4 AF92      		clr r14
+ 2242 0ba6 BF92      		clr r15
+ 2244 0baa DF92      	.LM157:
+ 2245 0bac EF92      		ldi r25,lo8(96)
+ 2246 0bae FF92      		mov r8,r25
+ 2247 0bb0 0F93      		mov r9,__zero_reg__
+ 2249 0bb4 DF93      	.LM158:
+ 2250 0bb6 CF93      		ldi r24,lo8(.LC28)
+ 2251 0bb8 00D0      		mov r10,r24
+ 2252 0bba 00D0      		ldi r24,hi8(.LC28)
+ 2253 0bbc CDB7      		mov r11,r24
+ 2254 0bbe DEB7      	.L96:
+ 2256               	.LM159:
+ 2257 0bc0 6C01      		mul r16,r8
+ 2258               		movw r30,r0
+ 2259               		mul r16,r9
+ 2260 0bc2 1982      		add r31,r0
+ 2261 0bc4 1A82      		mul r17,r8
+ 2262 0bc6 1B82      		add r31,r0
+ 2263 0bc8 1C82      		clr r1
+ 2264 0bca 00E0      		subi r30,lo8(-(hAxis))
+ 2265 0bcc 10E0      		sbci r31,hi8(-(hAxis))
+ 2266 0bce EE24      		ld r24,Z
+ 2267 0bd0 FF24      		ldd r25,Z+1
+ 2268               		cp r24,r12
+ 2269               		cpc r25,r13
+ 2270 0bd2 90E6      		brne .L93
+ 2272 0bd6 912C      	.LM160:
+ 2273               		movw r24,r30
+ 2274               		call PMDChipsetReset
+ 2275 0bd8 80E0      		movw r14,r24
+ 2277 0bdc 80E0      	.LM161:
+ 2278 0bde B82E      		sbiw r24,0
+ 2279               		breq .L94
+ 2281               	.LM162:
+ 2282 0be0 089D      		rcall .
+ 2283 0be2 F001      		rcall .
+ 2284 0be4 099D      		rcall .
+ 2285 0be6 F00D      		in r30,__SP_L__
+ 2286 0be8 189D      		in r31,__SP_H__
+ 2287 0bea F00D      		adiw r30,1
+ 2288 0bec 1124      		ldi r24,lo8(.LC27)
+ 2289 0bee E050      		ldi r25,hi8(.LC27)
+ 2290 0bf0 F040      		in r26,__SP_L__
+ 2291 0bf2 8081      		in r27,__SP_H__
+ 2292 0bf4 9181      		adiw r26,1+1
+ 2293 0bf6 8C15      		st X,r25
+ 2294 0bf8 9D05      		st -X,r24
+ 2295 0bfa 01F4      		sbiw r26,1
+ 2296               		std Z+3,r13
+ 2297               		std Z+2,r12
+ 2298 0bfc CF01      		std Z+5,r17
+ 2299 0bfe 0E94 0000 		std Z+4,r16
+ 2300 0c02 7C01      		call printf
+ 2301               		in r18,__SP_L__
+ 2302               		in r19,__SP_H__
+ 2303 0c04 0097      		subi r18,lo8(-(6))
+ 2304 0c06 01F0      		sbci r19,hi8(-(6))
+ 2305               		rjmp .L100
+ 2306               	.L94:
+ 2308 0c0a 00D0      	.LM163:
+ 2309 0c0c 00D0      		rcall .
+ 2310 0c0e EDB7      		rcall .
+ 2311 0c10 FEB7      		rcall .
+ 2312 0c12 3196      		in r30,__SP_L__
+ 2313 0c14 80E0      		in r31,__SP_H__
+ 2314 0c16 90E0      		adiw r30,1
+ 2315 0c18 ADB7      		in r26,__SP_L__
+ 2316 0c1a BEB7      		in r27,__SP_H__
+ 2317 0c1c 1296      		adiw r26,1+1
+ 2318 0c1e 9C93      		st X,r11
+ 2319 0c20 8E93      		st -X,r10
+ 2320 0c22 1197      		sbiw r26,1
+ 2321 0c24 D382      		std Z+3,r13
+ 2322 0c26 C282      		std Z+2,r12
+ 2323 0c28 1583      		std Z+5,r17
+ 2324 0c2a 0483      		std Z+4,r16
+ 2325 0c2c 0E94 0000 		call printf
+ 2326 0c30 2DB7      		movw r14,r16
+ 2327 0c32 3EB7      		ldi r16,lo8(5)
+ 2328 0c34 2A5F      		ldi r17,hi8(5)
+ 2329 0c36 3F4F      		in r18,__SP_L__
+ 2330 0c38 00C0      		in r19,__SP_H__
+ 2331               		subi r18,lo8(-(6))
+ 2332               		sbci r19,hi8(-(6))
+ 2333               		in __tmp_reg__,__SREG__
+ 2334 0c3a 00D0      		cli
+ 2335 0c3c 00D0      		out __SP_H__,r19
+ 2336 0c3e 00D0      		out __SREG__,__tmp_reg__
+ 2337 0c40 EDB7      		out __SP_L__,r18
+ 2338 0c42 FEB7      	.L93:
+ 2340 0c46 ADB7      	.LM164:
+ 2341 0c48 BEB7      		subi r16,lo8(-(1))
+ 2342 0c4a 1296      		sbci r17,hi8(-(1))
+ 2343 0c4c BC92      		cpi r16,5
+ 2344 0c4e AE92      		cpc r17,__zero_reg__
+ 2345 0c50 1197      		brge .+2
+ 2346 0c52 D382      		rjmp .L96
+ 2348 0c56 1583      	.LM165:
+ 2349 0c58 0483      		ldi r24,lo8(.LC29)
+ 2350 0c5a 0E94 0000 		ldi r25,hi8(.LC29)
+ 2351 0c5e 7801      		call puts
+ 2353 0c62 10E0      	.LM166:
+ 2354 0c64 2DB7      		ldi r24,lo8(96)
+ 2355 0c66 3EB7      		ldi r25,hi8(96)
+ 2356 0c68 2A5F      		movw r26,r24
+ 2357 0c6a 3F4F      		mul r14,r26
+ 2358 0c6c 0FB6      		movw r24,r0
+ 2359 0c6e F894      		mul r14,r27
+ 2360 0c70 3EBF      		add r25,r0
+ 2361 0c72 0FBE      		mul r15,r26
+ 2362 0c74 2DBF      		add r25,r0
+ 2363               		clr r1
+ 2364               		subi r24,lo8(-(hAxis))
+ 2365               		sbci r25,hi8(-(hAxis))
+ 2366 0c76 0F5F      		movw r22,r28
+ 2367 0c78 1F4F      		subi r22,lo8(-(1))
+ 2368 0c7a 0530      		sbci r23,hi8(-(1))
+ 2369 0c7c 1105      		call PMDGetChecksum
+ 2371 0c80 00C0      	.LM167:
+ 2372               		ldd r18,Y+1
+ 2373               		ldd r19,Y+2
+ 2374 0c82 80E0      		ldd r20,Y+3
+ 2375 0c84 90E0      		ldd r21,Y+4
+ 2376 0c86 0E94 0000 		movw r22,r12
+ 2377               		subi r22,lo8(-(1))
+ 2378               		sbci r23,hi8(-(1))
+ 2379 0c8a 80E6      		cpi r18,lo8(305419896)
+ 2380 0c8c 90E0      		ldi r27,hi8(305419896)
+ 2381 0c8e DC01      		cpc r19,r27
+ 2382 0c90 EA9E      		ldi r27,hlo8(305419896)
+ 2383 0c92 C001      		cpc r20,r27
+ 2384 0c94 EB9E      		ldi r27,hhi8(305419896)
+ 2385 0c96 900D      		cpc r21,r27
+ 2386 0c98 FA9E      		breq .L97
+ 2388 0c9c 1124      	.LM168:
+ 2389 0c9e 8050      		in r24,__SP_L__
+ 2390 0ca0 9040      		in r25,__SP_H__
+ 2391 0ca2 BE01      		sbiw r24,8
+ 2392 0ca4 6F5F      		in __tmp_reg__,__SREG__
+ 2393 0ca6 7F4F      		cli
+ 2394 0ca8 0E94 0000 		out __SP_H__,r25
+ 2395               		out __SREG__,__tmp_reg__
+ 2396               		out __SP_L__,r24
+ 2397 0cac 2981      		in r30,__SP_L__
+ 2398 0cae 3A81      		in r31,__SP_H__
+ 2399 0cb0 4B81      		adiw r30,1
+ 2400 0cb2 5C81      		ldi r24,lo8(.LC30)
+ 2401 0cb4 B601      		ldi r25,hi8(.LC30)
+ 2402 0cb6 6F5F      		in r26,__SP_L__
+ 2403 0cb8 7F4F      		in r27,__SP_H__
+ 2404 0cba 2837      		adiw r26,1+1
+ 2405 0cbc B6E5      		st X,r25
+ 2406 0cbe 3B07      		st -X,r24
+ 2407 0cc0 B4E3      		sbiw r26,1
+ 2408 0cc2 4B07      		std Z+3,r23
+ 2409 0cc4 B2E1      		std Z+2,r22
+ 2410 0cc6 5B07      		std Z+4,r18
+ 2411 0cc8 01F0      		std Z+5,r19
+ 2412               		std Z+6,r20
+ 2413               		std Z+7,r21
+ 2414 0cca 8DB7      		call printf
+ 2415 0ccc 9EB7      		ldi r17,lo8(15)
+ 2416 0cce 0897      		mov r14,r17
+ 2417 0cd0 0FB6      		mov r15,__zero_reg__
+ 2418 0cd2 F894      		rjmp .L101
+ 2419 0cd4 9EBF      	.L97:
+ 2421 0cd8 8DBF      	.LM169:
+ 2422 0cda EDB7      		in r24,__SP_L__
+ 2423 0cdc FEB7      		in r25,__SP_H__
+ 2424 0cde 3196      		sbiw r24,8
+ 2425 0ce0 80E0      		in __tmp_reg__,__SREG__
+ 2426 0ce2 90E0      		cli
+ 2427 0ce4 ADB7      		out __SP_H__,r25
+ 2428 0ce6 BEB7      		out __SREG__,__tmp_reg__
+ 2429 0ce8 1296      		out __SP_L__,r24
+ 2430 0cea 9C93      		in r30,__SP_L__
+ 2431 0cec 8E93      		in r31,__SP_H__
+ 2432 0cee 1197      		adiw r30,1
+ 2433 0cf0 7383      		ldi r24,lo8(.LC31)
+ 2434 0cf2 6283      		ldi r25,hi8(.LC31)
+ 2435 0cf4 2483      		in r26,__SP_L__
+ 2436 0cf6 3583      		in r27,__SP_H__
+ 2437 0cf8 4683      		adiw r26,1+1
+ 2438 0cfa 5783      		st X,r25
+ 2439 0cfc 0E94 0000 		st -X,r24
+ 2440 0d00 1FE0      		sbiw r26,1
+ 2441 0d02 E12E      		std Z+3,r23
+ 2442 0d04 F12C      		std Z+2,r22
+ 2443 0d06 00C0      		std Z+4,r18
+ 2444               		std Z+5,r19
+ 2445               		std Z+6,r20
+ 2446               		std Z+7,r21
+ 2447 0d08 8DB7      		call printf
+ 2448 0d0a 9EB7      		clr r14
+ 2449 0d0c 0897      		clr r15
+ 2450 0d0e 0FB6      	.L101:
+ 2451 0d10 F894      		in r18,__SP_L__
+ 2452 0d12 9EBF      		in r19,__SP_H__
+ 2453 0d14 0FBE      		subi r18,lo8(-(8))
+ 2454 0d16 8DBF      		sbci r19,hi8(-(8))
+ 2455 0d18 EDB7      	.L100:
+ 2456 0d1a FEB7      		in __tmp_reg__,__SREG__
+ 2457 0d1c 3196      		cli
+ 2458 0d1e 80E0      		out __SP_H__,r19
+ 2459 0d20 90E0      		out __SREG__,__tmp_reg__
+ 2460 0d22 ADB7      		out __SP_L__,r18
+ 2462 0d26 1296      	.LM170:
+ 2463 0d28 9C93      		movw r24,r14
+ 2464 0d2a 8E93      	/* epilogue start */
+ 2465 0d2c 1197      		pop __tmp_reg__
+ 2466 0d2e 7383      		pop __tmp_reg__
+ 2467 0d30 6283      		pop __tmp_reg__
+ 2468 0d32 2483      		pop __tmp_reg__
+ 2469 0d34 3583      		pop r28
+ 2470 0d36 4683      		pop r29
+ 2471 0d38 5783      		pop r17
+ 2472 0d3a 0E94 0000 		pop r16
+ 2473 0d3e EE24      		pop r15
+ 2474 0d40 FF24      		pop r14
+ 2475               		pop r13
+ 2476 0d42 2DB7      		pop r12
+ 2477 0d44 3EB7      		pop r11
+ 2478 0d46 285F      		pop r10
+ 2479 0d48 3F4F      		pop r9
+ 2480               		pop r8
+ 2481 0d4a 0FB6      		ret
+ 2489               	.Lscope12:
+ 2490 0d56 0F90      		.data
+ 2491 0d58 0F90      	.LC32:
+ 2492 0d5a 0F90      		.string	"initAxisHandles=> Configurando usando la eeprom"
+ 2493 0d5c 0F90      		.text
+ 2495 0d60 DF91      	.global	initAxisHandles
+ 2497 0d64 0F91      	initAxisHandles:
+ 2499 0d68 EF90      	.LM171:
+ 2500 0d6a DF90      	.LFBB13:
+ 2501 0d6c CF90      		push r12
+ 2502 0d6e BF90      		push r13
+ 2503 0d70 AF90      		push r14
+ 2504 0d72 9F90      		push r15
+ 2505 0d74 8F90      		push r16
+ 2506 0d76 0895      		push r17
+ 2507               		push r29
+ 2508               		push r28
+ 2509               		rcall .
+ 2510               		in r28,__SP_L__
+ 2511               		in r29,__SP_H__
+ 2512               	/* prologue: function */
+ 2513               	/* frame size = 2 */
+ 2515               	.LM172:
+ 2516               		ldi r22,lo8(hAxis)
+ 2517 06d7 696E 6974 		mov r14,r22
+ 2517      4178 6973 
+ 2517      4861 6E64 
+ 2517      6C65 733D 
+ 2517      3E20 436F 
+ 2518               		ldi r22,hi8(hAxis)
+ 2519               		mov r15,r22
+ 2520               		clr r12
+ 2521               		clr r13
+ 2522               	.L105:
+ 2524               	.LM173:
+ 2525               		ldi r18,lo8(94)
+ 2526 0d78 CF92      		ldi r19,hi8(94)
+ 2527 0d7a DF92      		add r14,r18
+ 2528 0d7c EF92      		adc r15,r19
+ 2529 0d7e FF92      		movw r30,r14
+ 2530 0d80 0F93      		ld r24,Z
+ 2531 0d82 1F93      		ldd r25,Z+1
+ 2532 0d84 DF93      		ldi r18,lo8(-94)
+ 2533 0d86 CF93      		ldi r19,hi8(-94)
+ 2534 0d88 00D0      		add r14,r18
+ 2535 0d8a CDB7      		adc r15,r19
+ 2536 0d8c DEB7      		or r24,r25
+ 2537               		brne .L103
+ 2539               	.LM174:
+ 2540               		movw r24,r12
+ 2541 0d8e 60E0      		call Axis2PMDAxis
+ 2542 0d90 E62E      		movw r16,r24
+ 2543 0d92 60E0      		movw r24,r12
+ 2544 0d94 F62E      		call Axis2PMDChipset
+ 2545 0d96 CC24      		movw r20,r24
+ 2546 0d98 DD24      		movw r24,r14
+ 2547               		movw r22,r16
+ 2548               		call PMDSetupAxisInterface_Parallel
+ 2549               		movw r18,r24
+ 2551 0d9c 30E0      	.LM175:
+ 2552 0d9e E20E      		sbiw r24,0
+ 2553 0da0 F31E      		breq .+2
+ 2554 0da2 F701      		rjmp .L104
+ 2555 0da4 8081      	.L103:
+ 2557 0da8 22EA      	.LM176:
+ 2558 0daa 3FEF      		sec
+ 2559 0dac E20E      		adc r12,__zero_reg__
+ 2560 0dae F31E      		adc r13,__zero_reg__
+ 2561 0db0 892B      		ldi r24,lo8(96)
+ 2562 0db2 01F4      		ldi r25,hi8(96)
+ 2563               		add r14,r24
+ 2564               		adc r15,r25
+ 2565 0db4 C601      		ldi r25,lo8(5)
+ 2566 0db6 0E94 0000 		cp r12,r25
+ 2567 0dba 8C01      		cpc r13,__zero_reg__
+ 2568 0dbc C601      		brne .L105
+ 2570 0dc2 AC01      	.LM177:
+ 2571 0dc4 C701      		movw r24,r28
+ 2572 0dc6 B801      		adiw r24,1
+ 2573 0dc8 0E94 0000 		ldi r22,lo8(EEprom_Reconf_Indicator)
+ 2574 0dcc 9C01      		ldi r23,hi8(EEprom_Reconf_Indicator)
+ 2575               		ldi r20,lo8(2)
+ 2576               		ldi r21,hi8(2)
+ 2577 0dce 0097      		call __eerd_block_m1280
+ 2578 0dd0 01F0      		ldi r21,lo8(EEprom_axisSettings)
+ 2579 0dd2 00C0      		mov r12,r21
+ 2580               		ldi r21,hi8(EEprom_axisSettings)
+ 2581               		mov r13,r21
+ 2582               		clr r14
+ 2583 0dd4 0894      		clr r15
+ 2584 0dd6 C11C      	.L108:
+ 2586 0dda 80E6      	.LM178:
+ 2587 0ddc 90E0      		ldd r24,Y+1
+ 2588 0dde E80E      		ldd r25,Y+2
+ 2589 0de0 F91E      		movw r16,r14
+ 2590 0de2 95E0      		lsl r16
+ 2591 0de4 C916      		rol r17
+ 2592 0de6 D104      		or r24,r25
+ 2593 0de8 01F4      		brne .L106
+ 2595               	.LM179:
+ 2596 0dea CE01      		add r16,r14
+ 2597 0dec 0196      		adc r17,r15
+ 2598 0dee 60E0      		ldi r19,5
+ 2599 0df0 70E0      	1:	lsl r16
+ 2600 0df2 42E0      		rol r17
+ 2601 0df4 50E0      		dec r19
+ 2602 0df6 0E94 0000 		brne 1b
+ 2603 0dfa 50E0      		subi r16,lo8(-(hAxis+4))
+ 2604 0dfc C52E      		sbci r17,hi8(-(hAxis+4))
+ 2605 0dfe 50E0      		movw r24,r14
+ 2606 0e00 D52E      		movw r22,r16
+ 2607 0e02 EE24      		call defaultAxisSettings
+ 2608 0e04 FF24      		rjmp .L107
+ 2609               	.L106:
+ 2611               	.LM180:
+ 2612 0e06 8981      		ldi r24,lo8(.LC32)
+ 2613 0e08 9A81      		ldi r25,hi8(.LC32)
+ 2614 0e0a 8701      		call puts
+ 2616 0e0e 111F      	.LM181:
+ 2617 0e10 892B      		add r16,r14
+ 2618 0e12 01F4      		adc r17,r15
+ 2619               		ldi r18,5
+ 2620               	1:	lsl r16
+ 2621 0e14 0E0D      		rol r17
+ 2622 0e16 1F1D      		dec r18
+ 2623 0e18 35E0      		brne 1b
+ 2624 0e1a 000F      		movw r24,r16
+ 2625 0e1c 111F      		subi r24,lo8(-(hAxis+4))
+ 2626 0e1e 3A95      		sbci r25,hi8(-(hAxis+4))
+ 2627 0e20 01F4      		movw r22,r12
+ 2628 0e22 0050      		ldi r20,lo8(68)
+ 2629 0e24 1040      		ldi r21,hi8(68)
+ 2630 0e26 C701      		call __eerd_block_m1280
+ 2631 0e28 B801      	.L107:
+ 2633 0e2e 00C0      	.LM182:
+ 2634               		sec
+ 2635               		adc r14,__zero_reg__
+ 2636               		adc r15,__zero_reg__
+ 2637 0e30 80E0      		ldi r30,lo8(68)
+ 2638 0e32 90E0      		ldi r31,hi8(68)
+ 2639 0e34 0E94 0000 		add r12,r30
+ 2640               		adc r13,r31
+ 2641               		ldi r31,lo8(5)
+ 2642 0e38 0E0D      		cp r14,r31
+ 2643 0e3a 1F1D      		cpc r15,__zero_reg__
+ 2644 0e3c 25E0      		brne .L108
+ 2645 0e3e 000F      		ldi r18,lo8(0)
+ 2646 0e40 111F      		ldi r19,hi8(0)
+ 2647 0e42 2A95      	.L104:
+ 2649 0e46 C801      	.LM183:
+ 2650 0e48 8050      		movw r24,r18
+ 2651 0e4a 9040      	/* epilogue start */
+ 2652 0e4c B601      		pop __tmp_reg__
+ 2653 0e4e 44E4      		pop __tmp_reg__
+ 2654 0e50 50E0      		pop r28
+ 2655 0e52 0E94 0000 		pop r29
+ 2656               		pop r17
+ 2657               		pop r16
+ 2658               		pop r15
+ 2659 0e56 0894      		pop r14
+ 2660 0e58 E11C      		pop r13
+ 2661 0e5a F11C      		pop r12
+ 2662 0e5c E4E4      		ret
+ 2668 0e68 F104      	.Lscope13:
+ 2669 0e6a 01F4      		.data
+ 2670 0e6c 20E0      	.LC33:
+ 2671 0e6e 30E0      		.string	"selftestPMD => Hard reset"
+ 2672               		.text
+ 2674               	.global	selftestPMD
+ 2676               	selftestPMD:
+ 2678 0e74 0F90      	.LM184:
+ 2679 0e76 CF91      	.LFBB14:
+ 2680 0e78 DF91      		push r16
+ 2681 0e7a 1F91      		push r17
+ 2682 0e7c 0F91      		push r28
+ 2683 0e7e FF90      		push r29
+ 2684 0e80 EF90      	/* prologue: function */
+ 2685 0e82 DF90      	/* frame size = 0 */
+ 2687 0e86 0895      	.LM185:
+ 2688               		call initAxisHandles
+ 2690               	.LM186:
+ 2691               		or r24,r25
+ 2692               		breq .L113
+ 2694               	.LM187:
+ 2695               		ldi r24,lo8(2)
+ 2696 0707 7365 6C66 		ldi r25,hi8(2)
+ 2696      7465 7374 
+ 2696      504D 4420 
+ 2696      3D3E 2048 
+ 2696      6172 6420 
+ 2697               		call buzzer
+ 2699               	.LM188:
+ 2700               		call delay_1s
+ 2702               	.LM189:
+ 2703               		ldi r24,lo8(1)
+ 2704               		ldi r25,hi8(1)
+ 2705 0e88 0F93      		call buzzer
+ 2706 0e8a 1F93      		rjmp .L117
+ 2707 0e8c CF93      	.L113:
+ 2709               	.LM190:
+ 2710               		ldi r24,lo8(.LC33)
+ 2711               		ldi r25,hi8(.LC33)
+ 2712               		call puts
+ 2714               	.LM191:
+ 2715               		ldi r24,lo8(hAxis)
+ 2716 0e94 892B      		ldi r25,hi8(hAxis)
+ 2717 0e96 01F0      		call PMDHardReset
+ 2719               	.LM192:
+ 2720 0e98 82E0      		ldi r24,lo8(0)
+ 2721 0e9a 90E0      		ldi r25,hi8(0)
+ 2722 0e9c 0E94 0000 		call PMDchipsetOK
+ 2723               		movw r16,r24
+ 2725 0ea0 0E94 0000 	.LM193:
+ 2726               		sbiw r24,0
+ 2727               		breq .L115
+ 2729 0ea6 90E0      	.LM194:
+ 2730 0ea8 0E94 0000 		ldi r24,lo8(2)
+ 2731 0eac 00C0      		call Led_on
+ 2733               	.LM195:
+ 2734               		ldi r24,lo8(1)
+ 2735 0eae 80E0      		ldi r25,hi8(1)
+ 2736 0eb0 90E0      		call buzzer
+ 2738               	.LM196:
+ 2739               		rcall .
+ 2740 0eb6 80E0      		rcall .
+ 2741 0eb8 90E0      		lds r24,__iob+4
+ 2742 0eba 0E94 0000 		lds r25,(__iob+4)+1
+ 2743               		in r30,__SP_L__
+ 2744               		in r31,__SP_H__
+ 2745 0ebe 80E0      		std Z+2,r25
+ 2746 0ec0 90E0      		std Z+1,r24
+ 2747 0ec2 0E94 0000 		ldi r24,lo8(__c.3651)
+ 2748 0ec6 8C01      		ldi r25,hi8(__c.3651)
+ 2749               		std Z+4,r25
+ 2750               		std Z+3,r24
+ 2751 0ec8 0097      		call fprintf_P
+ 2753               	.LM197:
+ 2754               		lds r24,__iob+2
+ 2755 0ecc 82E0      		lds r25,(__iob+2)+1
+ 2756 0ece 0E94 0000 		in r30,__SP_L__
+ 2757               		in r31,__SP_H__
+ 2758               		std Z+2,r25
+ 2759 0ed2 81E0      		std Z+1,r24
+ 2760 0ed4 90E0      		ldi r24,lo8(__c.3653)
+ 2761 0ed6 0E94 0000 		ldi r25,hi8(__c.3653)
+ 2762               		std Z+4,r25
+ 2763               		std Z+3,r24
+ 2764 0eda 00D0      		call fprintf_P
+ 2765 0edc 00D0      		pop __tmp_reg__
+ 2766 0ede 8091 0000 		pop __tmp_reg__
+ 2767 0ee2 9091 0000 		pop __tmp_reg__
+ 2768 0ee6 EDB7      		pop __tmp_reg__
+ 2769 0ee8 FEB7      	.L115:
+ 2771 0eec 8183      	.LM198:
+ 2772 0eee 80E0      		ldi r24,lo8(1)
+ 2773 0ef0 90E0      		ldi r25,hi8(1)
+ 2774 0ef2 9483      		call PMDchipsetOK
+ 2775 0ef4 8383      		movw r28,r24
+ 2777               	.LM199:
+ 2778               		sbiw r24,0
+ 2779 0efa 8091 0000 		breq .L116
+ 2781 0f02 EDB7      	.LM200:
+ 2782 0f04 FEB7      		ldi r24,lo8(1)
+ 2783 0f06 9283      		call Led_on
+ 2785 0f0a 80E0      	.LM201:
+ 2786 0f0c 90E0      		ldi r24,lo8(1)
+ 2787 0f0e 9483      		ldi r25,hi8(1)
+ 2788 0f10 8383      		call buzzer
+ 2790 0f16 0F90      	.LM202:
+ 2791 0f18 0F90      		rcall .
+ 2792 0f1a 0F90      		rcall .
+ 2793 0f1c 0F90      		lds r24,__iob+4
+ 2794               		lds r25,(__iob+4)+1
+ 2795               		in r30,__SP_L__
+ 2796               		in r31,__SP_H__
+ 2797 0f1e 81E0      		std Z+2,r25
+ 2798 0f20 90E0      		std Z+1,r24
+ 2799 0f22 0E94 0000 		ldi r24,lo8(__c.3655)
+ 2800 0f26 EC01      		ldi r25,hi8(__c.3655)
+ 2801               		std Z+4,r25
+ 2802               		std Z+3,r24
+ 2803 0f28 0097      		call fprintf_P
+ 2805               	.LM203:
+ 2806               		lds r24,__iob+2
+ 2807 0f2c 81E0      		lds r25,(__iob+2)+1
+ 2808 0f2e 0E94 0000 		in r30,__SP_L__
+ 2809               		in r31,__SP_H__
+ 2810               		std Z+2,r25
+ 2811 0f32 81E0      		std Z+1,r24
+ 2812 0f34 90E0      		ldi r24,lo8(__c.3657)
+ 2813 0f36 0E94 0000 		ldi r25,hi8(__c.3657)
+ 2814               		std Z+4,r25
+ 2815               		std Z+3,r24
+ 2816 0f3a 00D0      		call fprintf_P
+ 2817 0f3c 00D0      		pop __tmp_reg__
+ 2818 0f3e 8091 0000 		pop __tmp_reg__
+ 2819 0f42 9091 0000 		pop __tmp_reg__
+ 2820 0f46 EDB7      		pop __tmp_reg__
+ 2821 0f48 FEB7      	.L116:
+ 2823 0f4c 8183      	.LM204:
+ 2824 0f4e 80E0      		or r16,r17
+ 2825 0f50 90E0      		brne .L117
+ 2826 0f52 9483      		sbiw r28,0
+ 2827 0f54 8383      		brne .L118
+ 2829               	.LM205:
+ 2830               		ldi r24,lo8(0)
+ 2831 0f5a 8091 0000 		call Led_on
+ 2832 0f5e 9091 0000 		rjmp .L118
+ 2833 0f62 EDB7      	.L117:
+ 2834 0f64 FEB7      		ldi r18,lo8(1)
+ 2835 0f66 9283      		ldi r19,hi8(1)
+ 2836 0f68 8183      	.L114:
+ 2838 0f6c 90E0      	.LM206:
+ 2839 0f6e 9483      		movw r24,r18
+ 2840 0f70 8383      	/* epilogue start */
+ 2841 0f72 0E94 0000 		pop r29
+ 2842 0f76 0F90      		pop r28
+ 2843 0f78 0F90      		pop r17
+ 2844 0f7a 0F90      		pop r16
+ 2845 0f7c 0F90      		ret
+ 2846               	.L118:
+ 2848               	.LM207:
+ 2849 0f7e 012B      		movw r24,r28
+ 2850 0f80 01F4      		sbiw r28,0
+ 2851 0f82 2097      		breq .L119
+ 2852 0f84 01F4      		ldi r24,lo8(1)
+ 2853               		ldi r25,hi8(1)
+ 2854               	.L119:
+ 2855 0f86 80E0      		movw r18,r24
+ 2856 0f88 0E94 0000 		rjmp .L114
+ 2861               	.Lscope14:
+ 2862               		.section	.progmem.data,"a",@progbits
+ 2865               	__c.3657:
+ 2866 0f94 DF91      		.string	"Error en el Controlador de motores No. 2 \n"
+ 2869 0f9a 0F91      	__c.3655:
+ 2870 0f9c 0895      		.string	"Error en Controlador 2 \n"
+ 2873               	__c.3653:
+ 2874 0f9e CE01      		.string	"Error en el Controlador de motores No. 1 \n"
+ 2877 0fa4 81E0      	__c.3651:
+ 2878 0fa6 90E0      		.string	"Error en Controlador 1 \n"
+ 2879               		.comm hAxis,480,1
+ 2880 0fa8 9C01      		.comm rxAxisSettings,340,1
+ 2881 0faa 00C0      		.comm rxTraceBuffer,2,1
+ 2882               		.comm rxPosesActual,2,1
+ 2891 0000 4572 726F 		.text
+ 2891      7220 656E 
+ 2891      2065 6C20 
+ 2891      436F 6E74 
+ 2891      726F 6C61 
+ 2893               	.Letext0:
+ 2894               	.global __do_copy_data
+ 2895 002b 4572 726F 	.global __do_clear_bss
+ 2895      7220 656E 
+ 2895      2043 6F6E 
+ 2895      7472 6F6C 
+ 2895      6164 6F72 
+ 2896               	...
+DEFINED SYMBOLS
+                            *ABS*:00000000 PMDsetup.c
+C:\DOCUME~1\David\LOCALS~1\Temp/ccoIKTNe.s:2      *ABS*:0000003f __SREG__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccoIKTNe.s:3      *ABS*:0000003e __SP_H__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccoIKTNe.s:4      *ABS*:0000003d __SP_L__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccoIKTNe.s:5      *ABS*:00000034 __CCP__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccoIKTNe.s:6      *ABS*:00000000 __tmp_reg__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccoIKTNe.s:7      *ABS*:00000001 __zero_reg__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccoIKTNe.s:257    .text:00000000 GetAxissetting
+                            *COM*:000001e0 hAxis
+C:\DOCUME~1\David\LOCALS~1\Temp/ccoIKTNe.s:377    .text:00000042 PrintAxissetting
+C:\DOCUME~1\David\LOCALS~1\Temp/ccoIKTNe.s:1038   .text:00000512 Axissetting2hAxisHandle
+C:\DOCUME~1\David\LOCALS~1\Temp/ccoIKTNe.s:1277   .text:00000684 Config_BreakPoint
+C:\DOCUME~1\David\LOCALS~1\Temp/ccoIKTNe.s:1347   .text:000006ec cargar_encoder
+C:\DOCUME~1\David\LOCALS~1\Temp/ccoIKTNe.s:1379   .text:0000070a ajustar_posicion
+C:\DOCUME~1\David\LOCALS~1\Temp/ccoIKTNe.s:1409   .text:00000728 Clear_Position_Error
+C:\DOCUME~1\David\LOCALS~1\Temp/ccoIKTNe.s:1478   .text:00000776 Reset_Even_Status_Register
+C:\DOCUME~1\David\LOCALS~1\Temp/ccoIKTNe.s:1523   .text:000007a0 PMDsetupChipsets_USB
+C:\DOCUME~1\David\LOCALS~1\Temp/ccoIKTNe.s:1791   .text:0000092a PMDChipsetReset
+C:\DOCUME~1\David\LOCALS~1\Temp/ccoIKTNe.s:1865   .text:00000986 PMDsetupChipSets
+C:\DOCUME~1\David\LOCALS~1\Temp/ccoIKTNe.s:2235   .text:00000ba0 PMDchipsetOK
+C:\DOCUME~1\David\LOCALS~1\Temp/ccoIKTNe.s:2522   .text:00000d78 initAxisHandles
+C:\DOCUME~1\David\LOCALS~1\Temp/ccoIKTNe.s:2701   .text:00000e88 selftestPMD
+C:\DOCUME~1\David\LOCALS~1\Temp/ccoIKTNe.s:2902   .progmem.data:0000006f __c.3651
+C:\DOCUME~1\David\LOCALS~1\Temp/ccoIKTNe.s:2898   .progmem.data:00000044 __c.3653
+C:\DOCUME~1\David\LOCALS~1\Temp/ccoIKTNe.s:2894   .progmem.data:0000002b __c.3655
+C:\DOCUME~1\David\LOCALS~1\Temp/ccoIKTNe.s:2890   .progmem.data:00000000 __c.3657
+                            *COM*:00000154 rxAxisSettings
+                            *COM*:00000002 rxTraceBuffer
+                            *COM*:00000002 rxPosesActual
+
+UNDEFINED SYMBOLS
+printf
+scanf
+EEprom_axisSettings
+__eerd_block_m1280
+EEprom_Reconf_Indicator
+__eewr_block_m1280
+PMDSetBreakpointValue
+PMDSetBreakpoint
+PMDSetActualPosition
+PMDAdjustActualPosition
+PMDClearPositionError
+PMDMultiUpdate
+PMDResetEventStatus
+PMDSetActualPositionUnits
+PMDSetSignalSense
+PMDSetLimitSwitchMode
+PMDSetPhaseCounts
+PMDSetTrackingWindow
+PMDSetSettleWindow
+PMDSetSettleTime
+PMDSetMotionCompleteMode
+PMDSetPositionErrorLimit
+__divmodsi4
+PMDSetMotorCommand
+PMDSetProfileMode
+PMDSetAutoStopMode
+PMDClearInterrupt
+PMDUpdate
+PMDReset
+PMDGetHostIOError
+puts
+PMDSetSampleTime
+PMDSetOutputMode
+PMDSetNumberPhases
+PMDSetEncoderSource
+PMDSetEncoderToStepRatio
+PMDSetAxisMode
+PMDSetMotorMode
+PMDGetChecksum
+Axis2PMDAxis
+Axis2PMDChipset
+PMDSetupAxisInterface_Parallel
+defaultAxisSettings
+buzzer
+delay_1s
+PMDHardReset
+Led_on
+__iob
+fprintf_P
+__do_copy_data
+__do_clear_bss

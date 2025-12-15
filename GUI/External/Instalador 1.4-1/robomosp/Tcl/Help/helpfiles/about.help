@@ -1,0 +1,11 @@
+;---------------------------------------------------
+;Topic About
+;---------------------------------------------------
+.topic about
+.title About Help
+;<p>
+;<img src=logo>
+;</p>
+<p>
+This program is a free software. For details see <a href=license>License</a>.
+</p>

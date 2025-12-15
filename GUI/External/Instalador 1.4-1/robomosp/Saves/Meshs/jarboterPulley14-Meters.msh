@@ -1,0 +1,1782 @@
+434
+         0    0.01106    -0.0045 
+-0.00597949 0.00930426    -0.0045 
+-0.0100605 0.00459449    -0.0045 
+-0.0109474  -0.001574    -0.0045 
+-0.00835859 -0.00724276    -0.0045 
+-0.00311596  -0.010612    -0.0045 
+0.00311596  -0.010612    -0.0045 
+0.00835859 -0.00724276    -0.0045 
+ 0.0109474  -0.001574    -0.0045 
+ 0.0100605 0.00459449    -0.0045 
+0.00597949 0.00930426    -0.0045 
+1.25321e-017    0.01106    -0.0045 
+         0    0.01106    -0.0035 
+-0.00597949 0.00930426    -0.0035 
+-0.0100605 0.00459449    -0.0035 
+-0.0109474  -0.001574    -0.0035 
+-0.00835859 -0.00724276    -0.0035 
+-0.00311596  -0.010612    -0.0035 
+0.00311596  -0.010612    -0.0035 
+0.00835859 -0.00724276    -0.0035 
+ 0.0109474  -0.001574    -0.0035 
+ 0.0100605 0.00459449    -0.0035 
+0.00597949 0.00930426    -0.0035 
+1.25321e-017    0.01106    -0.0035 
+         0    0.01106    -0.0025 
+-0.00597949 0.00930426    -0.0025 
+-0.0100605 0.00459449    -0.0025 
+-0.0109474  -0.001574    -0.0025 
+-0.00835859 -0.00724276    -0.0025 
+-0.00311596  -0.010612    -0.0025 
+0.00311596  -0.010612    -0.0025 
+0.00835859 -0.00724276    -0.0025 
+ 0.0109474  -0.001574    -0.0025 
+ 0.0100605 0.00459449    -0.0025 
+0.00597949 0.00930426    -0.0025 
+1.25321e-017    0.01106    -0.0025 
+         0    0.01106    -0.0015 
+-0.00597949 0.00930426    -0.0015 
+-0.0100605 0.00459449    -0.0015 
+-0.0109474  -0.001574    -0.0015 
+-0.00835859 -0.00724276    -0.0015 
+-0.00311596  -0.010612    -0.0015 
+0.00311596  -0.010612    -0.0015 
+0.00835859 -0.00724276    -0.0015 
+ 0.0109474  -0.001574    -0.0015 
+ 0.0100605 0.00459449    -0.0015 
+0.00597949 0.00930426    -0.0015 
+1.25321e-017    0.01106    -0.0015 
+         0    0.01106    -0.0005 
+-0.00597949 0.00930426    -0.0005 
+-0.0100605 0.00459449    -0.0005 
+-0.0109474  -0.001574    -0.0005 
+-0.00835859 -0.00724276    -0.0005 
+-0.00311596  -0.010612    -0.0005 
+0.00311596  -0.010612    -0.0005 
+0.00835859 -0.00724276    -0.0005 
+ 0.0109474  -0.001574    -0.0005 
+ 0.0100605 0.00459449    -0.0005 
+0.00597949 0.00930426    -0.0005 
+1.25321e-017    0.01106    -0.0005 
+         0    0.01106     0.0005 
+-0.00597949 0.00930426     0.0005 
+-0.0100605 0.00459449     0.0005 
+-0.0109474  -0.001574     0.0005 
+-0.00835859 -0.00724276     0.0005 
+-0.00311596  -0.010612     0.0005 
+0.00311596  -0.010612     0.0005 
+0.00835859 -0.00724276     0.0005 
+ 0.0109474  -0.001574     0.0005 
+ 0.0100605 0.00459449     0.0005 
+0.00597949 0.00930426     0.0005 
+1.25321e-017    0.01106     0.0005 
+         0    0.01106     0.0015 
+-0.00597949 0.00930426     0.0015 
+-0.0100605 0.00459449     0.0015 
+-0.0109474  -0.001574     0.0015 
+-0.00835859 -0.00724276     0.0015 
+-0.00311596  -0.010612     0.0015 
+0.00311596  -0.010612     0.0015 
+0.00835859 -0.00724276     0.0015 
+ 0.0109474  -0.001574     0.0015 
+ 0.0100605 0.00459449     0.0015 
+0.00597949 0.00930426     0.0015 
+1.25321e-017    0.01106     0.0015 
+         0    0.01106     0.0025 
+-0.00597949 0.00930426     0.0025 
+-0.0100605 0.00459449     0.0025 
+-0.0109474  -0.001574     0.0025 
+-0.00835859 -0.00724276     0.0025 
+-0.00311596  -0.010612     0.0025 
+0.00311596  -0.010612     0.0025 
+0.00835859 -0.00724276     0.0025 
+ 0.0109474  -0.001574     0.0025 
+ 0.0100605 0.00459449     0.0025 
+0.00597949 0.00930426     0.0025 
+1.25321e-017    0.01106     0.0025 
+         0    0.01106     0.0035 
+-0.00597949 0.00930426     0.0035 
+-0.0100605 0.00459449     0.0035 
+-0.0109474  -0.001574     0.0035 
+-0.00835859 -0.00724276     0.0035 
+-0.00311596  -0.010612     0.0035 
+0.00311596  -0.010612     0.0035 
+0.00835859 -0.00724276     0.0035 
+ 0.0109474  -0.001574     0.0035 
+ 0.0100605 0.00459449     0.0035 
+0.00597949 0.00930426     0.0035 
+1.25321e-017    0.01106     0.0035 
+         0    0.01106     0.0045 
+-0.00597949 0.00930426     0.0045 
+-0.0100605 0.00459449     0.0045 
+-0.0109474  -0.001574     0.0045 
+-0.00835859 -0.00724276     0.0045 
+-0.00311596  -0.010612     0.0045 
+0.00311596  -0.010612     0.0045 
+0.00835859 -0.00724276     0.0045 
+ 0.0109474  -0.001574     0.0045 
+ 0.0100605 0.00459449     0.0045 
+0.00597949 0.00930426     0.0045 
+1.25321e-017    0.01106     0.0045 
+-0.00330362 -0.00572205    -0.0055 
+-0.00330362 0.00572205    -0.0055 
+-0.00330362          0    -0.0055 
+0.00165181 0.00286102    -0.0055 
+0.00165181 -0.00286102    -0.0055 
+-0.00330362 0.00572205     0.0055 
+-0.00330362 -0.00572205     0.0055 
+-0.00330362          0     0.0055 
+0.00165181 -0.00286102     0.0055 
+0.00165181 0.00286102     0.0055 
+         0     0.0145 0.00568182 
+-0.00783929  0.0121982 0.00568182 
+-0.0131897 0.00602352 0.00568182 
+-0.0143524 -0.00206357 0.00568182 
+-0.0109584 -0.00949548 0.00568182 
+-0.00408512 -0.0139126 0.00568182 
+0.00408512 -0.0139126 0.00568182 
+ 0.0109584 -0.00949548 0.00568182 
+ 0.0143524 -0.00206357 0.00568182 
+ 0.0131897 0.00602352 0.00568182 
+0.00783929  0.0121982 0.00568182 
+1.64299e-017     0.0145 0.00568182 
+         0     0.0145 0.00586364 
+-0.00783929  0.0121982 0.00586364 
+-0.0131897 0.00602352 0.00586364 
+-0.0143524 -0.00206357 0.00586364 
+-0.0109584 -0.00949548 0.00586364 
+-0.00408512 -0.0139126 0.00586364 
+0.00408512 -0.0139126 0.00586364 
+ 0.0109584 -0.00949548 0.00586364 
+ 0.0143524 -0.00206357 0.00586364 
+ 0.0131897 0.00602352 0.00586364 
+0.00783929  0.0121982 0.00586364 
+1.64299e-017     0.0145 0.00586364 
+         0     0.0145 0.00604545 
+-0.00783929  0.0121982 0.00604545 
+-0.0131897 0.00602352 0.00604545 
+-0.0143524 -0.00206357 0.00604545 
+-0.0109584 -0.00949548 0.00604545 
+-0.00408512 -0.0139126 0.00604545 
+0.00408512 -0.0139126 0.00604545 
+ 0.0109584 -0.00949548 0.00604545 
+ 0.0143524 -0.00206357 0.00604545 
+ 0.0131897 0.00602352 0.00604545 
+0.00783929  0.0121982 0.00604545 
+1.64299e-017     0.0145 0.00604545 
+         0     0.0145 0.00622727 
+-0.00783929  0.0121982 0.00622727 
+-0.0131897 0.00602352 0.00622727 
+-0.0143524 -0.00206357 0.00622727 
+-0.0109584 -0.00949548 0.00622727 
+-0.00408512 -0.0139126 0.00622727 
+0.00408512 -0.0139126 0.00622727 
+ 0.0109584 -0.00949548 0.00622727 
+ 0.0143524 -0.00206357 0.00622727 
+ 0.0131897 0.00602352 0.00622727 
+0.00783929  0.0121982 0.00622727 
+1.64299e-017     0.0145 0.00622727 
+         0     0.0145 0.00640909 
+-0.00783929  0.0121982 0.00640909 
+-0.0131897 0.00602352 0.00640909 
+-0.0143524 -0.00206357 0.00640909 
+-0.0109584 -0.00949548 0.00640909 
+-0.00408512 -0.0139126 0.00640909 
+0.00408512 -0.0139126 0.00640909 
+ 0.0109584 -0.00949548 0.00640909 
+ 0.0143524 -0.00206357 0.00640909 
+ 0.0131897 0.00602352 0.00640909 
+0.00783929  0.0121982 0.00640909 
+1.64299e-017     0.0145 0.00640909 
+         0     0.0145 0.00659091 
+-0.00783929  0.0121982 0.00659091 
+-0.0131897 0.00602352 0.00659091 
+-0.0143524 -0.00206357 0.00659091 
+-0.0109584 -0.00949548 0.00659091 
+-0.00408512 -0.0139126 0.00659091 
+0.00408512 -0.0139126 0.00659091 
+ 0.0109584 -0.00949548 0.00659091 
+ 0.0143524 -0.00206357 0.00659091 
+ 0.0131897 0.00602352 0.00659091 
+0.00783929  0.0121982 0.00659091 
+1.64299e-017     0.0145 0.00659091 
+         0     0.0145 0.00677273 
+-0.00783929  0.0121982 0.00677273 
+-0.0131897 0.00602352 0.00677273 
+-0.0143524 -0.00206357 0.00677273 
+-0.0109584 -0.00949548 0.00677273 
+-0.00408512 -0.0139126 0.00677273 
+0.00408512 -0.0139126 0.00677273 
+ 0.0109584 -0.00949548 0.00677273 
+ 0.0143524 -0.00206357 0.00677273 
+ 0.0131897 0.00602352 0.00677273 
+0.00783929  0.0121982 0.00677273 
+1.64299e-017     0.0145 0.00677273 
+         0     0.0145 0.00695455 
+-0.00783929  0.0121982 0.00695455 
+-0.0131897 0.00602352 0.00695455 
+-0.0143524 -0.00206357 0.00695455 
+-0.0109584 -0.00949548 0.00695455 
+-0.00408512 -0.0139126 0.00695455 
+0.00408512 -0.0139126 0.00695455 
+ 0.0109584 -0.00949548 0.00695455 
+ 0.0143524 -0.00206357 0.00695455 
+ 0.0131897 0.00602352 0.00695455 
+0.00783929  0.0121982 0.00695455 
+1.64299e-017     0.0145 0.00695455 
+         0     0.0145 0.00713636 
+-0.00783929  0.0121982 0.00713636 
+-0.0131897 0.00602352 0.00713636 
+-0.0143524 -0.00206357 0.00713636 
+-0.0109584 -0.00949548 0.00713636 
+-0.00408512 -0.0139126 0.00713636 
+0.00408512 -0.0139126 0.00713636 
+ 0.0109584 -0.00949548 0.00713636 
+ 0.0143524 -0.00206357 0.00713636 
+ 0.0131897 0.00602352 0.00713636 
+0.00783929  0.0121982 0.00713636 
+1.64299e-017     0.0145 0.00713636 
+         0     0.0145 0.00731818 
+-0.00783929  0.0121982 0.00731818 
+-0.0131897 0.00602352 0.00731818 
+-0.0143524 -0.00206357 0.00731818 
+-0.0109584 -0.00949548 0.00731818 
+-0.00408512 -0.0139126 0.00731818 
+0.00408512 -0.0139126 0.00731818 
+ 0.0109584 -0.00949548 0.00731818 
+ 0.0143524 -0.00206357 0.00731818 
+ 0.0131897 0.00602352 0.00731818 
+0.00783929  0.0121982 0.00731818 
+1.64299e-017     0.0145 0.00731818 
+         0     0.0145     0.0075 
+-0.00783929  0.0121982     0.0075 
+-0.0131897 0.00602352     0.0075 
+-0.0143524 -0.00206357     0.0075 
+-0.0109584 -0.00949548     0.0075 
+-0.00408512 -0.0139126     0.0075 
+0.00408512 -0.0139126     0.0075 
+ 0.0109584 -0.00949548     0.0075 
+ 0.0143524 -0.00206357     0.0075 
+ 0.0131897 0.00602352     0.0075 
+0.00783929  0.0121982     0.0075 
+1.64299e-017     0.0145     0.0075 
+-0.00330362 -0.00572205     0.0055 
+-0.00330362 0.00572205     0.0055 
+-0.00330362          0     0.0055 
+0.00165181 0.00286102     0.0055 
+0.00165181 -0.00286102     0.0055 
+0.00660725          0     0.0075 
+-0.00330362 0.00572205     0.0075 
+-0.00330362 -0.00572205     0.0075 
+0.00660725 0.00572205     0.0075 
+0.00165181 0.00858307     0.0075 
+0.00165181 0.00286102     0.0075 
+0.00660725 -0.00572205     0.0075 
+0.00165181 -0.00286102     0.0075 
+0.00165181 -0.00858307     0.0075 
+-0.00330362          0     0.0075 
+-0.00825906 0.00286102     0.0075 
+-0.00825906 -0.00286102     0.0075 
+-0.00330362          0     0.0075 
+0.00165181 -0.00286102     0.0075 
+0.00165181 0.00286102     0.0075 
+         0     0.0145    -0.0075 
+-0.00783929  0.0121982    -0.0075 
+-0.0131897 0.00602352    -0.0075 
+-0.0143524 -0.00206357    -0.0075 
+-0.0109584 -0.00949548    -0.0075 
+-0.00408512 -0.0139126    -0.0075 
+0.00408512 -0.0139126    -0.0075 
+ 0.0109584 -0.00949548    -0.0075 
+ 0.0143524 -0.00206357    -0.0075 
+ 0.0131897 0.00602352    -0.0075 
+0.00783929  0.0121982    -0.0075 
+1.64299e-017     0.0145    -0.0075 
+         0     0.0145 -0.00731818 
+-0.00783929  0.0121982 -0.00731818 
+-0.0131897 0.00602352 -0.00731818 
+-0.0143524 -0.00206357 -0.00731818 
+-0.0109584 -0.00949548 -0.00731818 
+-0.00408512 -0.0139126 -0.00731818 
+0.00408512 -0.0139126 -0.00731818 
+ 0.0109584 -0.00949548 -0.00731818 
+ 0.0143524 -0.00206357 -0.00731818 
+ 0.0131897 0.00602352 -0.00731818 
+0.00783929  0.0121982 -0.00731818 
+1.64299e-017     0.0145 -0.00731818 
+         0     0.0145 -0.00713636 
+-0.00783929  0.0121982 -0.00713636 
+-0.0131897 0.00602352 -0.00713636 
+-0.0143524 -0.00206357 -0.00713636 
+-0.0109584 -0.00949548 -0.00713636 
+-0.00408512 -0.0139126 -0.00713636 
+0.00408512 -0.0139126 -0.00713636 
+ 0.0109584 -0.00949548 -0.00713636 
+ 0.0143524 -0.00206357 -0.00713636 
+ 0.0131897 0.00602352 -0.00713636 
+0.00783929  0.0121982 -0.00713636 
+1.64299e-017     0.0145 -0.00713636 
+         0     0.0145 -0.00695455 
+-0.00783929  0.0121982 -0.00695455 
+-0.0131897 0.00602352 -0.00695455 
+-0.0143524 -0.00206357 -0.00695455 
+-0.0109584 -0.00949548 -0.00695455 
+-0.00408512 -0.0139126 -0.00695455 
+0.00408512 -0.0139126 -0.00695455 
+ 0.0109584 -0.00949548 -0.00695455 
+ 0.0143524 -0.00206357 -0.00695455 
+ 0.0131897 0.00602352 -0.00695455 
+0.00783929  0.0121982 -0.00695455 
+1.64299e-017     0.0145 -0.00695455 
+         0     0.0145 -0.00677273 
+-0.00783929  0.0121982 -0.00677273 
+-0.0131897 0.00602352 -0.00677273 
+-0.0143524 -0.00206357 -0.00677273 
+-0.0109584 -0.00949548 -0.00677273 
+-0.00408512 -0.0139126 -0.00677273 
+0.00408512 -0.0139126 -0.00677273 
+ 0.0109584 -0.00949548 -0.00677273 
+ 0.0143524 -0.00206357 -0.00677273 
+ 0.0131897 0.00602352 -0.00677273 
+0.00783929  0.0121982 -0.00677273 
+1.64299e-017     0.0145 -0.00677273 
+         0     0.0145 -0.00659091 
+-0.00783929  0.0121982 -0.00659091 
+-0.0131897 0.00602352 -0.00659091 
+-0.0143524 -0.00206357 -0.00659091 
+-0.0109584 -0.00949548 -0.00659091 
+-0.00408512 -0.0139126 -0.00659091 
+0.00408512 -0.0139126 -0.00659091 
+ 0.0109584 -0.00949548 -0.00659091 
+ 0.0143524 -0.00206357 -0.00659091 
+ 0.0131897 0.00602352 -0.00659091 
+0.00783929  0.0121982 -0.00659091 
+1.64299e-017     0.0145 -0.00659091 
+         0     0.0145 -0.00640909 
+-0.00783929  0.0121982 -0.00640909 
+-0.0131897 0.00602352 -0.00640909 
+-0.0143524 -0.00206357 -0.00640909 
+-0.0109584 -0.00949548 -0.00640909 
+-0.00408512 -0.0139126 -0.00640909 
+0.00408512 -0.0139126 -0.00640909 
+ 0.0109584 -0.00949548 -0.00640909 
+ 0.0143524 -0.00206357 -0.00640909 
+ 0.0131897 0.00602352 -0.00640909 
+0.00783929  0.0121982 -0.00640909 
+1.64299e-017     0.0145 -0.00640909 
+         0     0.0145 -0.00622727 
+-0.00783929  0.0121982 -0.00622727 
+-0.0131897 0.00602352 -0.00622727 
+-0.0143524 -0.00206357 -0.00622727 
+-0.0109584 -0.00949548 -0.00622727 
+-0.00408512 -0.0139126 -0.00622727 
+0.00408512 -0.0139126 -0.00622727 
+ 0.0109584 -0.00949548 -0.00622727 
+ 0.0143524 -0.00206357 -0.00622727 
+ 0.0131897 0.00602352 -0.00622727 
+0.00783929  0.0121982 -0.00622727 
+1.64299e-017     0.0145 -0.00622727 
+         0     0.0145 -0.00604545 
+-0.00783929  0.0121982 -0.00604545 
+-0.0131897 0.00602352 -0.00604545 
+-0.0143524 -0.00206357 -0.00604545 
+-0.0109584 -0.00949548 -0.00604545 
+-0.00408512 -0.0139126 -0.00604545 
+0.00408512 -0.0139126 -0.00604545 
+ 0.0109584 -0.00949548 -0.00604545 
+ 0.0143524 -0.00206357 -0.00604545 
+ 0.0131897 0.00602352 -0.00604545 
+0.00783929  0.0121982 -0.00604545 
+1.64299e-017     0.0145 -0.00604545 
+         0     0.0145 -0.00586364 
+-0.00783929  0.0121982 -0.00586364 
+-0.0131897 0.00602352 -0.00586364 
+-0.0143524 -0.00206357 -0.00586364 
+-0.0109584 -0.00949548 -0.00586364 
+-0.00408512 -0.0139126 -0.00586364 
+0.00408512 -0.0139126 -0.00586364 
+ 0.0109584 -0.00949548 -0.00586364 
+ 0.0143524 -0.00206357 -0.00586364 
+ 0.0131897 0.00602352 -0.00586364 
+0.00783929  0.0121982 -0.00586364 
+1.64299e-017     0.0145 -0.00586364 
+         0     0.0145 -0.00568182 
+-0.00783929  0.0121982 -0.00568182 
+-0.0131897 0.00602352 -0.00568182 
+-0.0143524 -0.00206357 -0.00568182 
+-0.0109584 -0.00949548 -0.00568182 
+-0.00408512 -0.0139126 -0.00568182 
+0.00408512 -0.0139126 -0.00568182 
+ 0.0109584 -0.00949548 -0.00568182 
+ 0.0143524 -0.00206357 -0.00568182 
+ 0.0131897 0.00602352 -0.00568182 
+0.00783929  0.0121982 -0.00568182 
+1.64299e-017     0.0145 -0.00568182 
+0.00660725          0    -0.0075 
+-0.00330362 -0.00572205    -0.0075 
+-0.00330362 0.00572205    -0.0075 
+0.00660725 -0.00572205    -0.0075 
+0.00165181 -0.00858307    -0.0075 
+0.00165181 -0.00286102    -0.0075 
+0.00660725 0.00572205    -0.0075 
+0.00165181 0.00286102    -0.0075 
+0.00165181 0.00858307    -0.0075 
+-0.00330362          0    -0.0075 
+-0.00825906 -0.00286102    -0.0075 
+-0.00825906 0.00286102    -0.0075 
+-0.00330362          0    -0.0075 
+0.00165181 0.00286102    -0.0075 
+0.00165181 -0.00286102    -0.0075 
+-0.00330362 0.00572205    -0.0055 
+-0.00330362 -0.00572205    -0.0055 
+-0.00330362          0    -0.0055 
+0.00165181 -0.00286102    -0.0055 
+0.00165181 0.00286102    -0.0055 
+
+672
+
+3      13       0       1
+              ./CfgsFiles/MtrDefault.mtr
+3      12       0      13
+              ./CfgsFiles/MtrDefault.mtr
+3      14       1       2
+              ./CfgsFiles/MtrDefault.mtr
+3      13       1      14
+              ./CfgsFiles/MtrDefault.mtr
+3      15       2       3
+              ./CfgsFiles/MtrDefault.mtr
+3      14       2      15
+              ./CfgsFiles/MtrDefault.mtr
+3      16       3       4
+              ./CfgsFiles/MtrDefault.mtr
+3      15       3      16
+              ./CfgsFiles/MtrDefault.mtr
+3      17       4       5
+              ./CfgsFiles/MtrDefault.mtr
+3      16       4      17
+              ./CfgsFiles/MtrDefault.mtr
+3      18       5       6
+              ./CfgsFiles/MtrDefault.mtr
+3      17       5      18
+              ./CfgsFiles/MtrDefault.mtr
+3      19       6       7
+              ./CfgsFiles/MtrDefault.mtr
+3      18       6      19
+              ./CfgsFiles/MtrDefault.mtr
+3      20       7       8
+              ./CfgsFiles/MtrDefault.mtr
+3      19       7      20
+              ./CfgsFiles/MtrDefault.mtr
+3      21       8       9
+              ./CfgsFiles/MtrDefault.mtr
+3      20       8      21
+              ./CfgsFiles/MtrDefault.mtr
+3      22       9      10
+              ./CfgsFiles/MtrDefault.mtr
+3      21       9      22
+              ./CfgsFiles/MtrDefault.mtr
+3      23      10      11
+              ./CfgsFiles/MtrDefault.mtr
+3      22      10      23
+              ./CfgsFiles/MtrDefault.mtr
+3      25      12      13
+              ./CfgsFiles/MtrDefault.mtr
+3      24      12      25
+              ./CfgsFiles/MtrDefault.mtr
+3      26      13      14
+              ./CfgsFiles/MtrDefault.mtr
+3      25      13      26
+              ./CfgsFiles/MtrDefault.mtr
+3      27      14      15
+              ./CfgsFiles/MtrDefault.mtr
+3      26      14      27
+              ./CfgsFiles/MtrDefault.mtr
+3      28      15      16
+              ./CfgsFiles/MtrDefault.mtr
+3      27      15      28
+              ./CfgsFiles/MtrDefault.mtr
+3      29      16      17
+              ./CfgsFiles/MtrDefault.mtr
+3      28      16      29
+              ./CfgsFiles/MtrDefault.mtr
+3      30      17      18
+              ./CfgsFiles/MtrDefault.mtr
+3      29      17      30
+              ./CfgsFiles/MtrDefault.mtr
+3      31      18      19
+              ./CfgsFiles/MtrDefault.mtr
+3      30      18      31
+              ./CfgsFiles/MtrDefault.mtr
+3      32      19      20
+              ./CfgsFiles/MtrDefault.mtr
+3      31      19      32
+              ./CfgsFiles/MtrDefault.mtr
+3      33      20      21
+              ./CfgsFiles/MtrDefault.mtr
+3      32      20      33
+              ./CfgsFiles/MtrDefault.mtr
+3      34      21      22
+              ./CfgsFiles/MtrDefault.mtr
+3      33      21      34
+              ./CfgsFiles/MtrDefault.mtr
+3      35      22      23
+              ./CfgsFiles/MtrDefault.mtr
+3      34      22      35
+              ./CfgsFiles/MtrDefault.mtr
+3      37      24      25
+              ./CfgsFiles/MtrDefault.mtr
+3      36      24      37
+              ./CfgsFiles/MtrDefault.mtr
+3      38      25      26
+              ./CfgsFiles/MtrDefault.mtr
+3      37      25      38
+              ./CfgsFiles/MtrDefault.mtr
+3      39      26      27
+              ./CfgsFiles/MtrDefault.mtr
+3      38      26      39
+              ./CfgsFiles/MtrDefault.mtr
+3      40      27      28
+              ./CfgsFiles/MtrDefault.mtr
+3      39      27      40
+              ./CfgsFiles/MtrDefault.mtr
+3      41      28      29
+              ./CfgsFiles/MtrDefault.mtr
+3      40      28      41
+              ./CfgsFiles/MtrDefault.mtr
+3      42      29      30
+              ./CfgsFiles/MtrDefault.mtr
+3      41      29      42
+              ./CfgsFiles/MtrDefault.mtr
+3      43      30      31
+              ./CfgsFiles/MtrDefault.mtr
+3      42      30      43
+              ./CfgsFiles/MtrDefault.mtr
+3      44      31      32
+              ./CfgsFiles/MtrDefault.mtr
+3      43      31      44
+              ./CfgsFiles/MtrDefault.mtr
+3      45      32      33
+              ./CfgsFiles/MtrDefault.mtr
+3      44      32      45
+              ./CfgsFiles/MtrDefault.mtr
+3      46      33      34
+              ./CfgsFiles/MtrDefault.mtr
+3      45      33      46
+              ./CfgsFiles/MtrDefault.mtr
+3      47      34      35
+              ./CfgsFiles/MtrDefault.mtr
+3      46      34      47
+              ./CfgsFiles/MtrDefault.mtr
+3      49      36      37
+              ./CfgsFiles/MtrDefault.mtr
+3      48      36      49
+              ./CfgsFiles/MtrDefault.mtr
+3      50      37      38
+              ./CfgsFiles/MtrDefault.mtr
+3      49      37      50
+              ./CfgsFiles/MtrDefault.mtr
+3      51      38      39
+              ./CfgsFiles/MtrDefault.mtr
+3      50      38      51
+              ./CfgsFiles/MtrDefault.mtr
+3      52      39      40
+              ./CfgsFiles/MtrDefault.mtr
+3      51      39      52
+              ./CfgsFiles/MtrDefault.mtr
+3      53      40      41
+              ./CfgsFiles/MtrDefault.mtr
+3      52      40      53
+              ./CfgsFiles/MtrDefault.mtr
+3      54      41      42
+              ./CfgsFiles/MtrDefault.mtr
+3      53      41      54
+              ./CfgsFiles/MtrDefault.mtr
+3      55      42      43
+              ./CfgsFiles/MtrDefault.mtr
+3      54      42      55
+              ./CfgsFiles/MtrDefault.mtr
+3      56      43      44
+              ./CfgsFiles/MtrDefault.mtr
+3      55      43      56
+              ./CfgsFiles/MtrDefault.mtr
+3      57      44      45
+              ./CfgsFiles/MtrDefault.mtr
+3      56      44      57
+              ./CfgsFiles/MtrDefault.mtr
+3      58      45      46
+              ./CfgsFiles/MtrDefault.mtr
+3      57      45      58
+              ./CfgsFiles/MtrDefault.mtr
+3      59      46      47
+              ./CfgsFiles/MtrDefault.mtr
+3      58      46      59
+              ./CfgsFiles/MtrDefault.mtr
+3      61      48      49
+              ./CfgsFiles/MtrDefault.mtr
+3      60      48      61
+              ./CfgsFiles/MtrDefault.mtr
+3      62      49      50
+              ./CfgsFiles/MtrDefault.mtr
+3      61      49      62
+              ./CfgsFiles/MtrDefault.mtr
+3      63      50      51
+              ./CfgsFiles/MtrDefault.mtr
+3      62      50      63
+              ./CfgsFiles/MtrDefault.mtr
+3      64      51      52
+              ./CfgsFiles/MtrDefault.mtr
+3      63      51      64
+              ./CfgsFiles/MtrDefault.mtr
+3      65      52      53
+              ./CfgsFiles/MtrDefault.mtr
+3      64      52      65
+              ./CfgsFiles/MtrDefault.mtr
+3      66      53      54
+              ./CfgsFiles/MtrDefault.mtr
+3      65      53      66
+              ./CfgsFiles/MtrDefault.mtr
+3      67      54      55
+              ./CfgsFiles/MtrDefault.mtr
+3      66      54      67
+              ./CfgsFiles/MtrDefault.mtr
+3      68      55      56
+              ./CfgsFiles/MtrDefault.mtr
+3      67      55      68
+              ./CfgsFiles/MtrDefault.mtr
+3      69      56      57
+              ./CfgsFiles/MtrDefault.mtr
+3      68      56      69
+              ./CfgsFiles/MtrDefault.mtr
+3      70      57      58
+              ./CfgsFiles/MtrDefault.mtr
+3      69      57      70
+              ./CfgsFiles/MtrDefault.mtr
+3      71      58      59
+              ./CfgsFiles/MtrDefault.mtr
+3      70      58      71
+              ./CfgsFiles/MtrDefault.mtr
+3      73      60      61
+              ./CfgsFiles/MtrDefault.mtr
+3      72      60      73
+              ./CfgsFiles/MtrDefault.mtr
+3      74      61      62
+              ./CfgsFiles/MtrDefault.mtr
+3      73      61      74
+              ./CfgsFiles/MtrDefault.mtr
+3      75      62      63
+              ./CfgsFiles/MtrDefault.mtr
+3      74      62      75
+              ./CfgsFiles/MtrDefault.mtr
+3      76      63      64
+              ./CfgsFiles/MtrDefault.mtr
+3      75      63      76
+              ./CfgsFiles/MtrDefault.mtr
+3      77      64      65
+              ./CfgsFiles/MtrDefault.mtr
+3      76      64      77
+              ./CfgsFiles/MtrDefault.mtr
+3      78      65      66
+              ./CfgsFiles/MtrDefault.mtr
+3      77      65      78
+              ./CfgsFiles/MtrDefault.mtr
+3      79      66      67
+              ./CfgsFiles/MtrDefault.mtr
+3      78      66      79
+              ./CfgsFiles/MtrDefault.mtr
+3      80      67      68
+              ./CfgsFiles/MtrDefault.mtr
+3      79      67      80
+              ./CfgsFiles/MtrDefault.mtr
+3      81      68      69
+              ./CfgsFiles/MtrDefault.mtr
+3      80      68      81
+              ./CfgsFiles/MtrDefault.mtr
+3      82      69      70
+              ./CfgsFiles/MtrDefault.mtr
+3      81      69      82
+              ./CfgsFiles/MtrDefault.mtr
+3      83      70      71
+              ./CfgsFiles/MtrDefault.mtr
+3      82      70      83
+              ./CfgsFiles/MtrDefault.mtr
+3      85      72      73
+              ./CfgsFiles/MtrDefault.mtr
+3      84      72      85
+              ./CfgsFiles/MtrDefault.mtr
+3      86      73      74
+              ./CfgsFiles/MtrDefault.mtr
+3      85      73      86
+              ./CfgsFiles/MtrDefault.mtr
+3      87      74      75
+              ./CfgsFiles/MtrDefault.mtr
+3      86      74      87
+              ./CfgsFiles/MtrDefault.mtr
+3      88      75      76
+              ./CfgsFiles/MtrDefault.mtr
+3      87      75      88
+              ./CfgsFiles/MtrDefault.mtr
+3      89      76      77
+              ./CfgsFiles/MtrDefault.mtr
+3      88      76      89
+              ./CfgsFiles/MtrDefault.mtr
+3      90      77      78
+              ./CfgsFiles/MtrDefault.mtr
+3      89      77      90
+              ./CfgsFiles/MtrDefault.mtr
+3      91      78      79
+              ./CfgsFiles/MtrDefault.mtr
+3      90      78      91
+              ./CfgsFiles/MtrDefault.mtr
+3      92      79      80
+              ./CfgsFiles/MtrDefault.mtr
+3      91      79      92
+              ./CfgsFiles/MtrDefault.mtr
+3      93      80      81
+              ./CfgsFiles/MtrDefault.mtr
+3      92      80      93
+              ./CfgsFiles/MtrDefault.mtr
+3      94      81      82
+              ./CfgsFiles/MtrDefault.mtr
+3      93      81      94
+              ./CfgsFiles/MtrDefault.mtr
+3      95      82      83
+              ./CfgsFiles/MtrDefault.mtr
+3      94      82      95
+              ./CfgsFiles/MtrDefault.mtr
+3      97      84      85
+              ./CfgsFiles/MtrDefault.mtr
+3      96      84      97
+              ./CfgsFiles/MtrDefault.mtr
+3      98      85      86
+              ./CfgsFiles/MtrDefault.mtr
+3      97      85      98
+              ./CfgsFiles/MtrDefault.mtr
+3      99      86      87
+              ./CfgsFiles/MtrDefault.mtr
+3      98      86      99
+              ./CfgsFiles/MtrDefault.mtr
+3     100      87      88
+              ./CfgsFiles/MtrDefault.mtr
+3      99      87     100
+              ./CfgsFiles/MtrDefault.mtr
+3     101      88      89
+              ./CfgsFiles/MtrDefault.mtr
+3     100      88     101
+              ./CfgsFiles/MtrDefault.mtr
+3     102      89      90
+              ./CfgsFiles/MtrDefault.mtr
+3     101      89     102
+              ./CfgsFiles/MtrDefault.mtr
+3     103      90      91
+              ./CfgsFiles/MtrDefault.mtr
+3     102      90     103
+              ./CfgsFiles/MtrDefault.mtr
+3     104      91      92
+              ./CfgsFiles/MtrDefault.mtr
+3     103      91     104
+              ./CfgsFiles/MtrDefault.mtr
+3     105      92      93
+              ./CfgsFiles/MtrDefault.mtr
+3     104      92     105
+              ./CfgsFiles/MtrDefault.mtr
+3     106      93      94
+              ./CfgsFiles/MtrDefault.mtr
+3     105      93     106
+              ./CfgsFiles/MtrDefault.mtr
+3     107      94      95
+              ./CfgsFiles/MtrDefault.mtr
+3     106      94     107
+              ./CfgsFiles/MtrDefault.mtr
+3     109      96      97
+              ./CfgsFiles/MtrDefault.mtr
+3     108      96     109
+              ./CfgsFiles/MtrDefault.mtr
+3     110      97      98
+              ./CfgsFiles/MtrDefault.mtr
+3     109      97     110
+              ./CfgsFiles/MtrDefault.mtr
+3     111      98      99
+              ./CfgsFiles/MtrDefault.mtr
+3     110      98     111
+              ./CfgsFiles/MtrDefault.mtr
+3     112      99     100
+              ./CfgsFiles/MtrDefault.mtr
+3     111      99     112
+              ./CfgsFiles/MtrDefault.mtr
+3     113     100     101
+              ./CfgsFiles/MtrDefault.mtr
+3     112     100     113
+              ./CfgsFiles/MtrDefault.mtr
+3     114     101     102
+              ./CfgsFiles/MtrDefault.mtr
+3     113     101     114
+              ./CfgsFiles/MtrDefault.mtr
+3     115     102     103
+              ./CfgsFiles/MtrDefault.mtr
+3     114     102     115
+              ./CfgsFiles/MtrDefault.mtr
+3     116     103     104
+              ./CfgsFiles/MtrDefault.mtr
+3     115     103     116
+              ./CfgsFiles/MtrDefault.mtr
+3     117     104     105
+              ./CfgsFiles/MtrDefault.mtr
+3     116     104     117
+              ./CfgsFiles/MtrDefault.mtr
+3     118     105     106
+              ./CfgsFiles/MtrDefault.mtr
+3     117     105     118
+              ./CfgsFiles/MtrDefault.mtr
+3     119     106     107
+              ./CfgsFiles/MtrDefault.mtr
+3     118     106     119
+              ./CfgsFiles/MtrDefault.mtr
+3     122     121     123
+              ./CfgsFiles/MtrDefault.mtr
+3     120     122     124
+              ./CfgsFiles/MtrDefault.mtr
+3     123     124     122
+              ./CfgsFiles/MtrDefault.mtr
+3     127     126     128
+              ./CfgsFiles/MtrDefault.mtr
+3     125     127     129
+              ./CfgsFiles/MtrDefault.mtr
+3     128     129     127
+              ./CfgsFiles/MtrDefault.mtr
+3     143     130     131
+              ./CfgsFiles/MtrDefault.mtr
+3     142     130     143
+              ./CfgsFiles/MtrDefault.mtr
+3     144     131     132
+              ./CfgsFiles/MtrDefault.mtr
+3     143     131     144
+              ./CfgsFiles/MtrDefault.mtr
+3     145     132     133
+              ./CfgsFiles/MtrDefault.mtr
+3     144     132     145
+              ./CfgsFiles/MtrDefault.mtr
+3     146     133     134
+              ./CfgsFiles/MtrDefault.mtr
+3     145     133     146
+              ./CfgsFiles/MtrDefault.mtr
+3     147     134     135
+              ./CfgsFiles/MtrDefault.mtr
+3     146     134     147
+              ./CfgsFiles/MtrDefault.mtr
+3     148     135     136
+              ./CfgsFiles/MtrDefault.mtr
+3     147     135     148
+              ./CfgsFiles/MtrDefault.mtr
+3     149     136     137
+              ./CfgsFiles/MtrDefault.mtr
+3     148     136     149
+              ./CfgsFiles/MtrDefault.mtr
+3     150     137     138
+              ./CfgsFiles/MtrDefault.mtr
+3     149     137     150
+              ./CfgsFiles/MtrDefault.mtr
+3     151     138     139
+              ./CfgsFiles/MtrDefault.mtr
+3     150     138     151
+              ./CfgsFiles/MtrDefault.mtr
+3     152     139     140
+              ./CfgsFiles/MtrDefault.mtr
+3     151     139     152
+              ./CfgsFiles/MtrDefault.mtr
+3     153     140     141
+              ./CfgsFiles/MtrDefault.mtr
+3     152     140     153
+              ./CfgsFiles/MtrDefault.mtr
+3     155     142     143
+              ./CfgsFiles/MtrDefault.mtr
+3     154     142     155
+              ./CfgsFiles/MtrDefault.mtr
+3     156     143     144
+              ./CfgsFiles/MtrDefault.mtr
+3     155     143     156
+              ./CfgsFiles/MtrDefault.mtr
+3     157     144     145
+              ./CfgsFiles/MtrDefault.mtr
+3     156     144     157
+              ./CfgsFiles/MtrDefault.mtr
+3     158     145     146
+              ./CfgsFiles/MtrDefault.mtr
+3     157     145     158
+              ./CfgsFiles/MtrDefault.mtr
+3     159     146     147
+              ./CfgsFiles/MtrDefault.mtr
+3     158     146     159
+              ./CfgsFiles/MtrDefault.mtr
+3     160     147     148
+              ./CfgsFiles/MtrDefault.mtr
+3     159     147     160
+              ./CfgsFiles/MtrDefault.mtr
+3     161     148     149
+              ./CfgsFiles/MtrDefault.mtr
+3     160     148     161
+              ./CfgsFiles/MtrDefault.mtr
+3     162     149     150
+              ./CfgsFiles/MtrDefault.mtr
+3     161     149     162
+              ./CfgsFiles/MtrDefault.mtr
+3     163     150     151
+              ./CfgsFiles/MtrDefault.mtr
+3     162     150     163
+              ./CfgsFiles/MtrDefault.mtr
+3     164     151     152
+              ./CfgsFiles/MtrDefault.mtr
+3     163     151     164
+              ./CfgsFiles/MtrDefault.mtr
+3     165     152     153
+              ./CfgsFiles/MtrDefault.mtr
+3     164     152     165
+              ./CfgsFiles/MtrDefault.mtr
+3     167     154     155
+              ./CfgsFiles/MtrDefault.mtr
+3     166     154     167
+              ./CfgsFiles/MtrDefault.mtr
+3     168     155     156
+              ./CfgsFiles/MtrDefault.mtr
+3     167     155     168
+              ./CfgsFiles/MtrDefault.mtr
+3     169     156     157
+              ./CfgsFiles/MtrDefault.mtr
+3     168     156     169
+              ./CfgsFiles/MtrDefault.mtr
+3     170     157     158
+              ./CfgsFiles/MtrDefault.mtr
+3     169     157     170
+              ./CfgsFiles/MtrDefault.mtr
+3     171     158     159
+              ./CfgsFiles/MtrDefault.mtr
+3     170     158     171
+              ./CfgsFiles/MtrDefault.mtr
+3     172     159     160
+              ./CfgsFiles/MtrDefault.mtr
+3     171     159     172
+              ./CfgsFiles/MtrDefault.mtr
+3     173     160     161
+              ./CfgsFiles/MtrDefault.mtr
+3     172     160     173
+              ./CfgsFiles/MtrDefault.mtr
+3     174     161     162
+              ./CfgsFiles/MtrDefault.mtr
+3     173     161     174
+              ./CfgsFiles/MtrDefault.mtr
+3     175     162     163
+              ./CfgsFiles/MtrDefault.mtr
+3     174     162     175
+              ./CfgsFiles/MtrDefault.mtr
+3     176     163     164
+              ./CfgsFiles/MtrDefault.mtr
+3     175     163     176
+              ./CfgsFiles/MtrDefault.mtr
+3     177     164     165
+              ./CfgsFiles/MtrDefault.mtr
+3     176     164     177
+              ./CfgsFiles/MtrDefault.mtr
+3     179     166     167
+              ./CfgsFiles/MtrDefault.mtr
+3     178     166     179
+              ./CfgsFiles/MtrDefault.mtr
+3     180     167     168
+              ./CfgsFiles/MtrDefault.mtr
+3     179     167     180
+              ./CfgsFiles/MtrDefault.mtr
+3     181     168     169
+              ./CfgsFiles/MtrDefault.mtr
+3     180     168     181
+              ./CfgsFiles/MtrDefault.mtr
+3     182     169     170
+              ./CfgsFiles/MtrDefault.mtr
+3     181     169     182
+              ./CfgsFiles/MtrDefault.mtr
+3     183     170     171
+              ./CfgsFiles/MtrDefault.mtr
+3     182     170     183
+              ./CfgsFiles/MtrDefault.mtr
+3     184     171     172
+              ./CfgsFiles/MtrDefault.mtr
+3     183     171     184
+              ./CfgsFiles/MtrDefault.mtr
+3     185     172     173
+              ./CfgsFiles/MtrDefault.mtr
+3     184     172     185
+              ./CfgsFiles/MtrDefault.mtr
+3     186     173     174
+              ./CfgsFiles/MtrDefault.mtr
+3     185     173     186
+              ./CfgsFiles/MtrDefault.mtr
+3     187     174     175
+              ./CfgsFiles/MtrDefault.mtr
+3     186     174     187
+              ./CfgsFiles/MtrDefault.mtr
+3     188     175     176
+              ./CfgsFiles/MtrDefault.mtr
+3     187     175     188
+              ./CfgsFiles/MtrDefault.mtr
+3     189     176     177
+              ./CfgsFiles/MtrDefault.mtr
+3     188     176     189
+              ./CfgsFiles/MtrDefault.mtr
+3     191     178     179
+              ./CfgsFiles/MtrDefault.mtr
+3     190     178     191
+              ./CfgsFiles/MtrDefault.mtr
+3     192     179     180
+              ./CfgsFiles/MtrDefault.mtr
+3     191     179     192
+              ./CfgsFiles/MtrDefault.mtr
+3     193     180     181
+              ./CfgsFiles/MtrDefault.mtr
+3     192     180     193
+              ./CfgsFiles/MtrDefault.mtr
+3     194     181     182
+              ./CfgsFiles/MtrDefault.mtr
+3     193     181     194
+              ./CfgsFiles/MtrDefault.mtr
+3     195     182     183
+              ./CfgsFiles/MtrDefault.mtr
+3     194     182     195
+              ./CfgsFiles/MtrDefault.mtr
+3     196     183     184
+              ./CfgsFiles/MtrDefault.mtr
+3     195     183     196
+              ./CfgsFiles/MtrDefault.mtr
+3     197     184     185
+              ./CfgsFiles/MtrDefault.mtr
+3     196     184     197
+              ./CfgsFiles/MtrDefault.mtr
+3     198     185     186
+              ./CfgsFiles/MtrDefault.mtr
+3     197     185     198
+              ./CfgsFiles/MtrDefault.mtr
+3     199     186     187
+              ./CfgsFiles/MtrDefault.mtr
+3     198     186     199
+              ./CfgsFiles/MtrDefault.mtr
+3     200     187     188
+              ./CfgsFiles/MtrDefault.mtr
+3     199     187     200
+              ./CfgsFiles/MtrDefault.mtr
+3     201     188     189
+              ./CfgsFiles/MtrDefault.mtr
+3     200     188     201
+              ./CfgsFiles/MtrDefault.mtr
+3     203     190     191
+              ./CfgsFiles/MtrDefault.mtr
+3     202     190     203
+              ./CfgsFiles/MtrDefault.mtr
+3     204     191     192
+              ./CfgsFiles/MtrDefault.mtr
+3     203     191     204
+              ./CfgsFiles/MtrDefault.mtr
+3     205     192     193
+              ./CfgsFiles/MtrDefault.mtr
+3     204     192     205
+              ./CfgsFiles/MtrDefault.mtr
+3     206     193     194
+              ./CfgsFiles/MtrDefault.mtr
+3     205     193     206
+              ./CfgsFiles/MtrDefault.mtr
+3     207     194     195
+              ./CfgsFiles/MtrDefault.mtr
+3     206     194     207
+              ./CfgsFiles/MtrDefault.mtr
+3     208     195     196
+              ./CfgsFiles/MtrDefault.mtr
+3     207     195     208
+              ./CfgsFiles/MtrDefault.mtr
+3     209     196     197
+              ./CfgsFiles/MtrDefault.mtr
+3     208     196     209
+              ./CfgsFiles/MtrDefault.mtr
+3     210     197     198
+              ./CfgsFiles/MtrDefault.mtr
+3     209     197     210
+              ./CfgsFiles/MtrDefault.mtr
+3     211     198     199
+              ./CfgsFiles/MtrDefault.mtr
+3     210     198     211
+              ./CfgsFiles/MtrDefault.mtr
+3     212     199     200
+              ./CfgsFiles/MtrDefault.mtr
+3     211     199     212
+              ./CfgsFiles/MtrDefault.mtr
+3     213     200     201
+              ./CfgsFiles/MtrDefault.mtr
+3     212     200     213
+              ./CfgsFiles/MtrDefault.mtr
+3     215     202     203
+              ./CfgsFiles/MtrDefault.mtr
+3     214     202     215
+              ./CfgsFiles/MtrDefault.mtr
+3     216     203     204
+              ./CfgsFiles/MtrDefault.mtr
+3     215     203     216
+              ./CfgsFiles/MtrDefault.mtr
+3     217     204     205
+              ./CfgsFiles/MtrDefault.mtr
+3     216     204     217
+              ./CfgsFiles/MtrDefault.mtr
+3     218     205     206
+              ./CfgsFiles/MtrDefault.mtr
+3     217     205     218
+              ./CfgsFiles/MtrDefault.mtr
+3     219     206     207
+              ./CfgsFiles/MtrDefault.mtr
+3     218     206     219
+              ./CfgsFiles/MtrDefault.mtr
+3     220     207     208
+              ./CfgsFiles/MtrDefault.mtr
+3     219     207     220
+              ./CfgsFiles/MtrDefault.mtr
+3     221     208     209
+              ./CfgsFiles/MtrDefault.mtr
+3     220     208     221
+              ./CfgsFiles/MtrDefault.mtr
+3     222     209     210
+              ./CfgsFiles/MtrDefault.mtr
+3     221     209     222
+              ./CfgsFiles/MtrDefault.mtr
+3     223     210     211
+              ./CfgsFiles/MtrDefault.mtr
+3     222     210     223
+              ./CfgsFiles/MtrDefault.mtr
+3     224     211     212
+              ./CfgsFiles/MtrDefault.mtr
+3     223     211     224
+              ./CfgsFiles/MtrDefault.mtr
+3     225     212     213
+              ./CfgsFiles/MtrDefault.mtr
+3     224     212     225
+              ./CfgsFiles/MtrDefault.mtr
+3     227     214     215
+              ./CfgsFiles/MtrDefault.mtr
+3     226     214     227
+              ./CfgsFiles/MtrDefault.mtr
+3     228     215     216
+              ./CfgsFiles/MtrDefault.mtr
+3     227     215     228
+              ./CfgsFiles/MtrDefault.mtr
+3     229     216     217
+              ./CfgsFiles/MtrDefault.mtr
+3     228     216     229
+              ./CfgsFiles/MtrDefault.mtr
+3     230     217     218
+              ./CfgsFiles/MtrDefault.mtr
+3     229     217     230
+              ./CfgsFiles/MtrDefault.mtr
+3     231     218     219
+              ./CfgsFiles/MtrDefault.mtr
+3     230     218     231
+              ./CfgsFiles/MtrDefault.mtr
+3     232     219     220
+              ./CfgsFiles/MtrDefault.mtr
+3     231     219     232
+              ./CfgsFiles/MtrDefault.mtr
+3     233     220     221
+              ./CfgsFiles/MtrDefault.mtr
+3     232     220     233
+              ./CfgsFiles/MtrDefault.mtr
+3     234     221     222
+              ./CfgsFiles/MtrDefault.mtr
+3     233     221     234
+              ./CfgsFiles/MtrDefault.mtr
+3     235     222     223
+              ./CfgsFiles/MtrDefault.mtr
+3     234     222     235
+              ./CfgsFiles/MtrDefault.mtr
+3     236     223     224
+              ./CfgsFiles/MtrDefault.mtr
+3     235     223     236
+              ./CfgsFiles/MtrDefault.mtr
+3     237     224     225
+              ./CfgsFiles/MtrDefault.mtr
+3     236     224     237
+              ./CfgsFiles/MtrDefault.mtr
+3     239     226     227
+              ./CfgsFiles/MtrDefault.mtr
+3     238     226     239
+              ./CfgsFiles/MtrDefault.mtr
+3     240     227     228
+              ./CfgsFiles/MtrDefault.mtr
+3     239     227     240
+              ./CfgsFiles/MtrDefault.mtr
+3     241     228     229
+              ./CfgsFiles/MtrDefault.mtr
+3     240     228     241
+              ./CfgsFiles/MtrDefault.mtr
+3     242     229     230
+              ./CfgsFiles/MtrDefault.mtr
+3     241     229     242
+              ./CfgsFiles/MtrDefault.mtr
+3     243     230     231
+              ./CfgsFiles/MtrDefault.mtr
+3     242     230     243
+              ./CfgsFiles/MtrDefault.mtr
+3     244     231     232
+              ./CfgsFiles/MtrDefault.mtr
+3     243     231     244
+              ./CfgsFiles/MtrDefault.mtr
+3     245     232     233
+              ./CfgsFiles/MtrDefault.mtr
+3     244     232     245
+              ./CfgsFiles/MtrDefault.mtr
+3     246     233     234
+              ./CfgsFiles/MtrDefault.mtr
+3     245     233     246
+              ./CfgsFiles/MtrDefault.mtr
+3     247     234     235
+              ./CfgsFiles/MtrDefault.mtr
+3     246     234     247
+              ./CfgsFiles/MtrDefault.mtr
+3     248     235     236
+              ./CfgsFiles/MtrDefault.mtr
+3     247     235     248
+              ./CfgsFiles/MtrDefault.mtr
+3     249     236     237
+              ./CfgsFiles/MtrDefault.mtr
+3     248     236     249
+              ./CfgsFiles/MtrDefault.mtr
+3     251     238     239
+              ./CfgsFiles/MtrDefault.mtr
+3     250     238     251
+              ./CfgsFiles/MtrDefault.mtr
+3     252     239     240
+              ./CfgsFiles/MtrDefault.mtr
+3     251     239     252
+              ./CfgsFiles/MtrDefault.mtr
+3     253     240     241
+              ./CfgsFiles/MtrDefault.mtr
+3     252     240     253
+              ./CfgsFiles/MtrDefault.mtr
+3     254     241     242
+              ./CfgsFiles/MtrDefault.mtr
+3     253     241     254
+              ./CfgsFiles/MtrDefault.mtr
+3     255     242     243
+              ./CfgsFiles/MtrDefault.mtr
+3     254     242     255
+              ./CfgsFiles/MtrDefault.mtr
+3     256     243     244
+              ./CfgsFiles/MtrDefault.mtr
+3     255     243     256
+              ./CfgsFiles/MtrDefault.mtr
+3     257     244     245
+              ./CfgsFiles/MtrDefault.mtr
+3     256     244     257
+              ./CfgsFiles/MtrDefault.mtr
+3     258     245     246
+              ./CfgsFiles/MtrDefault.mtr
+3     257     245     258
+              ./CfgsFiles/MtrDefault.mtr
+3     259     246     247
+              ./CfgsFiles/MtrDefault.mtr
+3     258     246     259
+              ./CfgsFiles/MtrDefault.mtr
+3     260     247     248
+              ./CfgsFiles/MtrDefault.mtr
+3     259     247     260
+              ./CfgsFiles/MtrDefault.mtr
+3     261     248     249
+              ./CfgsFiles/MtrDefault.mtr
+3     260     248     261
+              ./CfgsFiles/MtrDefault.mtr
+3     264     263     265
+              ./CfgsFiles/MtrDefault.mtr
+3     262     264     266
+              ./CfgsFiles/MtrDefault.mtr
+3     265     266     264
+              ./CfgsFiles/MtrDefault.mtr
+3     267     270     272
+              ./CfgsFiles/MtrDefault.mtr
+3     272     271     268
+              ./CfgsFiles/MtrDefault.mtr
+3     273     267     274
+              ./CfgsFiles/MtrDefault.mtr
+3     275     274     269
+              ./CfgsFiles/MtrDefault.mtr
+3     276     268     277
+              ./CfgsFiles/MtrDefault.mtr
+3     269     276     278
+              ./CfgsFiles/MtrDefault.mtr
+3     277     278     276
+              ./CfgsFiles/MtrDefault.mtr
+3     279     269     280
+              ./CfgsFiles/MtrDefault.mtr
+3     268     279     281
+              ./CfgsFiles/MtrDefault.mtr
+3     281     280     267
+              ./CfgsFiles/MtrDefault.mtr
+3     280     281     279
+              ./CfgsFiles/MtrDefault.mtr
+3     295     282     283
+              ./CfgsFiles/MtrDefault.mtr
+3     294     282     295
+              ./CfgsFiles/MtrDefault.mtr
+3     296     283     284
+              ./CfgsFiles/MtrDefault.mtr
+3     295     283     296
+              ./CfgsFiles/MtrDefault.mtr
+3     297     284     285
+              ./CfgsFiles/MtrDefault.mtr
+3     296     284     297
+              ./CfgsFiles/MtrDefault.mtr
+3     298     285     286
+              ./CfgsFiles/MtrDefault.mtr
+3     297     285     298
+              ./CfgsFiles/MtrDefault.mtr
+3     299     286     287
+              ./CfgsFiles/MtrDefault.mtr
+3     298     286     299
+              ./CfgsFiles/MtrDefault.mtr
+3     300     287     288
+              ./CfgsFiles/MtrDefault.mtr
+3     299     287     300
+              ./CfgsFiles/MtrDefault.mtr
+3     301     288     289
+              ./CfgsFiles/MtrDefault.mtr
+3     300     288     301
+              ./CfgsFiles/MtrDefault.mtr
+3     302     289     290
+              ./CfgsFiles/MtrDefault.mtr
+3     301     289     302
+              ./CfgsFiles/MtrDefault.mtr
+3     303     290     291
+              ./CfgsFiles/MtrDefault.mtr
+3     302     290     303
+              ./CfgsFiles/MtrDefault.mtr
+3     304     291     292
+              ./CfgsFiles/MtrDefault.mtr
+3     303     291     304
+              ./CfgsFiles/MtrDefault.mtr
+3     305     292     293
+              ./CfgsFiles/MtrDefault.mtr
+3     304     292     305
+              ./CfgsFiles/MtrDefault.mtr
+3     307     294     295
+              ./CfgsFiles/MtrDefault.mtr
+3     306     294     307
+              ./CfgsFiles/MtrDefault.mtr
+3     308     295     296
+              ./CfgsFiles/MtrDefault.mtr
+3     307     295     308
+              ./CfgsFiles/MtrDefault.mtr
+3     309     296     297
+              ./CfgsFiles/MtrDefault.mtr
+3     308     296     309
+              ./CfgsFiles/MtrDefault.mtr
+3     310     297     298
+              ./CfgsFiles/MtrDefault.mtr
+3     309     297     310
+              ./CfgsFiles/MtrDefault.mtr
+3     311     298     299
+              ./CfgsFiles/MtrDefault.mtr
+3     310     298     311
+              ./CfgsFiles/MtrDefault.mtr
+3     312     299     300
+              ./CfgsFiles/MtrDefault.mtr
+3     311     299     312
+              ./CfgsFiles/MtrDefault.mtr
+3     313     300     301
+              ./CfgsFiles/MtrDefault.mtr
+3     312     300     313
+              ./CfgsFiles/MtrDefault.mtr
+3     314     301     302
+              ./CfgsFiles/MtrDefault.mtr
+3     313     301     314
+              ./CfgsFiles/MtrDefault.mtr
+3     315     302     303
+              ./CfgsFiles/MtrDefault.mtr
+3     314     302     315
+              ./CfgsFiles/MtrDefault.mtr
+3     316     303     304
+              ./CfgsFiles/MtrDefault.mtr
+3     315     303     316
+              ./CfgsFiles/MtrDefault.mtr
+3     317     304     305
+              ./CfgsFiles/MtrDefault.mtr
+3     316     304     317
+              ./CfgsFiles/MtrDefault.mtr
+3     319     306     307
+              ./CfgsFiles/MtrDefault.mtr
+3     318     306     319
+              ./CfgsFiles/MtrDefault.mtr
+3     320     307     308
+              ./CfgsFiles/MtrDefault.mtr
+3     319     307     320
+              ./CfgsFiles/MtrDefault.mtr
+3     321     308     309
+              ./CfgsFiles/MtrDefault.mtr
+3     320     308     321
+              ./CfgsFiles/MtrDefault.mtr
+3     322     309     310
+              ./CfgsFiles/MtrDefault.mtr
+3     321     309     322
+              ./CfgsFiles/MtrDefault.mtr
+3     323     310     311
+              ./CfgsFiles/MtrDefault.mtr
+3     322     310     323
+              ./CfgsFiles/MtrDefault.mtr
+3     324     311     312
+              ./CfgsFiles/MtrDefault.mtr
+3     323     311     324
+              ./CfgsFiles/MtrDefault.mtr
+3     325     312     313
+              ./CfgsFiles/MtrDefault.mtr
+3     324     312     325
+              ./CfgsFiles/MtrDefault.mtr
+3     326     313     314
+              ./CfgsFiles/MtrDefault.mtr
+3     325     313     326
+              ./CfgsFiles/MtrDefault.mtr
+3     327     314     315
+              ./CfgsFiles/MtrDefault.mtr
+3     326     314     327
+              ./CfgsFiles/MtrDefault.mtr
+3     328     315     316
+              ./CfgsFiles/MtrDefault.mtr
+3     327     315     328
+              ./CfgsFiles/MtrDefault.mtr
+3     329     316     317
+              ./CfgsFiles/MtrDefault.mtr
+3     328     316     329
+              ./CfgsFiles/MtrDefault.mtr
+3     331     318     319
+              ./CfgsFiles/MtrDefault.mtr
+3     330     318     331
+              ./CfgsFiles/MtrDefault.mtr
+3     332     319     320
+              ./CfgsFiles/MtrDefault.mtr
+3     331     319     332
+              ./CfgsFiles/MtrDefault.mtr
+3     333     320     321
+              ./CfgsFiles/MtrDefault.mtr
+3     332     320     333
+              ./CfgsFiles/MtrDefault.mtr
+3     334     321     322
+              ./CfgsFiles/MtrDefault.mtr
+3     333     321     334
+              ./CfgsFiles/MtrDefault.mtr
+3     335     322     323
+              ./CfgsFiles/MtrDefault.mtr
+3     334     322     335
+              ./CfgsFiles/MtrDefault.mtr
+3     336     323     324
+              ./CfgsFiles/MtrDefault.mtr
+3     335     323     336
+              ./CfgsFiles/MtrDefault.mtr
+3     337     324     325
+              ./CfgsFiles/MtrDefault.mtr
+3     336     324     337
+              ./CfgsFiles/MtrDefault.mtr
+3     338     325     326
+              ./CfgsFiles/MtrDefault.mtr
+3     337     325     338
+              ./CfgsFiles/MtrDefault.mtr
+3     339     326     327
+              ./CfgsFiles/MtrDefault.mtr
+3     338     326     339
+              ./CfgsFiles/MtrDefault.mtr
+3     340     327     328
+              ./CfgsFiles/MtrDefault.mtr
+3     339     327     340
+              ./CfgsFiles/MtrDefault.mtr
+3     341     328     329
+              ./CfgsFiles/MtrDefault.mtr
+3     340     328     341
+              ./CfgsFiles/MtrDefault.mtr
+3     343     330     331
+              ./CfgsFiles/MtrDefault.mtr
+3     342     330     343
+              ./CfgsFiles/MtrDefault.mtr
+3     344     331     332
+              ./CfgsFiles/MtrDefault.mtr
+3     343     331     344
+              ./CfgsFiles/MtrDefault.mtr
+3     345     332     333
+              ./CfgsFiles/MtrDefault.mtr
+3     344     332     345
+              ./CfgsFiles/MtrDefault.mtr
+3     346     333     334
+              ./CfgsFiles/MtrDefault.mtr
+3     345     333     346
+              ./CfgsFiles/MtrDefault.mtr
+3     347     334     335
+              ./CfgsFiles/MtrDefault.mtr
+3     346     334     347
+              ./CfgsFiles/MtrDefault.mtr
+3     348     335     336
+              ./CfgsFiles/MtrDefault.mtr
+3     347     335     348
+              ./CfgsFiles/MtrDefault.mtr
+3     349     336     337
+              ./CfgsFiles/MtrDefault.mtr
+3     348     336     349
+              ./CfgsFiles/MtrDefault.mtr
+3     350     337     338
+              ./CfgsFiles/MtrDefault.mtr
+3     349     337     350
+              ./CfgsFiles/MtrDefault.mtr
+3     351     338     339
+              ./CfgsFiles/MtrDefault.mtr
+3     350     338     351
+              ./CfgsFiles/MtrDefault.mtr
+3     352     339     340
+              ./CfgsFiles/MtrDefault.mtr
+3     351     339     352
+              ./CfgsFiles/MtrDefault.mtr
+3     353     340     341
+              ./CfgsFiles/MtrDefault.mtr
+3     352     340     353
+              ./CfgsFiles/MtrDefault.mtr
+3     355     342     343
+              ./CfgsFiles/MtrDefault.mtr
+3     354     342     355
+              ./CfgsFiles/MtrDefault.mtr
+3     356     343     344
+              ./CfgsFiles/MtrDefault.mtr
+3     355     343     356
+              ./CfgsFiles/MtrDefault.mtr
+3     357     344     345
+              ./CfgsFiles/MtrDefault.mtr
+3     356     344     357
+              ./CfgsFiles/MtrDefault.mtr
+3     358     345     346
+              ./CfgsFiles/MtrDefault.mtr
+3     357     345     358
+              ./CfgsFiles/MtrDefault.mtr
+3     359     346     347
+              ./CfgsFiles/MtrDefault.mtr
+3     358     346     359
+              ./CfgsFiles/MtrDefault.mtr
+3     360     347     348
+              ./CfgsFiles/MtrDefault.mtr
+3     359     347     360
+              ./CfgsFiles/MtrDefault.mtr
+3     361     348     349
+              ./CfgsFiles/MtrDefault.mtr
+3     360     348     361
+              ./CfgsFiles/MtrDefault.mtr
+3     362     349     350
+              ./CfgsFiles/MtrDefault.mtr
+3     361     349     362
+              ./CfgsFiles/MtrDefault.mtr
+3     363     350     351
+              ./CfgsFiles/MtrDefault.mtr
+3     362     350     363
+              ./CfgsFiles/MtrDefault.mtr
+3     364     351     352
+              ./CfgsFiles/MtrDefault.mtr
+3     363     351     364
+              ./CfgsFiles/MtrDefault.mtr
+3     365     352     353
+              ./CfgsFiles/MtrDefault.mtr
+3     364     352     365
+              ./CfgsFiles/MtrDefault.mtr
+3     367     354     355
+              ./CfgsFiles/MtrDefault.mtr
+3     366     354     367
+              ./CfgsFiles/MtrDefault.mtr
+3     368     355     356
+              ./CfgsFiles/MtrDefault.mtr
+3     367     355     368
+              ./CfgsFiles/MtrDefault.mtr
+3     369     356     357
+              ./CfgsFiles/MtrDefault.mtr
+3     368     356     369
+              ./CfgsFiles/MtrDefault.mtr
+3     370     357     358
+              ./CfgsFiles/MtrDefault.mtr
+3     369     357     370
+              ./CfgsFiles/MtrDefault.mtr
+3     371     358     359
+              ./CfgsFiles/MtrDefault.mtr
+3     370     358     371
+              ./CfgsFiles/MtrDefault.mtr
+3     372     359     360
+              ./CfgsFiles/MtrDefault.mtr
+3     371     359     372
+              ./CfgsFiles/MtrDefault.mtr
+3     373     360     361
+              ./CfgsFiles/MtrDefault.mtr
+3     372     360     373
+              ./CfgsFiles/MtrDefault.mtr
+3     374     361     362
+              ./CfgsFiles/MtrDefault.mtr
+3     373     361     374
+              ./CfgsFiles/MtrDefault.mtr
+3     375     362     363
+              ./CfgsFiles/MtrDefault.mtr
+3     374     362     375
+              ./CfgsFiles/MtrDefault.mtr
+3     376     363     364
+              ./CfgsFiles/MtrDefault.mtr
+3     375     363     376
+              ./CfgsFiles/MtrDefault.mtr
+3     377     364     365
+              ./CfgsFiles/MtrDefault.mtr
+3     376     364     377
+              ./CfgsFiles/MtrDefault.mtr
+3     379     366     367
+              ./CfgsFiles/MtrDefault.mtr
+3     378     366     379
+              ./CfgsFiles/MtrDefault.mtr
+3     380     367     368
+              ./CfgsFiles/MtrDefault.mtr
+3     379     367     380
+              ./CfgsFiles/MtrDefault.mtr
+3     381     368     369
+              ./CfgsFiles/MtrDefault.mtr
+3     380     368     381
+              ./CfgsFiles/MtrDefault.mtr
+3     382     369     370
+              ./CfgsFiles/MtrDefault.mtr
+3     381     369     382
+              ./CfgsFiles/MtrDefault.mtr
+3     383     370     371
+              ./CfgsFiles/MtrDefault.mtr
+3     382     370     383
+              ./CfgsFiles/MtrDefault.mtr
+3     384     371     372
+              ./CfgsFiles/MtrDefault.mtr
+3     383     371     384
+              ./CfgsFiles/MtrDefault.mtr
+3     385     372     373
+              ./CfgsFiles/MtrDefault.mtr
+3     384     372     385
+              ./CfgsFiles/MtrDefault.mtr
+3     386     373     374
+              ./CfgsFiles/MtrDefault.mtr
+3     385     373     386
+              ./CfgsFiles/MtrDefault.mtr
+3     387     374     375
+              ./CfgsFiles/MtrDefault.mtr
+3     386     374     387
+              ./CfgsFiles/MtrDefault.mtr
+3     388     375     376
+              ./CfgsFiles/MtrDefault.mtr
+3     387     375     388
+              ./CfgsFiles/MtrDefault.mtr
+3     389     376     377
+              ./CfgsFiles/MtrDefault.mtr
+3     388     376     389
+              ./CfgsFiles/MtrDefault.mtr
+3     391     378     379
+              ./CfgsFiles/MtrDefault.mtr
+3     390     378     391
+              ./CfgsFiles/MtrDefault.mtr
+3     392     379     380
+              ./CfgsFiles/MtrDefault.mtr
+3     391     379     392
+              ./CfgsFiles/MtrDefault.mtr
+3     393     380     381
+              ./CfgsFiles/MtrDefault.mtr
+3     392     380     393
+              ./CfgsFiles/MtrDefault.mtr
+3     394     381     382
+              ./CfgsFiles/MtrDefault.mtr
+3     393     381     394
+              ./CfgsFiles/MtrDefault.mtr
+3     395     382     383
+              ./CfgsFiles/MtrDefault.mtr
+3     394     382     395
+              ./CfgsFiles/MtrDefault.mtr
+3     396     383     384
+              ./CfgsFiles/MtrDefault.mtr
+3     395     383     396
+              ./CfgsFiles/MtrDefault.mtr
+3     397     384     385
+              ./CfgsFiles/MtrDefault.mtr
+3     396     384     397
+              ./CfgsFiles/MtrDefault.mtr
+3     398     385     386
+              ./CfgsFiles/MtrDefault.mtr
+3     397     385     398
+              ./CfgsFiles/MtrDefault.mtr
+3     399     386     387
+              ./CfgsFiles/MtrDefault.mtr
+3     398     386     399
+              ./CfgsFiles/MtrDefault.mtr
+3     400     387     388
+              ./CfgsFiles/MtrDefault.mtr
+3     399     387     400
+              ./CfgsFiles/MtrDefault.mtr
+3     401     388     389
+              ./CfgsFiles/MtrDefault.mtr
+3     400     388     401
+              ./CfgsFiles/MtrDefault.mtr
+3     403     390     391
+              ./CfgsFiles/MtrDefault.mtr
+3     402     390     403
+              ./CfgsFiles/MtrDefault.mtr
+3     404     391     392
+              ./CfgsFiles/MtrDefault.mtr
+3     403     391     404
+              ./CfgsFiles/MtrDefault.mtr
+3     405     392     393
+              ./CfgsFiles/MtrDefault.mtr
+3     404     392     405
+              ./CfgsFiles/MtrDefault.mtr
+3     406     393     394
+              ./CfgsFiles/MtrDefault.mtr
+3     405     393     406
+              ./CfgsFiles/MtrDefault.mtr
+3     407     394     395
+              ./CfgsFiles/MtrDefault.mtr
+3     406     394     407
+              ./CfgsFiles/MtrDefault.mtr
+3     408     395     396
+              ./CfgsFiles/MtrDefault.mtr
+3     407     395     408
+              ./CfgsFiles/MtrDefault.mtr
+3     409     396     397
+              ./CfgsFiles/MtrDefault.mtr
+3     408     396     409
+              ./CfgsFiles/MtrDefault.mtr
+3     410     397     398
+              ./CfgsFiles/MtrDefault.mtr
+3     409     397     410
+              ./CfgsFiles/MtrDefault.mtr
+3     411     398     399
+              ./CfgsFiles/MtrDefault.mtr
+3     410     398     411
+              ./CfgsFiles/MtrDefault.mtr
+3     412     399     400
+              ./CfgsFiles/MtrDefault.mtr
+3     411     399     412
+              ./CfgsFiles/MtrDefault.mtr
+3     413     400     401
+              ./CfgsFiles/MtrDefault.mtr
+3     412     400     413
+              ./CfgsFiles/MtrDefault.mtr
+3     414     417     419
+              ./CfgsFiles/MtrDefault.mtr
+3     419     418     415
+              ./CfgsFiles/MtrDefault.mtr
+3     420     414     421
+              ./CfgsFiles/MtrDefault.mtr
+3     422     421     416
+              ./CfgsFiles/MtrDefault.mtr
+3     423     415     424
+              ./CfgsFiles/MtrDefault.mtr
+3     416     423     425
+              ./CfgsFiles/MtrDefault.mtr
+3     424     425     423
+              ./CfgsFiles/MtrDefault.mtr
+3     426     416     427
+              ./CfgsFiles/MtrDefault.mtr
+3     415     426     428
+              ./CfgsFiles/MtrDefault.mtr
+3     428     427     414
+              ./CfgsFiles/MtrDefault.mtr
+3     427     428     426
+              ./CfgsFiles/MtrDefault.mtr
+3     431     430     432
+              ./CfgsFiles/MtrDefault.mtr
+3     429     431     433
+              ./CfgsFiles/MtrDefault.mtr
+3     432     433     431
+              ./CfgsFiles/MtrDefault.mtr

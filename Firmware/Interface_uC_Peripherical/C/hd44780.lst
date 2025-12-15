@@ -1,0 +1,580 @@
+   1               		.file	"hd44780.c"
+   2               	__SREG__ = 0x3f
+   3               	__SP_H__ = 0x3e
+   4               	__SP_L__ = 0x3d
+   5               	__CCP__  = 0x34
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   9               		.text
+  10               	.Ltext0:
+  72               	hd44780_outnibble:
+   1:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** #include "macros.h"
+   2:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 
+   3:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** #include <stdbool.h>
+   4:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** #include <stdint.h>
+   5:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 
+   6:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** #include <avr/io.h>
+   7:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** #include <util/delay.h>
+   8:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 
+   9:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** #include "hd44780.h"
+  10:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 
+  11:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** #define GLUE(a, b)     a##b
+  12:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** #define PORT(x)        GLUE(PORT, x)
+  13:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** #define PIN(x)         GLUE(PIN, x)
+  14:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** #define DDR(x)         GLUE(DDR, x)
+  15:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 
+  16:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** #define HD44780_PORTOUT    PORT(HD44780_PORT)
+  17:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** #define HD44780_PORTIN     PIN(HD44780_PORT)
+  18:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** #define HD44780_DDR        DDR(HD44780_PORT)
+  19:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 
+  20:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** #define HD44780_DATABITS \
+  21:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** (_BV(HD44780_D4)|_BV(HD44780_D5)|_BV(HD44780_D6)|_BV(HD44780_D7))
+  22:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 
+  23:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** #define HD44780_BUSYFLAG 0x80
+  24:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 
+  25:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** /*
+  26:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c ****  * Send one pulse to the E signal (enable).  Mind the timing
+  27:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c ****  * constraints.  If readback is set to true, read the HD44780 data
+  28:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c ****  * pins right before the falling edge of E, and return that value.
+  29:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c ****  */
+  30:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** static inline uint8_t
+  31:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** hd44780_pulse_e(bool readback) __attribute__((always_inline));
+  32:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 
+  33:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** static inline uint8_t
+  34:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** hd44780_pulse_e(bool readback)
+  35:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** {
+  36:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 	uint8_t x;
+  37:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 
+  38:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 	HD44780_PORTOUT |= _BV(HD44780_E);
+  39:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 	/*
+  40:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 	* Guarantee at least 500 ns of pulse width.  For high CPU
+  41:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 	* frequencies, a delay loop is used.  For lower frequencies, NOPs
+  42:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 	* are used, and at or below 1 MHz, the native pulse width will
+  43:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 	* already be 1 us or more so no additional delays are needed.
+  44:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 	*/
+  45:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 	#if F_CPU > 4000000UL
+  46:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 		_delay_us(0.5);
+  47:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 	#else
+  48:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 	/*
+  49:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 	* When reading back, we need one additional NOP, as the value read
+  50:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 	* back from the input pin is sampled close to the beginning of a
+  51:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 	* CPU clock cycle, while the previous edge on the output pin is
+  52:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 	* generated towards the end of a CPU clock cycle.
+  53:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 	*/
+  54:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 		if (readback)
+  55:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 			__asm__ volatile("nop");
+  56:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 			#  if F_CPU > 1000000UL
+  57:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 				__asm__ volatile("nop");
+  58:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 				#    if F_CPU > 2000000UL
+  59:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 					__asm__ volatile("nop");
+  60:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 					__asm__ volatile("nop");
+  61:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 				#    endif /* F_CPU > 2000000UL */
+  62:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 			#  endif /* F_CPU > 1000000UL */
+  63:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 	#endif
+  64:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 	if (readback)
+  65:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 		x = HD44780_PORTIN & HD44780_DATABITS;
+  66:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 	else
+  67:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 		x = 0;
+  68:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 	HD44780_PORTOUT &= ~_BV(HD44780_E);
+  69:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 
+  70:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 	return x;
+  71:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** }
+  72:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 
+  73:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** /*
+  74:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c ****  * Send one nibble out to the LCD controller.
+  75:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c ****  */
+  76:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** static void
+  77:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** hd44780_outnibble(uint8_t n, uint8_t rs)
+  78:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** {
+  73               	ame size = 0 */
+  74               		mov r25,r24
+  76               	.LM1:
+  77               		cbi 37-32,4
+  79:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 	uint8_t x;
+  80:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 
+  81:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 	HD44780_PORTOUT &= ~_BV(HD44780_RW);
+  79               		tst r22
+  80               		breq .L2
+  82:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 	if (rs)
+  82               	3:
+  83               		sbi 37-32,6
+  84 0004 6623      		rjmp .L3
+  85 0006 01F0      	.L2:
+  83:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 		HD44780_PORTOUT |= _BV(HD44780_RS);
+  86               	abn	68,0,85,.LM4-.LFBB1
+  87               	.LM4:
+  88 0008 2E9A      		cbi 37-32,6
+  89 000a 00C0      	.L3:
+  84:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 	else
+  85:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 		HD44780_PORTOUT &= ~_BV(HD44780_RS);
+  91               	
+  92               		in r24,37-32
+  93 000c 2E98      		andi r25,lo8(15)
+  94               		andi r24,lo8(-16)
+  86:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c ****   
+  87:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 	x = (HD44780_PORTOUT & ~HD44780_DATABITS) | ((n << HD44780_D4) & HD44780_DATABITS);
+  95               	 r24,r25
+  97 000e 85B1      	.LM6:
+  98 0010 9F70      		out 37-32,r24
+  99 0012 807F      	.LBB62:
+ 100 0014 892B      	.LBB63:
+  88:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 	HD44780_PORTOUT = x;
+ 101               	n	68,0,38,.LM7-.LFBB1
+ 102               	.LM7:
+ 103 0016 85B9      		sbi 37-32,5
+ 104               	.LBB64:
+ 105               	.LBB65:
+ 106               	.LBB66:
+ 107               	.LBB67:
+ 109               	.Ltext1:
+ 111               	.LM8:
+ 112               		ldi r24,lo8(1)
+ 113               	/* #APP */
+ 114               	 ;  83 "c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h" 1
+   1:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** /* Copyright (c) 2002, Marek Michalkiewicz
+   2:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****    Copyright (c) 2007 Joerg Wunsch
+   3:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****    All rights reserved.
+   4:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+   5:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****    Redistribution and use in source and binary forms, with or without
+   6:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****    modification, are permitted provided that the following conditions are met:
+   7:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+   8:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****    * Redistributions of source code must retain the above copyright
+   9:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****      notice, this list of conditions and the following disclaimer.
+  10:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  11:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****    * Redistributions in binary form must reproduce the above copyright
+  12:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****      notice, this list of conditions and the following disclaimer in
+  13:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****      the documentation and/or other materials provided with the
+  14:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****      distribution.
+  15:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  16:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****    * Neither the name of the copyright holders nor the names of
+  17:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****      contributors may be used to endorse or promote products derived
+  18:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****      from this software without specific prior written permission.
+  19:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  20:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  21:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****   AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  22:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+  23:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****   ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+  24:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****   LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+  25:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+  26:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****   SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+  27:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+  28:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+  29:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+  30:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****   POSSIBILITY OF SUCH DAMAGE. */
+  31:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  32:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** /* $Id: delay_basic.h,v 1.1 2007/05/13 21:23:20 joerg_wunsch Exp $ */
+  33:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  34:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** #ifndef _UTIL_DELAY_BASIC_H_
+  35:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** #define _UTIL_DELAY_BASIC_H_ 1
+  36:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  37:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** #include <inttypes.h>
+  38:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  39:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** /** \file */
+  40:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** /** \defgroup util_delay_basic <util/delay_basic.h>: Basic busy-wait delay loops
+  41:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     \code
+  42:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     #include <util/delay_basic.h>
+  43:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     \endcode
+  44:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  45:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     The functions in this header file implement simple delay loops
+  46:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     that perform a busy-waiting.  They are typically used to
+  47:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     facilitate short delays in the program execution.  They are
+  48:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     implemented as count-down loops with a well-known CPU cycle
+  49:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     count per loop iteration.  As such, no other processing can
+  50:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     occur simultaneously.  It should be kept in mind that the
+  51:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     functions described here do not disable interrupts.
+  52:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  53:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     In general, for long delays, the use of hardware timers is
+  54:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     much preferrable, as they free the CPU, and allow for
+  55:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     concurrent processing of other events while the timer is
+  56:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     running.  However, in particular for very short delays, the
+  57:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     overhead of setting up a hardware timer is too much compared
+  58:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     to the overall delay time.
+  59:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  60:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     Two inline functions are provided for the actual delay algorithms.
+  61:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  62:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** */
+  63:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  64:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** #if !defined(__DOXYGEN__)
+  65:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** static inline void _delay_loop_1(uint8_t __count) __attribute__((always_inline));
+  66:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** static inline void _delay_loop_2(uint16_t __count) __attribute__((always_inline));
+  67:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** #endif
+  68:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  69:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** /** \ingroup util_delay_basic
+  70:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  71:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     Delay loop using an 8-bit counter \c __count, so up to 256
+  72:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     iterations are possible.  (The value 256 would have to be passed
+  73:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     as 0.)  The loop executes three CPU cycles per iteration, not
+  74:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     including the overhead the compiler needs to setup the counter
+  75:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     register.
+  76:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  77:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     Thus, at a CPU speed of 1 MHz, delays of up to 768 microseconds
+  78:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     can be achieved.
+  79:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** */
+  80:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** void
+  81:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** _delay_loop_1(uint8_t __count)
+  82:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** {
+  83:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 	__asm__ volatile (
+ 115               	rne 1b
+ 116               	 ;  0 "" 2
+ 117 001a 81E0      	/* #NOAPP */
+ 118               	.LBE67:
+ 119               	.LBE66:
+ 120 001c 8A95      	.LBE65:
+ 121 001e 01F4      	.LBE64:
+ 123               	.Ltext2:
+ 125               	.LM9:
+ 126               		cbi 37-32,5
+ 127               	/* epilogue start */
+ 128               	.LBE63:
+ 129               	.LBE62:
+ 131               	.LM10:
+ 132 0020 2D98      		ret
+ 134               	.Lscope1:
+  89:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 	(void)hd44780_pulse_e(false);
+  90:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** }
+ 136               	,0,0,17
+ 138 0022 0895      	.global	hd44780_outbyte
+ 140               	hd44780_outbyte:
+ 142               	.LM11:
+ 143               	.LFBB2:
+ 144               		push r16
+ 145               		push r17
+ 146               	/* prologue: function */
+  91:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 
+  92:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** /*
+  93:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c ****  * Send one byte to the LCD controller.  As we are in 4-bit mode, we
+  94:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c ****  * have to send two nibbles.
+  95:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c ****  */
+  96:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** void hd44780_outbyte(uint8_t b, uint8_t rs)
+  97:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** {
+ 147               	ze = 0 */
+ 148               		mov r17,r24
+ 149               		mov r16,r22
+ 151 0026 1F93      	.LM12:
+ 152               		swap r24
+ 153               		andi r24,lo8(15)
+ 154 0028 182F      		call hd44780_outnibble
+  98:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 	hd44780_outnibble(b >> 4, rs);
+ 156               	ov r24,r17
+ 157               		andi r24,lo8(15)
+ 158 002c 8295      		mov r22,r16
+ 159 002e 8F70      		call hd44780_outnibble
+ 160 0030 0E94 0000 	/* epilogue start */
+  99:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 	hd44780_outnibble(b & 0xf, rs);
+ 161               	bn	68,0,100,.LM14-.LFBB2
+ 162               	.LM14:
+ 163 0034 812F      		pop r17
+ 164 0036 8F70      		pop r16
+ 165 0038 602F      		ret
+ 167               	.Lscope2:
+ 100:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** }
+ 168               		"hd44780_innibble:f(1,2)",36,0,0,hd44780_innibble
+ 171 0040 0F91      	hd44780_innibble:
+ 173               	.LM15:
+ 174               	.LFBB3:
+ 175               	/* prologue: function */
+ 176               	/* frame size = 0 */
+ 178               	.LM16:
+ 101:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 
+ 102:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** /*
+ 103:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c ****  * Read one nibble from the LCD controller.
+ 104:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c ****  */
+ 105:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** static uint8_t hd44780_innibble(uint8_t rs)
+ 106:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** {
+ 179               	4
+ 181               	.LM17:
+ 182               		in r25,36-32
+ 183               		andi r25,lo8(-16)
+ 107:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 	uint8_t x;
+ 108:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 
+ 109:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 	HD44780_PORTOUT |= _BV(HD44780_RW);
+ 184               	36-32,r25
+ 186 0044 2C9A      	.LM18:
+ 110:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 	HD44780_DDR &= ~HD44780_DATABITS;
+ 187               	t r24
+ 188               		breq .L8
+ 190 0048 907F      	.LM19:
+ 191 004a 94B9      		sbi 37-32,6
+ 111:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 	if (rs)
+ 192               	 .L9
+ 193               	.L8:
+ 195 004e 01F0      	.LM20:
+ 112:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 		HD44780_PORTOUT |= _BV(HD44780_RS);
+ 196               	 37-32,6
+ 197               	.L9:
+ 198 0050 2E9A      	.LBB68:
+ 199 0052 00C0      	.LBB69:
+ 113:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 	else
+ 114:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 		HD44780_PORTOUT &= ~_BV(HD44780_RS);
+ 201               	:
+ 202               		sbi 37-32,5
+ 203 0054 2E98      	.LBB70:
+ 204               	.LBB71:
+ 205               	.LBB72:
+ 206               	.LBB73:
+ 208               	.Ltext3:
+ 210               	.LM22:
+ 211               		ldi r24,lo8(1)
+ 212               	/* #APP */
+ 213               	 ;  83 "c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h" 1
+ 214               		1: dec r24
+ 215               		brne 1b
+ 216               	 ;  0 "" 2
+ 217               	/* #NOAPP */
+ 218 0058 81E0      	.LBE73:
+ 219               	.LBE72:
+ 220               	.LBE71:
+ 221 005a 8A95      	.LBE70:
+ 223               	.Ltext4:
+ 225               	.LM23:
+ 226               		in r24,35-32
+ 228               	.LM24:
+ 229               		cbi 37-32,5
+ 230               	.LBE69:
+ 231               	.LBE68:
+ 233 005e 83B1      	.LM25:
+ 234               		in r25,36-32
+ 235               		ori r25,lo8(15)
+ 236 0060 2D98      		out 36-32,r25
+ 238               	.LM26:
+ 115:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c ****   
+ 116:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 	x = hd44780_pulse_e(true);
+ 117:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 	HD44780_DDR |= HD44780_DATABITS;
+ 239               	FBB3
+ 240               	.LM27:
+ 241 0062 94B1      		andi r24,lo8(15)
+ 242 0064 9F60      	/* epilogue start */
+ 243 0066 94B9      		ret
+ 118:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 	HD44780_PORTOUT &= ~_BV(HD44780_RW);
+ 244               	
+ 245               	.LM25:
+ 246 0068 2C98      		in r25,36-32
+ 119:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 
+ 120:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 	return (x & HD44780_DATABITS) >> HD44780_D4;
+ 121:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** }
+ 247               	.c",132,0,0,.Ltext4
+ 248               	.Ltext4:
+ 250               	.LM23:
+ 251 006c 0895      		in r24,35-32
+ 253               	.LM24:
+ 254               		cbi 37-32,5
+ 255               	.LBE69:
+ 256               	.LBE68:
+ 258               	.LM25:
+ 122:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 
+ 123:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** /*
+ 124:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c ****  * Read one byte (i.e. two nibbles) from the LCD controller.
+ 125:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c ****  */
+ 126:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** uint8_t
+ 127:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** hd44780_inbyte(uint8_t rs)
+ 128:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** {
+ 259               	2
+ 260               		ori r25,lo8(15)
+ 261               		out 36-32,r25
+ 263 0070 1F93      	.LM26:
+ 264               		cbi 37-32,4
+ 266 0072 182F      	.LM27:
+ 129:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c ****   uint8_t x;
+ 130:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 
+ 131:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c ****   x = hd44780_innibble(rs) << 4;
+ 267               	5
+ 268               	.LBE69:
+ 269 0074 0E94 0000 	.LBE68:
+ 271 007a 0295      	.LM25:
+ 272 007c 007F      		in r25,36-32
+ 132:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c ****   x |= hd44780_innibble(rs);
+ 273               	.c",132,0,0,.Ltext4
+ 274               	.Ltext4:
+ 276 0080 0E94 0000 	.LM23:
+ 133:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 
+ 134:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c ****   return x;
+ 135:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** }
+ 277               	r24,35-32
+ 279 0084 802B      	.LM24:
+ 280               		cbi 37-32,5
+ 281 0086 1F91      	.LBE69:
+ 282 0088 0F91      	.LBE68:
+ 284               	.LM25:
+ 285               		in r25,36-32
+ 286               		ori r25,lo8(15)
+ 287               		out 36-32,r25
+ 289               	.LM26:
+ 290               		cbi 37-32,4
+ 292               	.LM27:
+ 136:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 
+ 137:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** /*
+ 138:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c ****  * Wait until the busy flag is cleared.
+ 139:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c ****  */
+ 140:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** void
+ 141:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** hd44780_wait_ready(void)
+ 142:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** {
+ 293               	5
+ 294               	.LBE69:
+ 295               	.LBE68:
+ 297               	.LM25:
+ 298               		in r25,36-32
+ 143:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c ****   while (hd44780_incmd() & HD44780_BUSYFLAG) ;
+ 299               	.c",132,0,0,.Ltext4
+ 300               	.Ltext4:
+ 302 008e 0E94 0000 	.LM23:
+ 303 0092 87FD      		in r24,35-32
+ 305               	.LM24:
+ 144:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** }
+ 306               	-32,5
+ 307               	.LBE69:
+ 308 0096 0895      	.LBE68:
+ 310               	.LM25:
+ 311               		in r25,36-32
+ 312               		ori r25,lo8(15)
+ 313               		out 36-32,r25
+ 145:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 
+ 146:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** /*
+ 147:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c ****  * Initialize the LCD controller.
+ 148:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c ****  *
+ 149:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c ****  * The initialization sequence has a mandatory timing so the
+ 150:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c ****  * controller can safely recognize the type of interface desired.
+ 151:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c ****  * This is the only area where timed waits are really needed as
+ 152:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c ****  * the busy flag cannot be probed initially.
+ 153:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c ****  */
+ 154:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** void
+ 155:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** hd44780_init(void)
+ 156:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** {
+ 315               		in r24,35-32
+ 317               	.LM24:
+ 318               		cbi 37-32,5
+ 319               	.LBE69:
+ 157:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 
+ 158:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 	HD44780_DDR = _BV(HD44780_RS) | _BV(HD44780_RW) | _BV(HD44780_E) | HD44780_DATABITS;
+ 320               	"C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c",132,0,0,.Ltext4
+ 321               	.Ltext4:
+ 323 009a 84B9      	.LM23:
+ 324               		in r24,35-32
+ 326               	.LM24:
+ 327               		cbi 37-32,5
+ 328               	.LBE69:
+ 329               	.LBE68:
+  84:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 		"1: dec %0" "\n\t"
+  85:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 		"brne 1b"
+  86:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 		: "=r" (__count)
+  87:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 		: "0" (__count)
+  88:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 	);
+  89:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** }
+  90:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  91:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** /** \ingroup util_delay_basic
+  92:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  93:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     Delay loop using a 16-bit counter \c __count, so up to 65536
+  94:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     iterations are possible.  (The value 65536 would have to be
+  95:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     passed as 0.)  The loop executes four CPU cycles per iteration,
+  96:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     not including the overhead the compiler requires to setup the
+  97:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     counter register pair.
+  98:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  99:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     Thus, at a CPU speed of 1 MHz, delays of up to about 262.1
+ 100:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     milliseconds can be achieved.
+ 101:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****  */
+ 102:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** void
+ 103:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** _delay_loop_2(uint16_t __count)
+ 104:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** {
+ 105:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 	__asm__ volatile (
+ 330               	,0,117,.LM25-.LFBB3
+ 331               	.LM25:
+ 332 009c 80E3      		in r25,36-32
+ 333 009e 95E7      		ori r25,lo8(15)
+ 334               		out 36-32,r25
+ 336 00a0 0197      	.LM26:
+ 337 00a2 01F4      		cbi 37-32,4
+ 339               	.LM27:
+ 340               		andi r24,lo8(15)
+ 341               	/* epilogue start */
+ 342               		ret
+ 344               	.Lscope3:
+ 159:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 	_delay_ms(15);		/* 40 ms needed for Vcc = 2.7 V */
+ 160:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 	hd44780_outnibble(HD44780_FNSET(1, 0, 0) >> 4, 0);
+ 346               		68,0,121,.LM27-.LFBB3
+ 347               	.LM27:
+ 348 00a4 83E0      		andi r24,lo8(15)
+ 349 00a6 60E0      	/* epilogue start */
+ 350 00a8 0E94 0000 		ret
+ 352               	.Lscope3:
+ 355               	.global	hd44780_inbyte
+ 357               	hd44780_inbyte:
+ 359 00ac 88E0      	.LM28:
+ 360 00ae 90E2      	.LFBB4:
+ 361               		push r16
+ 362               		push r17
+ 363 00b0 0197      	/* prologue: function */
+ 364 00b2 01F4      	/* frame size = 0 */
+ 365               		mov r17,r24
+ 367               	.LM29:
+ 368               		call hd44780_innibble
+ 369               		mov r16,r24
+ 370               		swap r16
+ 371               		andi r16,lo8(-16)
+ 161:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 	_delay_ms(4.1);
+ 162:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 	hd44780_outnibble(HD44780_FNSET(1, 0, 0) >> 4, 0);
+ 373               	frame size = 0 */
+ 374               		mov r17,r24
+ 376 00b6 60E0      	.LM29:
+ 377 00b8 0E94 0000 		call hd44780_innibble
+ 378               		mov r16,r24
+ 379               		swap r16
+ 380               		andi r16,lo8(-16)
+ 382               	.LM30:
+ 383               		mov r24,r17
+ 384               		call hd44780_innibble
+ 386 00bc 88EC      	.LM31:
+ 387 00be 90E0      		or r24,r16
+ 388               	/* epilogue start */
+ 389               		pop r17
+ 390 00c0 0197      		pop r16
+ 391 00c2 01F4      		ret
+ 396               	.Lscope4:
+ 398               	.global	hd44780_wait_ready
+ 163:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 	_delay_ms(0.1);
+ 164:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 	hd44780_outnibble(HD44780_FNSET(1, 0, 0) >> 4, 0);
+ 400               	-.LFBB4
+ 401               	.Lscope4:
+ 403 00c6 60E0      	.global	hd44780_wait_ready
+ 165:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 
+ 166:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 	hd44780_outnibble(HD44780_FNSET(0, 1, 0) >> 4, 0);
+ 405               	-.LFBB4
+ 406               	.Lscope4:
+ 408 00ce 60E0      	.global	hd44780_wait_ready
+ 167:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 	hd44780_wait_ready();
+ 410               	-.LFBB4
+ 411               	.Lscope4:
+ 168:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 	hd44780_outcmd(HD44780_FNSET(0, 1, 0));
+ 413               	",64,0,0,16
+ 416 00da 60E0      	.Lscope4:
+ 169:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 	hd44780_wait_ready();
+ 418               	",64,0,0,16
+ 170:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 	hd44780_outcmd(HD44780_DISPCTL(0, 0, 0));
+ 421               	r17
+ 422               		pop r16
+ 423 00e4 88E0      		ret
+ 171:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** 	hd44780_wait_ready();
+ 426               	0,135,.LM31-.LFBB4
+ 427               	.LM31:
+ 428 00ec 0E94 0000 		or r24,r16
+ 429               	/* epilogue start */
+ 172:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/hd44780.c **** }
+ 430               	r16,lo8(-16)
+ 432 00f0 0895      	.LM30:
+ 433               		mov r24,r17
+ 434               		call hd44780_innibble
+ 436               	.LM31:
+DEFINED SYMBOLS
+                            *ABS*:00000000 hd44780.c
+C:\DOCUME~1\David\LOCALS~1\Temp/ccOGlAzG.s:2      *ABS*:0000003f __SREG__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccOGlAzG.s:3      *ABS*:0000003e __SP_H__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccOGlAzG.s:4      *ABS*:0000003d __SP_L__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccOGlAzG.s:5      *ABS*:00000034 __CCP__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccOGlAzG.s:6      *ABS*:00000000 __tmp_reg__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccOGlAzG.s:7      *ABS*:00000001 __zero_reg__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccOGlAzG.s:72     .text:00000000 hd44780_outnibble
+C:\DOCUME~1\David\LOCALS~1\Temp/ccOGlAzG.s:146    .text:00000024 hd44780_outbyte
+C:\DOCUME~1\David\LOCALS~1\Temp/ccOGlAzG.s:178    .text:00000044 hd44780_innibble
+C:\DOCUME~1\David\LOCALS~1\Temp/ccOGlAzG.s:258    .text:0000006e hd44780_inbyte
+C:\DOCUME~1\David\LOCALS~1\Temp/ccOGlAzG.s:292    .text:0000008c hd44780_wait_ready
+C:\DOCUME~1\David\LOCALS~1\Temp/ccOGlAzG.s:314    .text:00000098 hd44780_init
+
+NO UNDEFINED SYMBOLS

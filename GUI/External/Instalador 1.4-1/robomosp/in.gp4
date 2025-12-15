@@ -1,0 +1,11 @@
+set term tkcanvas
+set out "gp.tk"
+set nokey
+set grid
+set autoscale x
+set autoscale y
+set tmargin 5
+set bmargin 5
+set xlabel "Time" 0,-1
+set ylabel "V" 0,2
+plot "C:/Instalador 1.4-1/robomosp/Saves/Trajectories/GNUPlotData/.plot" using 1:4+4 w lines

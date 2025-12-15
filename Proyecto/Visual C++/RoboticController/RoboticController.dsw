@@ -1,0 +1,77 @@
+Microsoft Developer Studio Workspace File, Format Version 6.00
+# WARNING: DO NOT EDIT OR DELETE THIS WORKSPACE FILE!
+
+###############################################################################
+
+Project: "RoboticController"=".\RoboticController.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name newmat
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name roboop
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "demo"="..\..\Jarboter_V_2_1\roboop\demo.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name newmat
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name roboop
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "newmat"="..\..\Jarboter_V_2_1\roboop\newmat.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "roboop"="..\..\Jarboter_V_2_1\roboop\roboop.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Global:
+
+Package=<5>
+{{{
+}}}
+
+Package=<3>
+{{{
+}}}
+
+###############################################################################
+

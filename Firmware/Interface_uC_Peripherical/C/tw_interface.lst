@@ -1,0 +1,1018 @@
+   1               		.file	"tw_interface.c"
+   2               	__SREG__ = 0x3f
+   3               	__SP_H__ = 0x3e
+   4               	__SP_L__ = 0x3d
+   5               	__CCP__  = 0x34
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   9               		.text
+  10               	.Ltext0:
+ 231               	.global	TWI_init
+ 233               	TWI_init:
+   1:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 
+   2:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** #include <avr/io.h>
+   3:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** #include <stdint.h>
+   4:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** #include <util/twi.h>		
+   5:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** #include <stdio.h>
+   6:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** #include <stdlib.h>
+   7:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** #include "types.h"
+   8:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** #include "tw_interface.h"
+   9:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 
+  10:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 	
+  11:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 	/** \ingroup Protocolo_I2C
+  12:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 	\brief Permite mandar el ADDH además del ADDL*/
+  13:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 	#define TWI_ADDRH
+  14:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 
+  15:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 	/** \ingroup Protocolo_I2C
+  16:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 	\brief Maximal number of iterations to wait for a device to respond for a
+  17:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 	selection.  Should be large enough to allow for a pending write to
+  18:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 	complete, but low enough to properly abort an infinite loop in case
+  19:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 	a slave is broken or not present at all.  With 100 kHz TWI clock,
+  20:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 	transfering the start condition and SLA+R/W packet takes about 10
+  21:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 	µs.  The longest write period is supposed to not exceed ~ 10 ms.
+  22:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 	Thus, normal operation should not require more than 100 iterations
+  23:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 	to get the device to respond to a selection.*/
+  24:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 	#define MAX_ITER	400
+  25:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 
+  26:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 	/** \ingroup Protocolo_I2C
+  27:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 	\brief Saved TWI status register, for error messages only.  We need to
+  28:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 	save it in a variable, since the datasheet only guarantees the TWSR
+  29:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 	register to have valid contents while the TWINT bit in TWCR is set.*/
+  30:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 	uint8 twst;
+  31:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 
+  32:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** /**************************************************************************************************
+  33:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** void TWI_init(void)
+  34:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** {
+ 234               	34,.LM0-.LFBB1
+ 235               	.LM0:
+ 236               	.LFBB1:
+ 237               	/* prologue: function */
+ 238               	/* frame size = 0 */
+  35:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 
+  36:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c ****   /* initialize TWI clock: 100 kHz clock, TWPS = 0 => prescaler = 1 */
+  37:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** #if defined(TWPS0)
+  38:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c ****   /* has prescaler (mega128 & newer) */
+  39:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c ****   TWSR = 0;
+ 239               	bn	68,0,39,.LM1-.LFBB1
+ 240               	.LM1:
+ 241 0000 1092 B900 		sts 185,__zero_reg__
+  40:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** #endif
+  41:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 
+  42:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** #if F_CPU < 3600000UL
+  43:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c ****   TWBR = 10;			/* smallest TWBR value*/
+  44:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** #else
+  45:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c ****   TWBR = (F_CPU / 400000UL - 16) / 2;
+ 242               	tabn	68,0,45,.LM2-.LFBB1
+ 243               	.LM2:
+ 244 0004 82E0      		ldi r24,lo8(2)
+ 245 0006 8093 B800 		sts 184,r24
+ 246               	/* epilogue start */
+  46:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** #endif
+  47:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** }
+ 247               	bn	68,0,47,.LM3-.LFBB1
+ 248               	.LM3:
+ 249 000a 0895      		ret
+ 251               	.Lscope1:
+ 257               	.global	read_bytes_I2C
+ 259               	read_bytes_I2C:
+  48:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 
+  49:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** /**************************************************************************************************
+  50:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** int16 read_bytes_I2C(uint8 sla, uint32 eeaddr, int16 len, uint8 *buf)
+  51:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** {
+ 260               	51,.LM4-.LFBB2
+ 261               	.LM4:
+ 262               	.LFBB2:
+ 263 000c 0F93      		push r16
+ 264 000e 1F93      		push r17
+ 265 0010 CF93      		push r28
+ 266 0012 DF93      		push r29
+ 267               	/* prologue: function */
+ 268               	/* frame size = 0 */
+ 269 0014 F82F      		mov r31,r24
+ 270 0016 E801      		movw r28,r16
+  52:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 	uint8 twcr, n = 0;
+  53:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 	int16 rv = 0; 
+  54:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c ****  
+  55:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 	/* 1. First cycle: master transmitter mode*/
+  56:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c ****  
+  57:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 	restart:
+  58:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		if (n++ >= MAX_ITER)
+  59:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 			return -1;
+  60:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 	begin:
+  61:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		
+  62:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		/* send start condition TWCR = Registro que controla el TWI*/
+  63:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		TWCR = _BV(TWINT) | _BV(TWSTA) | _BV(TWEN); 
+  64:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		while ((TWCR & _BV(TWINT)) == 0) ; 			/* wait for transmission */
+  65:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		switch ((twst = TW_STATUS))
+  66:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		{
+  67:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 			case TW_REP_START:							/* OK, but should not happen */
+  68:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 			case TW_START:
+  69:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 			break;
+  70:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 			
+  71:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 			case TW_MT_ARB_LOST:						
+  72:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 				goto begin;
+  73:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 					
+  74:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 			default:
+  75:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 				return -1;								/* error: not in start condition */
+  76:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 														/* NB: do /not/ send stop condition */
+  77:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		}	
+  78:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		
+  79:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		
+  80:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		/**< send SLA+W */
+  81:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		TWDR = sla | TW_WRITE; 							/* LO coloca para lectura*/
+  82:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		TWCR = _BV(TWINT) | _BV(TWEN); 				/* clear interrupt to start transmission */
+  83:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		while ((TWCR & _BV(TWINT)) == 0) ; 			/* wait for transmission */
+  84:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		switch ((twst = TW_STATUS))
+  85:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		{
+  86:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 			case TW_MT_SLA_ACK:
+  87:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 			break;
+  88:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 			
+  89:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 			case TW_MT_SLA_NACK:						/* nack during select: device busy writing ACK POLLING*/				
+  90:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 				goto restart;	
+  91:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 				
+  92:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 			case TW_MT_ARB_LOST:						/* re-arbitrate */
+  93:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 				goto begin;
+  94:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 				
+  95:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 			default:
+  96:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 				goto error;								/* must send stop condition */
+  97:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		}
+  98:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		
+  99:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		
+ 100:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		#ifdef TWI_ADDRH
+ 101:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 			TWDR =(uint8)((eeaddr>>8)&0xFF);			/* high 8 bits of addr if define TWI_ADDRH*/
+ 271               	0,101,.LM5-.LFBB2
+ 272               	.LM5:
+ 273 0018 BB27      		clr r27
+ 274 001a A72F      		mov r26,r23
+ 275 001c 962F      		mov r25,r22
+ 276 001e 852F      		mov r24,r21
+ 277 0020 982F      		mov r25,r24
+ 279               	.LM6:
+ 280 0022 A4EA      		ldi r26,lo8(-92)
+ 282               	.LM7:
+ 283 0024 E4E8      		ldi r30,lo8(-124)
+ 102:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 			TWCR = _BV(TWINT) | _BV(TWEN); 			/* clear interrupt to start transmission */
+ 103:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 			while ((TWCR & _BV(TWINT)) == 0) ; 		/* wait for transmission */
+ 104:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 			switch ((twst = TW_STATUS))
+ 105:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 			{
+ 106:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 				case TW_MT_DATA_ACK:
+ 107:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 				break;
+ 108:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 					
+ 109:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 				case TW_MT_DATA_NACK:
+ 110:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 					goto quit;         					/* En espera */
+ 111:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 					
+ 112:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 				case TW_MT_ARB_LOST:
+ 113:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 					goto begin;
+ 114:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 					
+ 115:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 				default:
+ 116:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 					goto error;							/* must send stop condition */
+ 117:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 			}			
+ 118:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		#endif
+ 119:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		
+ 120:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		
+ 121:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c ****      
+ 122:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		TWDR = (uint8)(eeaddr&0xFF);      				/* low 8 bits of addr */
+ 123:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		TWCR = _BV(TWINT) | _BV(TWEN);     			/* clear interrupt to start transmission */
+ 124:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		while ((TWCR & _BV(TWINT)) == 0) ; 			/* wait for transmission */
+ 125:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		switch ((twst = TW_STATUS))
+ 126:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		{
+ 127:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 			case TW_MT_DATA_ACK:
+ 128:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 			break;
+ 129:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 				
+ 130:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 			case TW_MT_DATA_NACK:
+ 131:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 				goto quit;
+ 132:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 				
+ 133:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 			case TW_MT_ARB_LOST:
+ 134:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 				goto begin;
+ 135:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 				
+ 136:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 			default:
+ 137:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 				goto error;								/* must send stop condition */
+ 138:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		}
+ 139:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		
+ 140:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		
+ 141:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		/* 2. Next cycle(s): master receiver mode*/
+ 142:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		
+ 143:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		TWCR = _BV(TWINT) | _BV(TWSTA) | _BV(TWEN); 	/* send (rep.) start condition */
+ 144:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		while ((TWCR & _BV(TWINT)) == 0) ; 			/* wait for transmission */
+ 145:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		switch ((twst = TW_STATUS))
+ 146:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		{
+ 147:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 			case TW_START:								/* OK, but should not happen */
+ 148:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 			case TW_REP_START:
+ 149:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 			break;
+ 150:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 				
+ 151:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 			case TW_MT_ARB_LOST:
+ 152:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 				goto begin;
+ 153:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 				
+ 154:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 			default:
+ 155:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 				goto error;
+ 156:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		}
+ 157:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		
+ 158:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		/* send SLA+R */
+ 159:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		TWDR = sla | TW_READ;
+ 284               	159,.LM8-.LFBB2
+ 285               	.LM8:
+ 286 0026 1F2F      		mov r17,r31
+ 287 0028 1160      		ori r17,lo8(1)
+ 288               	.L45:
+ 290               	.LM9:
+ 291 002a A093 BC00 		sts 188,r26
+ 292               	.L5:
+ 294               	.LM10:
+ 295 002e 8091 BC00 		lds r24,188
+ 296 0032 87FF      		sbrs r24,7
+ 297 0034 00C0      		rjmp .L5
+ 299               	.LM11:
+ 300 0036 8091 B900 		lds r24,185
+ 301 003a 887F      		andi r24,lo8(-8)
+ 302 003c 8031      		cpi r24,lo8(16)
+ 303 003e 01F0      		breq .L7
+ 304 0040 8833      		cpi r24,lo8(56)
+ 305 0042 01F0      		breq .L45
+ 306 0044 8830      		cpi r24,lo8(8)
+ 307 0046 01F0      		breq .L7
+ 308 0048 8093 0000 		sts twst,r24
+ 309 004c 4FEF      		ldi r20,lo8(-1)
+ 310 004e 5FEF      		ldi r21,hi8(-1)
+ 311 0050 00C0      		rjmp .L8
+ 312               	.L7:
+ 314               	.LM12:
+ 315 0052 F093 BB00 		sts 187,r31
+ 317               	.LM13:
+ 318 0056 E093 BC00 		sts 188,r30
+ 319               	.L9:
+ 321               	.LM14:
+ 322 005a 8091 BC00 		lds r24,188
+ 323 005e 87FF      		sbrs r24,7
+ 324 0060 00C0      		rjmp .L9
+ 326               	.LM15:
+ 327 0062 8091 B900 		lds r24,185
+ 328 0066 887F      		andi r24,lo8(-8)
+ 329 0068 8032      		cpi r24,lo8(32)
+ 330 006a 01F0      		breq .L45
+ 331 006c 8833      		cpi r24,lo8(56)
+ 332 006e 01F0      		breq .L45
+ 333 0070 8831      		cpi r24,lo8(24)
+ 334 0072 01F0      		breq .+2
+ 335 0074 00C0      		rjmp .L48
+ 336               	.L11:
+ 338               	.LM16:
+ 339 0076 9093 BB00 		sts 187,r25
+ 341               	.LM17:
+ 342 007a E093 BC00 		sts 188,r30
+ 343               	.L13:
+ 345               	.LM18:
+ 346 007e 8091 BC00 		lds r24,188
+ 347 0082 87FF      		sbrs r24,7
+ 348 0084 00C0      		rjmp .L13
+ 350               	.LM19:
+ 351 0086 8091 B900 		lds r24,185
+ 352 008a 887F      		andi r24,lo8(-8)
+ 353 008c 8033      		cpi r24,lo8(48)
+ 354 008e 01F0      		breq .L27
+ 355 0090 8833      		cpi r24,lo8(56)
+ 356 0092 01F0      		breq .L45
+ 357 0094 8832      		cpi r24,lo8(40)
+ 358 0096 01F4      		brne .L48
+ 360               	.LM20:
+ 361 0098 4093 BB00 		sts 187,r20
+ 363               	.LM21:
+ 364 009c E093 BC00 		sts 188,r30
+ 365               	.L17:
+ 367               	.LM22:
+ 368 00a0 8091 BC00 		lds r24,188
+ 369 00a4 87FF      		sbrs r24,7
+ 370 00a6 00C0      		rjmp .L17
+ 372               	.LM23:
+ 373 00a8 8091 B900 		lds r24,185
+ 374 00ac 887F      		andi r24,lo8(-8)
+ 375 00ae 8033      		cpi r24,lo8(48)
+ 376 00b0 01F0      		breq .L27
+ 377 00b2 8833      		cpi r24,lo8(56)
+ 378 00b4 01F4      		brne .+2
+ 379 00b6 00C0      		rjmp .L45
+ 380 00b8 8832      		cpi r24,lo8(40)
+ 381 00ba 01F4      		brne .L48
+ 383               	.LM24:
+ 384 00bc A093 BC00 		sts 188,r26
+ 385               	.L21:
+ 387               	.LM25:
+ 388 00c0 8091 BC00 		lds r24,188
+ 389 00c4 87FF      		sbrs r24,7
+ 390 00c6 00C0      		rjmp .L21
+ 392               	.LM26:
+ 393 00c8 8091 B900 		lds r24,185
+ 394 00cc 887F      		andi r24,lo8(-8)
+ 395 00ce 8031      		cpi r24,lo8(16)
+ 396 00d0 01F0      		breq .L23
+ 397 00d2 8833      		cpi r24,lo8(56)
+ 398 00d4 01F4      		brne .+2
+ 399 00d6 00C0      		rjmp .L45
+ 400 00d8 8830      		cpi r24,lo8(8)
+ 401 00da 01F4      		brne .L48
+ 402               	.L23:
+ 404               	.LM27:
+ 405 00dc 1093 BB00 		sts 187,r17
+ 160:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		TWCR = _BV(TWINT) | _BV(TWEN); 				/* clear interrupt to start transmission */
+ 406               	p .L24
+ 408 00e0 E093 BC00 	.LM30:
+ 409               		lds r24,185
+ 161:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		while ((TWCR & _BV(TWINT)) == 0) ; 			/* wait for transmission */
+ 410               	i r24,lo8(-8)
+ 411               		cpi r24,lo8(64)
+ 412 00e4 8091 BC00 		breq .L26
+ 413 00e8 87FF      		cpi r24,lo8(72)
+ 414 00ea 00C0      		breq .L27
+ 162:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		switch ((twst = TW_STATUS))
+ 415               	r24,lo8(56)
+ 416               		brne .L48
+ 417 00ec 8091 B900 		rjmp .L45
+ 418 00f0 887F      	.L27:
+ 419 00f2 8034      		sts twst,r24
+ 420 00f4 01F0      		ldi r20,lo8(0)
+ 421 00f6 8834      		ldi r21,hi8(0)
+ 422 00f8 01F0      		rjmp .L12
+ 423 00fa 8833      	.L48:
+ 424 00fc 01F4      		sts twst,r24
+ 425 00fe 00C0      		rjmp .L49
+ 426               	.L26:
+ 427 0100 8093 0000 		sts twst,r24
+ 428 0104 40E0      		ldi r25,lo8(-60)
+ 429 0106 50E0      		ldi r20,lo8(0)
+ 430 0108 00C0      		ldi r21,hi8(0)
+ 431               		rjmp .L28
+ 432 010a 8093 0000 	.L34:
+ 434               	.LM31:
+ 435 0110 8093 0000 		cpi r18,1
+ 436 0114 94EC      		cpc r19,__zero_reg__
+ 437 0116 40E0      		brne .L29
+ 438 0118 50E0      		ldi r25,lo8(-124)
+ 439 011a 00C0      	.L29:
+ 163:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		{
+ 164:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 			case TW_MR_SLA_ACK:
+ 165:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 			break;
+ 166:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 				
+ 167:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 			case TW_MR_SLA_NACK:
+ 168:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 				goto quit;
+ 169:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 				
+ 170:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 			case TW_MR_ARB_LOST:
+ 171:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 				goto begin;
+ 172:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 				
+ 173:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 			default:
+ 174:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 				goto error;
+ 175:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		}		
+ 176:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		
+ 177:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		for (twcr = _BV(TWINT) | _BV(TWEN) | _BV(TWEA);len > 0;len--)
+ 178:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		{
+ 179:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 			if (len == 1)
+ 442               	.LM33:
+ 443 011c 2130      		lds r24,188
+ 444 011e 3105      		sbrs r24,7
+ 445 0120 01F4      		rjmp .L30
+ 447               	.LM34:
+ 180:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 				twcr = _BV(TWINT) | _BV(TWEN); 		/* send NAK this time */
+ 181:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 			
+ 182:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 			TWCR = twcr;								/* clear int to start transmission */
+ 448               	4,185
+ 449               		andi r24,lo8(-8)
+ 450 0124 9093 BC00 		sts twst,r24
+ 451               		cpi r24,lo8(80)
+ 183:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 			while ((TWCR & _BV(TWINT)) == 0) ; 		/* wait for transmission */
+ 452               	q .L32
+ 453               		cpi r24,lo8(88)
+ 454 0128 8091 BC00 		breq .L33
+ 455 012c 87FF      	.L49:
+ 456 012e 00C0      		ldi r20,lo8(-1)
+ 184:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 			switch ((twst = TW_STATUS))
+ 457               	r21,hi8(-1)
+ 458               		rjmp .L12
+ 459 0130 8091 B900 	.L33:
+ 460 0134 887F      		ldi r18,lo8(0)
+ 461 0136 8093 0000 		ldi r19,hi8(0)
+ 462 013a 8035      	.L32:
+ 464 013e 8835      	.LM35:
+ 465 0140 01F0      		lds r24,187
+ 466               		st Y+,r24
+ 468 0144 5FEF      	.LM36:
+ 469 0146 00C0      		subi r20,lo8(-(1))
+ 470               		sbci r21,hi8(-(1))
+ 472 014a 30E0      	.LM37:
+ 473               		subi r18,lo8(-(-1))
+ 185:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 			{
+ 186:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 				case TW_MR_DATA_NACK:
+ 187:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 					len = 0;							/* force end of loop */
+ 188:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 				/* FALLTHROUGH */
+ 189:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 				case TW_MR_DATA_ACK:
+ 190:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 					*buf++ = TWDR;
+ 474               	1))
+ 475               	.L28:
+ 476 014c 8091 BB00 		cp __zero_reg__,r18
+ 477 0150 8993      		cpc __zero_reg__,r19
+ 191:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 					rv++;
+ 478               	t .L34
+ 479               	.L12:
+ 481 0154 5F4F      	.LM38:
+ 482               		ldi r24,lo8(-108)
+ 483               		sts 188,r24
+ 484 0156 2150      	.L8:
+ 486               	.LM39:
+ 487 015a 1216      		movw r24,r20
+ 488 015c 1306      	/* epilogue start */
+ 489 015e 04F0      		pop r29
+ 490               		pop r28
+ 192:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 				break;
+ 193:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 					
+ 194:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 				default:
+ 195:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 					goto error;
+ 196:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 			}
+ 197:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		}
+ 198:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		
+ 199:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		
+ 200:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 	quit:
+ 201:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		
+ 202:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		TWCR = _BV(TWINT) | _BV(TWSTO) | _BV(TWEN); /* send stop condition */
+ 491               	 r16
+ 492               		ret
+ 203:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		
+ 204:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		return rv;
+ 205:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		
+ 206:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 	error:
+ 207:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		rv = -1;
+ 208:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		goto quit;
+ 209:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** }
+ 496               	bn	192,0,0,.LFBB2-.LFBB2
+ 498 0166 CA01      	.Lscope2:
+ 505               	.global	write_page_I2C
+ 507               	write_page_I2C:
+ 509               	.LM40:
+ 510               	.LFBB3:
+ 511               		push r10
+ 512               		push r11
+ 513               		push r12
+ 514               		push r13
+ 515               		push r14
+ 516               		push r15
+ 517               		push r16
+ 518               		push r17
+ 519               		push r28
+ 210:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 
+ 211:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** /**************************************************************************************************
+ 212:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** int16 write_page_I2C(uint8 PAGE_SIZE,uint8 sla, uint32 eeaddr, int16 len, uint8 *buf)
+ 213:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** {
+ 520               	unction */
+ 521               	/* frame size = 0 */
+ 522               		movw r10,r18
+ 523 0172 AF92      		movw r12,r20
+ 524 0174 BF92      		movw r30,r16
+ 525 0176 CF92      		movw r28,r14
+ 527 017a EF92      	.LM41:
+ 528 017c FF92      		mov r16,r24
+ 529 017e 0F93      		ldi r17,lo8(0)
+ 530 0180 1F93      		subi r16,lo8(-(-1))
+ 531 0182 CF93      		sbci r17,hi8(-(-1))
+ 532 0184 DF93      		movw r18,r30
+ 533               		clr r20
+ 534               		sbrc r19,7
+ 535 0186 5901      		com r20
+ 536 0188 6A01      		mov r21,r20
+ 537 018a F801      		add r18,r10
+ 538 018c E701      		adc r19,r11
+ 214:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 	uint8  n = 0;
+ 215:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 	int16 rv = 0;
+ 216:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 	uint16 endaddr;
+ 217:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 
+ 218:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 	/* si la direccion mas la cantidad de datos en menor a  el tamaño de pagina*/
+ 219:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 	if (eeaddr + len <  (eeaddr | (PAGE_SIZE - 1)) )  
+ 539               	21,r13
+ 540               		movw r24,r16
+ 541 018e 082F      		clr r26
+ 542 0190 10E0      		sbrc r25,7
+ 543 0192 0150      		com r26
+ 544 0194 1040      		mov r27,r26
+ 545 0196 9F01      		or r24,r10
+ 546 0198 4427      		or r25,r11
+ 547 019a 37FD      		or r26,r12
+ 548 019c 4095      		or r27,r13
+ 549 019e 542F      		cp r18,r24
+ 550 01a0 2A0D      		cpc r19,r25
+ 551 01a2 3B1D      		cpc r20,r26
+ 552 01a4 4C1D      		cpc r21,r27
+ 553 01a6 5D1D      		brsh .L51
+ 555 01aa AA27      	.LM42:
+ 556 01ac 97FD      		movw r16,r30
+ 557 01ae A095      		add r16,r10
+ 558 01b0 BA2F      		adc r17,r11
+ 559 01b2 8A29      		rjmp .L52
+ 560 01b4 9B29      	.L51:
+ 562 01b8 BD29      	.LM43:
+ 563 01ba 2817      		or r16,r10
+ 564 01bc 3907      		or r17,r11
+ 565 01be 4A07      		subi r16,lo8(-(1))
+ 566 01c0 5B07      		sbci r17,hi8(-(1))
+ 567 01c2 00F4      	.L52:
+ 220:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		endaddr = eeaddr + len;
+ 568               	
+ 569               	.LM44:
+ 570 01c4 8F01      		clr r27
+ 571 01c6 0A0D      		mov r26,r13
+ 572 01c8 1B1D      		mov r25,r12
+ 573 01ca 00C0      		mov r24,r11
+ 574               		mov r25,r24
+ 221:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 	else
+ 222:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		/* Entonces colocar el final hasta el fin de pagina*/
+ 223:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		endaddr = (eeaddr | (PAGE_SIZE - 1)) + 1;  
+ 575               	n	68,0,234,.LM45-.LFBB3
+ 576               	.LM45:
+ 577 01cc 0A29      		ldi r19,lo8(-92)
+ 579 01d0 0F5F      	.LM46:
+ 580 01d2 1F4F      		ldi r18,lo8(-124)
+ 581               	.L83:
+ 224:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 	
+ 225:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 	len = endaddr - eeaddr;
+ 226:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 
+ 227:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 
+ 228:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 	restart:
+ 229:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		if (n++ >= MAX_ITER)
+ 230:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 			return -1;
+ 231:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 	begin:
+ 232:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		
+ 233:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		
+ 234:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		TWCR = _BV(TWINT) | _BV(TWSTA) | _BV(TWEN); 	/* send start condition */
+ 235:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		while ((TWCR & _BV(TWINT)) == 0) ; 			/* wait for transmission */
+ 236:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		twst = TW_STATUS;
+ 237:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		
+ 238:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		switch (twst)
+ 239:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		{
+ 240:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 			case TW_REP_START:							/* OK, but should not happen */
+ 241:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 			case TW_START:
+ 242:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 			break;
+ 243:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 				
+ 244:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 			case TW_MT_ARB_LOST:
+ 245:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 				goto begin;
+ 246:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 				
+ 247:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 			default:
+ 248:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 				return -1;								/* error: not in start condition */
+ 249:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 														/* NB: do /not/ send stop condition */
+ 250:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		}
+ 251:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		
+ 252:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		/* send SLA+W */
+ 253:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		TWDR = sla | TW_WRITE;
+ 254:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		TWCR = _BV(TWINT) | _BV(TWEN); 				/* clear interrupt to start transmission */
+ 255:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		while ((TWCR & _BV(TWINT)) == 0) ; 			/* wait for transmission */
+ 256:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		twst = TW_STATUS;
+ 257:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		
+ 258:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		switch (twst)
+ 259:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		{
+ 260:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 			case TW_MT_SLA_ACK:
+ 261:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 			break;
+ 262:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 				
+ 263:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 			case TW_MT_SLA_NACK:						/* nack during select: device busy writing */
+ 264:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 				goto restart;
+ 265:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 				
+ 266:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 			case TW_MT_ARB_LOST:						/* re-arbitrate */
+ 267:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 			goto begin;
+ 268:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 				
+ 269:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 			default:
+ 270:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 				goto error;								/* must send stop condition */
+ 271:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		}	
+ 272:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 			
+ 273:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		#ifdef TWI_ADDRH
+ 274:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 			TWDR =(uint8)((eeaddr>>8)&0xFF);			/* high 8 bits of addr if define TWI_ADDRH*/
+ 582               		68,0,234,.LM47-.LFBB3
+ 583               	.LM47:
+ 584 01d4 BB27      		sts 188,r19
+ 585 01d6 AD2D      	.L54:
+ 587 01da 8B2D      	.LM48:
+ 588 01dc 982F      		lds r24,188
+ 589               		sbrs r24,7
+ 590               		rjmp .L54
+ 592               	.LM49:
+ 593               		lds r24,185
+ 594 01e0 24E8      		andi r24,lo8(-8)
+ 596               	.LM50:
+ 597               		cpi r24,lo8(16)
+ 598 01e2 3093 BC00 		breq .L56
+ 599               		cpi r24,lo8(56)
+ 600               		breq .L83
+ 601               		cpi r24,lo8(8)
+ 602 01e6 8091 BC00 		breq .L56
+ 603 01ea 87FF      		sts twst,r24
+ 604 01ec 00C0      		ldi r22,lo8(-1)
+ 605               		ldi r23,hi8(-1)
+ 606               		rjmp .L57
+ 607 01ee 8091 B900 	.L56:
+ 609               	.LM51:
+ 610               		sts 187,r22
+ 612 01f6 01F0      	.LM52:
+ 613 01f8 8833      		sts 188,r18
+ 614 01fa 01F0      	.L58:
+ 616 01fe 01F0      	.LM53:
+ 617 0200 8093 0000 		lds r24,188
+ 618 0204 6FEF      		sbrs r24,7
+ 619 0206 7FEF      		rjmp .L58
+ 621               	.LM54:
+ 622               		lds r24,185
+ 623               		andi r24,lo8(-8)
+ 625               	.LM55:
+ 626               		cpi r24,lo8(32)
+ 627 020e 2093 BC00 		breq .L83
+ 628               		cpi r24,lo8(56)
+ 629               		breq .L83
+ 630               		cpi r24,lo8(24)
+ 631 0212 8091 BC00 		brne .L85
+ 632 0216 87FF      	.L60:
+ 634               	.LM56:
+ 635               		sts 187,r25
+ 637 021e 887F      	.LM57:
+ 638               		sts 188,r18
+ 639               	.L62:
+ 641 0222 01F0      	.LM58:
+ 642 0224 8833      		lds r24,188
+ 643 0226 01F0      		sbrs r24,7
+ 644 0228 8831      		rjmp .L62
+ 646               	.LM59:
+ 647               		lds r24,185
+ 648               		andi r24,lo8(-8)
+ 275:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 			TWCR = _BV(TWINT) | _BV(TWEN); 			/* clear interrupt to start transmission */
+ 650               	r24,lo8(40)
+ 651               		brne .L85
+ 653               	.LM61:
+ 276:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 			while ((TWCR & _BV(TWINT)) == 0) ; 		/* wait for transmission */
+ 654               	 187,r10
+ 656 0234 8091 BC00 	.LM62:
+ 657 0238 87FF      		sts 188,r18
+ 658 023a 00C0      	.L66:
+ 277:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 			twst = TW_STATUS;
+ 659               	bn	68,0,297,.LM63-.LFBB3
+ 660               	.LM63:
+ 661 023c 8091 B900 		lds r24,188
+ 662 0240 887F      		sbrs r24,7
+ 278:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 			
+ 279:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 			switch (twst)
+ 663               	p .L66
+ 665 0242 8033      	.LM64:
+ 666 0244 01F0      		lds r24,185
+ 667 0246 8833      		andi r24,lo8(-8)
+ 669 024a 8832      	.LM65:
+ 670 024c 01F4      		cpi r24,lo8(48)
+ 280:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 			{
+ 281:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 				case TW_MT_DATA_ACK:
+ 282:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 				break;
+ 283:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 					
+ 284:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 				case TW_MT_DATA_NACK:
+ 285:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 					goto quit;
+ 286:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 					
+ 287:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 				case TW_MT_ARB_LOST:
+ 288:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 					goto begin;
+ 289:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 					
+ 290:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 				default:
+ 291:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 					goto error;							/* must send stop condition */
+ 292:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 			}
+ 293:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		#endif
+ 294:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		
+ 295:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		TWDR = (uint8)(eeaddr&0xFF);					/* low 8 bits of addr */
+ 671               	69
+ 672               		cpi r24,lo8(56)
+ 673 024e A092 BB00 		brne .+2
+ 296:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		TWCR = _BV(TWINT) | _BV(TWEN); 				/* clear interrupt to start transmission */
+ 674               	BB3
+ 675               	.LM62:
+ 676 0252 2093 BC00 		sts 188,r18
+ 677               	.L66:
+ 297:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		while ((TWCR & _BV(TWINT)) == 0) ; 			/* wait for transmission */
+ 678               	abn	68,0,297,.LM63-.LFBB3
+ 679               	.LM63:
+ 680 0256 8091 BC00 		lds r24,188
+ 681 025a 87FF      		sbrs r24,7
+ 682 025c 00C0      		rjmp .L66
+ 298:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		twst = TW_STATUS;
+ 683               	bn	68,0,298,.LM64-.LFBB3
+ 684               	.LM64:
+ 685 025e 8091 B900 		lds r24,185
+ 686 0262 887F      		andi r24,lo8(-8)
+ 299:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		
+ 300:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		switch (twst)
+ 687               	abn	68,0,300,.LM65-.LFBB3
+ 688               	.LM65:
+ 689 0264 8033      		cpi r24,lo8(48)
+ 690 0266 01F0      		breq .L69
+ 691 0268 8833      		cpi r24,lo8(56)
+ 692 026a 01F4      		brne .+2
+ 693 026c 00C0      		rjmp .L83
+ 694 026e 8832      		cpi r24,lo8(40)
+ 695 0270 01F4      		brne .L85
+ 696 0272 00C0      		rjmp .L87
+ 697               	.L69:
+ 698 0274 8093 0000 		sts twst,r24
+ 699 0278 60E0      		ldi r22,lo8(0)
+ 700 027a 70E0      		ldi r23,hi8(0)
+ 701 027c 00C0      		rjmp .L61
+ 702               	.L85:
+ 703 027e 8093 0000 		sts twst,r24
+ 704 0282 00C0      		rjmp .L86
+ 705               	.L87:
+ 706 0284 8093 0000 		sts twst,r24
+ 708               	.LM66:
+ 709 0288 0A19      		sub r16,r10
+ 710 028a 1B09      		sbc r17,r11
+ 711 028c 60E0      		ldi r22,lo8(0)
+ 712 028e 70E0      		ldi r23,hi8(0)
+ 301:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		{
+ 302:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 			case TW_MT_DATA_ACK:
+ 303:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 			break;
+ 304:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 				
+ 305:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 			case TW_MT_DATA_NACK:
+ 306:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 				goto quit;
+ 307:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 				
+ 308:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 			case TW_MT_ARB_LOST:
+ 309:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 				goto begin;
+ 310:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 				
+ 311:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 			default:
+ 312:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 				goto error;								/* must send stop condition */
+ 313:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		}
+ 314:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		
+ 315:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		for (; len > 0; len--)
+ 316:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		{
+ 317:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 			TWDR = *buf++;
+ 318:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 			TWCR = _BV(TWINT) | _BV(TWEN); 			/* start transmission */
+ 713               	BB3
+ 714               	.LM67:
+ 715 0290 24E8      		ldi r18,lo8(-124)
+ 716 0292 00C0      		rjmp .L70
+ 717               	.L74:
+ 719               	.LM68:
+ 720 0294 8881      		ld r24,Y
+ 721 0296 8093 BB00 		sts 187,r24
+ 723               	.LM69:
+ 724 029a 2093 BC00 		sts 188,r18
+ 725               	.L71:
+ 319:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 			while ((TWCR & _BV(TWINT)) == 0) ; 		/* wait for transmission */
+ 726               	 r17,r11
+ 727               		ldi r22,lo8(0)
+ 728 029e 8091 BC00 		ldi r23,hi8(0)
+ 730 02a4 00C0      	.LM67:
+ 320:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 			switch ((twst = TW_STATUS))
+ 731               	
+ 732               		sts twst,r24
+ 733 02a6 8091 B900 		ldi r22,lo8(0)
+ 734 02aa 887F      		ldi r23,hi8(0)
+ 735 02ac 8093 0000 		rjmp .L61
+ 736 02b0 8832      	.L85:
+ 737 02b2 01F0      		sts twst,r24
+ 738               		rjmp .L86
+ 739 02b4 6FEF      	.L87:
+ 740 02b6 7FEF      		sts twst,r24
+ 742               	.LM66:
+ 743               		sub r16,r10
+ 744               		sbc r17,r11
+ 745 02ba 2196      		ldi r22,lo8(0)
+ 321:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 			{
+ 322:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 				case TW_MT_DATA_NACK:
+ 323:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 					goto error;							/* device write protected -- Note [16] */
+ 324:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 					
+ 325:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 				case TW_MT_DATA_ACK:
+ 326:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 					rv++;
+ 746               	
+ 747               		rjmp .L83
+ 748 02bc 6F5F      		cpi r24,lo8(40)
+ 749 02be 7F4F      		brne .L85
+ 750               		rjmp .L87
+ 751               	.L69:
+ 752               		sts twst,r24
+ 753 02c0 C801      		ldi r22,lo8(0)
+ 754 02c2 861B      		ldi r23,hi8(0)
+ 755 02c4 970B      		rjmp .L61
+ 756 02c6 1816      	.L85:
+ 757 02c8 1906      		sts twst,r24
+ 758 02ca 04F0      		rjmp .L86
+ 759               	.L87:
+ 327:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 				break;
+ 328:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 					
+ 329:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 				default:
+ 330:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 					goto error;
+ 331:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 			}
+ 332:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		}
+ 333:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 	quit:
+ 334:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		TWCR = _BV(TWINT) | _BV(TWSTO) | _BV(TWEN); 	/* send stop condition */
+ 760               	lo8(-8)
+ 762 02cc 84E9      	.LM65:
+ 763 02ce 8093 BC00 		cpi r24,lo8(48)
+ 764               		breq .L69
+ 335:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 			return rv;
+ 336:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		
+ 337:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 	error:
+ 338:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		rv = -1;
+ 339:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		goto quit;
+ 340:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** }
+ 765               	r24,lo8(56)
+ 766               		brne .+2
+ 767 02d2 CB01      		rjmp .L83
+ 768               		cpi r24,lo8(40)
+ 769 02d4 DF91      		brne .L85
+ 770 02d6 CF91      		rjmp .L87
+ 771 02d8 1F91      	.L69:
+ 772 02da 0F91      		sts twst,r24
+ 773 02dc FF90      		ldi r22,lo8(0)
+ 774 02de EF90      		ldi r23,hi8(0)
+ 775 02e0 DF90      		rjmp .L61
+ 776 02e2 CF90      	.L85:
+ 777 02e4 BF90      		sts twst,r24
+ 778 02e6 AF90      		rjmp .L86
+ 779 02e8 0895      	.L87:
+ 780               		sts twst,r24
+ 782               	.LM66:
+ 783               		sub r16,r10
+ 784               		sbc r17,r11
+ 785               		ldi r22,lo8(0)
+ 786               		ldi r23,hi8(0)
+ 788 0000 6572 726F 	.LM67:
+ 788      723D 3E20 
+ 788      5457 4920 
+ 788      7374 6174 
+ 788      7573 2025 
+ 789               		ldi r18,lo8(-124)
+ 790               		rjmp .L70
+ 791               	.L74:
+ 793               	.LM68:
+ 341:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** /**************************************************************************************************
+ 342:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** int16 write_bytes_I2C(uint8 PAGE_SIZE,uint8 sla, uint32 eeaddr, int16 len, uint8 *buf)
+ 343:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** {
+ 344:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 	int16 rv, total;
+ 345:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 
+ 346:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 	total = 0;
+ 347:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c ****   
+ 348:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 	do
+ 349:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c ****     {
+ 350:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		
+ 351:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		rv = write_page_I2C(PAGE_SIZE,sla, eeaddr, len, buf);
+ 352:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		if (rv == -1)
+ 353:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		{
+ 354:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 			error();
+ 355:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 			return -1;
+ 356:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		}
+ 357:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 	  
+ 358:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		eeaddr += rv;
+ 359:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		len -= rv;
+ 360:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		buf += rv;
+ 361:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 		total += rv;
+ 362:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c ****     }
+ 363:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c ****   while (len > 0);
+ 364:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 
+ 365:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c ****   return total;
+ 366:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** }
+ 367:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** /**************************************************************************************************
+ 368:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** void error(void)
+ 369:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** {
+ 794               		rjmp .L86
+ 795               	.L87:
+ 796               		sts twst,r24
+ 798               	.LM66:
+ 370:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c **** 
+ 371:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c ****   printf("error=> TWI status %#x\n", twst);
+ 799               	lo8(48)
+ 800               		breq .L69
+ 801 02ea 00D0      		cpi r24,lo8(56)
+ 802 02ec 00D0      		brne .+2
+ 803 02ee EDB7      		rjmp .L83
+ 804 02f0 FEB7      		cpi r24,lo8(40)
+ 805 02f2 3196      		brne .L85
+ 806 02f4 80E0      		rjmp .L87
+ 807 02f6 90E0      	.L69:
+ 808 02f8 ADB7      		sts twst,r24
+ 809 02fa BEB7      		ldi r22,lo8(0)
+ 810 02fc 1296      		ldi r23,hi8(0)
+ 811 02fe 9C93      		rjmp .L61
+ 812 0300 8E93      	.L85:
+ 813 0302 1197      		sts twst,r24
+ 814 0304 8091 0000 		rjmp .L86
+ 815 0308 8283      	.L87:
+ 816 030a 1382      		sts twst,r24
+ 372:C:/Jarboter_V_2_1/Firmware/Interface_uC_Peripherical/C/tw_interface.c ****   exit(0);
+ 818               	
+ 819               		sbc r17,r11
+ 820 0310 0F90      		ldi r22,lo8(0)
+ 821 0312 0F90      		ldi r23,hi8(0)
+ 823 0316 0F90      	.LM67:
+ 824 0318 80E0      		ldi r18,lo8(-124)
+ 825 031a 90E0      		rjmp .L70
+ 826 031c 0E94 0000 	.L74:
+ 828               	.LM68:
+ 829               		ld r24,Y
+ 830               		sts 187,r24
+ 832               	.LM69:
+ 833               		sts 188,r18
+ 834               	.L71:
+ 836               	.LM70:
+ 837               		lds r24,188
+ 838               		sbrs r24,7
+ 839               		rjmp .L71
+ 841 0320 4F92      	.LM71:
+ 842 0322 5F92      		lds r24,185
+ 843 0324 6F92      		andi r24,lo8(-8)
+ 844 0326 7F92      		sts twst,r24
+ 845 0328 8F92      		cpi r24,lo8(40)
+ 846 032a 9F92      		breq .L73
+ 847 032c AF92      	.L86:
+ 848 032e BF92      		ldi r22,lo8(-1)
+ 849 0330 CF92      		ldi r23,hi8(-1)
+ 850 0332 DF92      		rjmp .L61
+ 851 0334 EF92      	.L73:
+ 853 0338 0F93      	.LM72:
+ 854 033a 1F93      		adiw r28,1
+ 856 033e DF93      	.LM73:
+ 857               		subi r22,lo8(-(1))
+ 858               		sbci r23,hi8(-(1))
+ 859 0340 482E      	.L70:
+ 861 0344 5901      	.LM74:
+ 862 0346 6A01      		movw r24,r16
+ 863 0348 4801      		sub r24,r22
+ 864 034a 3701      		sbc r25,r23
+ 865               		cp __zero_reg__,r24
+ 866               		cpc __zero_reg__,r25
+ 867 034c C0E0      		brlt .L74
+ 868 034e D0E0      	.L61:
+ 870               	.LM75:
+ 871               		ldi r24,lo8(-108)
+ 872 0350 842D      		sts 188,r24
+ 873 0352 652D      	.L57:
+ 875 0356 9501      	.LM76:
+ 876 0358 8401      		movw r24,r22
+ 877 035a 7301      	/* epilogue start */
+ 878 035c 0E94 0000 		pop r29
+ 879 0360 9C01      		pop r28
+ 880               		pop r17
+ 881               		pop r16
+ 882 0362 8FEF      		pop r15
+ 883 0364 2F3F      		pop r14
+ 884 0366 3807      		pop r13
+ 885 0368 01F4      		pop r12
+ 886               		pop r11
+ 887               		pop r10
+ 888 036a 0E94 0000 		ret
+ 894               	.Lscope3:
+ 895 0374 821A      		.data
+ 896 0376 930A      	.LC0:
+ 897               		.string	"error=> TWI status %#x\n"
+ 898               		.text
+ 900 037a D31F      	.global	error
+ 902               	error:
+ 904 037e 1904      	.LM77:
+ 905 0380 04F4      	.LFBB4:
+ 906               	/* prologue: function */
+ 907               	/* frame size = 0 */
+ 909 0384 AA27      	.LM78:
+ 910 0386 97FD      		rcall .
+ 911 0388 A095      		rcall .
+ 912 038a BA2F      		in r30,__SP_L__
+ 913 038c A80E      		in r31,__SP_H__
+ 914 038e B91E      		adiw r30,1
+ 915 0390 CA1E      		ldi r24,lo8(.LC0)
+ 916 0392 DB1E      		ldi r25,hi8(.LC0)
+ 917               		in r26,__SP_L__
+ 918               		in r27,__SP_H__
+ 919 0394 620E      		adiw r26,1+1
+ 920 0396 731E      		st X,r25
+ 921 0398 00C0      		st -X,r24
+ 922               		sbiw r26,1
+ 923               		lds r24,twst
+ 924               		std Z+2,r24
+ 925 039a CE01      		std Z+3,__zero_reg__
+ 926               		call printf
+ 928 039e CF91      	.LM79:
+ 929 03a0 1F91      		pop __tmp_reg__
+ 930 03a2 0F91      		pop __tmp_reg__
+ 931 03a4 FF90      		pop __tmp_reg__
+ 932 03a6 EF90      		pop __tmp_reg__
+ 933 03a8 DF90      		ldi r24,lo8(0)
+ 934 03aa CF90      		ldi r25,hi8(0)
+ 935 03ac BF90      		call exit
+ 937 03b0 9F90      	.Lscope4:
+ 944               	.global	write_bytes_I2C
+ 946               	write_bytes_I2C:
+ 948               	.LM80:
+ 949               	.LFBB5:
+ 950               		push r4
+ 951               		push r5
+ 952               		push r6
+ 953               		push r7
+ 954               		push r8
+ 955               		push r9
+DEFINED SYMBOLS
+                            *ABS*:00000000 tw_interface.c
+C:\DOCUME~1\David\LOCALS~1\Temp/cc3703TC.s:2      *ABS*:0000003f __SREG__
+C:\DOCUME~1\David\LOCALS~1\Temp/cc3703TC.s:3      *ABS*:0000003e __SP_H__
+C:\DOCUME~1\David\LOCALS~1\Temp/cc3703TC.s:4      *ABS*:0000003d __SP_L__
+C:\DOCUME~1\David\LOCALS~1\Temp/cc3703TC.s:5      *ABS*:00000034 __CCP__
+C:\DOCUME~1\David\LOCALS~1\Temp/cc3703TC.s:6      *ABS*:00000000 __tmp_reg__
+C:\DOCUME~1\David\LOCALS~1\Temp/cc3703TC.s:7      *ABS*:00000001 __zero_reg__
+C:\DOCUME~1\David\LOCALS~1\Temp/cc3703TC.s:233    .text:00000000 TWI_init
+C:\DOCUME~1\David\LOCALS~1\Temp/cc3703TC.s:259    .text:0000000c read_bytes_I2C
+                            *COM*:00000001 twst
+C:\DOCUME~1\David\LOCALS~1\Temp/cc3703TC.s:519    .text:00000172 write_page_I2C
+C:\DOCUME~1\David\LOCALS~1\Temp/cc3703TC.s:793    .text:000002ea error
+C:\DOCUME~1\David\LOCALS~1\Temp/cc3703TC.s:837    .text:00000320 write_bytes_I2C
+
+UNDEFINED SYMBOLS
+printf
+exit
+__do_copy_data
+__do_clear_bss

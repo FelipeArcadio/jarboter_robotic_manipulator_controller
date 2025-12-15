@@ -1,0 +1,489 @@
+PROGRAM predefined;
+
+CONST
+    { The following 4 values are RETURNed by GETSTATUS (...) }
+    INT : R_PROCESS_READY := 0;
+    INT : R_PROCESS_RUNNING := 1;
+    INT : R_PROCESS_STOPPED := 2;
+    INT : R_PROCESS_BLOCKED := 3;
+    
+    INT : TCP_KEEP := 1;
+    INT : TCP_KEEP_REL := 2;
+    INT : DEVICE_REL := 3;
+
+VAR
+    REAL : R_C_CP,R_SPEED,R_SPEED_ORI,R_C_SPEED,R_ACC;
+    REAL : R_MOVE_TIME, R_SCALE_FORW, R_SCALE_BACK, R_DISTANCE_FORW, R_DISTANCE_BACK;
+     
+FUNCTION CROSS ( IN POSITION: x, y ) : POSITION;
+    VAR POSITION : RESP;
+BEGIN
+    RESP.X := x.Y * y.Z - x.Z * y.Y;
+    RESP.Y := x.Z * y.X - x.X * y.Z;
+    RESP.Z := x.X * y.Y - x.Y * y.X;
+    RETURN RESP;
+ENDFCT;
+
+FUNCTION DOT ( IN POSITION: x, y ) : REAL;
+    VAR REAL : RESP;
+BEGIN
+    RESP := x.X * y.X + x.Y * y.Y + x.Z * y.Z;
+    RETURN RESP;
+ENDFCT;
+
+FUNCTION CHR ( IN INT: asciivalue ) : CHAR;
+    VAR CHAR : RESP;
+BEGIN
+    RESP := asciivalue;
+    RETURN RESP;
+ENDFCT;
+
+FUNCTION FLOAT ( IN INT : x ) : REAL;
+    VAR REAL : RESP;
+BEGIN
+    RESP := x;
+    RETURN RESP;
+ENDFCT;
+
+
+FUNCTION ORIVANG ( IN POSITION: v; IN REAL: a ) : ORIENTATION;
+    VAR ORIENTATION : RESP;
+BEGIN
+    RESP.Q1 := COS ( a / 2.0 );
+    RESP.Q2 := SIN ( a / 2.0 ) * v.X;
+    RESP.Q3 := SIN ( a / 2.0 ) * v.Y;
+    RESP.Q4 := SIN ( a / 2.0 ) * v.Z;
+    RETURN RESP;
+ENDFCT;
+
+FUNCTION ORIMULT ( IN ORIENTATION: a, b ) : ORIENTATION;
+    VAR ORIENTATION : RESP;
+BEGIN
+    RESP.Q1 := -A.Q2 * B.Q2 - A.Q3 * B.Q3 - A.Q4 * B.Q4 + A.Q1 * B.Q1;
+    RESP.Q2 :=  A.Q2 * B.Q1 + A.Q3 * B.Q4 - A.Q4 * B.Q3 + A.Q1 * B.Q2;
+    RESP.Q3 := -A.Q2 * B.Q4 + A.Q3 * B.Q1 + A.Q4 * B.Q2 + A.Q1 * B.Q3;
+    RESP.Q4 :=  A.Q2 * B.Q3 - A.Q3 * B.Q2 + A.Q4 * B.Q1 + A.Q1 * B.Q4;
+    RETURN RESP;
+ENDFCT;
+
+FUNCTION ORIMAT ( IN POSITION: n, o, a ) : ORIENTATION;
+VAR 
+    ORIENTATION : RESP;
+    REAL : TRACE, s;
+BEGIN
+    TRACE := N.X + O.Y + A.Z + 1.0;
+    
+    IF TRACE > 0 THEN
+        S := 0.5 / SQRT ( TRACE );
+        RESP.Q1 := 0.25 / S;
+        RESP.Q2 := ( O.Z - A.Y ) * S;
+        RESP.Q2 := ( A.X - N.Z ) * S;
+        RESP.Q4 := ( N.Y - O.X ) * S;
+    ELSE
+        IF N.X > O.Y AND N.X > A.Z THEN
+            S := 2.0 * SQRT ( 1.0 + N.X - O.Y - A.Z );
+            RESP.Q1 := ( A.Y - O.Z ) / S;
+            RESP.Q2 := 0.25 * S;
+            RESP.Q3 := ( O.X + N.Y ) / S;
+            RESP.Q4 := ( A.X - O.Z ) / S;
+        ELSE
+            IF O.Y > A.Z THEN
+                S := 2.0 * SQRT ( 1.0 + O.Y - N.X - A.Z );
+                RESP.Q1 := ( A.X - N.Z ) / S;
+                RESP.Q2 := ( O.X + N.Y ) / S;
+                RESP.Q3 := 0.25 * S;
+                RESP.Q4 := ( A.Y + O.Z ) / S;
+            ELSE
+                S := 2.0 * SQRT ( 1.0 + A.Z - N.X - O.Y );
+                RESP.Q1 := ( O.X - N.Y ) / S;
+                RESP.Q2 := ( A.X + N.Z ) / S;
+                RESP.Q3 := ( A.Y + O.Z ) / S;
+                RESP.Q4 := 0.25 * S;
+            ENDIF;
+        ENDIF;
+    ENDIF;
+    RETURN RESP;
+ENDFCT;
+
+FUNCTION ORIQUAT ( IN REAL: a, b, c, d ) : ORIENTATION;
+    VAR ORIENTATION : RESP;
+BEGIN
+    RESP.Q1 := a;
+    RESP.Q2 := b;
+    RESP.Q3 := c;
+    RESP.Q4 := d;
+    RETURN RESP;
+ENDFCT;
+
+FUNCTION ORIRS ( IN REAL: a, b, c ) : ORIENTATION;
+VAR
+    POSITION : axisX := POSITION( 1, 0, 0 );
+    POSITION : axisY := POSITION( 0, 1, 0 );
+    POSITION : axisZ := POSITION( 0, 0, 1 );
+    ORIENTATION : RESP;
+BEGIN
+    RESP := ORIMULT ( ORIMULT ( ORIVANG ( axisZ, c ), ORIVANG ( axisY, b ) ), ORIVANG ( axisX, a ) );
+    RETURN RESP;
+ENDFCT;
+
+FUNCTION ORIXYZ ( IN REAL: a, b, c ) : ORIENTATION;
+VAR
+    POSITION : axisX := POSITION( 1, 0, 0 );
+    POSITION : axisY := POSITION( 0, 1, 0 );
+    POSITION : axisZ := POSITION( 0, 0, 1 );
+    ORIENTATION : RESP;
+BEGIN
+    RESP := ORIMULT ( ORIMULT ( ORIVANG ( axisX, a ), ORIVANG ( axisY, b ) ), ORIVANG ( axisZ, c ) );
+    RETURN RESP;
+ENDFCT;
+
+FUNCTION ORIYXZ ( IN REAL: a, b, c ) : ORIENTATION;
+VAR
+    POSITION : axisX := POSITION( 1, 0, 0 );
+    POSITION : axisY := POSITION( 0, 1, 0 );
+    POSITION : axisZ := POSITION( 0, 0, 1 );
+    ORIENTATION : RESP;
+BEGIN
+    RESP := ORIMULT ( ORIMULT ( ORIVANG ( axisY, a ), ORIVANG ( axisX, b ) ), ORIVANG ( axisZ, c ) );
+    RETURN RESP;
+ENDFCT;
+
+FUNCTION ORIZYX ( IN REAL: a, b, c ) : ORIENTATION;
+VAR
+    POSITION : axisX := POSITION( 1, 0, 0 );
+    POSITION : axisY := POSITION( 0, 1, 0 );
+    POSITION : axisZ := POSITION( 0, 0, 1 );
+    ORIENTATION : RESP;
+BEGIN
+    RESP := ORIMULT ( ORIMULT ( ORIVANG ( axisZ, a ), ORIVANG ( axisY, b ) ), ORIVANG ( axisX, c ) );
+    RETURN RESP;
+ENDFCT;
+
+FUNCTION ORIZYZ2 ( IN REAL: a, b, c ) : ORIENTATION;
+VAR
+    POSITION : axisY := POSITION( 0, 1, 0 );
+    POSITION : axisZ := POSITION( 0, 0, 1 );
+    ORIENTATION : RESP;
+BEGIN
+    RESP := ORIMULT ( ORIMULT ( ORIVANG ( axisZ, a ), ORIVANG ( axisY, b ) ), ORIVANG ( axisZ, c ) );
+    RETURN RESP;
+ENDFCT;
+
+FUNCTION QUATA ( IN ORIENTATION: ori ) : REAL;
+BEGIN
+    RETURN ori.Q1;
+ENDFCT;
+
+FUNCTION QUATB ( IN ORIENTATION: ori ) : REAL;
+BEGIN
+    RETURN ori.Q2;
+ENDFCT;
+
+FUNCTION QUATC ( IN ORIENTATION: ori ) : REAL;
+BEGIN
+    RETURN ori.Q3;
+ENDFCT;
+
+FUNCTION QUATD ( IN ORIENTATION: ori ) : REAL;
+BEGIN
+    RETURN ori.Q4;
+ENDFCT;
+
+FUNCTION ROTANGLE ( IN ORIENTATION: ori ) : REAL;
+    VAR REAL : RESP;
+BEGIN
+    RESP := 2 * ACOS ( ori.Q1 );
+    RETURN RESP;
+ENDFCT;
+
+FUNCTION ROTAXIS ( IN ORIENTATION: ori ) : POSITION;
+    VAR 
+        REAL : mitadteta;
+        POSITION : RESP;
+BEGIN
+    mitadteta := ACOS ( ori.Q1 );
+    RESP.X := ori.Q2 / SIN ( mitadteta );
+    RESP.Y := ori.Q3 / SIN ( mitadteta );
+    RESP.Z := ori.Q4 / SIN ( mitadteta );
+    RETURN RESP;
+ENDFCT;
+
+FUNCTION VECTORA ( IN ORIENTATION: ori ) : POSITION;
+    VAR POSITION : RESP;
+BEGIN
+    RESP.X := 2 * ( ori.Q2 * ori.Q4 + ori.Q1 * ori.Q3 );
+    RESP.Y := 2 * ( ori.Q3 * ori.Q4 - ori.Q1 * ori.Q2 );
+    RESP.Z := 1 - 2 * ( ori.Q2 * ori.Q2 + ori.Q3 * ori.Q3 );
+    RETURN RESP;
+ENDFCT;
+
+FUNCTION VECTORN ( IN ORIENTATION: ori ) : POSITION;
+    VAR POSITION : RESP;
+BEGIN
+    RESP.X := 1 - 2 * ( ori.Q3 * ori.Q3 + ori.Q4 * ori.Q4 );
+    RESP.Y := 2 * ( ori.Q2 * ori.Q3 + ori.Q1 * ori.Q4 );
+    RESP.Z := 2 * ( ori.Q2 * ori.Q4 - ori.Q1 * ori.Q3 );
+    RETURN RESP;
+ENDFCT;
+
+FUNCTION VECTORO ( IN ORIENTATION: ori ) : POSITION;
+    VAR POSITION : RESP;
+BEGIN
+    RESP.X := 2 * ( ori.Q2 * ori.Q3 - ori.Q1 * ori.Q4 );
+    RESP.Y := 1 - 2 * (  ori.Q2 * ori.Q2  + ori.Q4 * ori.Q4 );
+    RESP.Z := 2 * ( ori.Q3 * ori.Q4 + ori.Q1 * ori.Q2 );
+    RETURN RESP;
+ENDFCT;
+
+FUNCTION ORD ( IN CHAR: character ) : INT;
+    VAR INT : RESP;
+BEGIN
+    RESP := character;
+    RETURN RESP;
+ENDFCT;
+
+FUNCTION ANGLEX ( IN STRING: mode; IN ORIENTATION: ori ) : REAL;
+    VAR
+        POSITION : N, O, A;
+        REAL : C, TRX, TRY, RESP;
+BEGIN
+    N := VECTORN ( ori );
+    A := VECTORA ( ori );
+    O := VECTORO ( ori );
+    
+    IF COMPARE ( mode, 'RS' ) = 0 OR COMPARE ( mode, 'ZYX' ) = 0 THEN
+        C := COS ( ASIN ( -N.Z ) );
+        IF ABS ( C ) > 0.005 THEN
+            TRX :=  A.Z / C;
+            TRY :=  O.Z / C;
+            RESP := ATAN2 ( TRY, TRX );
+            IF RESP < 0 THEN 
+                RESP := RESP + 360;
+            ENDIF;
+        ELSE
+            TRX := O.X;
+            TRY := A.X;
+            RESP := ATAN2 ( TRY, TRX );
+            IF RESP < 0 THEN 
+                RESP := RESP + 360;
+            ENDIF;
+            
+        ENDIF;
+        RETURN RESP;
+    ENDIF;
+    
+    IF COMPARE ( mode, 'XYZ' ) = 0 THEN
+        C := COS ( ASIN ( A.X ) );
+        IF ABS ( C ) > 0.005 THEN
+            TRX :=  A.Z / C;
+            TRY := -A.Y / C;
+            RESP := ATAN2 ( TRY, TRX );
+            IF RESP < 0 THEN
+                RESP := RESP + 360;
+            ENDIF;
+        ELSE
+            RESP := 0.0;
+        ENDIF;
+        RETURN RESP;
+    ENDIF;
+    
+    IF COMPARE ( mode, 'YXZ' ) = 0 THEN
+        RESP := ASIN ( - A.Y );
+        IF RESP < 0 THEN 
+            RESP := RESP + 360;
+        ENDIF;
+        RETURN RESP;
+    ENDIF;
+    
+    RETURN 0.0;
+ENDFCT;
+
+FUNCTION ANGLEY ( IN STRING: mode; IN ORIENTATION: ori ) : REAL;
+    VAR 
+        POSITION : N, A, O;
+        REAL : C, TRX, TRY, RESP;
+BEGIN
+    N := VECTORN ( ori );
+    A := VECTORA ( ori );
+    O := VECTORO ( ori );
+    
+    IF COMPARE ( mode, 'RS' ) = 0 OR COMPARE ( mode, 'ZYX' ) = 0 THEN
+        RESP := ASIN ( -N.Z );
+        IF RESP < 0 THEN 
+            RESP := RESP + 360;
+        ENDIF;
+        RETURN RESP;
+    ENDIF;
+    
+    A := VECTORA ( ori );
+    IF COMPARE ( mode, 'XYZ' ) = 0 THEN
+        RESP := ASIN ( A.X );
+        IF RESP < 0 THEN 
+            RESP := RESP + 360;
+        ENDIF;
+        RETURN RESP;
+    ENDIF;
+    
+    IF COMPARE ( mode, 'YXZ' ) = 0 THEN
+        C := COS ( ASIN ( -A.Y ) );
+        IF ABS ( C ) > 0.005 THEN
+            TRX := A.Z / C;
+            TRY := A.X / C;
+            RESP := ATAN2 ( TRY, TRX );
+            IF RESP < 0 THEN 
+                RESP := RESP + 360;
+            ENDIF;
+        ELSE
+            C := ( N.X - O.X ) / (N.X + N.Z);
+            RESP := ACOS ( C );
+        ENDIF;
+        RETURN RESP;
+    ENDIF;
+    
+    IF COMPARE ( mode, 'ZYZ2' ) = 0 THEN
+        RESP := ( A.X / ABS ( A.X )) * ACOS ( A.Z );
+        IF RESP < 0 THEN 
+            RESP := RESP + 360;
+        ENDIF;
+        RETURN RESP;
+    ENDIF;
+    RETURN 0.0;   
+ENDFCT;
+
+FUNCTION ANGLEZ ( IN STRING: mode; IN ORIENTATION: ori ) : REAL;
+    VAR 
+        POSITION : N, A, O;
+        REAL : C, TRX, TRY, RESP;
+BEGIN
+    N := VECTORN ( ori );
+    A := VECTORA ( ori );
+    O := VECTORO ( ori );
+    
+    IF COMPARE ( mode, 'RS' ) = 0 OR COMPARE ( mode, 'ZYX' ) = 0 THEN
+        C := COS ( ASIN ( -N.Z ) );
+        IF ABS ( C ) > 0.005 THEN
+            TRX := N.X / C;
+            TRY := N.Y / C;
+            RESP := ATAN2 ( TRY, TRX );
+            IF RESP < 0 THEN 
+                RESP := RESP + 360;
+            ENDIF;
+        ELSE
+            TRX := O.X;
+            TRY := N.X;
+            RESP := ATAN2 ( TRY, TRX );
+            IF RESP < 0 THEN 
+                RESP := RESP + 360;
+            ENDIF;
+        ENDIF;
+        RETURN RESP;
+    ENDIF;
+    
+    IF COMPARE ( mode, 'XYZ' ) = 0 THEN
+        C := COS ( ASIN ( A.X ) );
+        IF ABS ( C ) > 0.005 THEN
+            TRX :=  N.X / C;
+            TRY := -O.X / C;
+            RESP := ATAN2 ( TRY, TRX );
+        ELSE
+            TRX := N.Y;
+            TRY := O.Y;
+            RESP := ATAN2 ( TRY, TRX );
+        ENDIF;
+        IF RESP < 0 THEN 
+            RESP := RESP + 360;
+        ENDIF;
+        RETURN RESP;
+    ENDIF;
+    
+    IF COMPARE ( mode, 'YXZ' ) = 0 THEN
+        C := COS ( ASIN ( -A.Y ) );
+        IF ABS ( C ) > 0.005 THEN
+            TRX := O.Y / C;
+            TRY := N.Y / C;
+        ELSE
+            C := ( ( N.X + N.Z ) * ( 1 - TAN ( ACOS ( ( N.X - O.X ) / N.X + N.Z ) ) ) + ( O.X + O.Z ) ) / 2.0;
+            RESP := ACOS ( C );
+        ENDIF;
+        RESP := ATAN2 ( TRY, TRX );
+        IF RESP < 0 THEN 
+            RESP := RESP + 360;
+        ENDIF;
+        RETURN RESP;
+    ENDIF;
+    
+    IF COMPARE ( mode, 'ZYZ2' ) = 0 THEN
+        C := SIN ( ( A.X / ABS ( A.X )) * ACOS ( A.Z ) );
+        IF ABS ( C ) > 0.005 THEN
+            TRX := A.X / C;
+            TRY := A.Y / C;
+            RESP := ATAN2 ( TRY, TRX );
+            IF RESP < 0 THEN 
+                RESP := RESP + 360;
+            ENDIF;
+        ELSE
+            TRX :=  N.X;
+            TRY := -O.X;
+            RESP := ATAN2 ( TRY, TRX );
+            IF RESP < 0 THEN 
+                RESP := RESP + 360;
+            ENDIF;
+            RETURN RESP;
+        ENDIF;
+    ENDIF;
+    RETURN 0.0;
+ENDFCT;
+
+FUNCTION ANGLEZ2 ( IN STRING: mode; IN ORIENTATION: ori ) : REAL;
+    VAR 
+        POSITION : N, O, A;
+        REAL : C, TRX, TRY, RESP;
+BEGIN
+    N := VECTORN ( ori );
+    O := VECTORO ( ori );
+    A := VECTORA ( ori );
+    
+    IF COMPARE ( mode, 'ZYZ2' ) = 0 THEN
+        C := SIN ( ( A.X / ABS ( A.X )) * ACOS ( A.Z ) );
+        IF ABS ( C ) > 0.005 THEN
+            TRX := -N.Z / C;
+            TRY :=  O.Z / C;
+            RESP := ATAN2 ( TRY, TRX );
+            IF RESP < 0 THEN 
+                RESP := RESP + 360;
+            ENDIF;
+        ELSE
+            RESP := 0.0;
+        ENDIF;
+        RETURN RESP;
+    ENDIF;
+    RETURN 0.0;
+ENDFCT;
+
+
+{
+FUNCTION EOL ( IN TEXT: x ) : BOOL;
+BEGIN
+
+ENDFCT;
+
+FUNCTION INV ( IN POSE: x ) : POSE;
+BEGIN
+
+ENDFCT;
+
+FUNCTION TRAFO ( IN JOINT: x ) : ROBTARGET;
+BEGIN
+
+ENDFCT;
+
+FUNCTION TRAFOINV ( IN ROBTARGET: x ) : JOINT;
+BEGIN
+
+ENDFCT;
+
+}
+
+BEGIN
+ENDPROGRAM;
+

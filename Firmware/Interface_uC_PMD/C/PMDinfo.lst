@@ -1,0 +1,2791 @@
+   1               		.file	"PMDinfo.c"
+   2               	__SREG__ = 0x3f
+   3               	__SP_H__ = 0x3e
+   4               	__SP_L__ = 0x3d
+   5               	__CCP__  = 0x34
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   9               		.text
+  10               	.Ltext0:
+ 249               		.data
+ 250               	.LC0:
+ 251 0000 6368 6563 		.string	"checkconnect=> Boton de Parada de Emergencia Activo "
+ 251      6B63 6F6E 
+ 251      6E65 6374 
+ 251      3D3E 2042 
+ 251      6F74 6F6E 
+ 252               	.LC1:
+ 253 0035 6368 6563 		.string	"checkconnect=> Cable #%d de Sensores esta desconectado \n"
+ 253      6B63 6F6E 
+ 253      6E65 6374 
+ 253      3D3E 2043 
+ 253      6162 6C65 
+ 254               	.LC2:
+ 255 006e 6368 6563 		.string	"checkconnect=> Los switch del eje de %s estan desconectados \n"
+ 255      6B63 6F6E 
+ 255      6E65 6374 
+ 255      3D3E 204C 
+ 255      6F73 2073 
+ 256               		.text
+ 258               	.global	checkconnect
+ 260               	checkconnect:
+   1:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** #include <avr/io.h>
+   2:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** #include <stdio.h>
+   3:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** #include <avr/pgmspace.h>
+   4:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** #include <stdlib.h>
+   5:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** #include <string.h>
+   6:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 
+   7:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** #include "c-motion.h"
+   8:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** #include "PMDsetup.h"
+   9:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** #include "messages.h"
+  10:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** #include "debug.h"
+  11:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 
+  12:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** extern PMDAxisHandle hAxis[DOF]; 
+  13:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 
+  14:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** //**********************************************************************************************
+  15:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 
+  16:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** PMDresult PMDCheckEventStatus(int16 Axis, PMDint16 print)  
+  17:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** {
+  18:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	PMDuint16 status;	
+  19:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	
+  20:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	PMDGetEventStatus(&hAxis[Axis],&status);
+  21:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	//Se limpia el Event Status Register
+  22:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	PMDResetEventStatus(&hAxis[Axis],~PMDEventStatusMask);
+  23:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		
+  24:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	printf("PMDCheckEventStatus=> El Event Status del eje %s es %X \n",AxisName(Axis),status);
+  25:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	
+  26:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	if(print==imprimir)
+  27:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	{
+  28:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c ****     
+  29:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		
+  30:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		if ((status & PMDEventMotionCompleteMask) !=0) //Este eje está en movimiento		
+  31:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			printf("PMDCheckEventStatus=> El movimiento  en el eje %s ha sido completado\n",AxisName(Axis));
+  32:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		
+  33:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		
+  34:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		if ((status & PMDEventWrapAroundMask) !=0 ) 
+  35:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			printf("PMDCheckEventStatus=> Desborde en la posicion actual del motor 7FFFFFFF O 80000000 eje %
+  36:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	 
+  37:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		//Se ha activado el Breakpoint 1
+  38:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		if ((status & PMDEventBreakpoint1Mask) !=0) 
+  39:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			printf("PMDCheckEventStatus=> Se ha activado el Breakpoint 1 en el eje %s \n",AxisName(Axis));
+  40:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		
+  41:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		//Se activa cuando el hardware de alta velocidad actura un nuevo dato de posicion
+  42:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		if ((status & PMDEventCaptureReceivedMask) !=0) 
+  43:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			printf("PMDCheckEventStatus=> El Hardware de alta velocidad ha capturado una nueva posicion del 
+  44:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			
+  45:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		//Cuando la posicion Actual difiere de la posicion commandada por una cantidad mayor 
+  46:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		//que la expecificada por el maximo error de posicion
+  47:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		if ((status & PMDEventMotionErrorMask)!=0) 
+  48:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			printf("PMDCheckEventStatus=> El error del movimiento excede el limite maximo de error para el e
+  49:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		
+  50:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		//Se llego al limite positivo
+  51:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		if ((status & PMDEventInPositiveLimitMask) !=0) 
+  52:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			printf("PMDCheckEventStatus=> Se ha llegado al limite Positivo en el eje %s\n",AxisName(Axis));
+  53:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		
+  54:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		//Se llego al limite negativo
+  55:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		if ((status & PMDEventInNegativeLimitMask) !=0 ) 
+  56:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			printf("PMDCheckEventStatus=> Se ha llegado al limite negativo en el eje %s\n",AxisName(Axis));
+  57:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			
+  58:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		//Error de instruccion
+  59:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		if ((status & PMDEventInstructionErrorMask) !=0) 
+  60:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			printf("PMDCheckEventStatus=> Ha ocurrido un error de Instruccion en el eje %s \n",AxisName(Axis
+  61:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		
+  62:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		//Error de la comunicacion solo para (MC2300)
+  63:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		if ((status & PMDEventCommutationErrorMask) !=0) 
+  64:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			printf("PMDCheckEventStatus=> Error de comunicacion solo para MC2300 en el eje %s \n",AxisName(A
+  65:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		
+  66:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		//Se ha activado el Breakpoint 2
+  67:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		if ((status & PMDEventBreakpoint2Mask) !=0) 
+  68:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			printf("PMDCheckEventStatus=> Se ha activado del Breakpoint2 en el eje %s \n",AxisName(Axis));
+  69:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	}	
+  70:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	
+  71:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	return status;
+  72:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c ****   
+  73:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** }
+  74:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 
+  75:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 
+  76:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** /*****************************************************************************************/
+  77:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** PMDresult PMDCheckActivityStatus(int16 Axis, PMDint16 print)
+  78:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** { 
+  79:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	PMDuint16 status,profile;	
+  80:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	
+  81:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	PMDGetActivityStatus(&hAxis[Axis],&status);
+  82:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	printf("PMDCheckActivityStatus=> El Activity status del eje %s es %X \n",AxisName(Axis),status);
+  83:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	
+  84:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	if(print==imprimir)
+  85:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	{
+  86:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		if ((status & PMDActivityAtMaximumVelocityMask) !=0 ) 
+  87:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			printf("PMDCheckActivityStatus=> El eje %s esta A la maxima Velocidad  \n",AxisName(Axis));
+  88:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		
+  89:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		if ((status & PMDActivityTrackingMask) !=0) 
+  90:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			printf("PMDCheckActivityStatus=> El eje %s esta dentro del tracking window  \n",AxisName(Axis));
+  91:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		
+  92:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		profile=(status & PMDActivityProfileModeMask) >> 3;
+  93:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		switch (profile)
+  94:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		{
+  95:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			case (0):
+  96:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			printf("PMDCheckActivityStatus=> El eje  %s tiene perfil TRAPEZOIDAL \n",AxisName(Axis));
+  97:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			break;
+  98:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			
+  99:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			case (1):
+ 100:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			printf("PMDCheckActivityStatus=> El eje  %s tiene perfil de VELOCIDAD \n",AxisName(Axis));
+ 101:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			break;
+ 102:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			
+ 103:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			case (2):
+ 104:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			printf("PMDCheckActivityStatus=> El eje  %s tiene perfil CURVA-S \n",AxisName(Axis));
+ 105:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			break;
+ 106:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			
+ 107:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			case (3):
+ 108:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			printf("PMDCheckActivityStatus=> El eje  %s tiene perfil ELECTRONIC GEAR \n",AxisName(Axis));
+ 109:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			break;
+ 110:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		}
+ 111:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		
+ 112:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		if ((status & PMDActivityAxisSettledMask)!=0) 
+ 113:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			printf("PMDCheckActivityStatus=> El eje %s ha permanecido en el Settle Window por un periodo de 
+ 114:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		if ((status &  PMDActivityMotorOnMask) !=0) 
+ 115:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			printf("PMDCheckActivityStatus=> El eje %s esta en MOTOR MODE ON \n",AxisName(Axis));		
+ 116:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		if ((status & PMDActivityPositionCaptureMask) !=0 ) 
+ 117:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			printf("PMDCheckActivityStatus=> El eje %s tiene un nuevo valor de posicion disponible para leer
+ 118:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		if ((status & PMDActivityInMotionMask) !=0) 
+ 119:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			printf("PMDCheckActivityStatus=> La posicion comandada esta cambiando en el eje %s\n",AxisName(A
+ 120:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		if ((status & PMDActivityInPositiveLimitMask) !=0) 
+ 121:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			printf("PMDCheckActivityStatus=> El eje %s  esta en el Limite Positivo \n",AxisName(Axis));		
+ 122:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		if ((status &  PMDActivityInNegativeLimitMask) !=0) 
+ 123:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			printf("PMDCheckActivityStatus=> El eje %s  esta en el Limite Negativo \n",AxisName(Axis));
+ 124:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	}
+ 125:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 
+ 126:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	return status;
+ 127:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** }
+ 128:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 
+ 129:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** /*****************************************************************************************/
+ 130:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** //Si hay un 1 en la maskara SetSignalSense devuelve el invertido del valor electrico
+ 131:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** //Si hay un 1 en la maskara el PMD interpreta que (0V SW oprimido) significa limite
+ 132:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** //Si hay un 0 en la maskara SetSignalSense devuelve el el valor electrico
+ 133:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** //Si hay un 0 en la maskara el PMD interpreta que (5V SW sin oprimir) significa limite
+ 134:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** PMDresult PMDCheckSignalStatus(int16 Axis, PMDint16 print)
+ 135:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** {
+ 136:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 
+ 137:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	PMDuint16 status,mask,status_char;
+ 138:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	char binario[20]="0";
+ 139:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	
+ 140:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	
+ 141:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	PMDGetSignalStatus(&hAxis[Axis],&status);
+ 142:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	//printf("El Signal status register del eje %s es %X \n",AxisName(Axis),status);
+ 143:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	
+ 144:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	status_char=status;
+ 145:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	status_char= status_char >> 3;
+ 146:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	
+ 147:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	itoa(status_char,binario,2);	
+ 148:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	
+ 149:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	printf("PMDCheckSignalStatus=> signal status = %s  \n",binario);
+ 150:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	
+ 151:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	
+ 152:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	if(print==imprimir)
+ 153:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	{
+ 154:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		PMDGetSignalSense(&hAxis[Axis],& mask);
+ 155:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		printf("PMDCheckSignalStatus=> La mascara de Signal sense del eje %s es %X \n",AxisName(Axis),mas
+ 156:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	
+ 157:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		if ((status & PMDSignalEncoderAMask) !=0)
+ 158:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		{
+ 159:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			if((mask & PMDSignalEncoderAMask)!=0)  //el bit vale 1 en el signal sense
+ 160:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			
+ 161:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			printf("PMDCheckSignalStatus=> El canal A = Real (0V) Valor  registro (5V) \n");		
+ 162:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		    else
+ 163:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			printf("PMDCheckSignalStatus=> El canal A = (5V) Valor Electrico Real =registro \n");
+ 164:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		}
+ 165:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		else
+ 166:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		{
+ 167:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			if((mask & PMDSignalEncoderAMask)!=0)  //el bit vale 1 en el signal sense
+ 168:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			printf("PMDCheckSignalStatus=> El canal A = Real (5V) Valor  Registro (0V) \n");
+ 169:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 				
+ 170:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		    else
+ 171:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			printf("PMDCheckSignalStatus=> El canal A = (0V) Valor Electrico Real = Registro \n");	
+ 172:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		}
+ 173:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		
+ 174:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		//--------------------------------------------------------------------------------//
+ 175:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		if ((status & PMDSignalEncoderBMask) !=0)
+ 176:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		{
+ 177:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			if((mask & PMDSignalEncoderBMask)!=0)  //el bit vale 1 en el signal sense
+ 178:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			
+ 179:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			printf("PMDCheckSignalStatus=> El canal B = Real (0V) Valor registro (5V) \n");		
+ 180:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		    else
+ 181:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			printf("PMDCheckSignalStatus=> El canal B = (5V) Valor Electrico Real =registro \n");
+ 182:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		}
+ 183:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		else
+ 184:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		{
+ 185:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			if((mask & PMDSignalEncoderBMask)!=0)  //el bit vale 1 en el signal sense
+ 186:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			printf("PMDCheckSignalStatus=> El canal B = Real (5V) Valor Registro (0V) \n");
+ 187:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 				
+ 188:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		    else
+ 189:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			printf("PMDCheckSignalStatus=> El canal B = (0V) Valor Electrico Real= Registro \n");	
+ 190:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		}
+ 191:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		//--------------------------------------------------------------------------------//
+ 192:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		
+ 193:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		if ((status & PMDSignalEncoderIndexMask) !=0)
+ 194:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		{
+ 195:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			if((mask & PMDSignalEncoderIndexMask)!=0)  //el bit vale 1 en el signal sense
+ 196:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			
+ 197:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			printf("PMDCheckSignalStatus=> Index = Real (0V) Valor registro (5V) \n");		
+ 198:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		    else
+ 199:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			printf("PMDCheckSignalStatus=> Index = (5V) Valor Electrico Real = registro \n");
+ 200:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		}
+ 201:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		else
+ 202:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		{
+ 203:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			if((mask & PMDSignalEncoderIndexMask)!=0)  //el bit vale 1 en el signal sense
+ 204:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			printf("PMDCheckSignalStatus=> Index = Real (5V) Valor Registro (0V) \n");
+ 205:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 				
+ 206:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		    else
+ 207:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			printf("PMDCheckSignalStatus=> Index = (0V) Valor Electrico Real= Registro \n");	
+ 208:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		}
+ 209:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		
+ 210:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		
+ 211:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		//--------------------------------------------------------------------------------//
+ 212:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		
+ 213:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		if ((status & PMDSignalEncoderHomeMask) !=0)
+ 214:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		{
+ 215:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			if((mask & PMDSignalEncoderHomeMask)!=0)  //el bit vale 1 en el signal sense
+ 216:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			
+ 217:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			printf("PMDCheckSignalStatus=> Home = Real (0V) Valor registro (5V) Captura Low to High \n");		
+ 218:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		    else
+ 219:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			printf("PMDCheckSignalStatus=> Home = (5V) Valor Electrico Real = registro Captura de High To Lo
+ 220:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		}
+ 221:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		else
+ 222:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		{
+ 223:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			if((mask & PMDSignalEncoderHomeMask)!=0)  //el bit vale 1 en el signal sense
+ 224:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			printf("PMDCheckSignalStatus=> Home = Real (5V) Valor Registro (0V) Captura Low to High \n");
+ 225:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 				
+ 226:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		    else
+ 227:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			printf("PMDCheckSignalStatus=> Home = (0V) Valor Electrico Real = Registro  Captura de High To L
+ 228:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		}
+ 229:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		
+ 230:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		//--------------------------------------------------------------------------------//
+ 231:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		if ((status & PMDSignalPositiveLimitMask) !=0)
+ 232:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		{
+ 233:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			if((mask & PMDSignalPositiveLimitMask)!=0)  //el bit vale 1 en el signal sense
+ 234:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			
+ 235:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			printf("PMDCheckSignalStatus=> Limite Positivo = Real (0V) Valor registro (5V)  No hay Evento de
+ 236:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		    else
+ 237:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			printf("PMDCheckSignalStatus=> Limite Positivo = (5V) Valor Electrico Real = registro No hay Eve
+ 238:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		}
+ 239:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		else
+ 240:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		{
+ 241:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			if((mask & PMDSignalPositiveLimitMask)!=0)  //el bit vale 1 en el signal sense
+ 242:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			
+ 243:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			printf("PMDCheckSignalStatus=> Limite Positivo = Real (5V) Valor Registro (0V) Hay Evento de Lim
+ 244:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			else
+ 245:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			printf("PMDCheckSignalStatus=> Limite Positivo = (0V) Valor Electrico Real = Registro hay Evento
+ 246:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		}
+ 247:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		//--------------------------------------------------------------------------------//
+ 248:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		if ((status & PMDSignalNegativeLimitMask) !=0)
+ 249:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		{
+ 250:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			if((mask & PMDSignalNegativeLimitMask)!=0)  //el bit vale 1 en el signal sense
+ 251:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			
+ 252:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			printf("PMDCheckSignalStatus=> Limite Negativo = Real (0V) Valor registro (5V) No hay Evento de 
+ 253:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		    else
+ 254:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			printf("PMDCheckSignalStatus=> Limite Negativo = (5V) Valor Electrico Real= registro No hay Even
+ 255:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		}
+ 256:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		else
+ 257:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		{
+ 258:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			if((mask & PMDSignalNegativeLimitMask)!=0)  //el bit vale 1 en el signal sense
+ 259:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			printf("PMDCheckSignalStatus=> Limite Negativo = Real (5V) Valor Registro (0V) Hay Evento de Lim
+ 260:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			else
+ 261:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			printf("PMDCheckSignalStatus=> Limite Negativo = (0V) Valor Electrico Real = Registro hay Evento
+ 262:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		}
+ 263:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		
+ 264:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		//--------------------------------------------------------------------------------//
+ 265:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		
+ 266:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		if ((status & PMDSignalStepOutputInvertMask) !=0) 
+ 267:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			printf("PMDCheckSignalStatus=> Step Output invert = + positivo\n");
+ 268:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		else
+ 269:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			printf("PMDCheckSignalStatus=> Step Output invert = - negativo\n");
+ 270:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		//--------------------------------------------------------------------------------//
+ 271:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		
+ 272:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		if ((status & PMDSignalMotorOutputInvertMask) !=0) 
+ 273:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			printf("PMDCheckSignalStatus=> Motor Output invert = + positivo\n");
+ 274:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		else
+ 275:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			printf("PMDCheckSignalStatus=> Motor Output invert = - negativo\n");
+ 276:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		//--------------------------------------------------------------------------------//
+ 277:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	}
+ 278:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	
+ 279:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	return status;
+ 280:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 
+ 281:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** }
+ 282:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** /**************************************************************************************************
+ 283:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** void infomov(int16 Axis, PMDint32* position, PMDint32* velocity, PMDuint32* acceleration, PMDuint32
+ 284:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			PMDint32* commandedposition,PMDint32* commandedvelocity, PMDint32* commandedacceleration,
+ 285:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			PMDint32* readencoder1, PMDint32* readerror,PMDuint16* encoderCounts, PMDuint16* steps)
+ 286:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** {
+ 287:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	
+ 288:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	PMDGetPosition(&hAxis[Axis],position);
+ 289:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	PMDGetVelocity(&hAxis[Axis],velocity);
+ 290:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	PMDGetAcceleration(&hAxis[Axis],acceleration);
+ 291:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	PMDGetDeceleration(&hAxis[Axis],deceleration);
+ 292:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	
+ 293:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	PMDGetCommandedPosition(&hAxis[Axis],commandedposition);
+ 294:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	PMDGetCommandedVelocity(&hAxis[Axis],commandedvelocity);
+ 295:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	PMDGetCommandedAcceleration(&hAxis[Axis],commandedacceleration);
+ 296:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	
+ 297:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	
+ 298:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	//Funciones que hacen uso del Encoder
+ 299:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	PMDGetActualPosition(&hAxis[Axis],readencoder1);
+ 300:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	PMDGetPositionError(&hAxis[Axis], readerror);	
+ 301:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	PMDGetEncoderToStepRatio(&hAxis[Axis], encoderCounts,steps);
+ 302:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	
+ 303:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	printf("infomov=> La informacion correspondiente del movimiento del eje %s es :\n",AxisName(Axis))
+ 304:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	printf("infomov=> posicion=	%08ld\n",*position);
+ 305:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	printf("infomov=> velodidad	= 	%08ld\n",*velocity);
+ 306:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	printf("infomov=> aceleracion=	%08ld\n",*acceleration);
+ 307:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	printf("infomov=> desaceleracion=	%08ld\n",*deceleration);
+ 308:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	printf("infomov=> posicion instantanea=	%08ld\n",*commandedposition);
+ 309:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	printf("infomov=> velocidad instantanea=	%08ld\n",*commandedvelocity);
+ 310:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	printf("infomov=> aceleracion instantanea=	%08ld\n",*commandedacceleration);
+ 311:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	printf("infomov=> Lectura Encoder=	%08ld\n",*readencoder1);
+ 312:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	printf("infomov=> Error Posicion=	%08ld\n",*readerror);	
+ 313:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	//printf("infomov=> Cuentas de Encoder= %08d \n",*cuentas_encoder);
+ 314:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	//printf("infomov=> No. uPasos por vuelta= %08d \n",*steps);		
+ 315:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 
+ 316:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	
+ 317:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** }
+ 318:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 
+ 319:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** /**************************************************************************************************
+ 320:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 
+ 321:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** void Print_Handlesinfo(void)
+ 322:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** {
+ 323:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c ****   int16 axis;
+ 324:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c ****   
+ 325:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	for(axis=0; axis < DOF; axis++) 
+ 326:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	{  
+ 327:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		printf("Print_Handlesinfo=> El Index del vector es %d \n",axis );
+ 328:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		printf("Print_Handlesinfo=> hAxis[%d].axis es igual a  %d  \n",axis,hAxis[axis].axis);
+ 329:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		printf("Print_Handlesinfo=> Corresponde a %s \n",AxisName(axis));
+ 330:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		printf("Print_Handlesinfo=> Es manejado por el chipset %d  \n",hAxis[axis].chipset);
+ 331:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	}
+ 332:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	
+ 333:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** }
+ 334:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** /**************************************************************************************************
+ 335:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** PMDuint16 getErrorHost(int16 axis)
+ 336:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** {
+ 337:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c ****     PMDuint16 ErrorPMD=0;
+ 338:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	 
+ 339:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	PMDGetHostIOError(&hAxis[axis],&ErrorPMD);
+ 340:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	
+ 341:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	return ErrorPMD;
+ 342:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** }
+ 343:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** /**************************************************************************************************
+ 344:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** int16 checkconnect(void)
+ 345:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** {
+ 261               	FBB1
+ 262               	.LM0:
+ 263               	.LFBB1:
+ 264 0000 2F92      		push r2
+ 265 0002 3F92      		push r3
+ 266 0004 4F92      		push r4
+ 267 0006 5F92      		push r5
+ 268 0008 6F92      		push r6
+ 269 000a 7F92      		push r7
+ 270 000c 8F92      		push r8
+ 271 000e 9F92      		push r9
+ 272 0010 AF92      		push r10
+ 273 0012 BF92      		push r11
+ 274 0014 CF92      		push r12
+ 275 0016 DF92      		push r13
+ 276 0018 EF92      		push r14
+ 277 001a FF92      		push r15
+ 278 001c 0F93      		push r16
+ 279 001e 1F93      		push r17
+ 280 0020 DF93      		push r29
+ 281 0022 CF93      		push r28
+ 282 0024 00D0      		rcall .
+ 283 0026 CDB7      		in r28,__SP_L__
+ 284 0028 DEB7      		in r29,__SP_H__
+ 285               	/* prologue: function */
+ 286               	/* frame size = 2 */
+ 346:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c ****     PMDuint16 signal_status;
+ 347:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	int16 Axis,Chipset,rc;
+ 348:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	
+ 349:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	rc=rcOK;
+ 350:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	
+ 351:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	/** SE observa el Estado del Boton de Parada de Emergecia **/
+ 352:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	
+ 353:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	if(bit_is_set(PIND, Estado_Boton_Emergencia))
+ 287               	B1
+ 288               	.LM1:
+ 289 002a 4A9B      		sbis 41-32,2
+ 290 002c 00C0      		rjmp .L2
+ 354:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	{
+ 355:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		buzzer(1);
+ 291               	abn	68,0,355,.LM2-.LFBB1
+ 292               	.LM2:
+ 293 002e 81E0      		ldi r24,lo8(1)
+ 294 0030 90E0      		ldi r25,hi8(1)
+ 295 0032 0E94 0000 		call buzzer
+ 356:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		
+ 357:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		printf("checkconnect=> Boton de Parada de Emergencia Activo \n");
+ 296               	bn	68,0,357,.LM3-.LFBB1
+ 297               	.LM3:
+ 298 0036 80E0      		ldi r24,lo8(.LC0)
+ 299 0038 90E0      		ldi r25,hi8(.LC0)
+ 300 003a 0E94 0000 		call puts
+ 358:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		fprintf_P(stderr,PSTR("Boton de Parada de Emergencia Activo \n"));
+ 301               	bn	68,0,358,.LM4-.LFBB1
+ 302               	.LM4:
+ 303 003e 00D0      		rcall .
+ 304 0040 00D0      		rcall .
+ 305 0042 8091 0000 		lds r24,__iob+4
+ 306 0046 9091 0000 		lds r25,(__iob+4)+1
+ 307 004a EDB7      		in r30,__SP_L__
+ 308 004c FEB7      		in r31,__SP_H__
+ 309 004e 9283      		std Z+2,r25
+ 310 0050 8183      		std Z+1,r24
+ 311 0052 80E0      		ldi r24,lo8(__c.3408)
+ 312 0054 90E0      		ldi r25,hi8(__c.3408)
+ 313 0056 9483      		std Z+4,r25
+ 314 0058 8383      		std Z+3,r24
+ 315 005a 0E94 0000 		call fprintf_P
+ 316 005e 0F90      		pop __tmp_reg__
+ 317 0060 0F90      		pop __tmp_reg__
+ 318 0062 0F90      		pop __tmp_reg__
+ 319 0064 0F90      		pop __tmp_reg__
+ 320               	.L2:
+ 321 0066 40E0      		ldi r20,lo8(hAxis)
+ 322 0068 C42E      		mov r12,r20
+ 323 006a 40E0      		ldi r20,hi8(hAxis)
+ 324 006c D42E      		mov r13,r20
+ 325 006e EE24      		clr r14
+ 326 0070 FF24      		clr r15
+ 327 0072 00E0      		ldi r16,lo8(0)
+ 328 0074 10E0      		ldi r17,hi8(0)
+ 359:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		
+ 360:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	}
+ 361:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	for(Axis=0; Axis < DOF; Axis++) 
+ 362:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	{
+ 363:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		
+ 364:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		PMDGetSignalStatus(&hAxis[Axis],&signal_status);	
+ 329               	
+ 330               	.LM5:
+ 331 0076 1E01      		movw r2,r28
+ 332 0078 0894      		sec
+ 333 007a 211C      		adc r2,__zero_reg__
+ 334 007c 311C      		adc r3,__zero_reg__
+ 365:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		
+ 366:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		if ((signal_status & PMDSignalPositiveLimitMask) ==0) //Significa que esta activado el Limite Pos
+ 367:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		{
+ 368:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			
+ 369:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			/*Verificar si los cables de Sensores estan conectados*/
+ 370:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			if((signal_status & PMDSignalNegativeLimitMask) ==0)
+ 371:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			{
+ 372:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 				
+ 373:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 				buzzer_ms(50);
+ 374:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 				buzzer_ms(50);
+ 375:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 				Chipset=Axis2PMDChipset(Axis)+1;
+ 376:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 				printf("checkconnect=> Cable #%d de Sensores esta desconectado \n",Chipset);
+ 335               	bn	68,0,376,.LM6-.LFBB1
+ 336               	.LM6:
+ 337 007e 30E0      		ldi r19,lo8(.LC1)
+ 338 0080 432E      		mov r4,r19
+ 339 0082 30E0      		ldi r19,hi8(.LC1)
+ 340 0084 532E      		mov r5,r19
+ 377:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 				printf("checkconnect=> Los switch del eje de %s estan desconectados \n",AxisName(Axis));
+ 341               	n	68,0,377,.LM7-.LFBB1
+ 342               	.LM7:
+ 343 0086 20E0      		ldi r18,lo8(.LC2)
+ 344 0088 622E      		mov r6,r18
+ 345 008a 20E0      		ldi r18,hi8(.LC2)
+ 346 008c 722E      		mov r7,r18
+ 378:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 				
+ 379:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 				//impresion de caracteres Display
+ 380:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 				if (Chipset==1)
+ 381:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 					fprintf_P(stderr,PSTR("Cable #1 de sensores desconectado \n"));
+ 382:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 				
+ 383:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 				if (Chipset==2)
+ 384:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 					fprintf_P(stderr,PSTR("Cable #2 de sensores desconectado \n"));
+ 347               	n	68,0,384,.LM8-.LFBB1
+ 348               	.LM8:
+ 349 008e 90E0      		ldi r25,lo8(__c.3412)
+ 350 0090 892E      		mov r8,r25
+ 351 0092 90E0      		ldi r25,hi8(__c.3412)
+ 352 0094 992E      		mov r9,r25
+ 354               	.LM9:
+ 355 0096 80E0      		ldi r24,lo8(__c.3410)
+ 356 0098 A82E      		mov r10,r24
+ 357 009a 80E0      		ldi r24,hi8(__c.3410)
+ 358 009c B82E      		mov r11,r24
+ 359               	.L6:
+ 361               	.LM10:
+ 362 009e C601      		movw r24,r12
+ 363 00a0 B101      		movw r22,r2
+ 364 00a2 0E94 0000 		call PMDGetSignalStatus
+ 366               	.LM11:
+ 367 00a6 8981      		ldd r24,Y+1
+ 368 00a8 84FD      		sbrc r24,4
+ 369 00aa 00C0      		rjmp .L3
+ 371               	.LM12:
+ 372 00ac 85FD      		sbrc r24,5
+ 373 00ae 00C0      		rjmp .L3
+ 375               	.LM13:
+ 376 00b0 62E3      		ldi r22,lo8(50)
+ 377 00b2 70E0      		ldi r23,hi8(50)
+ 378 00b4 80E0      		ldi r24,hlo8(50)
+ 379 00b6 90E0      		ldi r25,hhi8(50)
+ 380 00b8 0E94 0000 		call buzzer_ms
+ 382               	.LM14:
+ 383 00bc 62E3      		ldi r22,lo8(50)
+ 384 00be 70E0      		ldi r23,hi8(50)
+ 385 00c0 80E0      		ldi r24,hlo8(50)
+ 386 00c2 90E0      		ldi r25,hhi8(50)
+ 387 00c4 0E94 0000 		call buzzer_ms
+ 389               	.LM15:
+ 390 00c8 C701      		movw r24,r14
+ 391 00ca 0E94 0000 		call Axis2PMDChipset
+ 392 00ce 8C01      		movw r16,r24
+ 393 00d0 0F5F      		subi r16,lo8(-(1))
+ 394 00d2 1F4F      		sbci r17,hi8(-(1))
+ 396               	.LM16:
+ 397 00d4 00D0      		rcall .
+ 398 00d6 00D0      		rcall .
+ 399 00d8 EDB7      		in r30,__SP_L__
+ 400 00da FEB7      		in r31,__SP_H__
+ 401 00dc 5282      		std Z+2,r5
+ 402 00de 4182      		std Z+1,r4
+ 403 00e0 1483      		std Z+4,r17
+ 404 00e2 0383      		std Z+3,r16
+ 405 00e4 0E94 0000 		call printf
+ 407               	.LM17:
+ 408 00e8 0F90      		pop __tmp_reg__
+ 409 00ea 0F90      		pop __tmp_reg__
+ 410 00ec 0F90      		pop __tmp_reg__
+ 411 00ee 0F90      		pop __tmp_reg__
+ 412 00f0 C701      		movw r24,r14
+ 413 00f2 0E94 0000 		call AxisName
+ 414 00f6 00D0      		rcall .
+ 415 00f8 00D0      		rcall .
+ 416 00fa EDB7      		in r30,__SP_L__
+ 417 00fc FEB7      		in r31,__SP_H__
+ 418 00fe 7282      		std Z+2,r7
+ 419 0100 6182      		std Z+1,r6
+ 420 0102 9483      		std Z+4,r25
+ 421 0104 8383      		std Z+3,r24
+ 422 0106 0E94 0000 		call printf
+ 424               	.LM18:
+ 425 010a 0F90      		pop __tmp_reg__
+ 426 010c 0F90      		pop __tmp_reg__
+ 427 010e 0F90      		pop __tmp_reg__
+ 428 0110 0F90      		pop __tmp_reg__
+ 429 0112 0130      		cpi r16,1
+ 430 0114 1105      		cpc r17,__zero_reg__
+ 431 0116 01F4      		brne .L4
+ 433               	.LM19:
+ 434 0118 00D0      		rcall .
+ 435 011a 00D0      		rcall .
+ 436 011c 8091 0000 		lds r24,__iob+4
+ 437 0120 9091 0000 		lds r25,(__iob+4)+1
+ 438 0124 EDB7      		in r30,__SP_L__
+ 439 0126 FEB7      		in r31,__SP_H__
+ 440 0128 9283      		std Z+2,r25
+ 441 012a 8183      		std Z+1,r24
+ 442 012c B482      		std Z+4,r11
+ 443 012e A382      		std Z+3,r10
+ 444 0130 00C0      		rjmp .L9
+ 445               	.L4:
+ 447               	.LM20:
+ 448 0132 0230      		cpi r16,2
+ 449 0134 1105      		cpc r17,__zero_reg__
+ 450 0136 01F0      		breq .L5
+ 451 0138 0FEF      		ldi r16,lo8(-1)
+ 452 013a 1FEF      		ldi r17,hi8(-1)
+ 453 013c 00C0      		rjmp .L3
+ 454               	.L5:
+ 456               	.LM21:
+ 457 013e 00D0      		rcall .
+ 458 0140 00D0      		rcall .
+ 459 0142 8091 0000 		lds r24,__iob+4
+ 460 0146 9091 0000 		lds r25,(__iob+4)+1
+ 461 014a EDB7      		in r30,__SP_L__
+ 462 014c FEB7      		in r31,__SP_H__
+ 463 014e 9283      		std Z+2,r25
+ 464 0150 8183      		std Z+1,r24
+ 465 0152 9482      		std Z+4,r9
+ 466 0154 8382      		std Z+3,r8
+ 467               	.L9:
+ 468 0156 0E94 0000 		call fprintf_P
+ 469 015a 0FEF      		ldi r16,lo8(-1)
+ 470 015c 1FEF      		ldi r17,hi8(-1)
+ 471 015e 0F90      		pop __tmp_reg__
+ 472 0160 0F90      		pop __tmp_reg__
+ 473 0162 0F90      		pop __tmp_reg__
+ 474 0164 0F90      		pop __tmp_reg__
+ 475               	.L3:
+ 477               	.LM22:
+ 478 0166 0894      		sec
+ 479 0168 E11C      		adc r14,__zero_reg__
+ 480 016a F11C      		adc r15,__zero_reg__
+ 481 016c 80E6      		ldi r24,lo8(96)
+ 482 016e 90E0      		ldi r25,hi8(96)
+ 483 0170 C80E      		add r12,r24
+ 484 0172 D91E      		adc r13,r25
+ 485 0174 95E0      		ldi r25,lo8(5)
+ 486 0176 E916      		cp r14,r25
+ 487 0178 F104      		cpc r15,__zero_reg__
+ 488 017a 01F0      		breq .+2
+ 489 017c 00C0      		rjmp .L6
+ 385:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 				
+ 386:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 				rc=-1;
+ 387:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 			}
+ 388:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		}
+ 389:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 		
+ 390:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	}
+ 391:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	
+ 392:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** 	return rc;
+ 393:C:/Jarboter_V_2_1/Firmware/Interface_uC_PMD/C/PMDinfo.c **** }
+ 490               	pop r15
+ 491               		pop r14
+ 492 017e C801      		pop r13
+ 493               		pop r12
+ 494 0180 0F90      		pop r11
+ 495 0182 0F90      		pop r10
+ 496 0184 CF91      		pop r9
+ 497 0186 DF91      		pop r8
+ 498 0188 1F91      		pop r7
+ 499 018a 0F91      		pop r6
+ 500 018c FF90      		pop r5
+ 501 018e EF90      		pop r4
+ 502 0190 DF90      		pop r3
+ 503 0192 CF90      		pop r2
+ 504 0194 BF90      		ret
+ 512 01a4 3F90      	.Lscope1:
+ 513 01a6 2F90      		.data
+ 514 01a8 0895      	.LC3:
+ 515               		.string	"Print_Handlesinfo=> El Index del vector es %d \n"
+ 516               	.LC4:
+ 517               		.string	"Print_Handlesinfo=> hAxis[%d].axis es igual a  %d  \n"
+ 518               	.LC5:
+ 519               		.string	"Print_Handlesinfo=> Corresponde a %s \n"
+ 520               	.LC6:
+ 521               		.string	"Print_Handlesinfo=> Es manejado por el chipset %d  \n"
+ 522               		.text
+ 524               	.global	Print_Handlesinfo
+ 526               	Print_Handlesinfo:
+ 528               	.LM24:
+ 529 0111 5072 696E 	.LFBB2:
+ 529      745F 4861 
+ 529      6E64 6C65 
+ 529      7369 6E66 
+ 529      6F3D 3E20 
+ 530               		push r8
+ 531 0138 5072 696E 		push r9
+ 531      745F 4861 
+ 531      6E64 6C65 
+ 531      7369 6E66 
+ 531      6F3D 3E20 
+ 532               		push r10
+ 533               		push r11
+ 534               		push r12
+ 535               		push r13
+ 536               		push r14
+ 537               		push r15
+ 538               		push r16
+ 539               		push r17
+ 540 01aa 8F92      		push r28
+ 541 01ac 9F92      		push r29
+ 542 01ae AF92      	/* prologue: function */
+ 543 01b0 BF92      	/* frame size = 0 */
+ 545 01b4 DF92      	.LM25:
+ 546 01b6 EF92      		ldi r16,lo8(hAxis)
+ 547 01b8 FF92      		ldi r17,hi8(hAxis)
+ 548 01ba 0F93      		ldi r28,lo8(0)
+ 549 01bc 1F93      		ldi r29,hi8(0)
+ 551 01c0 DF93      	.LM26:
+ 552               		ldi r30,lo8(.LC3)
+ 553               		mov r8,r30
+ 554               		ldi r30,hi8(.LC3)
+ 555               		mov r9,r30
+ 557 01c4 10E0      	.LM27:
+ 558 01c6 C0E0      		ldi r23,lo8(.LC4)
+ 559 01c8 D0E0      		mov r10,r23
+ 560               		ldi r23,hi8(.LC4)
+ 561               		mov r11,r23
+ 563 01cc 8E2E      	.LM28:
+ 564 01ce E0E0      		ldi r22,lo8(.LC5)
+ 565 01d0 9E2E      		mov r12,r22
+ 566               		ldi r22,hi8(.LC5)
+ 567               		mov r13,r22
+ 569 01d4 A72E      	.LM29:
+ 570 01d6 70E0      		ldi r21,lo8(.LC6)
+ 571 01d8 B72E      		mov r14,r21
+ 572               		ldi r21,hi8(.LC6)
+ 573               		mov r15,r21
+ 574 01da 60E0      	.L11:
+ 576 01de 60E0      	.LM30:
+ 577 01e0 D62E      		rcall .
+ 578               		rcall .
+ 579               		in r26,__SP_L__
+ 580 01e2 50E0      		in r27,__SP_H__
+ 581 01e4 E52E      		adiw r26,1+1
+ 582 01e6 50E0      		st X,r9
+ 583 01e8 F52E      		st -X,r8
+ 584               		sbiw r26,1
+ 585               		adiw r26,3+1
+ 586               		st X,r29
+ 587 01ea 00D0      		st -X,r28
+ 588 01ec 00D0      		sbiw r26,3
+ 589 01ee ADB7      		call printf
+ 591 01f2 1296      	.LM31:
+ 592 01f4 9C92      		rcall .
+ 593 01f6 8E92      		in r30,__SP_L__
+ 594 01f8 1197      		in r31,__SP_H__
+ 595 01fa 1496      		adiw r30,1
+ 596 01fc DC93      		in r26,__SP_L__
+ 597 01fe CE93      		in r27,__SP_H__
+ 598 0200 1397      		adiw r26,1+1
+ 599 0202 0E94 0000 		st X,r11
+ 600               		st -X,r10
+ 601               		sbiw r26,1
+ 602 0206 00D0      		std Z+3,r29
+ 603 0208 EDB7      		std Z+2,r28
+ 604 020a FEB7      		movw r26,r16
+ 605 020c 3196      		adiw r26,2
+ 606 020e ADB7      		ld r24,X+
+ 607 0210 BEB7      		ld r25,X
+ 608 0212 1296      		sbiw r26,2+1
+ 609 0214 BC92      		std Z+5,r25
+ 610 0216 AE92      		std Z+4,r24
+ 611 0218 1197      		call printf
+ 613 021c C283      	.LM32:
+ 614 021e D801      		in r30,__SP_L__
+ 615 0220 1296      		in r31,__SP_H__
+ 616 0222 8D91      		adiw r30,6
+ 617 0224 9C91      		in __tmp_reg__,__SREG__
+ 618 0226 1397      		cli
+ 619 0228 9583      		out __SP_H__,r31
+ 620 022a 8483      		out __SREG__,__tmp_reg__
+ 621 022c 0E94 0000 		out __SP_L__,r30
+ 622               		movw r24,r28
+ 623               		call AxisName
+ 624 0230 EDB7      		rcall .
+ 625 0232 FEB7      		rcall .
+ 626 0234 3696      		in r26,__SP_L__
+ 627 0236 0FB6      		in r27,__SP_H__
+ 628 0238 F894      		adiw r26,1+1
+ 629 023a FEBF      		st X,r13
+ 630 023c 0FBE      		st -X,r12
+ 631 023e EDBF      		sbiw r26,1
+ 632 0240 CE01      		adiw r26,3+1
+ 633 0242 0E94 0000 		st X,r25
+ 634 0246 00D0      		st -X,r24
+ 635 0248 00D0      		sbiw r26,3
+ 636 024a ADB7      		call printf
+ 638 024e 1296      	.LM33:
+ 639 0250 DC92      		in r30,__SP_L__
+ 640 0252 CE92      		in r31,__SP_H__
+ 641 0254 1197      		std Z+2,r15
+ 642 0256 1496      		std Z+1,r14
+ 643 0258 9C93      		movw r26,r16
+ 644 025a 8E93      		ld r24,X+
+ 645 025c 1397      		ld r25,X
+ 646 025e 0E94 0000 		std Z+4,r25
+ 647               		std Z+3,r24
+ 648               		call printf
+ 650 0264 FEB7      	.LM34:
+ 651 0266 F282      		adiw r28,1
+ 652 0268 E182      		subi r16,lo8(-(96))
+ 653 026a D801      		sbci r17,hi8(-(96))
+ 654 026c 8D91      		pop __tmp_reg__
+ 655 026e 9C91      		pop __tmp_reg__
+ 656 0270 9483      		pop __tmp_reg__
+ 657 0272 8383      		pop __tmp_reg__
+ 658 0274 0E94 0000 		cpi r28,5
+ 659               		cpc r29,__zero_reg__
+ 660               		breq .+2
+ 661 0278 2196      		rjmp .L11
+ 662 027a 005A      	/* epilogue start */
+ 664 027e 0F90      	.LM35:
+ 665 0280 0F90      		pop r29
+ 666 0282 0F90      		pop r28
+ 667 0284 0F90      		pop r17
+ 668 0286 C530      		pop r16
+ 669 0288 D105      		pop r15
+ 670 028a 01F0      		pop r14
+ 671 028c 00C0      		pop r13
+ 672               		pop r12
+ 673               		pop r11
+ 674               		pop r10
+ 675 028e DF91      		pop r9
+ 676 0290 CF91      		pop r8
+ 677 0292 1F91      		ret
+ 682 029c CF90      	.Lscope2:
+ 685 02a2 9F90      	.global	getErrorHost
+ 687 02a6 0895      	getErrorHost:
+ 689               	.LM36:
+ 690               	.LFBB3:
+ 691               		push r29
+ 692               		push r28
+ 693               		rcall .
+ 694               		in r28,__SP_L__
+ 695               		in r29,__SP_H__
+ 696               	/* prologue: function */
+ 697               	/* frame size = 2 */
+ 699               	.LM37:
+ 700               		std Y+2,__zero_reg__
+ 701 02a8 DF93      		std Y+1,__zero_reg__
+ 703 02ac 00D0      	.LM38:
+ 704 02ae CDB7      		ldi r18,lo8(96)
+ 705 02b0 DEB7      		ldi r19,hi8(96)
+ 706               		movw r20,r24
+ 707               		mul r20,r18
+ 708               		movw r24,r0
+ 709               		mul r20,r19
+ 710 02b2 1A82      		add r25,r0
+ 711 02b4 1982      		mul r21,r18
+ 712               		add r25,r0
+ 713               		clr r1
+ 714 02b6 20E6      		subi r24,lo8(-(hAxis))
+ 715 02b8 30E0      		sbci r25,hi8(-(hAxis))
+ 716 02ba AC01      		movw r22,r28
+ 717 02bc 429F      		subi r22,lo8(-(1))
+ 718 02be C001      		sbci r23,hi8(-(1))
+ 719 02c0 439F      		call PMDGetHostIOError
+ 721 02c4 529F      	.LM39:
+ 722 02c6 900D      		ldd r24,Y+1
+ 723 02c8 1124      		ldd r25,Y+2
+ 724 02ca 8050      	/* epilogue start */
+ 725 02cc 9040      		pop __tmp_reg__
+ 726 02ce BE01      		pop __tmp_reg__
+ 727 02d0 6F5F      		pop r28
+ 728 02d2 7F4F      		pop r29
+ 729 02d4 0E94 0000 		ret
+ 734               	.Lscope3:
+ 735 02dc 0F90      		.data
+ 736 02de 0F90      	.LC7:
+ 737 02e0 CF91      		.ascii	"infomov="
+ 738 02e2 DF91      		.string	"> La informacion correspondiente del movimiento del eje %s es :\n"
+ 739 02e4 0895      	.LC8:
+ 740               		.string	"infomov=> posicion=\t%08ld\n"
+ 741               	.LC9:
+ 742               		.string	"infomov=> velodidad\t= \t%08ld\n"
+ 743               	.LC10:
+ 744               		.string	"infomov=> aceleracion=\t%08ld\n"
+ 745               	.LC11:
+ 746               		.string	"infomov=> desaceleracion=\t%08ld\n"
+ 747 016d 696E 666F 	.LC12:
+ 747      6D6F 763D 
+ 748 0175 3E20 4C61 		.string	"infomov=> posicion instantanea=\t%08ld\n"
+ 748      2069 6E66 
+ 748      6F72 6D61 
+ 748      6369 6F6E 
+ 748      2063 6F72 
+ 749               	.LC13:
+ 750 01b6 696E 666F 		.string	"infomov=> velocidad instantanea=\t%08ld\n"
+ 750      6D6F 763D 
+ 750      3E20 706F 
+ 750      7369 6369 
+ 750      6F6E 3D09 
+ 751               	.LC14:
+ 752 01d1 696E 666F 		.string	"infomov=> aceleracion instantanea=\t%08ld\n"
+ 752      6D6F 763D 
+ 752      3E20 7665 
+ 752      6C6F 6469 
+ 752      6461 6409 
+ 753               	.LC15:
+ 754 01ef 696E 666F 		.string	"infomov=> Lectura Encoder=\t%08ld\n"
+ 754      6D6F 763D 
+ 754      3E20 6163 
+ 754      656C 6572 
+ 754      6163 696F 
+ 755               	.LC16:
+ 756 020d 696E 666F 		.string	"infomov=> Error Posicion=\t%08ld\n"
+ 756      6D6F 763D 
+ 756      3E20 6465 
+ 756      7361 6365 
+ 756      6C65 7261 
+ 757               		.text
+ 771               	.global	infomov
+ 773               	infomov:
+ 775               	.LM40:
+ 776               	.LFBB4:
+ 777               		push r2
+ 778               		push r3
+ 779               		push r4
+ 780               		push r5
+ 781               		push r6
+ 782               		push r7
+ 783               		push r8
+ 784               		push r9
+ 785               		push r10
+ 786               		push r11
+ 787 02e6 2F92      		push r12
+ 788 02e8 3F92      		push r13
+ 789 02ea 4F92      		push r14
+ 790 02ec 5F92      		push r15
+ 791 02ee 6F92      		push r16
+ 792 02f0 7F92      		push r17
+ 793 02f2 8F92      		push r29
+ 794 02f4 9F92      		push r28
+ 795 02f6 AF92      		rcall .
+ 796 02f8 BF92      		rcall .
+ 797 02fa CF92      		in r28,__SP_L__
+ 798 02fc DF92      		in r29,__SP_H__
+ 799 02fe EF92      	/* prologue: function */
+ 800 0300 FF92      	/* frame size = 4 */
+ 801 0302 0F93      		movw r6,r24
+ 802 0304 1F93      		movw r4,r22
+ 803 0306 DF93      		movw r2,r20
+ 804 0308 CF93      		std Y+2,r19
+ 805 030a 00D0      		std Y+1,r18
+ 806 030c 00D0      		std Y+4,r17
+ 807 030e CDB7      		std Y+3,r16
+ 809               	.LM41:
+ 810               		ldi r24,lo8(96)
+ 811 0312 3C01      		ldi r25,hi8(96)
+ 812 0314 2B01      		mul r6,r24
+ 813 0316 1A01      		movw r16,r0
+ 814 0318 3A83      		mul r6,r25
+ 815 031a 2983      		add r17,r0
+ 816 031c 1C83      		mul r7,r24
+ 817 031e 0B83      		add r17,r0
+ 818               		clr r1
+ 819               		subi r16,lo8(-(hAxis))
+ 820 0320 80E6      		sbci r17,hi8(-(hAxis))
+ 821 0322 90E0      		movw r24,r16
+ 822 0324 689E      		call PMDGetPosition
+ 824 0328 699E      	.LM42:
+ 825 032a 100D      		movw r24,r16
+ 826 032c 789E      		movw r22,r2
+ 827 032e 100D      		call PMDGetVelocity
+ 829 0332 0050      	.LM43:
+ 830 0334 1040      		movw r24,r16
+ 831 0336 C801      		ldd r22,Y+1
+ 832 0338 0E94 0000 		ldd r23,Y+2
+ 833               		call PMDGetAcceleration
+ 835 033c C801      	.LM44:
+ 836 033e B101      		movw r24,r16
+ 837 0340 0E94 0000 		ldd r22,Y+3
+ 838               		ldd r23,Y+4
+ 839               		call PMDGetDeceleration
+ 841 0346 6981      	.LM45:
+ 842 0348 7A81      		movw r24,r16
+ 843 034a 0E94 0000 		movw r22,r14
+ 844               		call PMDGetCommandedPosition
+ 846 034e C801      	.LM46:
+ 847 0350 6B81      		movw r24,r16
+ 848 0352 7C81      		movw r22,r12
+ 849 0354 0E94 0000 		call PMDGetCommandedVelocity
+ 851               	.LM47:
+ 852 0358 C801      		movw r24,r16
+ 853 035a B701      		movw r22,r10
+ 854 035c 0E94 0000 		call PMDGetCommandedAcceleration
+ 856               	.LM48:
+ 857 0360 C801      		movw r24,r16
+ 858 0362 B601      		movw r22,r8
+ 859 0364 0E94 0000 		call PMDGetActualPosition
+ 861               	.LM49:
+ 862 0368 C801      		movw r24,r16
+ 863 036a B501      		ldd r22,Y+25
+ 864 036c 0E94 0000 		ldd r23,Y+26
+ 865               		call PMDGetPositionError
+ 867 0370 C801      	.LM50:
+ 868 0372 B401      		movw r24,r16
+ 869 0374 0E94 0000 		ldd r22,Y+27
+ 870               		ldd r23,Y+28
+ 871               		ldd r20,Y+29
+ 872 0378 C801      		ldd r21,Y+30
+ 873 037a 698D      		call PMDGetEncoderToStepRatio
+ 875 037e 0E94 0000 	.LM51:
+ 876               		movw r24,r6
+ 877               		call AxisName
+ 878 0382 C801      		rcall .
+ 879 0384 6B8D      		rcall .
+ 880 0386 7C8D      		ldi r18,lo8(.LC7)
+ 881 0388 4D8D      		ldi r19,hi8(.LC7)
+ 882 038a 5E8D      		in r30,__SP_L__
+ 883 038c 0E94 0000 		in r31,__SP_H__
+ 884               		std Z+2,r19
+ 885               		std Z+1,r18
+ 886 0390 C301      		std Z+4,r25
+ 887 0392 0E94 0000 		std Z+3,r24
+ 888 0396 00D0      		call printf
+ 890 039a 20E0      	.LM52:
+ 891 039c 30E0      		rcall .
+ 892 039e EDB7      		ldi r24,lo8(.LC8)
+ 893 03a0 FEB7      		ldi r25,hi8(.LC8)
+ 894 03a2 3283      		in r30,__SP_L__
+ 895 03a4 2183      		in r31,__SP_H__
+ 896 03a6 9483      		std Z+2,r25
+ 897 03a8 8383      		std Z+1,r24
+ 898 03aa 0E94 0000 		movw r30,r4
+ 899               		ld r24,Z
+ 900               		ldd r25,Z+1
+ 901 03ae 00D0      		ldd r26,Z+2
+ 902 03b0 80E0      		ldd r27,Z+3
+ 903 03b2 90E0      		in r30,__SP_L__
+ 904 03b4 EDB7      		in r31,__SP_H__
+ 905 03b6 FEB7      		std Z+3,r24
+ 906 03b8 9283      		std Z+4,r25
+ 907 03ba 8183      		std Z+5,r26
+ 908 03bc F201      		std Z+6,r27
+ 909 03be 8081      		call printf
+ 911 03c2 A281      	.LM53:
+ 912 03c4 B381      		ldi r24,lo8(.LC9)
+ 913 03c6 EDB7      		ldi r25,hi8(.LC9)
+ 914 03c8 FEB7      		in r30,__SP_L__
+ 915 03ca 8383      		in r31,__SP_H__
+ 916 03cc 9483      		std Z+2,r25
+ 917 03ce A583      		std Z+1,r24
+ 918 03d0 B683      		movw r30,r2
+ 919 03d2 0E94 0000 		ld r24,Z
+ 920               		ldd r25,Z+1
+ 921               		ldd r26,Z+2
+ 922 03d6 80E0      		ldd r27,Z+3
+ 923 03d8 90E0      		in r30,__SP_L__
+ 924 03da EDB7      		in r31,__SP_H__
+ 925 03dc FEB7      		std Z+3,r24
+ 926 03de 9283      		std Z+4,r25
+ 927 03e0 8183      		std Z+5,r26
+ 928 03e2 F101      		std Z+6,r27
+ 929 03e4 8081      		call printf
+ 931 03e8 A281      	.LM54:
+ 932 03ea B381      		ldi r24,lo8(.LC10)
+ 933 03ec EDB7      		ldi r25,hi8(.LC10)
+ 934 03ee FEB7      		in r30,__SP_L__
+ 935 03f0 8383      		in r31,__SP_H__
+ 936 03f2 9483      		std Z+2,r25
+ 937 03f4 A583      		std Z+1,r24
+ 938 03f6 B683      		ldd r30,Y+1
+ 939 03f8 0E94 0000 		ldd r31,Y+2
+ 940               		ld r24,Z
+ 941               		ldd r25,Z+1
+ 942 03fc 80E0      		ldd r26,Z+2
+ 943 03fe 90E0      		ldd r27,Z+3
+ 944 0400 EDB7      		in r30,__SP_L__
+ 945 0402 FEB7      		in r31,__SP_H__
+ 946 0404 9283      		std Z+3,r24
+ 947 0406 8183      		std Z+4,r25
+ 948 0408 E981      		std Z+5,r26
+ 949 040a FA81      		std Z+6,r27
+ 950 040c 8081      		call printf
+ 952 0410 A281      	.LM55:
+ 953 0412 B381      		ldi r24,lo8(.LC11)
+ 954 0414 EDB7      		ldi r25,hi8(.LC11)
+ 955 0416 FEB7      		in r30,__SP_L__
+ 956 0418 8383      		in r31,__SP_H__
+ 957 041a 9483      		std Z+2,r25
+ 958 041c A583      		std Z+1,r24
+ 959 041e B683      		ldd r30,Y+3
+ 960 0420 0E94 0000 		ldd r31,Y+4
+ 961               		ld r24,Z
+ 962               		ldd r25,Z+1
+ 963 0424 80E0      		ldd r26,Z+2
+ 964 0426 90E0      		ldd r27,Z+3
+ 965 0428 EDB7      		in r30,__SP_L__
+ 966 042a FEB7      		in r31,__SP_H__
+ 967 042c 9283      		std Z+3,r24
+ 968 042e 8183      		std Z+4,r25
+ 969 0430 EB81      		std Z+5,r26
+ 970 0432 FC81      		std Z+6,r27
+ 971 0434 8081      		call printf
+ 973 0438 A281      	.LM56:
+ 974 043a B381      		ldi r24,lo8(.LC12)
+ 975 043c EDB7      		ldi r25,hi8(.LC12)
+ 976 043e FEB7      		in r30,__SP_L__
+ 977 0440 8383      		in r31,__SP_H__
+ 978 0442 9483      		std Z+2,r25
+ 979 0444 A583      		std Z+1,r24
+ 980 0446 B683      		movw r30,r14
+ 981 0448 0E94 0000 		ld r24,Z
+ 982               		ldd r25,Z+1
+ 983               		ldd r26,Z+2
+ 984 044c 80E0      		ldd r27,Z+3
+ 985 044e 90E0      		in r30,__SP_L__
+ 986 0450 EDB7      		in r31,__SP_H__
+ 987 0452 FEB7      		std Z+3,r24
+ 988 0454 9283      		std Z+4,r25
+ 989 0456 8183      		std Z+5,r26
+ 990 0458 F701      		std Z+6,r27
+ 991 045a 8081      		call printf
+ 993 045e A281      	.LM57:
+ 994 0460 B381      		ldi r24,lo8(.LC13)
+ 995 0462 EDB7      		ldi r25,hi8(.LC13)
+ 996 0464 FEB7      		in r30,__SP_L__
+ 997 0466 8383      		in r31,__SP_H__
+ 998 0468 9483      		std Z+2,r25
+ 999 046a A583      		std Z+1,r24
+ 1000 046c B683      		movw r30,r12
+ 1001 046e 0E94 0000 		ld r24,Z
+ 1002               		ldd r25,Z+1
+ 1003               		ldd r26,Z+2
+ 1004 0472 80E0      		ldd r27,Z+3
+ 1005 0474 90E0      		in r30,__SP_L__
+ 1006 0476 EDB7      		in r31,__SP_H__
+ 1007 0478 FEB7      		std Z+3,r24
+ 1008 047a 9283      		std Z+4,r25
+ 1009 047c 8183      		std Z+5,r26
+ 1010 047e F601      		std Z+6,r27
+ 1011 0480 8081      		call printf
+ 1013 0484 A281      	.LM58:
+ 1014 0486 B381      		ldi r24,lo8(.LC14)
+ 1015 0488 EDB7      		ldi r25,hi8(.LC14)
+ 1016 048a FEB7      		in r30,__SP_L__
+ 1017 048c 8383      		in r31,__SP_H__
+ 1018 048e 9483      		std Z+2,r25
+ 1019 0490 A583      		std Z+1,r24
+ 1020 0492 B683      		movw r30,r10
+ 1021 0494 0E94 0000 		ld r24,Z
+ 1022               		ldd r25,Z+1
+ 1023               		ldd r26,Z+2
+ 1024 0498 80E0      		ldd r27,Z+3
+ 1025 049a 90E0      		in r30,__SP_L__
+ 1026 049c EDB7      		in r31,__SP_H__
+ 1027 049e FEB7      		std Z+3,r24
+ 1028 04a0 9283      		std Z+4,r25
+ 1029 04a2 8183      		std Z+5,r26
+ 1030 04a4 F501      		std Z+6,r27
+ 1031 04a6 8081      		call printf
+ 1033 04aa A281      	.LM59:
+ 1034 04ac B381      		ldi r24,lo8(.LC15)
+ 1035 04ae EDB7      		ldi r25,hi8(.LC15)
+ 1036 04b0 FEB7      		in r30,__SP_L__
+ 1037 04b2 8383      		in r31,__SP_H__
+ 1038 04b4 9483      		std Z+2,r25
+ 1039 04b6 A583      		std Z+1,r24
+ 1040 04b8 B683      		movw r30,r8
+ 1041 04ba 0E94 0000 		ld r24,Z
+ 1042               		ldd r25,Z+1
+ 1043               		ldd r26,Z+2
+ 1044 04be 80E0      		ldd r27,Z+3
+ 1045 04c0 90E0      		in r30,__SP_L__
+ 1046 04c2 EDB7      		in r31,__SP_H__
+ 1047 04c4 FEB7      		std Z+3,r24
+ 1048 04c6 9283      		std Z+4,r25
+ 1049 04c8 8183      		std Z+5,r26
+ 1050 04ca F401      		std Z+6,r27
+ 1051 04cc 8081      		call printf
+ 1053 04d0 A281      	.LM60:
+ 1054 04d2 B381      		ldi r24,lo8(.LC16)
+ 1055 04d4 EDB7      		ldi r25,hi8(.LC16)
+ 1056 04d6 FEB7      		in r30,__SP_L__
+ 1057 04d8 8383      		in r31,__SP_H__
+ 1058 04da 9483      		std Z+2,r25
+ 1059 04dc A583      		std Z+1,r24
+ 1060 04de B683      		ldd r30,Y+25
+ 1061 04e0 0E94 0000 		ldd r31,Y+26
+ 1062               		ld r24,Z
+ 1063               		ldd r25,Z+1
+ 1064 04e4 80E0      		ldd r26,Z+2
+ 1065 04e6 90E0      		ldd r27,Z+3
+ 1066 04e8 EDB7      		in r30,__SP_L__
+ 1067 04ea FEB7      		in r31,__SP_H__
+ 1068 04ec 9283      		std Z+3,r24
+ 1069 04ee 8183      		std Z+4,r25
+ 1070 04f0 E98D      		std Z+5,r26
+ 1071 04f2 FA8D      		std Z+6,r27
+ 1072 04f4 8081      		call printf
+ 1073 04f6 9181      		in r24,__SP_L__
+ 1074 04f8 A281      		in r25,__SP_H__
+ 1075 04fa B381      		adiw r24,6
+ 1076 04fc EDB7      		in __tmp_reg__,__SREG__
+ 1077 04fe FEB7      		cli
+ 1078 0500 8383      		out __SP_H__,r25
+ 1079 0502 9483      		out __SREG__,__tmp_reg__
+ 1080 0504 A583      		out __SP_L__,r24
+ 1081 0506 B683      	/* epilogue start */
+ 1083 050c 8DB7      	.LM61:
+ 1084 050e 9EB7      		pop __tmp_reg__
+ 1085 0510 0696      		pop __tmp_reg__
+ 1086 0512 0FB6      		pop __tmp_reg__
+ 1087 0514 F894      		pop __tmp_reg__
+ 1088 0516 9EBF      		pop r28
+ 1089 0518 0FBE      		pop r29
+ 1090 051a 8DBF      		pop r17
+ 1091               		pop r16
+ 1092               		pop r15
+ 1093               		pop r14
+ 1094 051c 0F90      		pop r13
+ 1095 051e 0F90      		pop r12
+ 1096 0520 0F90      		pop r11
+ 1097 0522 0F90      		pop r10
+ 1098 0524 CF91      		pop r9
+ 1099 0526 DF91      		pop r8
+ 1100 0528 1F91      		pop r7
+ 1101 052a 0F91      		pop r6
+ 1102 052c FF90      		pop r5
+ 1103 052e EF90      		pop r4
+ 1104 0530 DF90      		pop r3
+ 1105 0532 CF90      		pop r2
+ 1106 0534 BF90      		ret
+ 1108 0538 9F90      	.Lscope4:
+ 1109 053a 8F90      		.data
+ 1110 053c 7F90      	.LC17:
+ 1111 053e 6F90      		.string	"PMDCheckSignalStatus=> signal status = %s  \n"
+ 1112 0540 5F90      	.LC18:
+ 1113 0542 4F90      		.ascii	"PMDC"
+ 1114 0544 3F90      		.string	"heckSignalStatus=> La mascara de Signal sense del eje %s es %X \n"
+ 1115 0546 2F90      	.LC19:
+ 1116 0548 0895      		.ascii	"PMD"
+ 1117               		.string	"CheckSignalStatus=> El canal A = Real (0V) Valor  registro (5V) "
+ 1118               	.LC20:
+ 1119               		.ascii	"PMDCheck"
+ 1120               		.string	"SignalStatus=> El canal A = (5V) Valor Electrico Real =registro "
+ 1121 02ea 504D 4443 	.LC21:
+ 1121      6865 636B 
+ 1121      5369 676E 
+ 1121      616C 5374 
+ 1121      6174 7573 
+ 1122               		.ascii	"PMD"
+ 1123 0317 504D 4443 		.string	"CheckSignalStatus=> El canal A = Real (5V) Valor  Registro (0V) "
+ 1124 031b 6865 636B 	.LC22:
+ 1124      5369 676E 
+ 1124      616C 5374 
+ 1124      6174 7573 
+ 1124      3D3E 204C 
+ 1125               		.ascii	"PMDCheckS"
+ 1126 035c 504D 44   		.string	"ignalStatus=> El canal A = (0V) Valor Electrico Real = Registro "
+ 1127 035f 4368 6563 	.LC23:
+ 1127      6B53 6967 
+ 1127      6E61 6C53 
+ 1127      7461 7475 
+ 1127      733D 3E20 
+ 1128               		.ascii	"PM"
+ 1129 03a0 504D 4443 		.string	"DCheckSignalStatus=> El canal B = Real (0V) Valor registro (5V) "
+ 1129      6865 636B 
+ 1130 03a8 5369 676E 	.LC24:
+ 1130      616C 5374 
+ 1130      6174 7573 
+ 1130      3D3E 2045 
+ 1130      6C20 6361 
+ 1131               		.ascii	"PMDCheck"
+ 1132 03e9 504D 44   		.string	"SignalStatus=> El canal B = (5V) Valor Electrico Real =registro "
+ 1133 03ec 4368 6563 	.LC25:
+ 1133      6B53 6967 
+ 1133      6E61 6C53 
+ 1133      7461 7475 
+ 1133      733D 3E20 
+ 1134               		.ascii	"PM"
+ 1135 042d 504D 4443 		.string	"DCheckSignalStatus=> El canal B = Real (5V) Valor Registro (0V) "
+ 1135      6865 636B 
+ 1135      53
+ 1136 0436 6967 6E61 	.LC26:
+ 1136      6C53 7461 
+ 1136      7475 733D 
+ 1136      3E20 456C 
+ 1136      2063 616E 
+ 1137               		.ascii	"PMDCheck"
+ 1138 0477 504D      		.string	"SignalStatus=> El canal B = (0V) Valor Electrico Real= Registro "
+ 1139 0479 4443 6865 	.LC27:
+ 1139      636B 5369 
+ 1139      676E 616C 
+ 1139      5374 6174 
+ 1139      7573 3D3E 
+ 1140               		.string	"PMDCheckSignalStatus=> Index = Real (0V) Valor registro (5V) "
+ 1141 04ba 504D 4443 	.LC28:
+ 1141      6865 636B 
+ 1142 04c2 5369 676E 		.ascii	"PMDC"
+ 1142      616C 5374 
+ 1142      6174 7573 
+ 1142      3D3E 2045 
+ 1142      6C20 6361 
+ 1143               		.string	"heckSignalStatus=> Index = (5V) Valor Electrico Real = registro "
+ 1144 0503 504D      	.LC29:
+ 1145 0505 4443 6865 		.string	"PMDCheckSignalStatus=> Index = Real (5V) Valor Registro (0V) "
+ 1145      636B 5369 
+ 1145      676E 616C 
+ 1145      5374 6174 
+ 1145      7573 3D3E 
+ 1146               	.LC30:
+ 1147 0546 504D 4443 		.ascii	"PMD"
+ 1147      6865 636B 
+ 1148 054e 5369 676E 		.string	"CheckSignalStatus=> Index = (0V) Valor Electrico Real= Registro "
+ 1148      616C 5374 
+ 1148      6174 7573 
+ 1148      3D3E 2045 
+ 1148      6C20 6361 
+ 1149               	.LC31:
+ 1150 058f 504D 4443 		.ascii	"PMDCheckSignalSt"
+ 1150      6865 636B 
+ 1150      5369 676E 
+ 1150      616C 5374 
+ 1150      6174 7573 
+ 1151               		.string	"atus=> Home = Real (0V) Valor registro (5V) Captura Low to High "
+ 1152 05cd 504D 4443 	.LC32:
+ 1153 05d1 6865 636B 		.ascii	"PMDCheckSignalStatus=> Hom"
+ 1153      5369 676E 
+ 1153      616C 5374 
+ 1153      6174 7573 
+ 1153      3D3E 2049 
+ 1154               		.string	"e = (5V) Valor Electrico Real = registro Captura de High To Low "
+ 1155 0612 504D 4443 	.LC33:
+ 1155      6865 636B 
+ 1155      5369 676E 
+ 1155      616C 5374 
+ 1155      6174 7573 
+ 1156               		.ascii	"PMDCheckSignalSt"
+ 1157 0650 504D 44   		.string	"atus=> Home = Real (5V) Valor Registro (0V) Captura Low to High "
+ 1158 0653 4368 6563 	.LC34:
+ 1158      6B53 6967 
+ 1158      6E61 6C53 
+ 1158      7461 7475 
+ 1158      733D 3E20 
+ 1159               		.ascii	"PMDCheckSignalStatus=> Home"
+ 1160 0694 504D 4443 		.string	" = (0V) Valor Electrico Real = Registro  Captura de High To Low "
+ 1160      6865 636B 
+ 1160      5369 676E 
+ 1160      616C 5374 
+ 1161 06a4 6174 7573 	.LC35:
+ 1161      3D3E 2048 
+ 1161      6F6D 6520 
+ 1161      3D20 5265 
+ 1161      616C 2028 
+ 1162               		.ascii	"PMDCheckSignalStatus=> Limite Po"
+ 1163 06e5 504D 4443 		.string	"sitivo = Real (0V) Valor registro (5V)  No hay Evento de Limite "
+ 1163      6865 636B 
+ 1163      5369 676E 
+ 1163      616C 5374 
+ 1163      6174 7573 
+ 1164 06ff 6520 3D20 	.LC36:
+ 1164      2835 5629 
+ 1164      2056 616C 
+ 1164      6F72 2045 
+ 1164      6C65 6374 
+ 1165               		.ascii	"PMDCheckSignalStatus=> Limite Positivo"
+ 1166 0740 504D 4443 		.string	" = (5V) Valor Electrico Real = registro No hay Evento de Limite "
+ 1166      6865 636B 
+ 1166      5369 676E 
+ 1166      616C 5374 
+ 1167 0750 6174 7573 	.LC37:
+ 1167      3D3E 2048 
+ 1167      6F6D 6520 
+ 1167      3D20 5265 
+ 1167      616C 2028 
+ 1168               		.ascii	"PMDCheckSignalStatus=> Limi"
+ 1169 0791 504D 4443 		.string	"te Positivo = Real (5V) Valor Registro (0V) Hay Evento de Limite"
+ 1169      6865 636B 
+ 1169      5369 676E 
+ 1169      616C 5374 
+ 1169      6174 7573 
+ 1170 07ac 203D 2028 	.LC38:
+ 1170      3056 2920 
+ 1170      5661 6C6F 
+ 1170      7220 456C 
+ 1170      6563 7472 
+ 1171               		.ascii	"PMDCheckSignalStatus=> Limite Posit"
+ 1172 07ed 504D 4443 		.string	"ivo = (0V) Valor Electrico Real = Registro hay Evento de Limite "
+ 1172      6865 636B 
+ 1172      5369 676E 
+ 1172      616C 5374 
+ 1172      6174 7573 
+ 1173 080d 7369 7469 	.LC39:
+ 1173      766F 203D 
+ 1173      2052 6561 
+ 1173      6C20 2830 
+ 1173      5629 2056 
+ 1174               		.ascii	"PMDCheckSignalStatus=> Limite N"
+ 1175 084e 504D 4443 		.string	"egativo = Real (0V) Valor registro (5V) No hay Evento de Limite "
+ 1175      6865 636B 
+ 1175      5369 676E 
+ 1175      616C 5374 
+ 1175      6174 7573 
+ 1176 0874 203D 2028 	.LC40:
+ 1176      3556 2920 
+ 1176      5661 6C6F 
+ 1176      7220 456C 
+ 1176      6563 7472 
+ 1177               		.ascii	"PMDCheckSignalStatus=> Limite Negativ"
+ 1178 08b5 504D 4443 		.string	"o = (5V) Valor Electrico Real= registro No hay Evento de Limite "
+ 1178      6865 636B 
+ 1178      5369 676E 
+ 1178      616C 5374 
+ 1178      6174 7573 
+ 1179 08d0 7465 2050 	.LC41:
+ 1179      6F73 6974 
+ 1179      6976 6F20 
+ 1179      3D20 5265 
+ 1179      616C 2028 
+ 1180               		.ascii	"PMDCheckSignalStatus=> Limi"
+ 1181 0911 504D 4443 		.string	"te Negativo = Real (5V) Valor Registro (0V) Hay Evento de Limite"
+ 1181      6865 636B 
+ 1181      5369 676E 
+ 1181      616C 5374 
+ 1181      6174 7573 
+ 1182 0934 6976 6F20 	.LC42:
+ 1182      3D20 2830 
+ 1182      5629 2056 
+ 1182      616C 6F72 
+ 1182      2045 6C65 
+ 1183               		.ascii	"PMDCheckSignalStatus=> Limite Negat"
+ 1184 0975 504D 4443 		.string	"ivo = (0V) Valor Electrico Real = Registro hay Evento de Limite "
+ 1184      6865 636B 
+ 1184      5369 676E 
+ 1184      616C 5374 
+ 1184      6174 7573 
+ 1185 0994 6567 6174 	.LC43:
+ 1185      6976 6F20 
+ 1185      3D20 5265 
+ 1185      616C 2028 
+ 1185      3056 2920 
+ 1186               		.string	"PMDCheckSignalStatus=> Step Output invert = + positivo"
+ 1187 09d5 504D 4443 	.LC44:
+ 1187      6865 636B 
+ 1187      5369 676E 
+ 1187      616C 5374 
+ 1187      6174 7573 
+ 1188 09fa 6F20 3D20 		.string	"PMDCheckSignalStatus=> Step Output invert = - negativo"
+ 1188      2835 5629 
+ 1188      2056 616C 
+ 1188      6F72 2045 
+ 1188      6C65 6374 
+ 1189               	.LC45:
+ 1190 0a3b 504D 4443 		.string	"PMDCheckSignalStatus=> Motor Output invert = + positivo"
+ 1190      6865 636B 
+ 1190      5369 676E 
+ 1190      616C 5374 
+ 1190      6174 7573 
+ 1191 0a56 7465 204E 	.LC46:
+ 1191      6567 6174 
+ 1191      6976 6F20 
+ 1191      3D20 5265 
+ 1191      616C 2028 
+ 1192               		.string	"PMDCheckSignalStatus=> Motor Output invert = - negativo"
+ 1193 0a97 504D 4443 		.text
+ 1193      6865 636B 
+ 1193      5369 676E 
+ 1193      616C 5374 
+ 1193      6174 7573 
+ 1197               	.global	PMDCheckSignalStatus
+ 1199               	PMDCheckSignalStatus:
+ 1201               	.LM62:
+ 1202 0ba1 504D 4443 	.LFBB5:
+ 1202      6865 636B 
+ 1202      5369 676E 
+ 1202      616C 5374 
+ 1202      6174 7573 
+ 1203               		push r10
+ 1204               		push r11
+ 1205               		push r12
+ 1206               		push r13
+ 1207               		push r14
+ 1208               		push r15
+ 1209               		push r16
+ 1210               		push r17
+ 1211               		push r29
+ 1212               		push r28
+ 1213 054a AF92      		in r28,__SP_L__
+ 1214 054c BF92      		in r29,__SP_H__
+ 1215 054e CF92      		sbiw r28,24
+ 1216 0550 DF92      		in __tmp_reg__,__SREG__
+ 1217 0552 EF92      		cli
+ 1218 0554 FF92      		out __SP_H__,r29
+ 1219 0556 0F93      		out __SREG__,__tmp_reg__
+ 1220 0558 1F93      		out __SP_L__,r28
+ 1221 055a DF93      	/* prologue: function */
+ 1222 055c CF93      	/* frame size = 24 */
+ 1223 055e CDB7      		movw r10,r24
+ 1224 0560 DEB7      		movw r14,r22
+ 1226 0564 0FB6      	.LM63:
+ 1227 0566 F894      		ldi r24,lo8(48)
+ 1228 0568 DEBF      		ldi r25,hi8(48)
+ 1229 056a 0FBE      		ldi r26,hlo8(48)
+ 1230 056c CDBF      		ldi r27,hhi8(48)
+ 1231               		std Y+5,r24
+ 1232               		std Y+6,r25
+ 1233 056e 5C01      		std Y+7,r26
+ 1234 0570 7B01      		std Y+8,r27
+ 1235               		movw r30,r28
+ 1236               		adiw r30,9
+ 1237 0572 80E3      		ldi r24,lo8(16)
+ 1238 0574 90E0      		movw r26,r30
+ 1239 0576 A0E0      		st X+,__zero_reg__
+ 1240 0578 B0E0      	        dec r24
+ 1241 057a 8D83      		brne .-6
+ 1243 057e AF83      	.LM64:
+ 1244 0580 B887      		ldi r24,lo8(96)
+ 1245 0582 FE01      		ldi r25,hi8(96)
+ 1246 0584 3996      		mul r10,r24
+ 1247 0586 80E1      		movw r12,r0
+ 1248 0588 DF01      		mul r10,r25
+ 1249 058a 1D92      		add r13,r0
+ 1250 058c 8A95      		mul r11,r24
+ 1251 058e 01F4      		add r13,r0
+ 1252               		clr r1
+ 1253               		ldi r30,lo8(hAxis)
+ 1254 0590 80E6      		ldi r31,hi8(hAxis)
+ 1255 0592 90E0      		add r12,r30
+ 1256 0594 A89E      		adc r13,r31
+ 1257 0596 6001      		movw r24,r12
+ 1258 0598 A99E      		movw r22,r28
+ 1259 059a D00C      		subi r22,lo8(-(1))
+ 1260 059c B89E      		sbci r23,hi8(-(1))
+ 1261 059e D00C      		call PMDGetSignalStatus
+ 1263 05a2 E0E0      	.LM65:
+ 1264 05a4 F0E0      		ldd r24,Y+1
+ 1265 05a6 CE0E      		ldd r25,Y+2
+ 1267 05aa C601      	.LM66:
+ 1268 05ac BE01      		movw r16,r28
+ 1269 05ae 6F5F      		subi r16,lo8(-(5))
+ 1270 05b0 7F4F      		sbci r17,hi8(-(5))
+ 1271 05b2 0E94 0000 		ldi r31,3
+ 1272               	1:	lsr r25
+ 1273               		ror r24
+ 1274 05b6 8981      		dec r31
+ 1275 05b8 9A81      		brne 1b
+ 1276               		movw r22,r16
+ 1277               		ldi r20,lo8(2)
+ 1278 05ba 8E01      		ldi r21,hi8(2)
+ 1279 05bc 0B5F      		call itoa
+ 1281 05c0 F3E0      	.LM67:
+ 1282 05c2 9695      		rcall .
+ 1283 05c4 8795      		rcall .
+ 1284 05c6 FA95      		ldi r24,lo8(.LC17)
+ 1285 05c8 01F4      		ldi r25,hi8(.LC17)
+ 1286 05ca B801      		in r26,__SP_L__
+ 1287 05cc 42E0      		in r27,__SP_H__
+ 1288 05ce 50E0      		adiw r26,1+1
+ 1289 05d0 0E94 0000 		st X,r25
+ 1290               		st -X,r24
+ 1291               		sbiw r26,1
+ 1292 05d4 00D0      		adiw r26,3+1
+ 1293 05d6 00D0      		st X,r17
+ 1294 05d8 80E0      		st -X,r16
+ 1295 05da 90E0      		sbiw r26,3
+ 1296 05dc ADB7      		call printf
+ 1298 05e0 1296      	.LM68:
+ 1299 05e2 9C93      		pop __tmp_reg__
+ 1300 05e4 8E93      		pop __tmp_reg__
+ 1301 05e6 1197      		pop __tmp_reg__
+ 1302 05e8 1496      		pop __tmp_reg__
+ 1303 05ea 1C93      		ldi r27,lo8(-18)
+ 1304 05ec 0E93      		cp r14,r27
+ 1305 05ee 1397      		ldi r27,hi8(-18)
+ 1306 05f0 0E94 0000 		cpc r15,r27
+ 1307               		breq .+2
+ 1308               		rjmp .L19
+ 1310 05f6 0F90      	.LM69:
+ 1311 05f8 0F90      		movw r24,r12
+ 1312 05fa 0F90      		movw r22,r28
+ 1313 05fc BEEE      		subi r22,lo8(-(3))
+ 1314 05fe EB16      		sbci r23,hi8(-(3))
+ 1315 0600 BFEF      		call PMDGetSignalSense
+ 1317 0604 01F0      	.LM70:
+ 1318 0606 00C0      		movw r24,r10
+ 1319               		call AxisName
+ 1320               		rcall .
+ 1321 0608 C601      		rcall .
+ 1322 060a BE01      		rcall .
+ 1323 060c 6D5F      		in r30,__SP_L__
+ 1324 060e 7F4F      		in r31,__SP_H__
+ 1325 0610 0E94 0000 		adiw r30,1
+ 1326               		ldi r18,lo8(.LC18)
+ 1327               		ldi r19,hi8(.LC18)
+ 1328 0614 C501      		in r26,__SP_L__
+ 1329 0616 0E94 0000 		in r27,__SP_H__
+ 1330 061a 00D0      		adiw r26,1+1
+ 1331 061c 00D0      		st X,r19
+ 1332 061e 00D0      		st -X,r18
+ 1333 0620 EDB7      		sbiw r26,1
+ 1334 0622 FEB7      		std Z+3,r25
+ 1335 0624 3196      		std Z+2,r24
+ 1336 0626 20E0      		ldd r24,Y+3
+ 1337 0628 30E0      		ldd r25,Y+4
+ 1338 062a ADB7      		std Z+5,r25
+ 1339 062c BEB7      		std Z+4,r24
+ 1340 062e 1296      		call printf
+ 1342 0632 2E93      	.LM71:
+ 1343 0634 1197      		ldd r24,Y+1
+ 1344 0636 9383      		in r30,__SP_L__
+ 1345 0638 8283      		in r31,__SP_H__
+ 1346 063a 8B81      		adiw r30,6
+ 1347 063c 9C81      		in __tmp_reg__,__SREG__
+ 1348 063e 9583      		cli
+ 1349 0640 8483      		out __SP_H__,r31
+ 1350 0642 0E94 0000 		out __SREG__,__tmp_reg__
+ 1351               		out __SP_L__,r30
+ 1352               		ldd r25,Y+3
+ 1353 0646 8981      		sbrs r24,0
+ 1354 0648 EDB7      		rjmp .L20
+ 1356 064c 3696      	.LM72:
+ 1357 064e 0FB6      		sbrs r25,0
+ 1358 0650 F894      		rjmp .L21
+ 1360 0654 0FBE      	.LM73:
+ 1361 0656 EDBF      		ldi r24,lo8(.LC19)
+ 1362 0658 9B81      		ldi r25,hi8(.LC19)
+ 1363 065a 80FF      		rjmp .L48
+ 1364 065c 00C0      	.L21:
+ 1366               	.LM74:
+ 1367 065e 90FF      		ldi r24,lo8(.LC20)
+ 1368 0660 00C0      		ldi r25,hi8(.LC20)
+ 1369               		rjmp .L48
+ 1370               	.L20:
+ 1372 0664 90E0      	.LM75:
+ 1373 0666 00C0      		sbrs r25,0
+ 1374               		rjmp .L23
+ 1376               	.LM76:
+ 1377 0668 80E0      		ldi r24,lo8(.LC21)
+ 1378 066a 90E0      		ldi r25,hi8(.LC21)
+ 1379 066c 00C0      		rjmp .L48
+ 1380               	.L23:
+ 1382               	.LM77:
+ 1383 066e 90FF      		ldi r24,lo8(.LC22)
+ 1384 0670 00C0      		ldi r25,hi8(.LC22)
+ 1385               	.L48:
+ 1386               		call puts
+ 1388 0674 90E0      	.LM78:
+ 1389 0676 00C0      		ldd r24,Y+1
+ 1390               		ldd r25,Y+3
+ 1391               		sbrs r24,1
+ 1392               		rjmp .L24
+ 1394 067a 90E0      	.LM79:
+ 1395               		sbrs r25,1
+ 1396 067c 0E94 0000 		rjmp .L25
+ 1398               	.LM80:
+ 1399 0680 8981      		ldi r24,lo8(.LC23)
+ 1400 0682 9B81      		ldi r25,hi8(.LC23)
+ 1401 0684 81FF      		rjmp .L49
+ 1402 0686 00C0      	.L25:
+ 1404               	.LM81:
+ 1405 0688 91FF      		ldi r24,lo8(.LC24)
+ 1406 068a 00C0      		ldi r25,hi8(.LC24)
+ 1407               		rjmp .L49
+ 1408               	.L24:
+ 1410 068e 90E0      	.LM82:
+ 1411 0690 00C0      		sbrs r25,1
+ 1412               		rjmp .L27
+ 1414               	.LM83:
+ 1415 0692 80E0      		ldi r24,lo8(.LC25)
+ 1416 0694 90E0      		ldi r25,hi8(.LC25)
+ 1417 0696 00C0      		rjmp .L49
+ 1418               	.L27:
+ 1420               	.LM84:
+ 1421 0698 91FF      		ldi r24,lo8(.LC26)
+ 1422 069a 00C0      		ldi r25,hi8(.LC26)
+ 1423               	.L49:
+ 1424               		call puts
+ 1426 069e 90E0      	.LM85:
+ 1427 06a0 00C0      		ldd r24,Y+1
+ 1428               		ldd r25,Y+3
+ 1429               		sbrs r24,2
+ 1430               		rjmp .L28
+ 1432 06a4 90E0      	.LM86:
+ 1433               		sbrs r25,2
+ 1434 06a6 0E94 0000 		rjmp .L29
+ 1436               	.LM87:
+ 1437 06aa 8981      		ldi r24,lo8(.LC27)
+ 1438 06ac 9B81      		ldi r25,hi8(.LC27)
+ 1439 06ae 82FF      		rjmp .L50
+ 1440 06b0 00C0      	.L29:
+ 1442               	.LM88:
+ 1443 06b2 92FF      		ldi r24,lo8(.LC28)
+ 1444 06b4 00C0      		ldi r25,hi8(.LC28)
+ 1445               		rjmp .L50
+ 1446               	.L28:
+ 1448 06b8 90E0      	.LM89:
+ 1449 06ba 00C0      		sbrs r25,2
+ 1450               		rjmp .L31
+ 1452               	.LM90:
+ 1453 06bc 80E0      		ldi r24,lo8(.LC29)
+ 1454 06be 90E0      		ldi r25,hi8(.LC29)
+ 1455 06c0 00C0      		rjmp .L50
+ 1456               	.L31:
+ 1458               	.LM91:
+ 1459 06c2 92FF      		ldi r24,lo8(.LC30)
+ 1460 06c4 00C0      		ldi r25,hi8(.LC30)
+ 1461               	.L50:
+ 1462               		call puts
+ 1464 06c8 90E0      	.LM92:
+ 1465 06ca 00C0      		ldd r24,Y+1
+ 1466               		ldd r25,Y+3
+ 1467               		sbrs r24,3
+ 1468               		rjmp .L32
+ 1470 06ce 90E0      	.LM93:
+ 1471               		sbrs r25,3
+ 1472 06d0 0E94 0000 		rjmp .L33
+ 1474               	.LM94:
+ 1475 06d4 8981      		ldi r24,lo8(.LC31)
+ 1476 06d6 9B81      		ldi r25,hi8(.LC31)
+ 1477 06d8 83FF      		rjmp .L51
+ 1478 06da 00C0      	.L33:
+ 1480               	.LM95:
+ 1481 06dc 93FF      		ldi r24,lo8(.LC32)
+ 1482 06de 00C0      		ldi r25,hi8(.LC32)
+ 1483               		rjmp .L51
+ 1484               	.L32:
+ 1486 06e2 90E0      	.LM96:
+ 1487 06e4 00C0      		sbrs r25,3
+ 1488               		rjmp .L35
+ 1490               	.LM97:
+ 1491 06e6 80E0      		ldi r24,lo8(.LC33)
+ 1492 06e8 90E0      		ldi r25,hi8(.LC33)
+ 1493 06ea 00C0      		rjmp .L51
+ 1494               	.L35:
+ 1496               	.LM98:
+ 1497 06ec 93FF      		ldi r24,lo8(.LC34)
+ 1498 06ee 00C0      		ldi r25,hi8(.LC34)
+ 1499               	.L51:
+ 1500               		call puts
+ 1502 06f2 90E0      	.LM99:
+ 1503 06f4 00C0      		ldd r24,Y+1
+ 1504               		ldd r25,Y+3
+ 1505               		sbrs r24,4
+ 1506               		rjmp .L36
+ 1508 06f8 90E0      	.LM100:
+ 1509               		sbrs r25,4
+ 1510 06fa 0E94 0000 		rjmp .L37
+ 1512               	.LM101:
+ 1513 06fe 8981      		ldi r24,lo8(.LC35)
+ 1514 0700 9B81      		ldi r25,hi8(.LC35)
+ 1515 0702 84FF      		rjmp .L52
+ 1516 0704 00C0      	.L37:
+ 1518               	.LM102:
+ 1519 0706 94FF      		ldi r24,lo8(.LC36)
+ 1520 0708 00C0      		ldi r25,hi8(.LC36)
+ 1521               		rjmp .L52
+ 1522               	.L36:
+ 1524 070c 90E0      	.LM103:
+ 1525 070e 00C0      		sbrs r25,4
+ 1526               		rjmp .L39
+ 1528               	.LM104:
+ 1529 0710 80E0      		ldi r24,lo8(.LC37)
+ 1530 0712 90E0      		ldi r25,hi8(.LC37)
+ 1531 0714 00C0      		rjmp .L52
+ 1532               	.L39:
+ 1534               	.LM105:
+ 1535 0716 94FF      		ldi r24,lo8(.LC38)
+ 1536 0718 00C0      		ldi r25,hi8(.LC38)
+ 1537               	.L52:
+ 1538               		call puts
+ 1540 071c 90E0      	.LM106:
+ 1541 071e 00C0      		ldd r24,Y+1
+ 1542               		ldd r25,Y+3
+ 1543               		sbrs r24,5
+ 1544               		rjmp .L40
+ 1546 0722 90E0      	.LM107:
+ 1547               		sbrs r25,5
+ 1548 0724 0E94 0000 		rjmp .L41
+ 1550               	.LM108:
+ 1551 0728 8981      		ldi r24,lo8(.LC39)
+ 1552 072a 9B81      		ldi r25,hi8(.LC39)
+ 1553 072c 85FF      		rjmp .L53
+ 1554 072e 00C0      	.L41:
+ 1556               	.LM109:
+ 1557 0730 95FF      		ldi r24,lo8(.LC40)
+ 1558 0732 00C0      		ldi r25,hi8(.LC40)
+ 1559               		rjmp .L53
+ 1560               	.L40:
+ 1562 0736 90E0      	.LM110:
+ 1563 0738 00C0      		sbrs r25,5
+ 1564               		rjmp .L43
+ 1566               	.LM111:
+ 1567 073a 80E0      		ldi r24,lo8(.LC41)
+ 1568 073c 90E0      		ldi r25,hi8(.LC41)
+ 1569 073e 00C0      		rjmp .L53
+ 1570               	.L43:
+ 1572               	.LM112:
+ 1573 0740 95FF      		ldi r24,lo8(.LC42)
+ 1574 0742 00C0      		ldi r25,hi8(.LC42)
+ 1575               	.L53:
+ 1576               		call puts
+ 1578 0746 90E0      	.LM113:
+ 1579 0748 00C0      		ldd r24,Y+1
+ 1580               		ldd r25,Y+2
+ 1581               		sbrs r25,3
+ 1582               		rjmp .L44
+ 1584 074c 90E0      	.LM114:
+ 1585               		ldi r24,lo8(.LC43)
+ 1586 074e 0E94 0000 		ldi r25,hi8(.LC43)
+ 1587               		rjmp .L54
+ 1588               	.L44:
+ 1590 0754 9A81      	.LM115:
+ 1591 0756 93FF      		ldi r24,lo8(.LC44)
+ 1592 0758 00C0      		ldi r25,hi8(.LC44)
+ 1593               	.L54:
+ 1594               		call puts
+ 1596 075c 90E0      	.LM116:
+ 1597 075e 00C0      		ldd r24,Y+1
+ 1598               		ldd r25,Y+2
+ 1599               		sbrs r25,4
+ 1600               		rjmp .L46
+ 1602 0762 90E0      	.LM117:
+ 1603               		ldi r24,lo8(.LC45)
+ 1604 0764 0E94 0000 		ldi r25,hi8(.LC45)
+ 1605               		rjmp .L55
+ 1606               	.L46:
+ 1608 076a 9A81      	.LM118:
+ 1609 076c 94FF      		ldi r24,lo8(.LC46)
+ 1610 076e 00C0      		ldi r25,hi8(.LC46)
+ 1611               	.L55:
+ 1612               		call puts
+ 1613 0770 80E0      	.L19:
+ 1615 0774 00C0      	.LM119:
+ 1616               		ldd r24,Y+1
+ 1617               		ldd r25,Y+2
+ 1618               	/* epilogue start */
+ 1619 0776 80E0      		adiw r28,24
+ 1620 0778 90E0      		in __tmp_reg__,__SREG__
+ 1621               		cli
+ 1622 077a 0E94 0000 		out __SP_H__,r29
+ 1623               		out __SREG__,__tmp_reg__
+ 1624               		out __SP_L__,r28
+ 1625               		pop r28
+ 1626 077e 8981      		pop r29
+ 1627 0780 9A81      		pop r17
+ 1628               		pop r16
+ 1629 0782 6896      		pop r15
+ 1630 0784 0FB6      		pop r14
+ 1631 0786 F894      		pop r13
+ 1632 0788 DEBF      		pop r12
+ 1633 078a 0FBE      		pop r11
+ 1634 078c CDBF      		pop r10
+ 1635 078e CF91      		ret
+ 1643 079e BF90      	.Lscope5:
+ 1644 07a0 AF90      		.data
+ 1645 07a2 0895      	.LC47:
+ 1646               		.string	"PMDCheckActivityStatus=> El Activity status del eje %s es %X \n"
+ 1647               	.LC48:
+ 1648               		.string	"PMDCheckActivityStatus=> El eje %s esta A la maxima Velocidad  \n"
+ 1649               	.LC49:
+ 1650               		.ascii	"PMDCh"
+ 1651               		.string	"eckActivityStatus=> El eje %s esta dentro del tracking window  \n"
+ 1652               	.LC50:
+ 1653               		.string	"PMDCheckActivityStatus=> El eje  %s tiene perfil TRAPEZOIDAL \n"
+ 1654               	.LC51:
+ 1655               		.string	"PMDCheckActivityStatus=> El eje  %s tiene perfil de VELOCIDAD \n"
+ 1656 0bd9 504D 4443 	.LC52:
+ 1656      6865 636B 
+ 1656      4163 7469 
+ 1656      7669 7479 
+ 1656      5374 6174 
+ 1657               		.string	"PMDCheckActivityStatus=> El eje  %s tiene perfil CURVA-S \n"
+ 1658 0c18 504D 4443 	.LC53:
+ 1658      6865 636B 
+ 1658      4163 7469 
+ 1658      7669 7479 
+ 1658      5374 6174 
+ 1659               		.ascii	"PM"
+ 1660 0c59 504D 4443 		.string	"DCheckActivityStatus=> El eje  %s tiene perfil ELECTRONIC GEAR \n"
+ 1660      68
+ 1661 0c5e 6563 6B41 	.LC54:
+ 1661      6374 6976 
+ 1661      6974 7953 
+ 1661      7461 7475 
+ 1661      733D 3E20 
+ 1662               		.ascii	"PMDCheckActivityStatus=> El eje %s"
+ 1663 0c9f 504D 4443 		.string	" ha permanecido en el Settle Window por un periodo de tiempo N \n"
+ 1663      6865 636B 
+ 1663      4163 7469 
+ 1663      7669 7479 
+ 1663      5374 6174 
+ 1664               	.LC55:
+ 1665 0cde 504D 4443 		.string	"PMDCheckActivityStatus=> El eje %s esta en MOTOR MODE ON \n"
+ 1665      6865 636B 
+ 1665      4163 7469 
+ 1665      7669 7479 
+ 1665      5374 6174 
+ 1666               	.LC56:
+ 1667 0d1e 504D 4443 		.ascii	"PMDCheckActivityStatus=> E"
+ 1667      6865 636B 
+ 1667      4163 7469 
+ 1667      7669 7479 
+ 1667      5374 6174 
+ 1668               		.string	"l eje %s tiene un nuevo valor de posicion disponible para leer \n"
+ 1669 0d59 504D      	.LC57:
+ 1670 0d5b 4443 6865 		.ascii	"PMDCheckAct"
+ 1670      636B 4163 
+ 1670      7469 7669 
+ 1670      7479 5374 
+ 1670      6174 7573 
+ 1671               		.string	"ivityStatus=> La posicion comandada esta cambiando en el eje %s\n"
+ 1672 0d9c 504D 4443 	.LC58:
+ 1672      6865 636B 
+ 1672      4163 7469 
+ 1672      7669 7479 
+ 1672      5374 6174 
+ 1673 0dbe 2068 6120 		.string	"PMDCheckActivityStatus=> El eje %s  esta en el Limite Positivo \n"
+ 1673      7065 726D 
+ 1673      616E 6563 
+ 1673      6964 6F20 
+ 1673      656E 2065 
+ 1674               	.LC59:
+ 1675 0dff 504D 4443 		.string	"PMDCheckActivityStatus=> El eje %s  esta en el Limite Negativo \n"
+ 1675      6865 636B 
+ 1675      4163 7469 
+ 1675      7669 7479 
+ 1675      5374 6174 
+ 1676               		.text
+ 1680 0e95 504D 4443 	.global	PMDCheckActivityStatus
+ 1680      6865 636B 
+ 1680      4163 74
+ 1682               	PMDCheckActivityStatus:
+ 1684               	.LM120:
+ 1685 0f22 504D 4443 	.LFBB6:
+ 1685      6865 636B 
+ 1685      4163 7469 
+ 1685      7669 7479 
+ 1685      5374 6174 
+ 1686               		push r14
+ 1687               		push r15
+ 1688               		push r16
+ 1689               		push r17
+ 1690               		push r29
+ 1691               		push r28
+ 1692               		rcall .
+ 1693               		in r28,__SP_L__
+ 1694               		in r29,__SP_H__
+ 1695               	/* prologue: function */
+ 1696 07a4 EF92      	/* frame size = 2 */
+ 1697 07a6 FF92      		movw r14,r24
+ 1698 07a8 0F93      		movw r16,r22
+ 1700 07ac DF93      	.LM121:
+ 1701 07ae CF93      		ldi r24,lo8(96)
+ 1702 07b0 00D0      		ldi r25,hi8(96)
+ 1703 07b2 CDB7      		movw r18,r24
+ 1704 07b4 DEB7      		mul r14,r18
+ 1705               		movw r24,r0
+ 1706               		mul r14,r19
+ 1707 07b6 7C01      		add r25,r0
+ 1708 07b8 8B01      		mul r15,r18
+ 1709               		add r25,r0
+ 1710               		clr r1
+ 1711 07ba 80E6      		subi r24,lo8(-(hAxis))
+ 1712 07bc 90E0      		sbci r25,hi8(-(hAxis))
+ 1713 07be 9C01      		movw r22,r28
+ 1714 07c0 E29E      		subi r22,lo8(-(1))
+ 1715 07c2 C001      		sbci r23,hi8(-(1))
+ 1716 07c4 E39E      		call PMDGetActivityStatus
+ 1718 07c8 F29E      	.LM122:
+ 1719 07ca 900D      		movw r24,r14
+ 1720 07cc 1124      		call AxisName
+ 1721 07ce 8050      		rcall .
+ 1722 07d0 9040      		rcall .
+ 1723 07d2 BE01      		rcall .
+ 1724 07d4 6F5F      		in r30,__SP_L__
+ 1725 07d6 7F4F      		in r31,__SP_H__
+ 1726 07d8 0E94 0000 		adiw r30,1
+ 1727               		ldi r18,lo8(.LC47)
+ 1728               		ldi r19,hi8(.LC47)
+ 1729 07dc C701      		in r26,__SP_L__
+ 1730 07de 0E94 0000 		in r27,__SP_H__
+ 1731 07e2 00D0      		adiw r26,1+1
+ 1732 07e4 00D0      		st X,r19
+ 1733 07e6 00D0      		st -X,r18
+ 1734 07e8 EDB7      		sbiw r26,1
+ 1735 07ea FEB7      		std Z+3,r25
+ 1736 07ec 3196      		std Z+2,r24
+ 1737 07ee 20E0      		ldd r24,Y+1
+ 1738 07f0 30E0      		ldd r25,Y+2
+ 1739 07f2 ADB7      		std Z+5,r25
+ 1740 07f4 BEB7      		std Z+4,r24
+ 1741 07f6 1296      		call printf
+ 1743 07fa 2E93      	.LM123:
+ 1744 07fc 1197      		in r30,__SP_L__
+ 1745 07fe 9383      		in r31,__SP_H__
+ 1746 0800 8283      		adiw r30,6
+ 1747 0802 8981      		in __tmp_reg__,__SREG__
+ 1748 0804 9A81      		cli
+ 1749 0806 9583      		out __SP_H__,r31
+ 1750 0808 8483      		out __SREG__,__tmp_reg__
+ 1751 080a 0E94 0000 		out __SP_L__,r30
+ 1752               		subi r16,lo8(-18)
+ 1753               		sbci r17,hi8(-18)
+ 1754 080e EDB7      		breq .+2
+ 1755 0810 FEB7      		rjmp .L57
+ 1757 0814 0FB6      	.LM124:
+ 1758 0816 F894      		ldd r24,Y+1
+ 1759 0818 FEBF      		sbrs r24,1
+ 1760 081a 0FBE      		rjmp .L58
+ 1762 081e 0E5E      	.LM125:
+ 1763 0820 1F4F      		movw r24,r14
+ 1764 0822 01F0      		call AxisName
+ 1765 0824 00C0      		rcall .
+ 1766               		rcall .
+ 1767               		ldi r18,lo8(.LC48)
+ 1768 0826 8981      		ldi r19,hi8(.LC48)
+ 1769 0828 81FF      		in r26,__SP_L__
+ 1770 082a 00C0      		in r27,__SP_H__
+ 1771               		adiw r26,1+1
+ 1772               		st X,r19
+ 1773 082c C701      		st -X,r18
+ 1774 082e 0E94 0000 		sbiw r26,1
+ 1775 0832 00D0      		adiw r26,3+1
+ 1776 0834 00D0      		st X,r25
+ 1777 0836 20E0      		st -X,r24
+ 1778 0838 30E0      		sbiw r26,3
+ 1779 083a ADB7      		call printf
+ 1780 083c BEB7      		pop __tmp_reg__
+ 1781 083e 1296      		pop __tmp_reg__
+ 1782 0840 3C93      		pop __tmp_reg__
+ 1783 0842 2E93      		pop __tmp_reg__
+ 1784 0844 1197      	.L58:
+ 1786 0848 9C93      	.LM126:
+ 1787 084a 8E93      		ldd r24,Y+1
+ 1788 084c 1397      		sbrs r24,2
+ 1789 084e 0E94 0000 		rjmp .L59
+ 1791 0854 0F90      	.LM127:
+ 1792 0856 0F90      		movw r24,r14
+ 1793 0858 0F90      		call AxisName
+ 1794               		rcall .
+ 1795               		rcall .
+ 1796               		ldi r18,lo8(.LC49)
+ 1797 085a 8981      		ldi r19,hi8(.LC49)
+ 1798 085c 82FF      		in r30,__SP_L__
+ 1799 085e 00C0      		in r31,__SP_H__
+ 1800               		std Z+2,r19
+ 1801               		std Z+1,r18
+ 1802 0860 C701      		std Z+4,r25
+ 1803 0862 0E94 0000 		std Z+3,r24
+ 1804 0866 00D0      		call printf
+ 1805 0868 00D0      		pop __tmp_reg__
+ 1806 086a 20E0      		pop __tmp_reg__
+ 1807 086c 30E0      		pop __tmp_reg__
+ 1808 086e EDB7      		pop __tmp_reg__
+ 1809 0870 FEB7      	.L59:
+ 1811 0874 2183      	.LM128:
+ 1812 0876 9483      		ldd r24,Y+1
+ 1813 0878 8383      		ldd r25,Y+2
+ 1814 087a 0E94 0000 		andi r24,lo8(56)
+ 1815 087e 0F90      		andi r25,hi8(56)
+ 1816 0880 0F90      		ldi r26,3
+ 1817 0882 0F90      	1:	lsr r25
+ 1818 0884 0F90      		ror r24
+ 1819               		dec r26
+ 1820               		brne 1b
+ 1821               		cpi r24,1
+ 1822 0886 8981      		cpc r25,__zero_reg__
+ 1823 0888 9A81      		breq .L62
+ 1824 088a 8873      		cpi r24,1
+ 1825 088c 9070      		cpc r25,__zero_reg__
+ 1826 088e A3E0      		brlo .L61
+ 1827 0890 9695      		cpi r24,2
+ 1828 0892 8795      		cpc r25,__zero_reg__
+ 1829 0894 AA95      		breq .L63
+ 1830 0896 01F4      		sbiw r24,3
+ 1831 0898 8130      		brne .L60
+ 1832 089a 9105      		rjmp .L74
+ 1833 089c 01F0      	.L61:
+ 1835 08a0 9105      	.LM129:
+ 1836 08a2 00F0      		movw r24,r14
+ 1837 08a4 8230      		call AxisName
+ 1838 08a6 9105      		rcall .
+ 1839 08a8 01F0      		rcall .
+ 1840 08aa 0397      		ldi r18,lo8(.LC50)
+ 1841 08ac 01F4      		ldi r19,hi8(.LC50)
+ 1842 08ae 00C0      		rjmp .L72
+ 1843               	.L62:
+ 1845               	.LM130:
+ 1846 08b0 C701      		movw r24,r14
+ 1847 08b2 0E94 0000 		call AxisName
+ 1848 08b6 00D0      		rcall .
+ 1849 08b8 00D0      		rcall .
+ 1850 08ba 20E0      		ldi r18,lo8(.LC51)
+ 1851 08bc 30E0      		ldi r19,hi8(.LC51)
+ 1852 08be 00C0      		rjmp .L73
+ 1853               	.L63:
+ 1855               	.LM131:
+ 1856 08c0 C701      		movw r24,r14
+ 1857 08c2 0E94 0000 		call AxisName
+ 1858 08c6 00D0      		rcall .
+ 1859 08c8 00D0      		rcall .
+ 1860 08ca 20E0      		ldi r18,lo8(.LC52)
+ 1861 08cc 30E0      		ldi r19,hi8(.LC52)
+ 1862 08ce 00C0      	.L72:
+ 1863               		in r26,__SP_L__
+ 1864               		in r27,__SP_H__
+ 1865               		adiw r26,1+1
+ 1866 08d0 C701      		st X,r19
+ 1867 08d2 0E94 0000 		st -X,r18
+ 1868 08d6 00D0      		sbiw r26,1
+ 1869 08d8 00D0      		adiw r26,3+1
+ 1870 08da 20E0      		st X,r25
+ 1871 08dc 30E0      		st -X,r24
+ 1872               		sbiw r26,3
+ 1873 08de ADB7      		rjmp .L71
+ 1874 08e0 BEB7      	.L74:
+ 1876 08e4 3C93      	.LM132:
+ 1877 08e6 2E93      		movw r24,r14
+ 1878 08e8 1197      		call AxisName
+ 1879 08ea 1496      		rcall .
+ 1880 08ec 9C93      		rcall .
+ 1881 08ee 8E93      		ldi r18,lo8(.LC53)
+ 1882 08f0 1397      		ldi r19,hi8(.LC53)
+ 1883 08f2 00C0      	.L73:
+ 1884               		in r30,__SP_L__
+ 1885               		in r31,__SP_H__
+ 1886               		std Z+2,r19
+ 1887 08f4 C701      		std Z+1,r18
+ 1888 08f6 0E94 0000 		std Z+4,r25
+ 1889 08fa 00D0      		std Z+3,r24
+ 1890 08fc 00D0      	.L71:
+ 1891 08fe 20E0      		call printf
+ 1892 0900 30E0      		pop __tmp_reg__
+ 1893               		pop __tmp_reg__
+ 1894 0902 EDB7      		pop __tmp_reg__
+ 1895 0904 FEB7      		pop __tmp_reg__
+ 1896 0906 3283      	.L60:
+ 1898 090a 9483      	.LM133:
+ 1899 090c 8383      		ldd r24,Y+1
+ 1900               		sbrs r24,7
+ 1901 090e 0E94 0000 		rjmp .L65
+ 1903 0914 0F90      	.LM134:
+ 1904 0916 0F90      		movw r24,r14
+ 1905 0918 0F90      		call AxisName
+ 1906               		rcall .
+ 1907               		rcall .
+ 1908               		ldi r18,lo8(.LC54)
+ 1909 091a 8981      		ldi r19,hi8(.LC54)
+ 1910 091c 87FF      		in r26,__SP_L__
+ 1911 091e 00C0      		in r27,__SP_H__
+ 1912               		adiw r26,1+1
+ 1913               		st X,r19
+ 1914 0920 C701      		st -X,r18
+ 1915 0922 0E94 0000 		sbiw r26,1
+ 1916 0926 00D0      		adiw r26,3+1
+ 1917 0928 00D0      		st X,r25
+ 1918 092a 20E0      		st -X,r24
+ 1919 092c 30E0      		sbiw r26,3
+ 1920 092e ADB7      		call printf
+ 1921 0930 BEB7      		pop __tmp_reg__
+ 1922 0932 1296      		pop __tmp_reg__
+ 1923 0934 3C93      		pop __tmp_reg__
+ 1924 0936 2E93      		pop __tmp_reg__
+ 1925 0938 1197      	.L65:
+ 1927 093c 9C93      	.LM135:
+ 1928 093e 8E93      		ldd r24,Y+1
+ 1929 0940 1397      		ldd r25,Y+2
+ 1930 0942 0E94 0000 		sbrs r25,0
+ 1931 0946 0F90      		rjmp .L66
+ 1933 094a 0F90      	.LM136:
+ 1934 094c 0F90      		movw r24,r14
+ 1935               		call AxisName
+ 1936               		rcall .
+ 1937               		rcall .
+ 1938 094e 8981      		ldi r18,lo8(.LC55)
+ 1939 0950 9A81      		ldi r19,hi8(.LC55)
+ 1940 0952 90FF      		in r30,__SP_L__
+ 1941 0954 00C0      		in r31,__SP_H__
+ 1942               		std Z+2,r19
+ 1943               		std Z+1,r18
+ 1944 0956 C701      		std Z+4,r25
+ 1945 0958 0E94 0000 		std Z+3,r24
+ 1946 095c 00D0      		call printf
+ 1947 095e 00D0      		pop __tmp_reg__
+ 1948 0960 20E0      		pop __tmp_reg__
+ 1949 0962 30E0      		pop __tmp_reg__
+ 1950 0964 EDB7      		pop __tmp_reg__
+ 1951 0966 FEB7      	.L66:
+ 1953 096a 2183      	.LM137:
+ 1954 096c 9483      		ldd r24,Y+1
+ 1955 096e 8383      		ldd r25,Y+2
+ 1956 0970 0E94 0000 		sbrs r25,1
+ 1957 0974 0F90      		rjmp .L67
+ 1959 0978 0F90      	.LM138:
+ 1960 097a 0F90      		movw r24,r14
+ 1961               		call AxisName
+ 1962               		rcall .
+ 1963               		rcall .
+ 1964 097c 8981      		ldi r18,lo8(.LC56)
+ 1965 097e 9A81      		ldi r19,hi8(.LC56)
+ 1966 0980 91FF      		in r26,__SP_L__
+ 1967 0982 00C0      		in r27,__SP_H__
+ 1968               		adiw r26,1+1
+ 1969               		st X,r19
+ 1970 0984 C701      		st -X,r18
+ 1971 0986 0E94 0000 		sbiw r26,1
+ 1972 098a 00D0      		adiw r26,3+1
+ 1973 098c 00D0      		st X,r25
+ 1974 098e 20E0      		st -X,r24
+ 1975 0990 30E0      		sbiw r26,3
+ 1976 0992 ADB7      		call printf
+ 1977 0994 BEB7      		pop __tmp_reg__
+ 1978 0996 1296      		pop __tmp_reg__
+ 1979 0998 3C93      		pop __tmp_reg__
+ 1980 099a 2E93      		pop __tmp_reg__
+ 1981 099c 1197      	.L67:
+ 1983 09a0 9C93      	.LM139:
+ 1984 09a2 8E93      		ldd r24,Y+1
+ 1985 09a4 1397      		ldd r25,Y+2
+ 1986 09a6 0E94 0000 		sbrs r25,2
+ 1987 09aa 0F90      		rjmp .L68
+ 1989 09ae 0F90      	.LM140:
+ 1990 09b0 0F90      		movw r24,r14
+ 1991               		call AxisName
+ 1992               		rcall .
+ 1993               		rcall .
+ 1994 09b2 8981      		ldi r18,lo8(.LC57)
+ 1995 09b4 9A81      		ldi r19,hi8(.LC57)
+ 1996 09b6 92FF      		in r30,__SP_L__
+ 1997 09b8 00C0      		in r31,__SP_H__
+ 1998               		std Z+2,r19
+ 1999               		std Z+1,r18
+ 2000 09ba C701      		std Z+4,r25
+ 2001 09bc 0E94 0000 		std Z+3,r24
+ 2002 09c0 00D0      		call printf
+ 2003 09c2 00D0      		pop __tmp_reg__
+ 2004 09c4 20E0      		pop __tmp_reg__
+ 2005 09c6 30E0      		pop __tmp_reg__
+ 2006 09c8 EDB7      		pop __tmp_reg__
+ 2007 09ca FEB7      	.L68:
+ 2009 09ce 2183      	.LM141:
+ 2010 09d0 9483      		ldd r24,Y+1
+ 2011 09d2 8383      		ldd r25,Y+2
+ 2012 09d4 0E94 0000 		sbrs r25,3
+ 2013 09d8 0F90      		rjmp .L69
+ 2015 09dc 0F90      	.LM142:
+ 2016 09de 0F90      		movw r24,r14
+ 2017               		call AxisName
+ 2018               		rcall .
+ 2019               		rcall .
+ 2020 09e0 8981      		ldi r18,lo8(.LC58)
+ 2021 09e2 9A81      		ldi r19,hi8(.LC58)
+ 2022 09e4 93FF      		in r26,__SP_L__
+ 2023 09e6 00C0      		in r27,__SP_H__
+ 2024               		adiw r26,1+1
+ 2025               		st X,r19
+ 2026 09e8 C701      		st -X,r18
+ 2027 09ea 0E94 0000 		sbiw r26,1
+ 2028 09ee 00D0      		adiw r26,3+1
+ 2029 09f0 00D0      		st X,r25
+ 2030 09f2 20E0      		st -X,r24
+ 2031 09f4 30E0      		sbiw r26,3
+ 2032 09f6 ADB7      		call printf
+ 2033 09f8 BEB7      		pop __tmp_reg__
+ 2034 09fa 1296      		pop __tmp_reg__
+ 2035 09fc 3C93      		pop __tmp_reg__
+ 2036 09fe 2E93      		pop __tmp_reg__
+ 2037 0a00 1197      	.L69:
+ 2039 0a04 9C93      	.LM143:
+ 2040 0a06 8E93      		ldd r24,Y+1
+ 2041 0a08 1397      		ldd r25,Y+2
+ 2042 0a0a 0E94 0000 		sbrs r25,4
+ 2043 0a0e 0F90      		rjmp .L57
+ 2045 0a12 0F90      	.LM144:
+ 2046 0a14 0F90      		movw r24,r14
+ 2047               		call AxisName
+ 2048               		rcall .
+ 2049               		rcall .
+ 2050 0a16 8981      		ldi r18,lo8(.LC59)
+ 2051 0a18 9A81      		ldi r19,hi8(.LC59)
+ 2052 0a1a 94FF      		in r30,__SP_L__
+ 2053 0a1c 00C0      		in r31,__SP_H__
+ 2054               		std Z+2,r19
+ 2055               		std Z+1,r18
+ 2056 0a1e C701      		std Z+4,r25
+ 2057 0a20 0E94 0000 		std Z+3,r24
+ 2058 0a24 00D0      		call printf
+ 2059 0a26 00D0      		pop __tmp_reg__
+ 2060 0a28 20E0      		pop __tmp_reg__
+ 2061 0a2a 30E0      		pop __tmp_reg__
+ 2062 0a2c EDB7      		pop __tmp_reg__
+ 2063 0a2e FEB7      	.L57:
+ 2065 0a32 2183      	.LM145:
+ 2066 0a34 9483      		ldd r24,Y+1
+ 2067 0a36 8383      		ldd r25,Y+2
+ 2068 0a38 0E94 0000 	/* epilogue start */
+ 2069 0a3c 0F90      		pop __tmp_reg__
+ 2070 0a3e 0F90      		pop __tmp_reg__
+ 2071 0a40 0F90      		pop r28
+ 2072 0a42 0F90      		pop r29
+ 2073               		pop r17
+ 2074               		pop r16
+ 2075               		pop r15
+ 2076 0a44 8981      		pop r14
+ 2077 0a46 9A81      		ret
+ 2082 0a4e DF91      	.Lscope6:
+ 2083 0a50 1F91      		.data
+ 2084 0a52 0F91      	.LC60:
+ 2085 0a54 FF90      		.string	"PMDCheckEventStatus=> El Event Status del eje %s es %X \n"
+ 2086 0a56 EF90      	.LC61:
+ 2087 0a58 0895      		.ascii	"PMDCh"
+ 2088               		.string	"eckEventStatus=> El movimiento  en el eje %s ha sido completado\n"
+ 2089               	.LC62:
+ 2090               		.ascii	"PMDCheckEventStatus=> Desbo"
+ 2091               		.string	"rde en la posicion actual del motor 7FFFFFFF O 80000000 eje %s \n"
+ 2092               	.LC63:
+ 2093               		.ascii	"PMD"
+ 2094               		.string	"CheckEventStatus=> Se ha activado el Breakpoint 1 en el eje %s \n"
+ 2095 0f63 504D 4443 	.LC64:
+ 2095      6865 636B 
+ 2095      4576 656E 
+ 2095      7453 7461 
+ 2095      7475 733D 
+ 2096               		.ascii	"PMDCheckEventStatus=> El Hardwar"
+ 2097 0f9c 504D 4443 		.string	"e de alta velocidad ha capturado una nueva posicion del eje %s \n"
+ 2097      68
+ 2098 0fa1 6563 6B45 	.LC65:
+ 2098      7665 6E74 
+ 2098      5374 6174 
+ 2098      7573 3D3E 
+ 2098      2045 6C20 
+ 2099               		.ascii	"PMDCheckEventStatus=> El error "
+ 2100 0fe2 504D 4443 		.string	"del movimiento excede el limite maximo de error para el eje %s \n"
+ 2100      6865 636B 
+ 2100      4576 656E 
+ 2100      7453 7461 
+ 2100      7475 733D 
+ 2101 0ffd 7264 6520 	.LC66:
+ 2101      656E 206C 
+ 2101      6120 706F 
+ 2101      7369 6369 
+ 2101      6F6E 2061 
+ 2102               		.ascii	"PMDC"
+ 2103 103e 504D 44   		.string	"heckEventStatus=> Se ha llegado al limite Positivo en el eje %s\n"
+ 2104 1041 4368 6563 	.LC67:
+ 2104      6B45 7665 
+ 2104      6E74 5374 
+ 2104      6174 7573 
+ 2104      3D3E 2053 
+ 2105               		.ascii	"PMDC"
+ 2106 1082 504D 4443 		.string	"heckEventStatus=> Se ha llegado al limite negativo en el eje %s\n"
+ 2106      6865 636B 
+ 2106      4576 656E 
+ 2106      7453 7461 
+ 2106      7475 733D 
+ 2107 10a2 6520 6465 	.LC68:
+ 2107      2061 6C74 
+ 2107      6120 7665 
+ 2107      6C6F 6369 
+ 2107      6461 6420 
+ 2108               		.ascii	"PMDCheck"
+ 2109 10e3 504D 4443 		.string	"EventStatus=> Ha ocurrido un error de Instruccion en el eje %s \n"
+ 2109      6865 636B 
+ 2109      4576 656E 
+ 2109      7453 7461 
+ 2109      7475 733D 
+ 2110 1102 6465 6C20 	.LC69:
+ 2110      6D6F 7669 
+ 2110      6D69 656E 
+ 2110      746F 2065 
+ 2110      7863 6564 
+ 2111               		.ascii	"PMDCheckEve"
+ 2112 1143 504D 4443 		.string	"ntStatus=> Error de comunicacion solo para MC2300 en el eje %s \n"
+ 2113 1147 6865 636B 	.LC70:
+ 2113      4576 656E 
+ 2113      7453 7461 
+ 2113      7475 733D 
+ 2113      3E20 5365 
+ 2114               		.ascii	"PMD"
+ 2115 1188 504D 4443 		.string	"CheckEventStatus=> Se ha activado del Breakpoint2 en el eje %s \n"
+ 2116 118c 6865 636B 		.text
+ 2116      4576 656E 
+ 2116      7453 7461 
+ 2116      7475 733D 
+ 2116      3E20 5365 
+ 2120               	.global	PMDCheckEventStatus
+ 2122 1221 6E74 5374 	PMDCheckEventStatus:
+ 2122      6174 7573 
+ 2122      3D3E 2045 
+ 2122      7272 6F72 
+ 2122      2064 6520 
+ 2124 1262 504D 44   	.LM146:
+ 2125 1265 4368 6563 	.LFBB7:
+ 2125      6B45 7665 
+ 2125      6E74 5374 
+ 2125      6174 7573 
+ 2125      3D3E 2053 
+ 2126               		push r12
+ 2127               		push r13
+ 2128               		push r14
+ 2129               		push r15
+ 2130               		push r16
+ 2131               		push r17
+ 2132               		push r29
+ 2133               		push r28
+ 2134               		rcall .
+ 2135               		in r28,__SP_L__
+ 2136 0a5a CF92      		in r29,__SP_H__
+ 2137 0a5c DF92      	/* prologue: function */
+ 2138 0a5e EF92      	/* frame size = 2 */
+ 2139 0a60 FF92      		movw r12,r24
+ 2140 0a62 0F93      		movw r14,r22
+ 2142 0a66 DF93      	.LM147:
+ 2143 0a68 CF93      		ldi r24,lo8(96)
+ 2144 0a6a 00D0      		ldi r25,hi8(96)
+ 2145 0a6c CDB7      		mul r12,r24
+ 2146 0a6e DEB7      		movw r16,r0
+ 2147               		mul r12,r25
+ 2148               		add r17,r0
+ 2149 0a70 6C01      		mul r13,r24
+ 2150 0a72 7B01      		add r17,r0
+ 2151               		clr r1
+ 2152               		subi r16,lo8(-(hAxis))
+ 2153 0a74 80E6      		sbci r17,hi8(-(hAxis))
+ 2154 0a76 90E0      		movw r24,r16
+ 2155 0a78 C89E      		movw r22,r28
+ 2156 0a7a 8001      		subi r22,lo8(-(1))
+ 2157 0a7c C99E      		sbci r23,hi8(-(1))
+ 2158 0a7e 100D      		call PMDGetEventStatus
+ 2160 0a82 100D      	.LM148:
+ 2161 0a84 1124      		movw r24,r16
+ 2162 0a86 0050      		ldi r22,lo8(-18688)
+ 2163 0a88 1040      		ldi r23,hi8(-18688)
+ 2164 0a8a C801      		call PMDResetEventStatus
+ 2166 0a8e 6F5F      	.LM149:
+ 2167 0a90 7F4F      		movw r24,r12
+ 2168 0a92 0E94 0000 		call AxisName
+ 2169               		rcall .
+ 2170               		rcall .
+ 2171 0a96 C801      		rcall .
+ 2172 0a98 60E0      		in r30,__SP_L__
+ 2173 0a9a 77EB      		in r31,__SP_H__
+ 2174 0a9c 0E94 0000 		adiw r30,1
+ 2175               		ldi r18,lo8(.LC60)
+ 2176               		ldi r19,hi8(.LC60)
+ 2177 0aa0 C601      		in r26,__SP_L__
+ 2178 0aa2 0E94 0000 		in r27,__SP_H__
+ 2179 0aa6 00D0      		adiw r26,1+1
+ 2180 0aa8 00D0      		st X,r19
+ 2181 0aaa 00D0      		st -X,r18
+ 2182 0aac EDB7      		sbiw r26,1
+ 2183 0aae FEB7      		std Z+3,r25
+ 2184 0ab0 3196      		std Z+2,r24
+ 2185 0ab2 20E0      		ldd r24,Y+1
+ 2186 0ab4 30E0      		ldd r25,Y+2
+ 2187 0ab6 ADB7      		std Z+5,r25
+ 2188 0ab8 BEB7      		std Z+4,r24
+ 2189 0aba 1296      		call printf
+ 2191 0abe 2E93      	.LM150:
+ 2192 0ac0 1197      		in r30,__SP_L__
+ 2193 0ac2 9383      		in r31,__SP_H__
+ 2194 0ac4 8283      		adiw r30,6
+ 2195 0ac6 8981      		in __tmp_reg__,__SREG__
+ 2196 0ac8 9A81      		cli
+ 2197 0aca 9583      		out __SP_H__,r31
+ 2198 0acc 8483      		out __SREG__,__tmp_reg__
+ 2199 0ace 0E94 0000 		out __SP_L__,r30
+ 2200               		ldi r31,lo8(-18)
+ 2201               		cp r14,r31
+ 2202 0ad2 EDB7      		ldi r31,hi8(-18)
+ 2203 0ad4 FEB7      		cpc r15,r31
+ 2204 0ad6 3696      		breq .+2
+ 2205 0ad8 0FB6      		rjmp .L76
+ 2207 0adc FEBF      	.LM151:
+ 2208 0ade 0FBE      		ldd r24,Y+1
+ 2209 0ae0 EDBF      		sbrs r24,0
+ 2210 0ae2 FEEE      		rjmp .L77
+ 2212 0ae6 FFEF      	.LM152:
+ 2213 0ae8 FF06      		movw r24,r12
+ 2214 0aea 01F0      		call AxisName
+ 2215 0aec 00C0      		rcall .
+ 2216               		rcall .
+ 2217               		ldi r18,lo8(.LC61)
+ 2218 0aee 8981      		ldi r19,hi8(.LC61)
+ 2219 0af0 80FF      		in r26,__SP_L__
+ 2220 0af2 00C0      		in r27,__SP_H__
+ 2221               		adiw r26,1+1
+ 2222               		st X,r19
+ 2223 0af4 C601      		st -X,r18
+ 2224 0af6 0E94 0000 		sbiw r26,1
+ 2225 0afa 00D0      		adiw r26,3+1
+ 2226 0afc 00D0      		st X,r25
+ 2227 0afe 20E0      		st -X,r24
+ 2228 0b00 30E0      		sbiw r26,3
+ 2229 0b02 ADB7      		call printf
+ 2230 0b04 BEB7      		pop __tmp_reg__
+ 2231 0b06 1296      		pop __tmp_reg__
+ 2232 0b08 3C93      		pop __tmp_reg__
+ 2233 0b0a 2E93      		pop __tmp_reg__
+ 2234 0b0c 1197      	.L77:
+ 2236 0b10 9C93      	.LM153:
+ 2237 0b12 8E93      		ldd r24,Y+1
+ 2238 0b14 1397      		sbrs r24,1
+ 2239 0b16 0E94 0000 		rjmp .L78
+ 2241 0b1c 0F90      	.LM154:
+ 2242 0b1e 0F90      		movw r24,r12
+ 2243 0b20 0F90      		call AxisName
+ 2244               		rcall .
+ 2245               		rcall .
+ 2246               		ldi r18,lo8(.LC62)
+ 2247 0b22 8981      		ldi r19,hi8(.LC62)
+ 2248 0b24 81FF      		in r30,__SP_L__
+ 2249 0b26 00C0      		in r31,__SP_H__
+ 2250               		std Z+2,r19
+ 2251               		std Z+1,r18
+ 2252 0b28 C601      		std Z+4,r25
+ 2253 0b2a 0E94 0000 		std Z+3,r24
+ 2254 0b2e 00D0      		call printf
+ 2255 0b30 00D0      		pop __tmp_reg__
+ 2256 0b32 20E0      		pop __tmp_reg__
+ 2257 0b34 30E0      		pop __tmp_reg__
+ 2258 0b36 EDB7      		pop __tmp_reg__
+ 2259 0b38 FEB7      	.L78:
+ 2261 0b3c 2183      	.LM155:
+ 2262 0b3e 9483      		ldd r24,Y+1
+ 2263 0b40 8383      		sbrs r24,2
+ 2264 0b42 0E94 0000 		rjmp .L79
+ 2266 0b48 0F90      	.LM156:
+ 2267 0b4a 0F90      		movw r24,r12
+ 2268 0b4c 0F90      		call AxisName
+ 2269               		rcall .
+ 2270               		rcall .
+ 2271               		ldi r18,lo8(.LC63)
+ 2272 0b4e 8981      		ldi r19,hi8(.LC63)
+ 2273 0b50 82FF      		in r26,__SP_L__
+ 2274 0b52 00C0      		in r27,__SP_H__
+ 2275               		adiw r26,1+1
+ 2276               		st X,r19
+ 2277 0b54 C601      		st -X,r18
+ 2278 0b56 0E94 0000 		sbiw r26,1
+ 2279 0b5a 00D0      		adiw r26,3+1
+ 2280 0b5c 00D0      		st X,r25
+ 2281 0b5e 20E0      		st -X,r24
+ 2282 0b60 30E0      		sbiw r26,3
+ 2283 0b62 ADB7      		call printf
+ 2284 0b64 BEB7      		pop __tmp_reg__
+ 2285 0b66 1296      		pop __tmp_reg__
+ 2286 0b68 3C93      		pop __tmp_reg__
+ 2287 0b6a 2E93      		pop __tmp_reg__
+ 2288 0b6c 1197      	.L79:
+ 2290 0b70 9C93      	.LM157:
+ 2291 0b72 8E93      		ldd r24,Y+1
+ 2292 0b74 1397      		sbrs r24,3
+ 2293 0b76 0E94 0000 		rjmp .L80
+ 2295 0b7c 0F90      	.LM158:
+ 2296 0b7e 0F90      		movw r24,r12
+ 2297 0b80 0F90      		call AxisName
+ 2298               		rcall .
+ 2299               		rcall .
+ 2300               		ldi r18,lo8(.LC64)
+ 2301 0b82 8981      		ldi r19,hi8(.LC64)
+ 2302 0b84 83FF      		in r30,__SP_L__
+ 2303 0b86 00C0      		in r31,__SP_H__
+ 2304               		std Z+2,r19
+ 2305               		std Z+1,r18
+ 2306 0b88 C601      		std Z+4,r25
+ 2307 0b8a 0E94 0000 		std Z+3,r24
+ 2308 0b8e 00D0      		call printf
+ 2309 0b90 00D0      		pop __tmp_reg__
+ 2310 0b92 20E0      		pop __tmp_reg__
+ 2311 0b94 30E0      		pop __tmp_reg__
+ 2312 0b96 EDB7      		pop __tmp_reg__
+ 2313 0b98 FEB7      	.L80:
+ 2315 0b9c 2183      	.LM159:
+ 2316 0b9e 9483      		ldd r24,Y+1
+ 2317 0ba0 8383      		sbrs r24,4
+ 2318 0ba2 0E94 0000 		rjmp .L81
+ 2320 0ba8 0F90      	.LM160:
+ 2321 0baa 0F90      		movw r24,r12
+ 2322 0bac 0F90      		call AxisName
+ 2323               		rcall .
+ 2324               		rcall .
+ 2325               		ldi r18,lo8(.LC65)
+ 2326 0bae 8981      		ldi r19,hi8(.LC65)
+ 2327 0bb0 84FF      		in r26,__SP_L__
+ 2328 0bb2 00C0      		in r27,__SP_H__
+ 2329               		adiw r26,1+1
+ 2330               		st X,r19
+ 2331 0bb4 C601      		st -X,r18
+ 2332 0bb6 0E94 0000 		sbiw r26,1
+ 2333 0bba 00D0      		adiw r26,3+1
+ 2334 0bbc 00D0      		st X,r25
+ 2335 0bbe 20E0      		st -X,r24
+ 2336 0bc0 30E0      		sbiw r26,3
+ 2337 0bc2 ADB7      		call printf
+ 2338 0bc4 BEB7      		pop __tmp_reg__
+ 2339 0bc6 1296      		pop __tmp_reg__
+ 2340 0bc8 3C93      		pop __tmp_reg__
+ 2341 0bca 2E93      		pop __tmp_reg__
+ 2342 0bcc 1197      	.L81:
+ 2344 0bd0 9C93      	.LM161:
+ 2345 0bd2 8E93      		ldd r24,Y+1
+ 2346 0bd4 1397      		sbrs r24,5
+ 2347 0bd6 0E94 0000 		rjmp .L82
+ 2349 0bdc 0F90      	.LM162:
+ 2350 0bde 0F90      		movw r24,r12
+ 2351 0be0 0F90      		call AxisName
+ 2352               		rcall .
+ 2353               		rcall .
+ 2354               		ldi r18,lo8(.LC66)
+ 2355 0be2 8981      		ldi r19,hi8(.LC66)
+ 2356 0be4 85FF      		in r30,__SP_L__
+ 2357 0be6 00C0      		in r31,__SP_H__
+ 2358               		std Z+2,r19
+ 2359               		std Z+1,r18
+ 2360 0be8 C601      		std Z+4,r25
+ 2361 0bea 0E94 0000 		std Z+3,r24
+ 2362 0bee 00D0      		call printf
+ 2363 0bf0 00D0      		pop __tmp_reg__
+ 2364 0bf2 20E0      		pop __tmp_reg__
+ 2365 0bf4 30E0      		pop __tmp_reg__
+ 2366 0bf6 EDB7      		pop __tmp_reg__
+ 2367 0bf8 FEB7      	.L82:
+ 2369 0bfc 2183      	.LM163:
+ 2370 0bfe 9483      		ldd r24,Y+1
+ 2371 0c00 8383      		sbrs r24,6
+ 2372 0c02 0E94 0000 		rjmp .L83
+ 2374 0c08 0F90      	.LM164:
+ 2375 0c0a 0F90      		movw r24,r12
+ 2376 0c0c 0F90      		call AxisName
+ 2377               		rcall .
+ 2378               		rcall .
+ 2379               		ldi r18,lo8(.LC67)
+ 2380 0c0e 8981      		ldi r19,hi8(.LC67)
+ 2381 0c10 86FF      		in r26,__SP_L__
+ 2382 0c12 00C0      		in r27,__SP_H__
+ 2383               		adiw r26,1+1
+ 2384               		st X,r19
+ 2385 0c14 C601      		st -X,r18
+ 2386 0c16 0E94 0000 		sbiw r26,1
+ 2387 0c1a 00D0      		adiw r26,3+1
+ 2388 0c1c 00D0      		st X,r25
+ 2389 0c1e 20E0      		st -X,r24
+ 2390 0c20 30E0      		sbiw r26,3
+ 2391 0c22 ADB7      		call printf
+ 2392 0c24 BEB7      		pop __tmp_reg__
+ 2393 0c26 1296      		pop __tmp_reg__
+ 2394 0c28 3C93      		pop __tmp_reg__
+ 2395 0c2a 2E93      		pop __tmp_reg__
+ 2396 0c2c 1197      	.L83:
+ 2398 0c30 9C93      	.LM165:
+ 2399 0c32 8E93      		ldd r24,Y+1
+ 2400 0c34 1397      		sbrs r24,7
+ 2401 0c36 0E94 0000 		rjmp .L84
+ 2403 0c3c 0F90      	.LM166:
+ 2404 0c3e 0F90      		movw r24,r12
+ 2405 0c40 0F90      		call AxisName
+ 2406               		rcall .
+ 2407               		rcall .
+ 2408               		ldi r18,lo8(.LC68)
+ 2409 0c42 8981      		ldi r19,hi8(.LC68)
+ 2410 0c44 87FF      		in r30,__SP_L__
+ 2411 0c46 00C0      		in r31,__SP_H__
+ 2412               		std Z+2,r19
+ 2413               		std Z+1,r18
+ 2414 0c48 C601      		std Z+4,r25
+ 2415 0c4a 0E94 0000 		std Z+3,r24
+ 2416 0c4e 00D0      		call printf
+ 2417 0c50 00D0      		pop __tmp_reg__
+ 2418 0c52 20E0      		pop __tmp_reg__
+ 2419 0c54 30E0      		pop __tmp_reg__
+ 2420 0c56 EDB7      		pop __tmp_reg__
+ 2421 0c58 FEB7      	.L84:
+ 2423 0c5c 2183      	.LM167:
+ 2424 0c5e 9483      		ldd r24,Y+1
+ 2425 0c60 8383      		ldd r25,Y+2
+ 2426 0c62 0E94 0000 		sbrs r25,3
+ 2427 0c66 0F90      		rjmp .L85
+ 2429 0c6a 0F90      	.LM168:
+ 2430 0c6c 0F90      		movw r24,r12
+ 2431               		call AxisName
+ 2432               		rcall .
+ 2433               		rcall .
+ 2434 0c6e 8981      		ldi r18,lo8(.LC69)
+ 2435 0c70 9A81      		ldi r19,hi8(.LC69)
+ 2436 0c72 93FF      		in r26,__SP_L__
+ 2437 0c74 00C0      		in r27,__SP_H__
+ 2438               		adiw r26,1+1
+ 2439               		st X,r19
+ 2440 0c76 C601      		st -X,r18
+ 2441 0c78 0E94 0000 		sbiw r26,1
+ 2442 0c7c 00D0      		adiw r26,3+1
+ 2443 0c7e 00D0      		st X,r25
+ 2444 0c80 20E0      		st -X,r24
+ 2445 0c82 30E0      		sbiw r26,3
+ 2446 0c84 ADB7      		call printf
+ 2447 0c86 BEB7      		pop __tmp_reg__
+ 2448 0c88 1296      		pop __tmp_reg__
+ 2449 0c8a 3C93      		pop __tmp_reg__
+ 2450 0c8c 2E93      		pop __tmp_reg__
+ 2451 0c8e 1197      	.L85:
+ 2453 0c92 9C93      	.LM169:
+ 2454 0c94 8E93      		ldd r24,Y+1
+ 2455 0c96 1397      		ldd r25,Y+2
+ 2456 0c98 0E94 0000 		sbrs r25,6
+ 2457 0c9c 0F90      		rjmp .L76
+ 2459 0ca0 0F90      	.LM170:
+ 2460 0ca2 0F90      		movw r24,r12
+ 2461               		call AxisName
+ 2462               		rcall .
+ 2463               		rcall .
+ 2464 0ca4 8981      		ldi r18,lo8(.LC70)
+ 2465 0ca6 9A81      		ldi r19,hi8(.LC70)
+ 2466 0ca8 96FF      		in r30,__SP_L__
+ 2467 0caa 00C0      		in r31,__SP_H__
+ 2468               		std Z+2,r19
+ 2469               		std Z+1,r18
+ 2470 0cac C601      		std Z+4,r25
+ 2471 0cae 0E94 0000 		std Z+3,r24
+ 2472 0cb2 00D0      		call printf
+ 2473 0cb4 00D0      		pop __tmp_reg__
+ 2474 0cb6 20E0      		pop __tmp_reg__
+ 2475 0cb8 30E0      		pop __tmp_reg__
+ 2476 0cba EDB7      		pop __tmp_reg__
+ 2477 0cbc FEB7      	.L76:
+ 2479 0cc0 2183      	.LM171:
+ 2480 0cc2 9483      		ldd r24,Y+1
+ 2481 0cc4 8383      		ldd r25,Y+2
+ 2482 0cc6 0E94 0000 	/* epilogue start */
+ 2483 0cca 0F90      		pop __tmp_reg__
+ 2484 0ccc 0F90      		pop __tmp_reg__
+ 2485 0cce 0F90      		pop r28
+ 2486 0cd0 0F90      		pop r29
+ 2487               		pop r17
+ 2488               		pop r16
+ 2489               		pop r15
+ 2490 0cd2 8981      		pop r14
+ 2491 0cd4 9A81      		pop r13
+ 2492               		pop r12
+ 2493 0cd6 0F90      		ret
+ 2498 0ce0 0F91      	.Lscope7:
+ 2499 0ce2 FF90      		.section	.progmem.data,"a",@progbits
+ 2502 0ce8 CF90      	__c.3412:
+ 2503 0cea 0895      		.string	"Cable #2 de sensores desconectado \n"
+ 2506               	__c.3410:
+ 2507               		.string	"Cable #1 de sensores desconectado \n"
+ 2510               	__c.3408:
+ 2511               		.string	"Boton de Parada de Emergencia Activo \n"
+ 2512               		.comm hAxis,480,1
+ 2517 0024 4361 626C 		.text
+ 2517      6520 2331 
+ 2517      2064 6520 
+ 2517      7365 6E73 
+ 2517      6F72 6573 
+ 2519               	.Letext0:
+ 2520               	.global __do_copy_data
+ 2521 0048 426F 746F 	.global __do_clear_bss
+ 2521      6E20 6465 
+ 2521      2050 6172 
+ 2521      6164 6120 
+ 2521      6465 2045 
+ 2522               	...
+DEFINED SYMBOLS
+                            *ABS*:00000000 PMDinfo.c
+C:\DOCUME~1\David\LOCALS~1\Temp/ccJM0n9g.s:2      *ABS*:0000003f __SREG__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccJM0n9g.s:3      *ABS*:0000003e __SP_H__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccJM0n9g.s:4      *ABS*:0000003d __SP_L__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccJM0n9g.s:5      *ABS*:00000034 __CCP__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccJM0n9g.s:6      *ABS*:00000000 __tmp_reg__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccJM0n9g.s:7      *ABS*:00000001 __zero_reg__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccJM0n9g.s:260    .text:00000000 checkconnect
+C:\DOCUME~1\David\LOCALS~1\Temp/ccJM0n9g.s:2520   .progmem.data:00000048 __c.3408
+                            *COM*:000001e0 hAxis
+C:\DOCUME~1\David\LOCALS~1\Temp/ccJM0n9g.s:2512   .progmem.data:00000000 __c.3412
+C:\DOCUME~1\David\LOCALS~1\Temp/ccJM0n9g.s:2516   .progmem.data:00000024 __c.3410
+C:\DOCUME~1\David\LOCALS~1\Temp/ccJM0n9g.s:536    .text:000001aa Print_Handlesinfo
+C:\DOCUME~1\David\LOCALS~1\Temp/ccJM0n9g.s:697    .text:000002a8 getErrorHost
+C:\DOCUME~1\David\LOCALS~1\Temp/ccJM0n9g.s:783    .text:000002e6 infomov
+C:\DOCUME~1\David\LOCALS~1\Temp/ccJM0n9g.s:1209   .text:0000054a PMDCheckSignalStatus
+C:\DOCUME~1\David\LOCALS~1\Temp/ccJM0n9g.s:1692   .text:000007a4 PMDCheckActivityStatus
+C:\DOCUME~1\David\LOCALS~1\Temp/ccJM0n9g.s:2132   .text:00000a5a PMDCheckEventStatus
+
+UNDEFINED SYMBOLS
+buzzer
+puts
+__iob
+fprintf_P
+PMDGetSignalStatus
+buzzer_ms
+Axis2PMDChipset
+printf
+AxisName
+PMDGetHostIOError
+PMDGetPosition
+PMDGetVelocity
+PMDGetAcceleration
+PMDGetDeceleration
+PMDGetCommandedPosition
+PMDGetCommandedVelocity
+PMDGetCommandedAcceleration
+PMDGetActualPosition
+PMDGetPositionError
+PMDGetEncoderToStepRatio
+itoa
+PMDGetSignalSense
+PMDGetActivityStatus
+PMDGetEventStatus
+PMDResetEventStatus
+__do_copy_data
+__do_clear_bss

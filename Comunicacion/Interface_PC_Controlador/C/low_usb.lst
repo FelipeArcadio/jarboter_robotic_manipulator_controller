@@ -1,0 +1,529 @@
+   1               		.file	"low_usb.c"
+   2               	__SREG__ = 0x3f
+   3               	__SP_H__ = 0x3e
+   4               	__SP_L__ = 0x3d
+   5               	__CCP__  = 0x34
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   9               		.text
+  10               	.Ltext0:
+ 227               	.global	usb_read
+ 229               	usb_read:
+   1:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** #include <avr/io.h>
+   2:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** /**Standard Integer Types*/
+   3:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** #include <stdint.h>
+   4:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** #include <stdio.h>
+   5:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** #include <util/delay.h>
+   6:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** #include "low_usb.h"
+   7:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** //#define		DEBUGUSBLevel0
+   8:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** //#define		DEBUGUSBLevel1
+   9:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** //#define		DEBUGUSBLevel2
+  10:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 
+  11:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 
+  12:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 
+  13:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** /*---------------------------Funciones Interface PC-uControlador---------------------------*/
+  14:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 
+  15:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** int16 usb_read(uint8 *dato_h,uint8 *dato_l)
+  16:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** {
+ 230               	,.LM0-.LFBB1
+ 231               	.LM0:
+ 232               	.LFBB1:
+ 233               	/* prologue: function */
+ 234               	/* frame size = 0 */
+ 235 0000 FC01      		movw r30,r24
+ 236 0002 DB01      		movw r26,r22
+  17:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 	uint32 timeout=0xFFFF;
+  18:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 	
+  19:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 	CONTROL_USB_HIGH		=		0x00;					 	//Coloco el puerto L como lectura
+ 237               		68,0,19,.LM1-.LFBB1
+ 238               	.LM1:
+ 239 0004 1092 0701 		sts 263,__zero_reg__
+  20:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 	CONTROL_USB_LOW		=		0x00;					  	//Coloco el puerto K como lectura
+ 240               	tabn	68,0,20,.LM2-.LFBB1
+ 241               	.LM2:
+ 242 0008 1092 0A01 		sts 266,__zero_reg__
+  21:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 	
+  22:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 	PORTH		&= ~(_BV(USB_EN));						  	//Habilito el Controlador USB
+ 243               	tabn	68,0,22,.LM3-.LFBB1
+ 244               	.LM3:
+ 245 000c 8091 0201 		lds r24,258
+ 246 0010 8B7F      		andi r24,lo8(-5)
+ 247 0012 8093 0201 		sts 258,r24
+ 248 0016 20E0      		ldi r18,lo8(0)
+ 249 0018 30E0      		ldi r19,hi8(0)
+ 250 001a 00C0      		rjmp .L2
+ 251               	.L4:
+  23:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 	
+  24:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 	/** Espero a que la señal USB_READY esté en Bajo.*/	 
+  25:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** //	loop_until_bit_is_clear(PINH,USB_READY);									
+  26:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 	do
+  27:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 	{
+  28:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 		timeout--;
+  29:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 		if (timeout==0)
+ 252               	8,0,29,.LM4-.LFBB1
+ 253               	.LM4:
+ 254 001c 8FEF      		ldi r24,hi8(-2)
+ 255 001e 2E3F      		cpi r18,lo8(-2)
+ 256 0020 3807      		cpc r19,r24
+ 257 0022 01F4      		brne .L2
+ 258 0024 2AE0      		ldi r18,lo8(10)
+ 259 0026 30E0      		ldi r19,hi8(10)
+ 260 0028 00C0      		rjmp .L3
+ 261               	.L2:
+  30:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 			return rcTimeoutReadingData;
+  31:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 	}
+  32:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 	while(bit_is_set(PINH,USB_READY));	
+ 262               	,0,32,.LM5-.LFBB1
+ 263               	.LM5:
+ 264 002a 8091 0001 		lds r24,256
+ 265 002e 2F5F      		subi r18,lo8(-(1))
+ 266 0030 3F4F      		sbci r19,hi8(-(1))
+ 267 0032 87FD      		sbrc r24,7
+ 268 0034 00C0      		rjmp .L4
+  33:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 	
+  34:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 	PORTH			&= ~(_BV(USB_READ));				  	//Realiza Lectura
+ 269               		68,0,34,.LM6-.LFBB1
+ 270               	.LM6:
+ 271 0036 8091 0201 		lds r24,258
+ 272 003a 8F7E      		andi r24,lo8(-17)
+ 273 003c 8093 0201 		sts 258,r24
+ 274               	.LBB34:
+ 275               	.LBB35:
+ 276               	.LBB36:
+ 277               	.LBB37:
+ 279               	.Ltext1:
+   1:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** /* Copyright (c) 2002, Marek Michalkiewicz
+   2:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****    Copyright (c) 2007 Joerg Wunsch
+   3:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****    All rights reserved.
+   4:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+   5:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****    Redistribution and use in source and binary forms, with or without
+   6:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****    modification, are permitted provided that the following conditions are met:
+   7:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+   8:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****    * Redistributions of source code must retain the above copyright
+   9:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****      notice, this list of conditions and the following disclaimer.
+  10:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  11:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****    * Redistributions in binary form must reproduce the above copyright
+  12:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****      notice, this list of conditions and the following disclaimer in
+  13:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****      the documentation and/or other materials provided with the
+  14:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****      distribution.
+  15:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  16:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****    * Neither the name of the copyright holders nor the names of
+  17:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****      contributors may be used to endorse or promote products derived
+  18:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****      from this software without specific prior written permission.
+  19:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  20:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  21:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****   AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  22:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+  23:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****   ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+  24:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****   LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+  25:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+  26:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****   SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+  27:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+  28:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+  29:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+  30:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****   POSSIBILITY OF SUCH DAMAGE. */
+  31:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  32:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** /* $Id: delay_basic.h,v 1.1 2007/05/13 21:23:20 joerg_wunsch Exp $ */
+  33:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  34:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** #ifndef _UTIL_DELAY_BASIC_H_
+  35:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** #define _UTIL_DELAY_BASIC_H_ 1
+  36:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  37:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** #include <inttypes.h>
+  38:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  39:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** /** \file */
+  40:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** /** \defgroup util_delay_basic <util/delay_basic.h>: Basic busy-wait delay loops
+  41:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     \code
+  42:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     #include <util/delay_basic.h>
+  43:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     \endcode
+  44:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  45:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     The functions in this header file implement simple delay loops
+  46:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     that perform a busy-waiting.  They are typically used to
+  47:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     facilitate short delays in the program execution.  They are
+  48:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     implemented as count-down loops with a well-known CPU cycle
+  49:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     count per loop iteration.  As such, no other processing can
+  50:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     occur simultaneously.  It should be kept in mind that the
+  51:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     functions described here do not disable interrupts.
+  52:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  53:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     In general, for long delays, the use of hardware timers is
+  54:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     much preferrable, as they free the CPU, and allow for
+  55:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     concurrent processing of other events while the timer is
+  56:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     running.  However, in particular for very short delays, the
+  57:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     overhead of setting up a hardware timer is too much compared
+  58:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     to the overall delay time.
+  59:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  60:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     Two inline functions are provided for the actual delay algorithms.
+  61:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  62:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** */
+  63:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  64:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** #if !defined(__DOXYGEN__)
+  65:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** static inline void _delay_loop_1(uint8_t __count) __attribute__((always_inline));
+  66:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** static inline void _delay_loop_2(uint16_t __count) __attribute__((always_inline));
+  67:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** #endif
+  68:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  69:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** /** \ingroup util_delay_basic
+  70:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  71:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     Delay loop using an 8-bit counter \c __count, so up to 256
+  72:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     iterations are possible.  (The value 256 would have to be passed
+  73:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     as 0.)  The loop executes three CPU cycles per iteration, not
+  74:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     including the overhead the compiler needs to setup the counter
+  75:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     register.
+  76:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  77:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     Thus, at a CPU speed of 1 MHz, delays of up to 768 microseconds
+  78:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     can be achieved.
+  79:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** */
+  80:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** void
+  81:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** _delay_loop_1(uint8_t __count)
+  82:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** {
+  83:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 	__asm__ volatile (
+ 280               	0,83,.LM7-.LFBB1
+ 281               	.LM7:
+ 282 0040 85E0      		ldi r24,lo8(5)
+ 283               	/* #APP */
+ 284               	 ;  83 "c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h" 1
+ 285 0042 8A95      		1: dec r24
+ 286 0044 01F4      		brne 1b
+ 287               	 ;  0 "" 2
+ 288               	/* #NOAPP */
+ 289               	.LBE37:
+ 290               	.LBE36:
+ 291               	.LBE35:
+ 292               	.LBE34:
+ 294               	.Ltext2:
+  35:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 	_delay_us(2);
+  36:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 	
+  37:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 	if(dato_h!=NULL)
+ 295               	,.LM8-.LFBB1
+ 296               	.LM8:
+ 297 0046 3097      		sbiw r30,0
+ 298 0048 01F0      		breq .L5
+  38:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 	*dato_h	=	DATA_USB_READ_HIGH;         		//leo dato más significativo en el Puerto
+ 299               	abn	68,0,38,.LM9-.LFBB1
+ 300               	.LM9:
+ 301 004a 8091 0601 		lds r24,262
+ 302 004e 8083      		st Z,r24
+ 303               	.L5:
+  39:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 	*dato_l	=	DATA_USB_READ_LOW;             	//leo dato menos significativo	
+ 304               	bn	68,0,39,.LM10-.LFBB1
+ 305               	.LM10:
+ 306 0050 8091 0901 		lds r24,265
+ 307 0054 8C93      		st X,r24
+  40:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 	PORTH 	 		|= _BV(USB_READ);				 	 	//coloco la señal de read en alto	
+ 308               	/Interface_PC_Controlador/C/low_usb.c",132,0,0,.Ltext2
+ 309               	.Ltext2:
+ 311 005a 8061      	.LM8:
+ 312 005c 8093 0201 		sbiw r30,0
+  41:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 	PORTH 	 		|= _BV(USB_EN);					 	//coloco la señal de chip select en alto
+ 313               	 .L5
+ 315 0060 8091 0201 	.LM9:
+ 316 0064 8460      		lds r24,262
+ 317 0066 8093 0201 		st Z,r24
+ 318 006a 20E0      	.L5:
+ 320               	.LM10:
+  42:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 	
+  43:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 	return rcOK;
+  44:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** } 
+ 321               	,265
+ 322               		st X,r24
+ 324               	.LM11:
+ 325 0070 0895      		lds r24,258
+ 326               		ori r24,lo8(16)
+ 327               		sts 258,r24
+ 329               	.LM12:
+ 330               		lds r24,258
+ 331               		ori r24,lo8(4)
+ 332               		sts 258,r24
+ 333               		ldi r18,lo8(0)
+  45:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** /*-------------------------------------------------------------------------------------------------
+  46:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** int16 usb_write(uint8 datoh,uint8 datol)
+  47:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** {
+ 334               	stabn	68,0,39,.LM10-.LFBB1
+ 335               	.LM10:
+ 336               		lds r24,265
+ 337               		st X,r24
+ 339 0072 982F      	.LM11:
+  48:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 	DDRL	=		0xFF;											//Coloco el puerto L como Salida
+ 340               	,132,0,0,.Ltext2
+ 341               	.Ltext2:
+ 343 0076 8093 0A01 	.LM8:
+  49:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 	DDRK	=		0xFF;											//Coloco el puerto K como Salida
+ 344               	w r30,0
+ 345               		breq .L5
+  50:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 	//uint32 timeout=0xFFFF;
+  51:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 	
+  52:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 	PORTH		&= ~(_BV(USB_EN));							//Habilito el Controlador USB
+ 347               	9:
+ 348               		lds r24,262
+ 349 007e 8091 0201 		st Z,r24
+ 350 0082 8B7F      	.L5:
+ 352               	.LM10:
+  53:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 	
+  54:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 	/* Espero a que la señal USB_READY esté en Bajo.*/
+  55:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 	
+  56:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c ****   loop_until_bit_is_clear(PINH,USB_READY);
+ 353               	24,265
+ 354               		st X,r24
+ 356 008c 87FD      	.LM11:
+ 357 008e 00C0      		lds r24,258
+  57:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 	
+  58:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** /*	do{
+  59:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 	   timeout--;
+  60:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 	   if (timeout==0)
+  61:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 	       return rcTimeoutSendingData;
+  62:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 	}while(bit_is_set(PINH,USB_READY));
+  63:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** */	
+  64:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 	
+  65:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 	DATA_USB_WRITE_HIGH	=	datoh;						//Coloco el Dato mas significativo en el Puerto
+ 358               	t2
+ 359               	.Ltext2:
+  66:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 	DATA_USB_WRITE_LOW	=	datol;						//Coloco el Dato menos significativo en el Puerto
+ 361               	8:
+ 362               		sbiw r30,0
+ 363 0094 6093 0B01 		breq .L5
+  67:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 	PORTH		&= ~(_BV(USB_WRITE));						//Realizo una operacion de Escritura
+ 364               	tabn	68,0,38,.LM9-.LFBB1
+ 365               	.LM9:
+ 366 0098 8091 0201 		lds r24,262
+ 367 009c 877F      		st Z,r24
+ 368 009e 8093 0201 	.L5:
+ 370               	.LM10:
+ 371               		lds r24,265
+ 372               		st X,r24
+ 374               	.LM11:
+ 375               		lds r24,258
+ 376               		ori r24,lo8(16)
+ 377 00a2 85E0      		sts 258,r24
+ 379               	.LM12:
+ 380 00a4 8A95      		lds r24,258
+ 381 00a6 01F4      		ori r24,lo8(4)
+ 382               		sts 258,r24
+ 383               		ldi r18,lo8(0)
+ 384               		ldi r19,hi8(0)
+ 385               	.L3:
+ 387               	.LM13:
+ 388               		movw r24,r18
+ 389               	/* epilogue start */
+  68:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 	_delay_us(2);
+  69:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 	PORTH 		|= _BV(USB_WRITE);						//coloco la señal de read en alto	
+ 390               	b_read
+ 391               	.Lscope1:
+  70:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 	PORTH 		|= _BV(USB_EN);							//coloco la señal de chip select en alto
+ 395               	n	68,0,44,.LM13-.LFBB1
+ 396               	.LM13:
+ 397 00b2 8091 0201 		movw r24,r18
+ 398 00b6 8460      	/* epilogue start */
+ 399 00b8 8093 0201 		ret
+  71:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 	return rcOK;
+  72:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 	
+  73:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** } 
+ 400               	8
+ 401               		ori r24,lo8(16)
+ 402 00bc 80E0      		sts 258,r24
+ 404               	.LM12:
+ 405 00c0 0895      		lds r24,258
+ 406               		ori r24,lo8(4)
+ 407               		sts 258,r24
+ 408               		ldi r18,lo8(0)
+ 409               		ldi r19,hi8(0)
+ 410               	.L3:
+ 412               	.LM13:
+  74:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** /*-------------------------------------------------------------------------------------------------
+  75:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** //Esta funcion envia por los puertos del uC los datos
+  76:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** //Maneja tanto tamaños pares como inpares
+  77:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c ****  int16 Envio_USB(uint8* Buffer,int16 size)
+  78:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** {
+ 413               	abn	68,0,40,.LM11-.LFBB1
+ 414               	.LM11:
+ 415               		lds r24,258
+ 416 00c2 EF92      		ori r24,lo8(16)
+ 417 00c4 FF92      		sts 258,r24
+ 419 00c8 1F93      	.LM12:
+ 420 00ca CF93      		lds r24,258
+ 421 00cc DF93      		ori r24,lo8(4)
+ 422               		sts 258,r24
+ 423               		ldi r18,lo8(0)
+ 424 00ce 7B01      		ldi r19,hi8(0)
+ 425               	.L3:
+ 427 00d0 8C01      	.LM13:
+ 428 00d2 C0E0      		movw r24,r18
+ 429 00d4 D0E0      	/* epilogue start */
+ 430               		ret
+  79:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 	#ifdef DEBUGUSBLevel2
+  80:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 	int16 j;
+  81:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 	#endif
+  82:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 
+  83:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 	int16 i=0,rc=0,actual=0;
+  84:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 	uint8 templ,temph;
+  85:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 
+  86:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 	#ifdef DEBUGUSBLevel1
+  87:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 		printf("Envio_USB => Cantida de datos a mandar %d \n",size);
+  88:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 	#endif
+  89:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 		
+  90:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 	#ifdef DEBUGUSBLevel2		
+  91:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 	for(j=0;j<size;j++)
+  92:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 		printf("Envio_USB => Buffer[%d]=%X \n",j,Buffer[j]);		   
+  93:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 	#endif
+  94:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c ****    do
+  95:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 	{
+  96:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 		templ=Buffer[i] ;
+ 431               	8
+ 432               		ori r24,lo8(16)
+ 433 00d6 F801      		sts 258,r24
+  97:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 		actual=i+1;                    					//actual tiene los impares
+  98:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 		if (actual==size)
+ 435               	q .L5
+ 437 00da CE01      	.LM9:
+ 438 00dc 0196      		lds r24,262
+ 439 00de 8E15      		st Z,r24
+ 440 00e0 9F05      	.L5:
+  99:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 			rc=usb_write(0x00,templ);     				//he llegado a el final del 
+ 442               		lds r24,265
+ 443               		st X,r24
+ 445 00e6 00C0      	.LM11:
+ 446               		lds r24,258
+ 100:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 														//arreglo donde el tamaño es impar
+ 101:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 		else
+ 102:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 		{  	 
+ 103:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 			temph=Buffer[i+1];			
+ 104:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 			rc=usb_write(temph,templ);
+ 447               	t2
+ 448               	.Ltext2:
+ 450 00ea 8181      	.LM8:
+ 451               		sbiw r30,0
+ 452 00ec 0E94 0000 		breq .L5
+ 105:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 		}
+ 106:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 		i=i+2;
+ 453               	n	68,0,38,.LM9-.LFBB1
+ 454               	.LM9:
+ 455 00f0 2296      		lds r24,262
+ 456 00f2 0E5F      		st Z,r24
+ 457 00f4 1F4F      	.L5:
+ 107:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 		#ifdef DEBUGUSBLevel1
+ 108:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 		printf("Envio_USB => i= %d \n",i);
+ 109:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 		#endif
+ 110:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 	}
+ 111:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 	while (i<size); 
+ 458               	bn	68,0,39,.LM10-.LFBB1
+ 459               	.LM10:
+ 460 00f6 CE15      		lds r24,265
+ 461 00f8 DF05      		st X,r24
+ 463               	.LM11:
+ 112:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 	#ifdef DEBUGUSBLevel0
+ 113:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 		printf("Envio_USB => Saliendo\n");
+ 114:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 	#endif
+ 115:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 	return rc;
+ 116:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 	
+ 117:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** }
+ 464               	,132,0,0,.Ltext2
+ 465               	.Ltext2:
+ 467 00fe CF91      	.LM8:
+ 468 0100 1F91      		sbiw r30,0
+ 469 0102 0F91      		breq .L5
+ 471 0106 EF90      	.LM9:
+ 472 0108 0895      		lds r24,262
+ 473               		st Z,r24
+ 474               	.L5:
+ 476               	.LM10:
+ 477               		lds r24,265
+ 478               		st X,r24
+ 480               	.LM11:
+ 481               		lds r24,258
+ 482               		ori r24,lo8(16)
+ 483               		sts 258,r24
+ 118:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** /*-------------------------------------------------------------------------------------------------
+ 119:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** int16 Leo_USB(uint8* Buffer,int16 size)
+ 120:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** {
+ 484               	2-.LFBB1
+ 485               	.LM12:
+ 486               		lds r24,258
+ 487 010a EF92      		ori r24,lo8(4)
+ 488 010c FF92      		sts 258,r24
+ 489 010e 0F93      		ldi r18,lo8(0)
+ 490 0110 1F93      		ldi r19,hi8(0)
+ 491 0112 CF93      	.L3:
+ 493               	.LM13:
+ 494               		movw r24,r18
+ 495 0116 7B01      	/* epilogue start */
+ 496               		ret
+ 498 0118 EC01      	.Lscope1:
+ 121:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 	int16 i=0,rc=0,actual=0;
+ 122:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 	
+ 123:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 	#ifdef DEBUGUSBLevel1
+ 124:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 	printf("Leo_USB => Cantida de datos por leer %d \n",size);
+ 125:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 	#endif
+ 126:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 	do
+ 127:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 	{	
+ 128:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 		actual=i+1;                    					//actual tiene los impares
+ 129:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 		if(actual==size)
+ 502               	n	68,0,44,.LM13-.LFBB1
+ 503               	.LM13:
+ 504 011e C801      		movw r24,r18
+ 505 0120 0196      	/* epilogue start */
+ 506 0122 8E15      		ret
+ 508 0126 01F4      	.Lscope1:
+ 130:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 			rc=usb_read(NULL,&Buffer[i]);     			//he llegado a el final del 
+ 509               	68,0,41,.LM12-.LFBB1
+ 510               	.LM12:
+ 511 0128 80E0      		lds r24,258
+ 512 012a 90E0      		ori r24,lo8(4)
+ 513 012c 00C0      		sts 258,r24
+ 514               		ldi r18,lo8(0)
+ 131:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 														//arreglo donde el tamaño es impar
+ 132:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 		else
+ 133:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 		rc=usb_read(&Buffer[i+1],&Buffer[i]);				
+ 515               	stabn	68,0,39,.LM10-.LFBB1
+ 516               	.LM10:
+ 517 012e CE01      		lds r24,265
+ 518 0130 0196      		st X,r24
+ 520 0132 BE01      	.LM11:
+ 521 0134 0E94 0000 		lds r24,258
+ 134:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 		i=i+2;
+ 522               	t2
+ 523               	.Ltext2:
+ 525 013a 1F4F      	.LM8:
+ 526 013c 2296      		sbiw r30,0
+ 135:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 	}
+ 136:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 	while (i<size); 
+ 527               	 .L5
+ 529 013e 0E15      	.LM9:
+ 530 0140 1F05      		lds r24,262
+ 531 0142 04F0      		st Z,r24
+ 532               	.L5:
+ 137:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 	
+ 138:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 	#ifdef DEBUGUSBLevel0
+ 139:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 	printf("Leo_USB => Cantida de datos leidos %d \n",size);
+ 140:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 	#endif	
+ 141:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 	
+ 142:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 	#ifdef DEBUGUSBLevel2
+ 143:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 	for(i=0;i<size;i++)
+ 144:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 	printf("Leo_USB => Buffer[%d]=%X \n",i,Buffer[i]);		   
+ 145:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 	#endif	
+ 146:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** 	return rc;
+ 147:C:/Jarboter_V_2_1/Comunicacion/Interface_PC_Controlador/C/low_usb.c **** }
+ 533               	n	68,0,39,.LM10-.LFBB1
+ 534               	.LM10:
+ 535 0144 DF91      		lds r24,265
+ 536 0146 CF91      		st X,r24
+ 538 014a 0F91      	.LM11:
+ 539 014c FF90      		lds r24,258
+ 540 014e EF90      		ori r24,lo8(16)
+ 541 0150 0895      		sts 258,r24
+ 543               	.LM12:
+ 544               		lds r24,258
+ 545               		ori r24,lo8(4)
+ 546               		sts 258,r24
+ 547               		ldi r18,lo8(0)
+ 548               		ldi r19,hi8(0)
+DEFINED SYMBOLS
+                            *ABS*:00000000 low_usb.c
+C:\DOCUME~1\David\LOCALS~1\Temp/ccGBSx0K.s:2      *ABS*:0000003f __SREG__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccGBSx0K.s:3      *ABS*:0000003e __SP_H__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccGBSx0K.s:4      *ABS*:0000003d __SP_L__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccGBSx0K.s:5      *ABS*:00000034 __CCP__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccGBSx0K.s:6      *ABS*:00000000 __tmp_reg__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccGBSx0K.s:7      *ABS*:00000001 __zero_reg__
+C:\DOCUME~1\David\LOCALS~1\Temp/ccGBSx0K.s:229    .text:00000000 usb_read
+C:\DOCUME~1\David\LOCALS~1\Temp/ccGBSx0K.s:333    .text:00000072 usb_write
+C:\DOCUME~1\David\LOCALS~1\Temp/ccGBSx0K.s:412    .text:000000c2 Envio_USB
+C:\DOCUME~1\David\LOCALS~1\Temp/ccGBSx0K.s:483    .text:0000010a Leo_USB
+
+NO UNDEFINED SYMBOLS

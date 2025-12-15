@@ -1,0 +1,4 @@
+set style data lines
+cd 'C:\Jarboter_V_2_1\External\gnuplot\bin'
+plot "data-file.dat" using 1:2
+exit 

@@ -1,0 +1,68 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: RoboticController - Win32 Debug--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\DOCUME~1\David\LOCALS~1\Temp\RSP8.tmp" with contents
+[
+/nologo /MDd /W3 /Gm /GX /ZI /Od /I "C:\Jarboter_V_2_1\GUI\Include" /I "C:\Jarboter_V_2_1\Comunicacion\Interface_PC_Controlador\Include" /I "C:\Jarboter_V_2_1\GUI\External\roboop\source" /I "C:\Jarboter_V_2_1\GUI\External\roboop\newmat" /I "C:\Jarboter_V_2_1\Proyecto\Visual C++\RoboticController" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_STANDARD_" /FR"Debug/" /Fp"Debug/RoboticController.pch" /YX /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
+"C:\Jarboter_V_2_1\GUI\C\Interfaz_grafica.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\David\LOCALS~1\Temp\RSP8.tmp" 
+Creating temporary file "C:\DOCUME~1\David\LOCALS~1\Temp\RSP9.tmp" with contents
+[
+kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comctl32.lib /nologo /subsystem:windows /incremental:yes /pdb:"Debug/PMDControler.pdb" /debug /machine:I386 /out:"C:\Jarboter_V_2_1\GUI\External\Instalador 1.4-1\robomosp\PMDControler\PMDControler.exe" /pdbtype:sept 
+".\Debug\conversion.obj"
+".\Debug\DialogoAjusteSetRobot.obj"
+".\Debug\DialogoRTC.obj"
+".\Debug\DialogoTechPendant.obj"
+".\Debug\DialogoTRACE.obj"
+".\Debug\DialogoTrajecEnvia.obj"
+".\Debug\Interfaz_grafica.obj"
+".\Debug\mem.obj"
+".\Debug\menuFunc.obj"
+".\Debug\messages.obj"
+".\Debug\packetIO.obj"
+".\Debug\Procesamiento_archivos.obj"
+".\Debug\robotData.obj"
+".\Debug\USBfunc.obj"
+".\Resource\RoboticController.res"
+"\Jarboter_V_2_1\GUI\External\roboop\Debug\newmat.lib"
+"\Jarboter_V_2_1\GUI\External\roboop\roboop___Win32_Debug\roboop.lib"
+]
+Creating command line "link.exe @C:\DOCUME~1\David\LOCALS~1\Temp\RSP9.tmp"
+<h3>Output Window</h3>
+Compiling...
+Interfaz_grafica.cpp
+Linking...
+Creating temporary file "C:\DOCUME~1\David\LOCALS~1\Temp\RSPB.tmp" with contents
+[
+/nologo /o"Debug/RoboticController.bsc" 
+".\Debug\conversion.sbr"
+".\Debug\DialogoAjusteSetRobot.sbr"
+".\Debug\DialogoRTC.sbr"
+".\Debug\DialogoTechPendant.sbr"
+".\Debug\DialogoTRACE.sbr"
+".\Debug\DialogoTrajecEnvia.sbr"
+".\Debug\Interfaz_grafica.sbr"
+".\Debug\mem.sbr"
+".\Debug\menuFunc.sbr"
+".\Debug\messages.sbr"
+".\Debug\packetIO.sbr"
+".\Debug\Procesamiento_archivos.sbr"
+".\Debug\robotData.sbr"
+".\Debug\USBfunc.sbr"]
+Creating command line "bscmake.exe @C:\DOCUME~1\David\LOCALS~1\Temp\RSPB.tmp"
+Creating browse info file...
+<h3>Output Window</h3>
+
+
+
+<h3>Results</h3>
+PMDControler.exe - 0 error(s), 0 warning(s)
+</pre>
+</body>
+</html>

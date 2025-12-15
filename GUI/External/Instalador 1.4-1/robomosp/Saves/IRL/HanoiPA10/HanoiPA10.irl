@@ -1,0 +1,116 @@
+PROGRAM hanoi;
+
+SYSTEM_SPECIFICATION 'PA10.ssi';
+
+CONST
+    REAL: alto := 50.0; {Alto de la arandela = 50.0 cm}
+    REAL: distanciaTorres := 300.0;{Distancia entre la base de las torres}
+    REAL: distanciaRobot  := 400.0; {Distancia entre el robot y la torre central}
+    REAL: BaseTorre := 400.0; {altura de la base de la torre}
+    REAL: alturaTorre := 400.0; {largo de la torre}
+
+    INT: ABIERTO := 0;
+    INT: CERRADO := 1;
+
+VAR
+    POSITION: torre:= POSITION(distanciaRobot,0.0,baseTorre); {Posiciones de la torre central}
+    ARRAY [1..3] OF INT: estado := [ 0, 0, 0 ];
+    POSE: base := POSE ( POSITION (distanciaRobot,0.0,BaseTorre + alturaTorre + 100.0), ORIXYZ ( 90.0, 0.0, 0.0 ));
+    INT: num, origen, destino, temporal;
+
+PROCEDURE MOVERDISCO(IN INT: origen,destino);
+VAR
+    ROBTARGET: dest;
+BEGIN
+    write(origen,'->',destino);
+    writeln();
+
+    dest.PSE.ORI := base.ORI;
+
+    {Movimiento para recoger la ficha}
+    dest.PSE.POS := POSITION(
+                            torre.x,
+                            torre.y + distanciaTorres * (origen - 2),
+                            torre.z + (2*estado[origen]-1)*alto/2
+                            );
+    dest.A_JOINT.AA1 := ABIERTO;
+    WRITELN ( 'Recoge la ficha', dest.PSE.POS );
+    MOVE LIN dest;
+
+    {Movimiento bobre la torre de origen}
+    dest.PSE.POS := POSITION(
+                    torre.x,
+                torre.y + distanciaTorres * (origen - 2),
+                torre.z + alturaTorre + alto
+                );
+    dest.A_JOINT.AA1 := CERRADO;
+    WRITELN ( 'Sube al tope de la torre', dest.PSE.POS );
+    MOVE LIN dest;
+
+    {movimiento sobre la torre destino}
+    dest.PSE.POS := POSITION(
+                    torre.x,
+                torre.y + distanciaTorres * (destino - 2),
+                torre.z + alturaTorre + alto
+                );
+    dest.A_JOINT.AA1 := CERRADO;
+    WRITELN ( 'Tope de la torre destino', dest.PSE.POS );
+    MOVE LIN dest;
+
+    {Movimiento para dejar la arandela}
+    dest.PSE.POS := POSITION(
+                    torre.x,
+                torre.y + distanciaTorres * (destino - 2),
+                torre.z + (2*estado[destino]+1)*alto/2
+                );
+    dest.A_JOINT.AA1 := ABIERTO;
+    WRITELN ( 'Deja la ficha', dest.PSE.POS );
+    MOVE LIN dest;
+
+    {Vuelve a su origen}
+    WRITELN ( 'Vuelve a la base',base );
+    MOVE LIN base;
+
+    estado[origen]  := estado[origen]-1;
+    estado[destino] := estado[destino]+1;
+
+ENDPROC;
+
+PROCEDURE ALGORITMOHANOI(IN INT: discos, origen, destino, temporal);
+BEGIN
+    IF discos = 1 THEN
+        MOVERDISCO(origen,destino);
+        return;
+    ENDIF;
+    ALGORITMOHANOI(discos-1,origen,temporal,destino);
+    MOVERDISCO(origen,destino);
+    ALGORITMOHANOI(discos-1,temporal,destino,origen);
+ENDPROC;
+
+BEGIN
+{    writeln('Torres de Hanoi');
+    write('Numero de discos: ');
+    readln(num);
+    write('Torre Origen: ');
+    readln(origen);
+    write('Torre Destino: ');
+    readln(destino);
+    write('Torre Temporal: ');
+    readln(temporal);}
+    
+    origen := 1;
+    temporal := 2;
+    destino := 3;
+    num := 4;
+    
+    estado [ origen ] := num;
+    MOVE LIN base;
+    IF origen <> destino and origen <> temporal and destino <> temporal THEN
+        ALGORITMOHANOI(num,origen,destino,temporal);
+        writeln(estado);
+    ELSE
+        writeln('Error');
+    ENDIF;
+ENDPROGRAM;
+
+
