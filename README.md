@@ -19,7 +19,7 @@ Once trajectories are downloaded from the PC, the system can operate as a **stan
 - Reliable USB 2.0 communication between PC and embedded controller.
 - Multi-axis motion control using dedicated motion control chips (PMD MC2400).
 - Integrated feedback from optical encoders, Hall sensors and limit switches.
-- Open and didactic controller: standard interfaces (USB, UART, I²C) and documented architecture.
+-  controller: standard interfaces (USB, UART, I²C) and documented architecture.
 
 ## Hardware Architecture (High-Level)
 
