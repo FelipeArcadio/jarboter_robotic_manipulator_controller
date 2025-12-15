@@ -60,3 +60,56 @@ Once trajectories are downloaded from the PC, the system can operate as a **stan
                         |
                         v
                  Actuators (motors + gripper)
+## Software Architecture (High-Level)
+
+PC Side
+-------
+[User]
+   |
+   v
++-------------------------------+
+| Control GUI                   |
+| - Load/simulate trajectories  |
+| - Configure motion profiles   |
++-------------------------------+
+               |
+               v
++-------------------------------+
+| ROBOMOSP Engine               |
+| - Robot model & kinematics    |
+| - Trajectory generation       |
++-------------------------------+
+               |
+               v
++-------------------------------+
+| USB Communication Layer       |
+| - Packet protocol             |
+| - Error handling              |
++-------------------------------+
+               |
+               | USB 2.0
+               v
+
+Embedded Firmware (ATmega1280)
+------------------------------
++-------------------------------+
+| USB Driver + GPIF Interface   |
++-------------------------------+
+               |
+               v
++-------------------------------+
+| Command Decoder & State Machine|
+| - Idle / Download / Execute   |
+| - Error handling              |
++-------------------------------+
+               |
+               v
++------------------------------------------------------+
+|          Motion, Sensors & System Services           |
++---------------------+----------------+---------------+
+| Motion Control      | Sensors & I/O  | System        |
+| - PMD command API   | - Encoders     | - RTC tasks   |
+| - Multi-axis sync   | - Hall, limits | - Debug UART  |
+|                     | - Gripper      | - Error log   |
++---------------------+----------------+---------------+
+
