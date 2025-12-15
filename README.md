@@ -2,6 +2,8 @@
 
 ## Project Overview
 
+![Robot Jarboter](docs/img/introduccion/jarboter.png)
+
 This project consists of the design and implementation of a complete electronic controller (hardware + software) for a 6-DoF didactic robotic manipulator called **JARBOTER V2.1**.
 
 The goal was to replace a non-functional legacy controller with a new, open and stand-alone architecture based on a distributed system:
