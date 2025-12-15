@@ -24,6 +24,7 @@ Once trajectories are downloaded from the PC, the system can operate as a **stan
 -  controller: standard interfaces (USB, UART, I²C) and documented architecture.
 
 ## Hardware Architecture (High-Level)
+![Harware Architecture](docs/img/diseno/basicjarboter_en.png)
 
 
 ```text
